@@ -9,18 +9,12 @@ angular.module('authoringEnvironmentApp')
     ];
 
     $scope.tabpaneIsOpen = function(side) {
-        if ($filter('filter')($scope.panes, {position:side, selected: true, active:true}).length > 0) {
-            return true;
-        } else {
-            return false
-        }
+        return $filter('filter')($scope.panes, {position:side, selected: true, active:true}).length > 0;
     }
 
     $scope.flipActive = function(pane, side) {
         angular.forEach($filter('filter')($scope.panes, {position:side, selected: true, active:true}), function(value, key) {
-            if (value != pane) {
-                value.active = false;
-            }
+            value.active = (value != pane) ? false : value.active;
         });
         pane.active = !pane.active;
     }
