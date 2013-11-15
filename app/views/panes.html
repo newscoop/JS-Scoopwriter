@@ -1,0 +1,26 @@
+<div ng-controller="SfPanesCtrl">
+    <div class="tablist left-tablist" tabcontent-area="left-tabpane">
+        <ul class="navigation-tabs">
+            <li ng-repeat="pane in panes|filter:{position:'left', selected:true}" ng-class="{'active':pane.active}" ng-click="flipActive(pane, 'left')" tabname="{{pane.name|lowercase}}">
+                <a draggable="true" control="tab" rel="tooltip" data-placement="{{pane.position}}" data-original-title="{{pane.name}}">
+                    <i class="big-icon-chat"></i><span class="badge badge-inverse hide notifications"></span><span class="badge badge-info hide config-notif">!</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div class="tablist right-tablist" tabcontent-area="right-tabpane">
+        <ul class="navigation-tabs">
+            <li ng-repeat="pane in panes|filter:{position:'right', selected:true}" ng-class="{'active':pane.active}" ng-click="flipActive(pane, 'right')" tabname="{{pane.name|lowercase}}">
+                <a draggable="true" control="tab" rel="tooltip" data-placement="{{pane.position}}" data-original-title="{{pane.name}}">
+                    <i class="big-icon-chat"></i><span class="badge badge-inverse hide notifications"></span><span class="badge badge-info hide config-notif">!</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div class="tabpane left-tabpane"  ng-class="{'open-tabpane':tabpaneIsOpen('left')}">
+        <section ng-repeat="pane in panes|filter:{position:'left', selected:true}" ng-show="pane.active" ng-include="pane.template"></section>
+    </div>
+    <div class="tabpane right-tabpane" ng-class="{'open-tabpane':tabpaneIsOpen('right')}">
+        <section ng-repeat="pane in panes|filter:{position:'right', selected:true}" ng-show="pane.active" ng-include="pane.template"></section>
+    </div>
+</div>
