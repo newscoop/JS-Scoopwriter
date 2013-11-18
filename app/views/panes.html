@@ -3,7 +3,7 @@
         <ul class="navigation-tabs">
             <li ng-repeat="pane in panes|filter:{position:'left', selected:true}" ng-class="{'active':pane.active}" ng-click="flipActive(pane, 'left')" tabname="{{pane.name|lowercase}}">
                 <a draggable="true" control="tab" rel="tooltip" data-placement="{{pane.position}}" data-original-title="{{pane.name}}">
-                    <i class="big-icon-chat"></i><span class="badge badge-inverse hide notifications"></span><span class="badge badge-info hide config-notif">!</span>
+                    <i class="big-icon-{pane.icon}"></i><span class="badge badge-inverse hide notifications"></span><span class="badge badge-info hide config-notif">!</span>
                 </a>
             </li>
         </ul>
@@ -12,7 +12,7 @@
         <ul class="navigation-tabs">
             <li ng-repeat="pane in panes|filter:{position:'right', selected:true}" ng-class="{'active':pane.active}" ng-click="flipActive(pane, 'right')" tabname="{{pane.name|lowercase}}">
                 <a draggable="true" control="tab" rel="tooltip" data-placement="{{pane.position}}" data-original-title="{{pane.name}}">
-                    <i class="big-icon-chat"></i><span class="badge badge-inverse hide notifications"></span><span class="badge badge-info hide config-notif">!</span>
+                    <i class="big-icon-{pane.icon}"></i><span class="badge badge-inverse hide notifications"></span><span class="badge badge-info hide config-notif">!</span>
                 </a>
             </li>
         </ul>

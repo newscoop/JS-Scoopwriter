@@ -1,12 +1,8 @@
 'use strict';
 
 angular.module('authoringEnvironmentApp')
-  .controller('SfPanesCtrl', function ($scope, $filter) {
-    $scope.panes = [
-        {name: "Topics", template: 'views/pane-topics.html', position: 'left', active: false, selected: true},
-        {name: "Koekjes", template: 'views/pane-topics.html', position: 'left', active: false, selected: true},
-        {name: "Media", template: 'views/pane-topics.html', position: 'right', active: false, selected: true}
-    ];
+  .controller('SfPanesCtrl', function ($scope, $filter, panes) {
+    $scope.panes = panes.query();
 
     $scope.tabpaneIsOpen = function(side) {
         return $filter('filter')($scope.panes, {position:side, selected: true, active:true}).length > 0;

@@ -1,0 +1,14 @@
+<ul ng-controller="PanesConfigCtrl" class="dropdown-menu tabconfig-dropdown sf-dropdown sf-dropdown-right">
+<h5 class="dropdown-title">Sidetab view configuration</h5>
+<li ng-repeat="pane in panes" class="tabconfig" target-tab="ingest">
+    <span class="sf-checkbox-custom" ng-class="{'sf-checked': pane.selected}" ng-click="pane.selected=!pane.selected">
+        <input type="checkbox" class="sf-checkbox" ng-model="pane.selected" style="display:none" />
+    </span>
+    <i class="small-icon-{{pane.icon}}"></i>{{ pane.name }}
+    <div class="sf-toggle-custom" ng-click="flipPosition(pane)" ng-class="{ 'sf-checked': pane.position == 'right' }" >
+        <div class="sf-toggle-custom-inner">
+            <input type="checkbox" ng-model="pane.position" ng-true-value="left" ng-false-value="right" class="sf-toggle" style="display: none;">
+        </div>
+    </div>
+</li>
+</ul>
