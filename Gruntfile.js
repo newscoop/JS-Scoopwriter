@@ -42,6 +42,15 @@ module.exports = function (grunt) {
         ]
       }
     },
+    // preprocess : {
+    //   html: {
+    //     options: {
+    //       context : { prefixPath : '/bundles/newscoopeditor/' }
+    //     },
+    //     src: '<%= yeoman.dist %>/index.html',
+    //     dest: '<%= yeoman.dist %>/admin.html.twig'
+    //   }
+    // },
     autoprefixer: {
       options: ['last 1 version'],
       dist: {
@@ -336,6 +345,7 @@ module.exports = function (grunt) {
     'uglify',
     'rev',
     'usemin',
+    // 'preprocess:html'
   ]);
 
   grunt.registerTask('default', [
@@ -343,5 +353,7 @@ module.exports = function (grunt) {
     'test',
     'build'
   ]);
+
+  grunt.loadNpmTasks('grunt-preprocess');
   grunt.loadNpmTasks('grunt-contrib-less');
 };

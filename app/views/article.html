@@ -3,22 +3,11 @@
    id="main-article"
    ng-controller="ArticleCtrl"
    >
-
-    <section class="article-section">
-        <header>
-            <span class="edit-label">Spitzmarke</span>
-        </header>
-        <div id="article-section" class="aloha-editable aloha-block-blocklevel-sortable ui-sortable" contenteditable="true">
-            <!-- can't find this in the data from the API -->
-            <!--p>Das Elsass</p-->
-        </div>
-    </section>
-
     <section class="article-date">
         <p>{{article.published | date}}</p>
     </section>
 
-    <section class="article-title">
+    <!-- <section class="article-title">
         <header>
             <span class="edit-label">Kurztitel</span>
             <span class="edit-words-info">30 von 30 Zeichen</span>
@@ -26,18 +15,18 @@
         <div id="article-title" class="aloha-editable aloha-block-blocklevel-sortable ui-sortable" contenteditable="true">
             <p ng-bind-html="article.title"></p>
         </div>
-    </section>
+    </section> -->
 
     <section class="article-short-text">
         <header>
-            <span class="edit-label">Lead</span>
+            <span class="edit-label">Deck</span>
             <span class="edit-words-info">92 Zeichen / 15 Worter</span>
         </header>
         <div
            id="article-short-text"
            class="aloha-editable aloha-block-blocklevel-sortable ui-sortable"
            contenteditable="true"
-           ng-bind-html="article.fields.lede"
+           ng-bind-html="article.fields.deck"
            >
            </div>
     </section>
@@ -54,7 +43,7 @@
                   ui-sortable
                   aloha-editable-active"
            contenteditable="true"
-           ng-bind-html="article.fields.body"
+           ng-bind-html="article.fields.full_text"
            >
         </div>
     </section>
