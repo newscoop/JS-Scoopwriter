@@ -26,10 +26,6 @@ module.exports = function (grunt) {
         files: ['test/spec/{,*/}*.coffee'],
         tasks: ['coffee:test']
       },
-      compass: {
-        files: ['<%= yeoman.app %>/styles/{,*/}*.{scss,sass}'],
-        tasks: ['compass:server', 'autoprefixer']
-      },
       styles: {
         files: ['<%= yeoman.app %>/styles/{,*/}*.css'],
         tasks: ['copy:styles', 'autoprefixer']
@@ -136,32 +132,21 @@ module.exports = function (grunt) {
         }]
       }
     },
-    compass: {
-      options: {
-        sassDir: '<%= yeoman.app %>/styles',
-        cssDir: '.tmp/styles',
-        generatedImagesDir: '.tmp/images/generated',
-        imagesDir: '<%= yeoman.app %>/images',
-        javascriptsDir: '<%= yeoman.app %>/scripts',
-        fontsDir: '<%= yeoman.app %>/fonts',
-        importPath: '<%= yeoman.app %>/bower_components',
-        httpImagesPath: '/images',
-        httpGeneratedImagesPath: '/images/generated',
-        httpFontsPath: '/fonts',
-        relativeAssets: false
-      },
-      dist: {},
-      server: {
-        options: {
-          debugInfo: true
-        }
-      }
-    },
     // not used since Uglify task does concat,
     // but still available if needed
     /*concat: {
       dist: {}
     },*/
+    less: {
+      dist: {
+        options: {
+          paths: ["<%= yeoman.app %>/styles"]
+        },
+        files: {
+          "<%= yeoman.dist %>/styles/bootstrap.css": "<%= yeoman.app %>/styles/bootstrap.less"
+        }
+      }
+    },
     rev: {
       dist: {
         files: {
@@ -275,17 +260,15 @@ module.exports = function (grunt) {
     concurrent: {
       server: [
         'coffee:dist',
-        'compass:server',
         'copy:styles'
       ],
       test: [
         'coffee',
-        'compass',
         'copy:styles'
       ],
       dist: [
         'coffee',
-        'compass:dist',
+        'less:dist',
         'copy:styles',
         'imagemin',
         'svgmin',
@@ -296,11 +279,6 @@ module.exports = function (grunt) {
       unit: {
         configFile: 'karma.conf.js',
         singleRun: true
-      }
-    },
-    cdnify: {
-      dist: {
-        html: ['<%= yeoman.dist %>/*.html']
       }
     },
     ngmin: {
@@ -354,11 +332,10 @@ module.exports = function (grunt) {
     'concat',
     'ngmin',
     'copy:dist',
-    'cdnify',
     'cssmin',
     'uglify',
     'rev',
-    'usemin'
+    'usemin',
   ]);
 
   grunt.registerTask('default', [
@@ -366,4 +343,5 @@ module.exports = function (grunt) {
     'test',
     'build'
   ]);
+  grunt.loadNpmTasks('grunt-contrib-less');
 };
