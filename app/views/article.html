@@ -7,46 +7,18 @@
         <p>{{article.published | date}}</p>
     </section>
 
-    <!-- <section class="article-title">
-        <header>
-            <span class="edit-label">Kurztitel</span>
-            <span class="edit-words-info">30 von 30 Zeichen</span>
-        </header>
-        <div id="article-title" class="aloha-editable aloha-block-blocklevel-sortable ui-sortable" contenteditable="true">
-            <p ng-bind-html="article.title"></p>
-        </div>
-    </section> -->
-
-    <section class="article-short-text">
-        <header>
-            <span class="edit-label">Deck</span>
-            <span class="edit-words-info">92 Zeichen / 15 Worter</span>
-        </header>
+    <section
+       class="article-full-text"
+       ng-repeat="field in editableFields = (type.fields | orderBy:'fieldWeight' | filter:editable)"
+       >
         <div
-           id="article-short-text"
-           class="aloha-editable aloha-block-blocklevel-sortable ui-sortable"
-           contenteditable="true"
-           ng-bind-html="article.fields.deck"
-           >
-           </div>
-    </section>
-
-    <section class="article-full-text">
-        <header>
-            <span class="edit-label">Lauftext</span>
-            <span class="edit-words-info">2565 Zeichen / 414 Worter</span>
-        </header>
-        <div
-           id="article-full-text"
-           class="aloha-editable
-                  aloha-block-blocklevel-sortable
-                  ui-sortable
-                  aloha-editable-active"
-           contenteditable="true"
-           ng-bind-html="article.fields.full_text"
+           class="editable"
+           ng-bind-html="article.fields[field.name]"
            >
         </div>
     </section>
-
+    <div ng-hide="editableFields.length">
+      There are no editable fields for this type of article
+    </div>
 
 </article>
