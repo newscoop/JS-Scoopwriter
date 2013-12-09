@@ -3,8 +3,12 @@
 angular.module('authoringEnvironmentApp')
   .controller('ArticleCtrl', function ($scope, $http, $location) {
     var
-      //b = 'http://tw-merge.lab.sourcefabric.org', // standalone
+      // devcode: !newscoop
+      b = 'http://tw-merge.lab.sourcefabric.org', // standalone
+      // endcode
+      // devcode: newscoop
       b = '', // plugin
+      // endcode
       s = $location.search(),
       n = s.f_article_number;
     $http
