@@ -12,8 +12,8 @@
        ng-repeat="field in editableFields = (type.fields | orderBy:'fieldWeight' | filter:editable)"
        >
         <div
-           class="editable"
-           ng-bind-html="article.fields[field.name]"
+           ng-bind-html="article.fields[field.name]" 
+           aloha
            >
         </div>
     </section>
