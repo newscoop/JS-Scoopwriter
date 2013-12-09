@@ -39,18 +39,39 @@ module.exports = function (grunt) {
           '.tmp/styles/{,*/}*.css',
           '{.tmp,<%= yeoman.app %>}/scripts/{,*/}*.js',
           '<%= yeoman.app %>/images/{,*/}*.{png,jpg,jpeg,gif,webp,svg}'
-        ]
+        ],
+        tasks: ['devcode:server']
       }
     },
-    // preprocess : {
-    //   html: {
-    //     options: {
-    //       context : { prefixPath : '/bundles/newscoopeditor/' }
-    //     },
-    //     src: '<%= yeoman.dist %>/index.html',
-    //     dest: '<%= yeoman.dist %>/admin.html.twig'
-    //   }
-    // },
+    devcode :
+    {
+      options :
+      {
+        html: true,        // html files parsing?
+        js: true,          // javascript files parsing?
+        css: true,         // css files parsing?
+        clean: true,       // removes devcode comments even if code was not removed
+        block: {
+          open: 'devcode', // with this string we open a block of code
+          close: 'endcode' // with this string we close a block of code
+        },
+        dest: 'dist'       // default destination which overwrittes environment variable
+      },
+      server : {           // settings for task used with 'devcode:server'
+        options: {
+            source: '<%= yeoman.app %>/',
+            dest: '.tmp/',
+            env: 'development'
+        }
+      },
+      newscoop : {             // settings for task used with 'devcode:dist'
+        options: {
+            source: 'dist/',
+            dest: 'dist/',
+            env: 'newscoop'
+        }
+      }
+    },
     autoprefixer: {
       options: ['last 1 version'],
       dist: {
@@ -149,10 +170,20 @@ module.exports = function (grunt) {
     less: {
       dist: {
         options: {
-          paths: ["<%= yeoman.app %>/styles"]
+          paths: ["<%= yeoman.app %>/styles"],
+          cleancss: true
         },
         files: {
           "<%= yeoman.dist %>/styles/bootstrap.css": "<%= yeoman.app %>/styles/bootstrap.less"
+        }
+      },
+      server: {
+        options: {
+          paths: ["<%= yeoman.app %>/styles"],
+          cleancss: false
+        },
+        files: {
+          ".tmp/styles/bootstrap.css": "<%= yeoman.app %>/styles/bootstrap.less"
         }
       }
     },
@@ -200,19 +231,6 @@ module.exports = function (grunt) {
           dest: '<%= yeoman.dist %>/images'
         }]
       }
-    },
-    cssmin: {
-      // By default, your `index.html` <!-- Usemin Block --> will take care of
-      // minification. This option is pre-configured if you do not wish to use
-      // Usemin blocks.
-      // dist: {
-      //   files: {
-      //     '<%= yeoman.dist %>/styles/main.css': [
-      //       '.tmp/styles/{,*/}*.css',
-      //       '<%= yeoman.app %>/styles/{,*/}*.css'
-      //     ]
-      //   }
-      // }
     },
     htmlmin: {
       dist: {
@@ -268,7 +286,9 @@ module.exports = function (grunt) {
     },
     concurrent: {
       server: [
+        'devcode:server',
         'coffee:dist',
+        'less:server',
         'copy:styles'
       ],
       test: [
@@ -298,15 +318,6 @@ module.exports = function (grunt) {
           src: '*.js',
           dest: '.tmp/concat/scripts'
         }]
-      }
-    },
-    uglify: {
-      dist: {
-        files: {
-          '<%= yeoman.dist %>/scripts/scripts.js': [
-            '<%= yeoman.dist %>/scripts/scripts.js'
-          ]
-        }
       }
     }
   });
@@ -341,11 +352,9 @@ module.exports = function (grunt) {
     'concat',
     'ngmin',
     'copy:dist',
-    'cssmin',
-    'uglify',
+    'devcode:newscoop',
     'rev',
-    'usemin',
-    // 'preprocess:html'
+    'usemin'
   ]);
 
   grunt.registerTask('default', [
@@ -354,6 +363,6 @@ module.exports = function (grunt) {
     'build'
   ]);
 
-  grunt.loadNpmTasks('grunt-preprocess');
+  grunt.loadNpmTasks('grunt-devcode');
   grunt.loadNpmTasks('grunt-contrib-less');
 };
