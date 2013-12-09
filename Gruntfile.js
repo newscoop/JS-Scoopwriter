@@ -319,6 +319,15 @@ module.exports = function (grunt) {
           dest: '.tmp/concat/scripts'
         }]
       }
+    },
+    uglify: {
+      dist: {
+        files: {
+          '<%= yeoman.dist %>/scripts/scripts.js': [
+            '<%= yeoman.dist %>/scripts/scripts.js'
+          ]
+        }
+      }
     }
   });
 
@@ -352,6 +361,7 @@ module.exports = function (grunt) {
     'concat',
     'ngmin',
     'copy:dist',
+    'uglify',
     'devcode:newscoop',
     'rev',
     'usemin'
