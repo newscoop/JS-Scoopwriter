@@ -7,15 +7,15 @@
     <input type="text" ng-model="search" class="search-query" placeholder="Search">
     <h3>Available Topics</h3>
     <ul class="edit-toc">
-        <li ng-repeat="topic in topics | filter:{selected:false} | filter:search | orderBy:'text'">
-            <a ng-click="chooseTopic(topic)">{{topic.text}} ({{topic.id}}) <button ng-click="deleteTopic(topic)">X</button></a>
+        <li ng-repeat="topic in topics | filter:{selected:false} | filter:search | orderBy:'text'" ng-click="chooseTopic(topic)">
+            {{topic.text}} <button ng-click="deleteTopic(topic)"> X </button>
         </li>
     </ul>
 
     <h3>Chosen Topics</h3>
     <ul class="edit-toc">
         <li ng-repeat="topic in topics | filter:{selected:true} | orderBy:'text'">
-            <a href="#">{{topic.text}} ({{topic.id}}) <button ng-click="deleteChTopic(topic)">X</button></a>
+            {{topic.text}} <button ng-click="deleteChTopic(topic)"> X </button>
         </li>
     </ul>
 </section>
