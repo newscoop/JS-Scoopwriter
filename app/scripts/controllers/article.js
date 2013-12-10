@@ -1,7 +1,8 @@
 'use strict';
 
 angular.module('authoringEnvironmentApp')
-  .controller('ArticleCtrl', function ($scope, $http, $location) {
+  .controller('ArticleCtrl', ['$scope', '$location', 'Article', 'Articletype',
+                              function ($scope, $location, Article, Articletype) {
     var s, n, b;
       s = $location.search();
       n = s.f_article_number;
@@ -15,16 +16,10 @@ angular.module('authoringEnvironmentApp')
       b = ''; // plugin
       // endcode
       
-    $http
-          .get(b + '/api/articles/' + n)
-          .success(function(article) {
-              $http
-                  .get(b + '/api/articleTypes/' + article.type)
-                  .success(function(type) {
-                      $scope.type = type;
-                      $scope.article = article;
-                  });
-      });
+    $scope.article = Article.get({articleId: n}, function(article) {
+      $scope.type = Articletype.get({type: article.type});
+    });
+      
       // used to filter
       $scope.editable = function(field) {
           if (field.isContentField == 0) {
@@ -40,4 +35,4 @@ angular.module('authoringEnvironmentApp')
           };
           return true;
       };
-  });
+  }]);
