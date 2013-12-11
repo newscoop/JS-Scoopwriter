@@ -3,12 +3,16 @@
 angular.module('authoringEnvironmentApp')
   .controller('ArticleCtrl', ['$scope', '$location', 'Article', 'Articletype',
                               function ($scope, $location, Article, Articletype) {
-    var s, n, b;
+    var s, n, b, l;
       s = $location.search();
       n = s.f_article_number;
+      l = s.f_language_id;
       // devcode: !newscoop
       if (n === undefined) {
         n = 64;
+      }
+      if (l === undefined) {
+        l = 'en';
       }
       b = 'http://tw-merge.lab.sourcefabric.org'; // standalone
       // endcode
@@ -16,7 +20,10 @@ angular.module('authoringEnvironmentApp')
       b = ''; // plugin
       // endcode
       
-    $scope.article = Article.get({articleId: n}, function(article) {
+    $scope.article = Article.get({
+        articleId: n,
+        language: l
+    }, function(article) {
       $scope.type = Articletype.get({type: article.type});
     });
       
