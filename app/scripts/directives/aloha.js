@@ -4,7 +4,7 @@ angular.module('authoringEnvironmentApp')
 /*
 Thanks goes out to https://groups.google.com/d/msg/angular/g3eNa360oMo/0-plw8zm-okJ
 */
-  .directive('aloha', ['$location', function ($location) {
+  .directive('aloha', ['$location', 'AlohaFormattingFactory', function ($location, AlohaFormattingFactory) {
 
     // Because angularjs would route clicks on any links, but we
     // want the user to be able to click on links so he can edit
@@ -65,6 +65,12 @@ Thanks goes out to https://groups.google.com/d/msg/angular/g3eNa360oMo/0-plw8zm-
         link: function (scope, elem, attrs) {
             Aloha.ready(function () {
                 $(elem).aloha();
+                Aloha.bind('aloha-selection-changed', function () {
+                    angular.forEach(AlohaFormattingFactory.get(), function(value, key) {
+                        var selected = Aloha.queryCommandState(value);
+                        jQuery('.editoricon-'+value.toLowerCase()).parent().toggleClass('active', selected);
+                    });
+                });
                 scope.$on('$destroy', function () {
                     $(elem).mahalo();
                 });
