@@ -1,14 +1,7 @@
 'use strict';
 
 angular.module('authoringEnvironmentApp')
-  .service('Article', function Article($resource) {
-    var b;
-    // devcode: !newscoop
-    b = 'http://tw-merge.lab.sourcefabric.org';
-    // endcode
-    // devcode: newscoop
-    b = '';
-    // endcode
+  .service('Article', function Article($resource, endpoint) {
 
     var langMap = {
         1: ['English', 'en'],
@@ -45,11 +38,14 @@ angular.module('authoringEnvironmentApp')
     };
 
     // AngularJS will instantiate a singleton by calling "new" on this function
-    return $resource(b+'/api/articles/:articleId?language=:language', {}, {
-      query: {
+    return $resource(
+      endpoint + '/api/articles/:articleId?language=:language',
+      {},
+      {
+        query: {
           method: 'GET',
           params: {articleId: '', language: 'en'},
           isArray: true
-      }
+        }
     });
   });
