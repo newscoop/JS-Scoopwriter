@@ -65,6 +65,7 @@ Thanks goes out to https://groups.google.com/d/msg/angular/g3eNa360oMo/0-plw8zm-
         link: function (scope, elem, attrs) {
             Aloha.ready(function () {
                 $(elem).aloha();
+                // this could go in the directive that it checks itself, we might have to benchmark this
                 Aloha.bind('aloha-selection-changed', function () {
                     angular.forEach(AlohaFormattingFactory.get(), function(value, key) {
                         var selected = Aloha.queryCommandState(value);

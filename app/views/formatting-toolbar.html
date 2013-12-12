@@ -14,20 +14,13 @@
 
 
     <div class="btn-toolbar">
-        <div class="btn-group headings">
-            <button class="btn currentHeading" rel="tooltip" title="Text Heading">Nothing</button>
+        <div class="btn-group headings" ng-controller="ToolbarCtrl">
+            <button class="btn currentHeading" rel="tooltip" title="Text Heading" ng-bind="active"></button>
             <button class="btn dropdown-toggle" data-toggle="dropdown" rel="tooltip" title="Change Heading">
                 <span class="caret"></span>
             </button>
             <ul class="dropdown-menu">
-                <!-- "changeHeading" is important so a click can be attached and
-                     data-tagname is used both to identify if the cursor is in one of these and
-               is used to change one heading to another
-               -->
-                <li><a class="action changeHeading" data-tagname="p">Normal Text</a></li>
-                <li><a class="action changeHeading" data-tagname="h1">Heading</a></li>
-                <li><a class="action changeHeading" data-tagname="h2">Subheading</a></li>
-                <li><a class="action changeHeading" data-tagname="h3">SubSubHeading</a></li>
+                <li ng-repeat="styler in stylers"><button sf-aloha-format-style data-style-element="{{styler.element}}" data-style-name="{{styler.name}}"></button></li>
             </ul>
         </div>
 
