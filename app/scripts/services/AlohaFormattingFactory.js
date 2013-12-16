@@ -6,6 +6,10 @@ angular.module('authoringEnvironmentApp')
     // ...
 
     var formatters = [];
+    var forbidden = [
+          'Insertorderedlist',
+          'Insertunorderedlist'
+        ];
 
     // Public API here
     return {
@@ -13,10 +17,19 @@ angular.module('authoringEnvironmentApp')
         return formatters;
       },
       add: function (Formatter) {
-        formatters.push(Formatter);
+        if (forbidden.indexOf(Formatter) == -1) {
+          formatters.push(Formatter);
+        }
       },
       remove: function (Formatter) {
         formatters.splice(formatters.indexOf(Formatter), 1);
+      },
+      query: function (Formatter) {
+        if (forbidden.indexOf(Formatter) == -1) {
+          return Aloha.queryCommandState(Formatter);
+        } else {
+          return false;
+        }
       }
     };
   });

@@ -25,29 +25,34 @@
         </div>
 
         <div class="btn-group">
-            <button sf-aloha-format-generic data-aloha-element="Bold"></button>
-            <button sf-aloha-format-generic data-aloha-element="Italic"></button>
-            <button sf-aloha-format-generic data-aloha-element="Underline"></button>
-            <button sf-aloha-format-generic data-aloha-element="Strikethrough"></button>
-            <button sf-aloha-format-generic data-aloha-element="Subscript"></button>
-            <button sf-aloha-format-generic data-aloha-element="Superscript"></button>
+            <button sf-aloha-format-generic data-aloha-element="Bold" data-button-name="Bold"></button>
+            <button sf-aloha-format-generic data-aloha-element="Italic" data-button-name="Italic"></button>
+            <button sf-aloha-format-generic data-aloha-element="Underline" data-button-name="Underline"></button>
+            <button sf-aloha-format-generic data-aloha-element="Strikethrough" data-button-name="Strikethrough"></button>
+            <button sf-aloha-format-generic data-aloha-element="Subscript" data-button-name="Subscript"></button>
+            <button sf-aloha-format-generic data-aloha-element="Superscript" data-button-name="Superscript"></button>
         </div>
 
-        <div class="btn-group">
+        <!-- <div class="btn-group">
+            <button class="btn dropdown-toggle" data-toggle="dropdown" rel="tooltip" title="Insert External Link"><i class="editoricon-createlink"></i></button>
+            <ul class="dropdown-menu">
+                <li><input type="text" /></li>
+                <li><button>Create</button></li>
+            </ul>
             <button class="btn  action insertLink" rel="tooltip" title="Insert Link"><i class="editoricon-link"></i></button>
             <button class="btn  action insertImage-oer" rel="tooltip" title="Insert Figure"><i class="editoricon-picture"></i></button>
             <button class="btn action insertMath" rel="tooltip" title="Insert Math">x<sup>2</sup></button>
             <button class="btn  action insertNote" rel="tooltip" title="Insert Note">!</button>
-        </div>
+        </div> -->
 
         <div class="btn-group">
-            <button class="btn action unorderedList" rel="tooltip" title="Unordered List"><i class="editoricon-list-ul"></i></button>
-            <button class="btn action orderedList" rel="tooltip" title="Ordered List"><i class="editoricon-list-ol"></i></button>
-            <button class="btn action outdentList" rel="tooltip" title="Indent List"><i class="editoricon-indent-left"></i></button>
-            <button class="btn action indentList" rel="tooltip" title="Outdent List"><i class="editoricon-indent-right"></i></button>
+            <button sf-aloha-format-generic data-aloha-element="Insertunorderedlist" data-button-name="Insert Unordered List"></button>
+            <button sf-aloha-format-generic data-aloha-element="Insertorderedlist" data-button-name="Insert Ordered List"></button>
+            <!-- <button class="btn action outdentList" rel="tooltip" title="Indent List"><i class="editoricon-indent-left"></i></button> -->
+            <!-- <button class="btn action indentList" rel="tooltip" title="Outdent List"><i class="editoricon-indent-right"></i></button> -->
         </div>
 
-        <div class="btn-group">
+        <!-- <div class="btn-group">
             <button class="btn action createTable" rel="tooltip" title="Create Table"><i class="editoricon-table"></i></button>
             <button class="btn dropdown-toggle" data-toggle="dropdown" rel="tooltip" title="Table Operations">
                 <span class="caret"></span>
@@ -56,7 +61,7 @@
                 <li><a class="action addrowbefore">Add Row Before</a></li>
                 <li><a class="action addrowafter">Add Row After</a></li>
             </ul>
-        </div>
+        </div> -->
 
     </div>
 
