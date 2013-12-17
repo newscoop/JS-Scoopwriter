@@ -6,6 +6,12 @@ angular.module('authoringEnvironmentApp', [
   'ngSanitize',
   'ngRoute'
 ])
+  // devcode: !newscoop
+  .constant('endpoint', 'http://tw-merge.lab.sourcefabric.org')
+  // endcode
+  // devcode: newscoop
+  .constant('endpoint', '')
+  // endcode
   .config(function ($routeProvider) {
     $routeProvider
       .when('/', {
