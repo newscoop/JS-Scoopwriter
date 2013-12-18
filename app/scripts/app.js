@@ -4,7 +4,8 @@ angular.module('authoringEnvironmentApp', [
   'ngCookies',
   'ngResource',
   'ngSanitize',
-  'ngRoute'
+  'ngRoute',
+  'ngAlohaEditor'
 ])
   // devcode: !newscoop
   .constant('endpoint', 'http://tw-merge.lab.sourcefabric.org')
