@@ -4,7 +4,8 @@ angular.module('authoringEnvironmentApp', [
   'ngCookies',
   'ngResource',
   'ngSanitize',
-  'ngRoute'
+  'ngRoute',
+  'ngAlohaEditor'
 ])
   .config(function ($routeProvider) {
     $routeProvider

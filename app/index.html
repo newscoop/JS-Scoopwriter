@@ -59,52 +59,15 @@
     <script src="bower_components/jquery/jquery.js"></script>
     <script src="bower_components/angular/angular.js"></script>
 
-    <script type="text/javascript">
-    Aloha = window.Aloha || {};
-
-    Aloha.settings = {
-      baseUrl: '/scripts/aloha/plugins',
-      logLevels: {'error': true, 'warn': true, 'info': false, 'debug': false},
-      errorhandling : true,
-
-      predefinedModules: {
-        'jquery19': window.jQuery
-      },
-
-      requireConfig: {
-        paths: {
-            // Override location of jquery-ui and use our own. Because
-            // jquery-ui and bootstrap conflict in a few cases (buttons,
-            // tooltip) our copy has those removed.
-            jqueryui: 'scripts/oerpub/js/jquery-ui-1.9.0.custom-aloha'
-        }
-      }
-
-    };
-
-  </script>
-
-  <script type="text/javascript" src="http://cdn.aloha-editor.org/latest/lib/require.js"></script>
-  <script type="text/javascript" src="http://cdn.aloha-editor.org/latest/lib/vendor/jquery-1.7.2.js"></script>
-
-  <script src="scripts/aloha/lib/aloha.js" data-aloha-plugins="
-    common/ui,
-    common/format,
-    common/paste,
-    common/block,
-    common/list,
-    common/table,
-    extra/draganddropfiles,
-    common/image
-    "></script>
-
-        
+    <script type="text/javascript" src="http://cdn.aloha-editor.org/latest/lib/require.js"></script>
+    <script type="text/javascript" src="http://cdn.aloha-editor.org/latest/lib/vendor/jquery-1.7.2.js"></script>
 
         <!-- build:js scripts/modules.js -->
         <script src="bower_components/angular-resource/angular-resource.js"></script>
         <script src="bower_components/angular-cookies/angular-cookies.js"></script>
         <script src="bower_components/angular-sanitize/angular-sanitize.js"></script>
         <script src="bower_components/angular-route/angular-route.js"></script>
+        <script src="bower_components/ng-aloha-editor/ng-aloha-editor.js"></script>
         <!-- endbuild -->
 
         <!-- build:js({.tmp,app}) scripts/scripts.js -->
@@ -115,12 +78,12 @@
         <script src="scripts/services/panes.js"></script>
         <script src="scripts/controllers/panes-config.js"></script>
         <script src="scripts/controllers/article.js"></script>
-        <script src="scripts/directives/aloha.js"></script>
         <script src="scripts/services/AlohaFormattingFactory.js"></script>
         <script src="scripts/directives/sf-aloha-format-generic.js"></script>
         <script src="scripts/directives/sf-aloha-format-style.js"></script>
         <script src="scripts/controllers/Toolbar.js"></script>
         <!-- endbuild -->
+
 
         <script src="scripts/bootstrap.min.js"></script>
 </body>

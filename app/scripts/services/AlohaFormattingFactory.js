@@ -1,9 +1,17 @@
 'use strict';
 
 angular.module('authoringEnvironmentApp')
-  .factory('AlohaFormattingFactory', function () {
+  .factory('AlohaFormattingFactory', ['$rootScope', function ($rootScope) {
     // Service logic
     // ...
+
+    $rootScope.$on('texteditor-selection-changed', function () {
+      angular.forEach(formatters, function(value, key) {
+          var selected = Aloha.queryCommandState(value);
+          jQuery('.editoricon-'+value.toLowerCase()).parent().toggleClass('active', selected);
+      });
+    });
+    
 
     var formatters = [];
     var forbidden = [
@@ -32,4 +40,4 @@ angular.module('authoringEnvironmentApp')
         }
       }
     };
-  });
+  }]);
