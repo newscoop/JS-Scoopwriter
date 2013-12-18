@@ -5,6 +5,7 @@ angular.module('authoringEnvironmentApp')
 Thanks goes out to https://groups.google.com/d/msg/angular/g3eNa360oMo/0-plw8zm-okJ
 */
   .directive('aloha', ['$location', 'AlohaFormattingFactory', function ($location, AlohaFormattingFactory) {
+    var count = 0;
 
     // Because angularjs would route clicks on any links, but we
     // want the user to be able to click on links so he can edit
@@ -51,6 +52,17 @@ Thanks goes out to https://groups.google.com/d/msg/angular/g3eNa360oMo/0-plw8zm-
         });
     }
 
+    function alohaElement(element) {
+        Aloha.ready(function () {
+            Aloha.jQuery(element).aloha();
+        });
+    }
+    function mahaloElement(element) {
+        Aloha.ready(function () {
+            Aloha.jQuery(element).mahalo();
+        });
+    }
+
     // Only do once for each page load.
     disableAlohaCtrlClickHandler();
 
@@ -62,9 +74,19 @@ Thanks goes out to https://groups.google.com/d/msg/angular/g3eNa360oMo/0-plw8zm-
         // the server.
         priority: -1000,
         terminal: true,
+        scope: {
+            alohaContent: '@alohaContent'
+        },
         link: function (scope, elem, attrs) {
+            console.log(scope.alohaContent);
+            var elementId = "" + count++;
+            var uniqeClass = "angular-aloha-element" + elementId;
+            elem[0].classList.add(uniqeClass);
+            elem.data("ng-aloha-element-id", elementId);
             Aloha.ready(function () {
-                $(elem).aloha();
+                alohaElement(elem);
+                Aloha.getEditableById(elem.attr('id')).setContents(scope.alohaContent);
+                // $(elem).aloha();
                 // this could go in the directive that it checks itself, we might have to benchmark this
                 Aloha.bind('aloha-selection-changed', function () {
                     angular.forEach(AlohaFormattingFactory.get(), function(value, key) {
@@ -72,10 +94,19 @@ Thanks goes out to https://groups.google.com/d/msg/angular/g3eNa360oMo/0-plw8zm-
                         jQuery('.editoricon-'+value.toLowerCase()).parent().toggleClass('active', selected);
                     });
                 });
-                scope.$on('$destroy', function () {
-                    $(elem).mahalo();
+                // scope.$on('$destroy', function () {
+                //     $(elem).mahalo();
+                // });
+                Aloha.bind('aloha-smart-content-changed', function(jEvent, jData) {
+                    // if (jData.editable.obj.data("ng-aloha-element-id") === elementId) {
+                        console.log(scope);
+                        scope.alohaContent = jData.editable.getContents();
+                        console.log(scope);
+                        scope.$apply();
+                    // }
                 });
             });
+
             replaceAngularLinkClickHandler(elem);
         }
     };
