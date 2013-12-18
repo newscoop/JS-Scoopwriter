@@ -1,13 +1,18 @@
 'use strict';
 
 angular.module('authoringEnvironmentApp')
-  .controller('ArticleCtrl', function ($scope, $http, $location) {
-    var s, n, b;
+  .controller('ArticleCtrl', ['$scope', '$location', 'Article', 'Articletype',
+                              function ($scope, $location, Article, Articletype) {
+    var s, n, b, l;
       s = $location.search();
       n = s.f_article_number;
+      l = s.f_language_id;
       // devcode: !newscoop
       if (n === undefined) {
         n = 64;
+      }
+      if (l === undefined) {
+        l = 'en';
       }
       b = 'http://tw-merge.lab.sourcefabric.org'; // standalone
       // endcode
@@ -15,16 +20,13 @@ angular.module('authoringEnvironmentApp')
       b = ''; // plugin
       // endcode
       
-    $http
-          .get(b + '/api/articles/' + n)
-          .success(function(article) {
-              $http
-                  .get(b + '/api/articleTypes/' + article.type)
-                  .success(function(type) {
-                      $scope.type = type;
-                      $scope.article = article;
-                  });
-      });
+    $scope.article = Article.get({
+        articleId: n,
+        language: l
+    }, function(article) {
+      $scope.type = Articletype.get({type: article.type});
+    });
+      
       // used to filter
       $scope.editable = function(field) {
           if (field.isContentField == 0) {
@@ -40,4 +42,4 @@ angular.module('authoringEnvironmentApp')
           };
           return true;
       };
-  });
+  }]);
