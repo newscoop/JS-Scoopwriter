@@ -12,7 +12,8 @@
        ng-repeat="field in editableFields = (type.fields | orderBy:'fieldWeight' | filter:editable)"
        >
         <div
-           ng-bind-html="article.fields[field.name]" 
+           ng-class="aes-{{field.name}}"
+           data-aloha-content='{{article.fields[field.name]}}'
            aloha
            >
         </div>

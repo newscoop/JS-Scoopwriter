@@ -17,8 +17,11 @@ angular.module('authoringEnvironmentApp')
     var updateScope = function () {
         var commandValue = Aloha.queryCommandValue('formatBlock');
         if (commandValue.toString().length > 0) {
-            $scope.active = $filter('filter')($scope.stylers, {element:commandValue}, true)[0].name;
-            $scope.$apply();
+            var filtered = $filter('filter')($scope.stylers, {element:commandValue}, true);
+            if (filtered.length > 0) {
+                $scope.active = filtered[0].name;
+                $scope.$apply();
+            }
         }
     };
     Aloha.ready(function () {

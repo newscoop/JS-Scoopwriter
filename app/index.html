@@ -58,9 +58,11 @@
 
     <script src="bower_components/jquery/jquery.js"></script>
     <script src="bower_components/angular/angular.js"></script>
-
-    <script type="text/javascript" src="http://cdn.aloha-editor.org/latest/lib/require.js"></script>
-    <script type="text/javascript" src="http://cdn.aloha-editor.org/latest/lib/vendor/jquery-1.7.2.js"></script>
+    
+    <script src="bower_components/requirejs/require.js"></script>
+    <script>
+    var ngAlohaEditorConfig = { baseUrl: 'bower_components/ng-aloha-editor/' };
+    </script>
 
         <!-- build:js scripts/modules.js -->
         <script src="bower_components/angular-resource/angular-resource.js"></script>

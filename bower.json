@@ -1,6 +1,6 @@
 {
   "name": "authoring-environment",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "dependencies": {
     "angular": "~1.2.4",
     "json3": "~3.2.4",
@@ -9,7 +9,8 @@
     "angular-cookies": "~1.2.0",
     "angular-sanitize": "~1.2.0",
     "angular-route": "~1.2.0",
-    "ng-aloha-editor": "git@github.com:terwey/ng-aloha-editor.git#master"
+    "ng-aloha-editor": "git@github.com:terwey/ng-aloha-editor.git#master",
+    "requirejs": "~2.1.9"
   },
   "devDependencies": {
     "angular-mocks": "~1.2.0",
