@@ -5,9 +5,21 @@ angular.module('authoringEnvironmentApp')
     // Service logic
     // ...
 
-    var panes = [
-        {name: "Topics", icon:'chat', template: 'views/pane-topics.html', position: 'left', active: false, selected: true}
-    ];
+    var panes = [{
+        name: "Topics",
+        icon:'chat',
+        template: 'views/pane-topics.html',
+        position: 'left',
+        active: false,
+        selected: true
+    }, {
+        name: "Draggable",
+        icon:'chat',
+        template: 'views/pane-draggable.html',
+        position: 'left',
+        active: false,
+        selected: true
+    }];
 
     // Public API here
     return {
