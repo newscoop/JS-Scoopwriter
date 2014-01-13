@@ -3,7 +3,7 @@
 angular.module('authoringEnvironmentApp')
   .directive('sfAlohaFormatGeneric', ['AlohaFormattingFactory', function (AlohaFormattingFactory) {
     return {
-      template: '<button class="btn action strong" rel="tooltip"' +
+      template: '<button class="btn btn-default action strong" rel="tooltip"' +
                 'title="{{buttonName}}"><i class="editoricon-{{alohaElement|lowercase}}"></i></button>',
       restrict: 'A',
       replace: true,

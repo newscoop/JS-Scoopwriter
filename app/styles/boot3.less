@@ -1,0 +1,21 @@
+/*
+
+  Customisations added after upgrading to bootstrap 3
+
+  This change invalidated a lot of classes, thus probably many of the
+  other files could (and hopefully would) be eliminated in the
+  future. I collect here the needed overrides on the bootstrap 3
+  classes, hopefully this file will be renamed and remain as the only
+  customisation file for the editor, together with a bootstrap theme.
+
+*/
+
+@hostTop: 44px; /* The system hosting the editor will need some room at the top for its own toolbar */
+
+/* all rules shuld be contained here */
+.authoring-environment {
+  /* more selectors to increase specificity */
+  .navbar-fixed-top.navbar.navbar-default {
+    top: @hostTop;
+  }
+}

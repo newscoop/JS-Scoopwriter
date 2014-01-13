@@ -1,8 +1,22 @@
-<div class="editor-toolbar-placeholder">
-<!-- ================= -->
-<!--  Toolbar Buttons  -->
-<!-- ================= -->
-<div class="toolbar aloha-dialog navbar-fixed-top">
+<div class="navbar navbar-default navbar-fixed-top">
+    <h1
+       class="main-article-title aloha-editable"
+       id="article-title-fixed"
+       contenteditable="true"
+       ng-controller="ArticleCtrl"
+       >
+      {{article.title}}
+    </h1>
+    <a class="btn btn-default btn-medium btn-info pull-right" href="#">Save</a>
+    <a class="btn btn-default btn-medium pull-right" href="#">Close</a>
+    <div class="btn-group pull-right" style="margin:0 20px 0 30px;">
+        <button class="btn btn-default btn-medium dropdown-toggle" data-toggle="dropdown"><i class="icon-settings"></i> <span class="caret"></span></button>
+        <div ng-include src="'views/panes-config.html'"></div>
+    </div>
+    <a class="btn btn-default btn-medium pull-right mobile-hide" href="#" id="zen-mode">Zen mode</a>
+    <a class="btn btn-default btn-medium pull-right mobile-hide" href="#" id="live-edit">Live edit</a>
+<div>
+<div class="aloha-dialog">
     <!-- ============= -->
     <!-- HACK add class aloha-dialog so the editor never blurs -->
     <!-- See src/lib/aloha.js
@@ -15,8 +29,8 @@
 
     <div class="btn-toolbar">
         <div class="btn-group headings" ng-controller="ToolbarCtrl">
-            <button class="btn currentHeading" rel="tooltip" title="Text Heading" ng-bind="active"></button>
-            <button class="btn dropdown-toggle" data-toggle="dropdown" rel="tooltip" title="Change Heading">
+            <button class="btn btn-default currentHeading" rel="tooltip" title="Text Heading" ng-bind="active"></button>
+            <button class="btn btn-default dropdown-toggle" data-toggle="dropdown" rel="tooltip" title="Change Heading">
                 <span class="caret"></span>
             </button>
             <ul class="dropdown-menu">
@@ -62,8 +76,7 @@
                 <li><a class="action addrowafter">Add Row After</a></li>
             </ul>
         </div> -->
-
     </div>
-
 </div><!-- / ".toolbar" -->
+</div>
 </div>
