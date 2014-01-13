@@ -19,6 +19,13 @@ angular.module('authoringEnvironmentApp')
         position: 'left',
         active: false,
         selected: true
+    }, {
+        name: "Draggable",
+        icon:'chat',
+        template: 'views/pane-draggable.html',
+        position: 'right',
+        active: false,
+        selected: true
     }];
 
     // Public API here
