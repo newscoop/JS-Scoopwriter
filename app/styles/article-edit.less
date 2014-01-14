@@ -1411,12 +1411,12 @@ button:focus {
     top: @hostTop;
   }
   .sf-upper-toolbar {
-    overflow: hidden; /* to trigger box context */
+    display: inline-block; /* to trigger block context */
+    width: 100%; /* goes with `inline-block` */
     padding: 5px 10px;
     box-shadow: inset 0 1px 0 #fff,0 1px 5px rgba(0,0,0,0.1);
   }
   .sf-lower-toolbar {
-    overflow: hidden; /* to trigger box context */
     padding: 5px;
   }
   /* centered nav bar http://stackoverflow.com/a/18538412/393758 */
