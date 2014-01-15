@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('authoringEnvironmentApp')
-  .factory('panes', function () {
+  .factory('panes', function ($filter) {
     // Service logic
     // ...
 
@@ -36,36 +36,31 @@ angular.module('authoringEnvironmentApp')
         return panes;
       },
       active: function (pane) {
-        panes.forEach(function (p) {
-          if (p.position == pane.position) {
-            if (p == pane) {
-              pane.active = !pane.active;
-            } else {
-              p.active = false;
-            }
+        $filter('filter')(panes, {
+          position: pane.position
+        }).forEach(function (p) {
+          if (p == pane) {
+            pane.active = !pane.active;
+          } else {
+            p.active = false;
           }
         });
         panes.layout = this.layout();
       },
       layout: function () {
-        var l = false, r = false, res = [];
-        panes.forEach(function(p) {
-          if (p.active) {
-            switch (p.position) {
-            case 'right':
-              r = true;
-              break;
-            case 'left':
-              l = true;
-              break;
-            default:
-              $log.debug('pane has unkonw position: '+p.position);
-            };
-          }});
-        if (l) {
+        var l = $filter('filter')(panes, {
+          position:'left',
+          active: true
+        }).length;
+        var r = $filter('filter')(panes, {
+          position:'right',
+          active: true
+        }).length;
+        var res = [];
+        if (l > 0) {
           res.push('shrink-left');
         }
-        if (r) {
+        if (r > 0) {
           res.push('shrink-right');
         }
         return res.join(' ');
