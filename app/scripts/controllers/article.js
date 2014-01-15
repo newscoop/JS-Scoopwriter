@@ -1,8 +1,9 @@
 'use strict';
 
 angular.module('authoringEnvironmentApp')
-  .controller('ArticleCtrl', ['$scope', '$location', 'Article', 'Articletype',
-                              function ($scope, $location, Article, Articletype) {
+  .controller('ArticleCtrl',
+              ['$scope', '$location', 'article', 'articletype', 'panes',
+               function ($scope, $location, article, articletype, panes) {
     var s, n, b, l;
       s = $location.search();
       n = s.f_article_number;
@@ -20,11 +21,11 @@ angular.module('authoringEnvironmentApp')
       b = ''; // plugin
       // endcode
       
-    $scope.article = Article.get({
+    $scope.article = article.get({
         articleId: n,
         language: l
     }, function(article) {
-      $scope.type = Articletype.get({type: article.type});
+      $scope.type = articletype.get({type: article.type});
     });
       
       // used to filter
@@ -42,4 +43,7 @@ angular.module('authoringEnvironmentApp')
           };
           return true;
       };
+
+  $scope.panes = panes.query();
+
   }]);

@@ -7,23 +7,23 @@
 
 // ARTICLE EDIT SCREEN
 
-
-
 @tablist-background:  #a1a1a1;
 @tabpane-background:  #f5f5f5;
 @tabpane-border:      #7c7c7c;
 @tabpane-width:       330px;
 @tabcontent-padding:  15px;
 
-
 @main-article-color:  #ffffff;
 @main-article-border: #cacaca;
-@main-article-padding-side : 60px;
-
+@main-article-padding-side: 60px;
+@main-article-margin-side: @tablist-width + 60px;
+@main-article-margin-side-shrinked: @main-article-margin-side + @tabpane-width;
 
 //positioning
 @editor-toolbar : 40px;
 @tablist-width : 48px;
+
+@duration: 0.7s; // for panel activation and deactivation
 
 html, body.article-edit {
   height:100%;
@@ -130,7 +130,7 @@ html, body.article-edit {
   border-style: solid;
   z-index:10;
   .box-sizing(border-box);
-  .transition( all 0.3s ease);
+  .transition( all @duration ease);
     &.left-tabpane {
       left:-@tabpane-width;
       border-width: 0 3px 0 0;
@@ -162,7 +162,6 @@ html, body.article-edit {
     }
 }
 
-
 .main-article-container {
   width:auto;
   background:@main-article-color;
@@ -172,10 +171,10 @@ html, body.article-edit {
   position:relative;
   z-index:1;
   padding: @hostTop + @subnav-height + @editor-toolbar + 20 @main-article-padding-side 40px;
-  margin:0 auto;
+  margin:0 @main-article-margin-side;
   min-height:100%;
   .box-sizing(border-box);
-  /*.transition( all 0.3s ease);*/
+  .transition( all @duration ease);
 
   max-width: 960px;
 
@@ -337,7 +336,12 @@ html, body.article-edit {
 
     }
   }
-  
+  &.shrink-left {
+    margin-left: @main-article-margin-side-shrinked;
+  }
+  &.shrink-right {
+    margin-right: @main-article-margin-side-shrinked;
+  }
 }
 
 
