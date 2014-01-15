@@ -28,7 +28,10 @@ angular.module('authoringEnvironmentApp')
         selected: true
     }];
 
-    panes.layout = [];
+    panes.layout = {
+      right: false,
+      left: false
+    };
 
     // Public API here
     return {
@@ -56,14 +59,10 @@ angular.module('authoringEnvironmentApp')
           position:'right',
           active: true
         }).length;
-        var res = [];
-        if (l > 0) {
-          res.push('shrink-left');
-        }
-        if (r > 0) {
-          res.push('shrink-right');
-        }
-        return res.join(' ');
+        return {
+          left: l>0 ? true : false,
+          right: r>0 ? true : false
+        };
       }
     };
   });
