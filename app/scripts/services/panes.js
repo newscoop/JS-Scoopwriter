@@ -20,9 +20,9 @@ angular.module('authoringEnvironmentApp')
         active: false,
         selected: true
     }, {
-        name: "Draggable",
-        icon:'chat',
-        template: 'views/pane-draggable.html',
+        name: "Embed",
+        icon:'switches',
+        template: 'views/pane-embed.html',
         position: 'right',
         active: false,
         selected: true

@@ -149,7 +149,7 @@ html, body.article-edit {
        }
     }
     .tabcontent {
-      display:none;
+      display:block;
       padding:@tabcontent-padding;
       padding-bottom: @tabcontent-padding + 30px; //because of scratchpad
       .box-sizing(border-box);
@@ -1430,5 +1430,34 @@ button:focus {
   }
   .sf-big-padding-button {
     margin: 0 @bigButtonSidePadding;
+  }
+
+  .embed-panel {
+    .btn-sf-invisible {
+      background: none;
+      border: none;
+    }
+    .title {
+      border: none;
+      background: none;
+      border-bottom: 1px dashed black;
+      box-sizing: content-box;
+
+      &[readonly] {
+        border-bottom: none;
+      }
+    }
+    .code {
+      width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      resize: none;
+      background: none;
+      box-sizing: content-box;
+      
+      &[readonly] {
+        border: none;
+      }
+    }
   }
 }

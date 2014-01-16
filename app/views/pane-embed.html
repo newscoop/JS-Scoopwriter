@@ -1,0 +1,43 @@
+<section class="tabcontent embed-panel" ng-controller="EmbedsCtrl">
+  <div>
+    Embed Code
+  </div>
+  <div class="tab-edit">
+    Add new
+  </div>
+  <div>
+    <div
+       ng-repeat="embed in embeds"
+       class="panel panel-default"
+       >
+      <div class="panel-heading">
+        <span class="expand"></span>
+        <button class="btn btn-sf-invisible pull-right">
+          <span class="glyphicon glyphicon-trash"></span>
+        </button>
+        <button
+           class="btn btn-sf-invisible pull-right"
+           ng-click="edit = true"
+           >
+          <span class="glyphicon glyphicon-pencil"></span>
+        </button>
+        <input class="title" ng-model="embed.title" ng-readonly="!edit">
+      </div>
+      <div class="panel-body">
+        <textarea
+           rows="3"
+           class="code"
+           ng-model="embed.code"
+           ng-readonly="!edit"></textarea>
+        <div class="footer" ng-show="edit">
+          <button
+             class="btn btn-sf-invisible pull-right"
+             ng-click="edit = false"
+             >
+            <span class="glyphicon glyphicon-floppy-disk"></span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
