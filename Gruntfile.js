@@ -174,7 +174,7 @@ module.exports = function (grunt) {
           cleancss: true
         },
         files: {
-          "<%= yeoman.dist %>/styles/bootstrap.css": "<%= yeoman.app %>/styles/bootstrap.less"
+          "<%= yeoman.dist %>/styles/main.css": "<%= yeoman.app %>/styles/main.less"
         }
       },
       server: {
@@ -183,7 +183,7 @@ module.exports = function (grunt) {
           cleancss: false
         },
         files: {
-          ".tmp/styles/bootstrap.css": "<%= yeoman.app %>/styles/bootstrap.less"
+          ".tmp/styles/main.css": "<%= yeoman.app %>/styles/main.less"
         }
       }
     },

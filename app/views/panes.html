@@ -1,16 +1,16 @@
 <div ng-controller="SfPanesCtrl">
-    <div class="tablist left-tablist" tabcontent-area="left-tabpane">
+    <div class="tablist left-tablist">
         <ul class="navigation-tabs">
-            <li ng-repeat="pane in panes|filter:{position:'left', selected:true}" ng-class="{'active':pane.active}" ng-click="flipActive(pane, 'left')" tabname="{{pane.name|lowercase}}">
+            <li ng-repeat="pane in panes|filter:{position:'left', selected:true}" ng-class="{'active':pane.active}" ng-click="flipActive(pane)" tabname="{{pane.name|lowercase}}">
                 <a draggable="true" control="tab" rel="tooltip" data-placement="{{pane.position}}" data-original-title="{{pane.name}}">
                     <i class="big-icon-{pane.icon}"></i><span class="badge badge-inverse hide notifications"></span><span class="badge badge-info hide config-notif">!</span>
                 </a>
             </li>
         </ul>
     </div>
-    <div class="tablist right-tablist" tabcontent-area="right-tabpane">
+    <div class="tablist right-tablist">
         <ul class="navigation-tabs">
-            <li ng-repeat="pane in panes|filter:{position:'right', selected:true}" ng-class="{'active':pane.active}" ng-click="flipActive(pane, 'right')" tabname="{{pane.name|lowercase}}">
+            <li ng-repeat="pane in panes|filter:{position:'right', selected:true}" ng-class="{'active':pane.active}" ng-click="flipActive(pane)" tabname="{{pane.name|lowercase}}">
                 <a draggable="true" control="tab" rel="tooltip" data-placement="{{pane.position}}" data-original-title="{{pane.name}}">
                     <i class="big-icon-{pane.icon}"></i><span class="badge badge-inverse hide notifications"></span><span class="badge badge-info hide config-notif">!</span>
                 </a>

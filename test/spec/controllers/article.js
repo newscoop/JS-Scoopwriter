@@ -16,7 +16,7 @@ describe('Controller: ArticleCtrl', function () {
     });
   }));
 
-  xit('should attach a list of awesomeThings to the scope', function () {
-    expect(scope.awesomeThings.length).toBe(3);
+  it('initialises', function () {
+    expect(!!ArticleCtrl).toBe(true);
   });
 });

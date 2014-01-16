@@ -1,6 +1,11 @@
+// copied from superdesk base template
+
+@topspace : 65px;
+@subnav-height: 53px;
+@subnav-mobile-height: 45px;
+@background-main:     #f8f8f8;
+
 // ARTICLE EDIT SCREEN
-
-
 
 @tablist-background:  #a1a1a1;
 @tabpane-background:  #f5f5f5;
@@ -8,31 +13,30 @@
 @tabpane-width:       330px;
 @tabcontent-padding:  15px;
 
-
 @main-article-color:  #ffffff;
 @main-article-border: #cacaca;
-@main-article-padding-side : 60px;
-
+@main-article-padding-side: 60px;
+@main-article-margin-side: @tablist-width + 60px;
+@main-article-margin-side-shrinked: @main-article-margin-side + @tabpane-width;
 
 //positioning
 @editor-toolbar : 40px;
 @tablist-width : 48px;
+
+@duration: 0.7s; // for panel activation and deactivation
 
 html, body.article-edit {
   height:100%;
   overflow: visible;
 }
 
-.subnav-fixed {
-  .main-article-title {
-    font-family: Georgia, serif;
-    font-weight: normal;
-    color: #0088CC;
-    font-size: 26px;
-    float: left;
-  }
+.main-article-title {
+  font-family: Georgia, serif;
+  font-weight: normal;
+  color: #0088CC;
+  font-size: 26px;
+  float: left;
 }
-
 
 .tablist {
   width:@tablist-width;
@@ -59,6 +63,7 @@ html, body.article-edit {
     .navigation-tabs {
       margin:-1px 0 0;
       border:0;
+      padding:0; /* to override webkit padding on `ul` */
       list-style-type:none;
         li {
           position:relative;
@@ -125,7 +130,7 @@ html, body.article-edit {
   border-style: solid;
   z-index:10;
   .box-sizing(border-box);
-  .transition( all 0.3s ease);
+  .transition( all @duration ease);
     &.left-tabpane {
       left:-@tabpane-width;
       border-width: 0 3px 0 0;
@@ -157,7 +162,6 @@ html, body.article-edit {
     }
 }
 
-
 .main-article-container {
   width:auto;
   background:@main-article-color;
@@ -166,11 +170,11 @@ html, body.article-edit {
   border-width:0 1px;
   position:relative;
   z-index:1;
-  padding:@subnav-height+@editor-toolbar+10 @main-article-padding-side 40px;
-  margin:0 auto;
+  padding: @hostTop + @subnav-height + @editor-toolbar + 20 @main-article-padding-side 40px;
+  margin:0 @main-article-margin-side;
   min-height:100%;
   .box-sizing(border-box);
-  /*.transition( all 0.3s ease);*/
+  .transition( all @duration ease);
 
   max-width: 960px;
 
@@ -332,7 +336,12 @@ html, body.article-edit {
 
     }
   }
-  
+  &.shrink-left {
+    margin-left: @main-article-margin-side-shrinked;
+  }
+  &.shrink-right {
+    margin-right: @main-article-margin-side-shrinked;
+  }
 }
 
 
@@ -1393,4 +1402,33 @@ button:focus {
   margin-top: 10px;
   border-top: 1px solid #ddd;
   padding-top: 10px;
+}
+
+@hostTop: 67px; /* The system hosting the editor will need some room at the top for its own toolbar */
+@bigButtonSidePadding: 20px; /* Side padding for some buttons in the toolbars */
+
+.authoring-environment {
+  background: #f8f8f8;
+  
+  /* more selectors to increase specificity */
+  .navbar-fixed-top.navbar.navbar-default {
+    top: @hostTop;
+  }
+  .sf-upper-toolbar {
+    display: inline-block; /* to trigger block context */
+    width: 100%; /* goes with `inline-block` */
+    padding: 5px 10px;
+    box-shadow: inset 0 1px 0 #fff,0 1px 5px rgba(0,0,0,0.1);
+  }
+  .sf-lower-toolbar {
+    padding: 5px;
+  }
+  /* centered nav bar http://stackoverflow.com/a/18538412/393758 */
+  .sf-navbar-center {
+    margin: 0 auto;
+    display: table;
+  }
+  .sf-big-padding-button {
+    margin: 0 @bigButtonSidePadding;
+  }
 }

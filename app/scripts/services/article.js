@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('authoringEnvironmentApp')
-  .service('Article', function Article($resource, endpoint) {
+  .service('article', function article($resource, endpoint) {
 
     var langMap = {
         1: ['English', 'en'],

@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('authoringEnvironmentApp')
-  .factory('panes', function () {
+  .factory('panes', function ($filter) {
     // Service logic
     // ...
 
@@ -19,16 +19,50 @@ angular.module('authoringEnvironmentApp')
         position: 'left',
         active: false,
         selected: true
+    }, {
+        name: "Draggable",
+        icon:'chat',
+        template: 'views/pane-draggable.html',
+        position: 'right',
+        active: false,
+        selected: true
     }];
+
+    panes.layout = {
+      right: false,
+      left: false
+    };
 
     // Public API here
     return {
       query: function () {
         return panes;
       },
-      active: function (Pane) {
-//        panes.indexOf(Pane)
-        Pane.active = !Pane.active;
+      active: function (pane) {
+        $filter('filter')(panes, {
+          position: pane.position
+        }).forEach(function (p) {
+          if (p == pane) {
+            pane.active = !pane.active;
+          } else {
+            p.active = false;
+          }
+        });
+        panes.layout = this.layout();
+      },
+      layout: function () {
+        var l = $filter('filter')(panes, {
+          position:'left',
+          active: true
+        }).length;
+        var r = $filter('filter')(panes, {
+          position:'right',
+          active: true
+        }).length;
+        return {
+          left: l>0 ? true : false,
+          right: r>0 ? true : false
+        };
       }
     };
   });
