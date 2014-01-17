@@ -1,6 +1,11 @@
 'use strict';
 
 describe('Service: Dragdata', function () {
+  
+  /* convenience function to parse strings for comparison, because
+   * also the same JSON object may generate two different strings when
+   * serialised */
+  var p = function(s) { return JSON.parse(s); };
 
   // load the service's module
   beforeEach(module('authoringEnvironmentApp'));
@@ -12,7 +17,15 @@ describe('Service: Dragdata', function () {
   }));
 
   it('should have a list of available types', function () {
-    expect(Dragdata.available).toEqual(['test', 'image']);
+    expect(Dragdata.available()).toEqual(['test', 'image']);
+  });
+
+  describe('for a common element', function() {
+    it('can detect a wrong format', function() {
+      var $e = $('<div>');
+      expect(Dragdata.checkDraggable($e))
+        .toBe('error: a draggable element has not a data-draggable-type attribute');
+    });
   });
 
   /* the test type is for higher level tests that rely on this
@@ -36,6 +49,7 @@ describe('Service: Dragdata', function () {
     beforeEach(function() {
       // initial element
       $i = $('<img>').attr({
+        'data-draggable-type': 'image',
         src: 'www.source.com/img.png'
       });
       // expected intermediate data
@@ -44,9 +58,12 @@ describe('Service: Dragdata', function () {
         src: 'www.source.com/img.png'
       });
     });
+    it('finds no error', function() {
+      expect(Dragdata.checkDraggable($i)).toBe(false);
+    });
     it('creates a data transfer object from an image', function() {
       var d = Dragdata.getData($i);
-      expect(d).toEqual(data);
+      expect(p(d)).toEqual(p(data));
     });
     it('returns a whole element to be attached to the editable', function() {
       var $r = Dragdata.getDropped(data);
