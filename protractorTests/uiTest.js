@@ -11,7 +11,7 @@
 
 describe('The Editor UI', function() {
     beforeEach(function() {
-        browser.get('http://127.0.0.1:9000');
+        browser.get('http://127.0.0.1:9000/#/?nobackend');
         // browser.sleep(3000);
     });
 
