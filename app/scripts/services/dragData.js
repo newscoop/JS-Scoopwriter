@@ -12,6 +12,11 @@ angular.module('authoringEnvironmentApp')
               return {
                   src: $e.attr('src')
               };
+          },
+          'embed': function($e) {
+              return {
+                  id: $e.attr('data-id')
+              };
           }
       };
 
@@ -53,6 +58,10 @@ angular.module('authoringEnvironmentApp')
           src: data.src
         });
         break;
+      case 'embed':
+        return $('<div>').attr({
+          'data-id': data.id
+        }).text('embed').alohaBlock();
       default:
         $log.debug('getDropped function called on a malformed data object, no known type into it');
       }

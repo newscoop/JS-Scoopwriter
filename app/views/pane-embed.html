@@ -9,6 +9,8 @@
     <div
        ng-repeat="embed in embeds"
        class="panel panel-default"
+       data-draggable-type="embed"
+       data-id="{{embed.id}}"
        sf-draggable
        >
       <div class="panel-heading">

@@ -17,7 +17,7 @@ describe('Service: Dragdata', function () {
   }));
 
   it('should have a list of available types', function () {
-    expect(Dragdata.available()).toEqual(['test', 'image']);
+    expect(Dragdata.available()).toEqual(['test', 'image', 'embed']);
   });
 
   describe('for a common element', function() {
