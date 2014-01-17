@@ -21,7 +21,7 @@ angular.module('authoringEnvironmentApp')
         selected: true
     }, {
         name: "Embed",
-        icon:'switches',
+        icon:'embeds',
         template: 'views/pane-embed.html',
         position: 'right',
         active: false,

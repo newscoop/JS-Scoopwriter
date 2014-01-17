@@ -38,7 +38,7 @@
     "karma-phantomjs-launcher": "~0.1.0",
     "karma": "~0.10.4",
     "karma-ng-html2js-preprocessor": "~0.1.0",
-    "grunt-contrib-less": "~0.5.2",
+    "grunt-contrib-less": "~0.9.0",
     "grunt-devcode": "0.0.4-c",
     "clean-css": "~2.0.2",
     "grunt-open": "~0.2.3"
