@@ -12,18 +12,36 @@
        >
       <div class="panel-heading">
         <span class="expand"></span>
-        <button class="btn btn-sf-invisible pull-right">
+        <button
+           class="btn btn-sf-invisible pull-right"
+           ng-show="expanded"
+           >
           <span class="glyphicon glyphicon-trash"></span>
         </button>
         <button
            class="btn btn-sf-invisible pull-right"
            ng-click="edit = true"
+           ng-show="expanded"
            >
           <span class="glyphicon glyphicon-pencil"></span>
         </button>
+        <button
+           class="btn btn-sf-invisible"
+           ng-hide="expanded"
+           ng-click="expanded = true"
+           >
+          <span class="glyphicon glyphicon-chevron-right"></span>
+        </button>
+        <button
+           class="btn btn-sf-invisible"
+           ng-show="expanded"
+           ng-click="expanded = false"
+           >
+          <span class="glyphicon glyphicon-chevron-down"></span>
+        </button>
         <input class="title" ng-model="embed.title" ng-readonly="!edit">
       </div>
-      <div class="panel-body">
+      <div class="panel-body" ng-show="expanded">
         <textarea
            rows="3"
            class="code"
