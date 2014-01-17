@@ -8,6 +8,7 @@
   <div>
     <div
        ng-repeat="embed in embeds"
+       ng-class="{collapsed: !expanded}"
        class="panel panel-default"
        data-draggable-type="embed"
        data-id="{{embed.id}}"
