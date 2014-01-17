@@ -2,8 +2,50 @@
   <div class="panel-title">
     Embed Code
   </div>
-  <div class="tab-edit">
-    Add new
+  <div class="add-snippet">
+    <div class="heading">
+      <button
+         class="btn btn-sf-invisible"
+         ng-click="expanded = true"
+         ng-hide="expanded"
+         >
+        <span class="glyphicon glyphicon-plus"></span>
+      </button>
+      <button
+         class="btn btn-sf-invisible"
+         ng-click="expanded = false"
+         ng-show="expanded"
+         >
+        <span class="glyphicon glyphicon-minus"></span>
+      </button>
+      ADD A SNIPPET
+    </div>
+    <div
+       ng-show="expanded"
+       class="body"
+       >
+      <input
+         class="editor-input"
+         placeholder="Title"
+         >
+      <textarea
+         class="editor-input"
+         placeholder="Insert Code"
+         >
+      </textarea>
+      <div class="controls">
+        <button
+           class="btn btn-primary pull-right"
+           >
+          Save
+        </button>
+        <button
+           class="btn btn-default pull-right"
+           >
+          Cancel
+        </button>
+      </div>
+    </div>
   </div>
   <div>
     <div

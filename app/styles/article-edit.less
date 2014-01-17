@@ -1442,6 +1442,27 @@ button:focus {
   }
 
   .embed-panel {
+    .editor-input {
+      width: 100%;
+      border: 1px solid #d0d0d0;
+      resize: none;
+      margin: 5px 0;
+    }
+    .btn-sf-invisible {
+      background: none;
+      border: none;
+      padding: 0;
+    }
+    .add-snippet {
+      background-color: #ebebeb;
+      margin: 10px 0;
+      .body {
+        padding: 5px;
+        .controls {
+          overflow: hidden;
+        }
+      }
+    }
     .panel.collapsed {
       cursor: move;
       &:not(:hover) {
@@ -1455,10 +1476,6 @@ button:focus {
       &:hover {
         border: 1px solid gray;
       }
-    }
-    .btn-sf-invisible {
-      background: none;
-      border: none;
     }
     .title {
       border: none;
