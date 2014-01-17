@@ -1443,8 +1443,18 @@ button:focus {
 
   .embed-panel {
     .panel.collapsed {
-      border: 1px solid gray;
       cursor: move;
+      &:not(:hover) {
+        .glyphicon-trash:before {
+          content: '';
+        }
+        .glyphicon-pencil:before {
+          content: '';
+        }
+      }
+      &:hover {
+        border: 1px solid gray;
+      }
     }
     .btn-sf-invisible {
       background: none;
