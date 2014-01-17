@@ -1,6 +1,18 @@
+/* 
+ * some examples
+ *
+ * search by repeater
+ * var firstElementInRepeater = element(by.repeater("pane in panes|filter:{position:'left', selected:true}").row(0));
+ *
+ * search by data-attribute
+ * var anchor = element(by.xpath('//a[@data-original-title="Draggable"]'));
+ * anchor.click();
+ */
+
 describe('The Editor UI', function() {
     beforeEach(function() {
-        browser.get('http://127.0.0.1:9000');
+        browser.get('http://127.0.0.1:9000/#/?nobackend');
+        // browser.sleep(3000);
     });
 
     describe('Pane Interaction', function() {
@@ -143,5 +155,20 @@ describe('The Editor UI', function() {
                 expect(mainArticle.getAttribute('class')).not.toMatch('shrink-right');
             });
         });
+    });
+
+    describe('Drag and Drop', function() {
+        it('it can drag', function() {
+            // find the draggable pane
+            var anchor = element(by.xpath('//a[@data-original-title="Draggable"]'));
+            anchor.click();
+
+            // get the div with the images
+            var mediaImages = element(by.id('media-images'));
+
+            // get the first image
+            var img = mediaImages.findElement(by.xpath('//img[@sf-draggable]'));
+        });
+
     });
 });
