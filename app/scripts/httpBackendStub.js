@@ -27,14 +27,26 @@
 
 			    snippets = {
 			    	0: {
+			    		"name": "Generic"
+			    	}
+			    }
+
+			    snippetsGeneric = {
+			    	0: {
 				    	id: 1,
 				    	"name": "My First Snippet",
-				    	"template": "Generic"
+				    	"template": "Generic",
+				    	"content": {
+				    		"code": '<div class="wowIamAnEmebed">This is so cool</div'
+				    	}
 				    },
 				    1: {
-				    	id: 3,
-				    	"name": "My Second Snippet",
-				    	"template": "Generic"
+				    	id: 1,
+				    	"name": "My First Snippet",
+				    	"template": "Generic",
+				    	"content": {
+				    		"code": '<div class="wowIamAnEmebed">This is so cool</div'
+				    	}
 				    }
 			    }
 
@@ -42,7 +54,7 @@
 			    	id: 1,
 			    	"name": "My First Snippet",
 			    	"template": "Generic",
-			    	"code": {
+			    	"content": {
 			    		"code": '<div class="wowIamAnEmebed">This is so cool</div'
 			    	}
 			    }
@@ -54,7 +66,8 @@
 			    }
 
 			    $httpBackend.whenGET(/\/api\/snippets/).respond(snippets);
-			    $httpBackend.whenGET(/\/api\/snippets\/[\d]/).respond(snippet);
+			    $httpBackend.whenGET(/\/api\/snippets\/generic/).respond(snippetsGeneric);
+			    $httpBackend.whenGET(/\/api\/snippets\/generic\/[\d]/).respond(snippet);
 			    $httpBackend.whenGET(/\/api\/snippetTemplate\/[\d]/).respond(snippetTemplate);
 
 			    // $httpBackend.whenGET(/api\/.*/).passThrough();
