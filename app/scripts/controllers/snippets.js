@@ -44,11 +44,21 @@ angular.module('authoringEnvironmentApp')
                 return s.id == id;
             });
         };
-        $scope.add = function(title, code) {
+        $scope.create = {
+        };
+        $scope.add = function() {
             $scope.snippets.push(decorate({
-                title: title,
-                code: code
+                title: $scope.create.title,
+                code: $scope.create.code
             }));
+            $scope.create = {
+            }
+            $scope.adding = false;
+        };
+        $scope.cancel = function() {
+            $scope.create = {
+            }
+            $scope.adding = false;
         };
         $scope.remove = function(id) {
             _.remove($scope.snippets, function(s) {

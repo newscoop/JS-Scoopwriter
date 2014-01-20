@@ -6,41 +6,46 @@
     <div class="heading">
       <button
          class="btn btn-sf-invisible"
-         ng-click="snippet.expanded = true"
-         ng-hide="snippet.expanded"
+         data-test-button="add"
+         ng-click="adding = true"
+         ng-hide="adding"
          >
         <span class="glyphicon glyphicon-plus"></span>
       </button>
       <button
          class="btn btn-sf-invisible"
-         ng-click="snippet.expanded = false"
-         ng-show="snippet.expanded"
+         ng-click="adding = false"
+         ng-show="adding"
          >
         <span class="glyphicon glyphicon-minus"></span>
       </button>
       ADD A SNIPPET
     </div>
     <div
-       ng-show="snippet.expanded"
+       ng-show="adding"
        class="body"
        >
       <input
          class="editor-input"
          placeholder="Title"
+         ng-model="create.title"
          >
       <textarea
          class="editor-input"
-         placeholder="Insert Code"
+         ng-model="create.code"
          >
       </textarea>
       <div class="controls">
         <button
            class="btn btn-primary pull-right"
+           data-test-button="new"
+           ng-click="add()"
            >
           Save
         </button>
         <button
            class="btn btn-default pull-right"
+           ng-click="cancel()"
            >
           Cancel
         </button>

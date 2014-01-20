@@ -20,7 +20,7 @@ angular.module('authoringEnvironmentApp')
         active: false,
         selected: true
     }, {
-        name: "Embed",
+        name: "Snippets",
         icon:'embeds',
         template: 'views/pane-embed.html',
         position: 'right',
