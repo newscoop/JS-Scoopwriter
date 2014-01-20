@@ -3,6 +3,13 @@
 angular.module('authoringEnvironmentApp')
     .controller('SnippetsCtrl', function ($scope) {
         function decorate(snippet) {
+            snippet.editing = false;
+            snippet.expanded = false;
+            snippet.edit = function() {
+                this.backup();
+                this.editing = true;
+                this.expanded = true;
+            };
             snippet.backup = function() {
                 this.copy = {
                     title: this.title,
@@ -12,6 +19,10 @@ angular.module('authoringEnvironmentApp')
             snippet.restore = function() {
                 this.title = this.copy.title;
                 this.code = this.copy.code;
+            };
+            snippet.cancel = function() {
+                this.editing = false;
+                this.restore();
             };
             return snippet;
         };

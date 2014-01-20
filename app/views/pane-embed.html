@@ -6,22 +6,22 @@
     <div class="heading">
       <button
          class="btn btn-sf-invisible"
-         ng-click="expanded = true"
-         ng-hide="expanded"
+         ng-click="snippet.expanded = true"
+         ng-hide="snippet.expanded"
          >
         <span class="glyphicon glyphicon-plus"></span>
       </button>
       <button
          class="btn btn-sf-invisible"
-         ng-click="expanded = false"
-         ng-show="expanded"
+         ng-click="snippet.expanded = false"
+         ng-show="snippet.expanded"
          >
         <span class="glyphicon glyphicon-minus"></span>
       </button>
       ADD A SNIPPET
     </div>
     <div
-       ng-show="expanded"
+       ng-show="snippet.expanded"
        class="body"
        >
       <input
@@ -49,54 +49,61 @@
   </div>
   <div>
     <div
-       ng-repeat="embed in embeds"
-       ng-class="{collapsed: !expanded}"
+       ng-repeat="snippet in snippets"
+       ng-class="{collapsed: !snippet.expanded}"
        class="panel panel-default"
        data-draggable-type="embed"
-       data-id="{{embed.id}}"
+       data-id="{{snippet.id}}"
        sf-draggable
        >
       <div class="panel-heading">
         <span class="expand"></span>
         <button
            class="btn btn-sf-invisible pull-right"
+           ng-click="remove(snippet.id)"
            >
           <span class="glyphicon glyphicon-trash"></span>
         </button>
         <button
            class="btn btn-sf-invisible pull-right"
-           ng-click="edit = true; expanded = true"
+           ng-click="snippet.edit()"
            >
           <span class="glyphicon glyphicon-pencil"></span>
         </button>
         <button
            class="btn btn-sf-invisible"
-           ng-hide="expanded"
-           ng-click="expanded = true"
+           ng-hide="snippet.expanded"
+           ng-click="snippet.expanded = true"
            >
           <span class="glyphicon glyphicon-chevron-right"></span>
         </button>
         <button
            class="btn btn-sf-invisible"
-           ng-show="expanded"
-           ng-click="expanded = false"
+           ng-show="snippet.expanded"
+           ng-click="snippet.expanded = false"
            >
           <span class="glyphicon glyphicon-chevron-down"></span>
         </button>
-        <input class="title" ng-model="embed.title" ng-readonly="!edit">
+        <input class="title" ng-model="snippet.title" ng-readonly="!snippet.editing">
       </div>
-      <div class="panel-body" ng-show="expanded">
+      <div class="panel-body" ng-show="snippet.expanded">
         <textarea
            rows="3"
            class="code"
-           ng-model="embed.code"
-           ng-readonly="!edit"></textarea>
-        <div class="footer" ng-show="edit">
+           ng-model="snippet.code"
+           ng-readonly="!snippet.editing"></textarea>
+        <div class="footer" ng-show="snippet.editing">
           <button
              class="btn btn-sf-invisible pull-right"
-             ng-click="edit = false"
+             ng-click="snippet.editing = false"
              >
             <span class="glyphicon glyphicon-floppy-disk"></span>
+          </button>
+          <button
+             class="btn btn-sf-invisible pull-right"
+             ng-click="snippet.cancel()"
+             >
+            <span class="glyphicon glyphicon-remove"></span>
           </button>
         </div>
       </div>
