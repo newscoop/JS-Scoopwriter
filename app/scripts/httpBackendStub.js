@@ -50,6 +50,8 @@
 				    }
 			    }
 
+			    snippetsForArticle = snippetsGeneric;
+
 			    snippet = {
 			    	id: 1,
 			    	"name": "My First Snippet",
@@ -65,6 +67,7 @@
 			    	"template": '%code%'
 			    }
 
+			    $httpBackend.whenGET(/\/api\/articles\/[\d]\/[\d]\/snippets/).respond(snippetsForArticle);
 			    $httpBackend.whenGET(/\/api\/snippets/).respond(snippets);
 			    $httpBackend.whenGET(/\/api\/snippets\/generic/).respond(snippetsGeneric);
 			    $httpBackend.whenGET(/\/api\/snippets\/generic\/[\d]/).respond(snippet);
