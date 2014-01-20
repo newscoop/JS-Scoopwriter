@@ -25,41 +25,45 @@
 
 			    // /Article
 
-			    snippets = {
-			    	0: {
-			    		"name": "Generic"
-			    	}
-			    }
-
-			    snippetsGeneric = {
-			    	0: {
-				    	id: 1,
-				    	"name": "My First Snippet",
-				    	"template": "Generic",
+			    var snippetGenerator = function($id, $type) {
+			    	return { 
+			    		id: $id,
+				    	"name": 'My '+$id+' '+$type,
+				    	"template": $type,
 				    	"content": {
-				    		"code": '<div class="wowIamAnEmebed">This is so cool</div'
-				    	}
-				    },
-				    1: {
-				    	id: 1,
-				    	"name": "My First Snippet",
-				    	"template": "Generic",
-				    	"content": {
-				    		"code": '<div class="wowIamAnEmebed">This is so cool</div'
+				    		"code": '<div class="embed'+ $id +'">This is so cool, '+$type+'</div>'
 				    	}
 				    }
 			    }
 
+			    snippetsGeneric = {
+			    	1: snippetGenerator(1, 'Generic'),
+				    2: snippetGenerator(2, 'Generic'),
+				    3: snippetGenerator(3, 'Generic'),
+				    4: snippetGenerator(4, 'Generic')
+			    }
+
+			    snippetsTweet = {
+			    	5: snippetGenerator(5, 'Tweet'),
+				    6: snippetGenerator(6, 'Tweet'),
+				    7: snippetGenerator(7, 'Tweet'),
+				    8: snippetGenerator(8, 'Tweet')
+				}
+
+			    snippets = {
+			    	1: snippetGenerator(1, 'Generic'),
+				    2: snippetGenerator(2, 'Generic'),
+				    3: snippetGenerator(3, 'Generic'),
+				    4: snippetGenerator(4, 'Generic'),
+			    	5: snippetGenerator(5, 'Tweet'),
+				    6: snippetGenerator(6, 'Tweet'),
+				    7: snippetGenerator(7, 'Tweet'),
+				    8: snippetGenerator(8, 'Tweet')
+			    }
+
 			    snippetsForArticle = snippetsGeneric;
 
-			    snippet = {
-			    	id: 1,
-			    	"name": "My First Snippet",
-			    	"template": "Generic",
-			    	"content": {
-			    		"code": '<div class="wowIamAnEmebed">This is so cool</div'
-			    	}
-			    }
+			    snippet = snippetGenerator(1, 'Generic');
 
 			    snippetTemplate = {
 			    	id: 1,
@@ -67,10 +71,23 @@
 			    	"template": '%code%'
 			    }
 
-			    $httpBackend.whenGET(/\/api\/articles\/[\d]\/[\d]\/snippets/).respond(snippetsForArticle);
-			    $httpBackend.whenGET(/\/api\/snippets/).respond(snippets);
+			    
+			    $httpBackend.whenGET(/\/api\/article\/64\/1\/snippets\/[\d]/).respond(function(method, url, data) {
+			    	console.log(url.split('/'));
+			    	return [200, snippetGenerator(url.split('/')[4], 'generic')];
+			    });
+
+			    $httpBackend.whenGET(/\/api\/article\/64\/1\/snippets/).respond(snippetsForArticle);
+			    
+			    $httpBackend.whenGET(/\/api\/snippets\/generic\/[\d]/).respond(function(method, url, data) {
+			    	return [200, snippetGenerator(url.split('/')[4], 'generic')];
+			    });
+			    $httpBackend.whenGET(/\/api\/snippets\/tweet\/[\d]/).respond(function(method, url, data) {
+			    	return [200, snippetGenerator(url.split('/')[4], 'tweet')];
+			    });
 			    $httpBackend.whenGET(/\/api\/snippets\/generic/).respond(snippetsGeneric);
-			    $httpBackend.whenGET(/\/api\/snippets\/generic\/[\d]/).respond(snippet);
+			    $httpBackend.whenGET(/\/api\/snippets\/tweet/).respond(snippetsTweet);
+			    $httpBackend.whenGET(/\/api\/snippets/).respond(snippets);
 			    $httpBackend.whenGET(/\/api\/snippetTemplate\/[\d]/).respond(snippetTemplate);
 
 			    // $httpBackend.whenGET(/api\/.*/).passThrough();
