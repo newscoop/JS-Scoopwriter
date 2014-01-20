@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('authoringEnvironmentApp')
-  .directive('sfDroppable', function (Dragdata) {
+  .directive('sfDroppable', ['$compile', 'Dragdata', function ($compile, Dragdata) {
     /* the selector for event delegation. in future also aloha blocks
      * may be added */
     var sel = 'p';
@@ -31,8 +31,8 @@ angular.module('authoringEnvironmentApp')
             if (target.next().is(place)) {
               $(place).remove();
             };
-            target.after(dropped);
+            target.after($compile(dropped)(scope));
           });
       }
     }
-  });
+  }]);
