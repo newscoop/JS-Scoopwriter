@@ -9,10 +9,10 @@
 
 	function initStubbedBackend() {
 		ng.module('authoringEnvironmentApp')
-			.config(function($provide) {
+			.config(['$provide', function($provide) {
 				$provide.decorator('$httpBackend', angular.mock.e2e.$httpBackendDecorator);
-			})
-			.run(function($httpBackend) {
+			}])
+			.run(['$httpBackend', function($httpBackend) {
 				// templates
 			    $httpBackend.whenGET(/views\/.*/).passThrough();
 
@@ -92,6 +92,6 @@
 
 			    // $httpBackend.whenGET(/api\/.*/).passThrough();
 				// define responses for requests here as usual
-			});
+			}]);
 	}
 })(angular);
