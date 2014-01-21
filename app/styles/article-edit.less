@@ -1480,11 +1480,10 @@ button:focus {
     .title {
       border: none;
       background: none;
-      border-bottom: 1px dashed black;
       box-sizing: content-box;
 
-      &[readonly] {
-        border-bottom: none;
+      &.editable {
+          border-bottom: 1px dashed black;
       }
     }
     .code {

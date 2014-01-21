@@ -89,7 +89,15 @@
            >
           <span class="glyphicon glyphicon-chevron-down"></span>
         </button>
-        <input class="title" ng-model="snippet.title" ng-readonly="!snippet.editing">
+        <input
+           class="editable title"
+           ng-model="snippet.title"
+           ng-show="snippet.editing">
+        <span
+           class="title"
+           ng-bind="snippet.title"
+           ng-hide="snippet.editing">
+        </span>
       </div>
       <div class="panel-body" ng-show="snippet.expanded">
         <textarea
