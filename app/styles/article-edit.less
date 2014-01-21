@@ -1514,15 +1514,27 @@ button:focus {
       */
       .controls {
           display: inline-block;
-          color: gray;
-          border: 1px solid gray;
+          color: rgb(77, 77, 77);
+          background-color: lightgray;
+          text-transform: uppercase;
+          font-weight: bold;
+          font-size: x-small;
+
+          span {
+              margin: 5px;
+          }
+          .clickable {
+              cursor: pointer;
+          }
       }
       .render-area {
           word-break: break-word;
-          border: 1px solid gray;
+          border: 1px solid lightgray;
           color: gray;
-          padding: 5px;
-          background-color: gainsboro;
+          padding: 10px;
+          background-color: rgb(250,250,250);
+          font-weight: lighter;
+          font-size: small;
       }
   }
 }

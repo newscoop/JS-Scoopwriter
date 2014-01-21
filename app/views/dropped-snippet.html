@@ -1,22 +1,26 @@
 <div>
   <div class="controls">
-    <span ng-click="expanded=true" ng-show="!expanded">
-      expand
+    <span
+       class="glyphicon glyphicon-chevron-right"
+       ng-click="expanded=true"
+       ng-show="!expanded">
     </span>
-    <span ng-click="expanded=false" ng-show="expanded">
-      collapse
+    <span
+       class="glyphicon glyphicon-chevron-down"
+       ng-click="expanded=false"
+       ng-show="expanded">
     </span>
     <span ng-show="expanded">
-      <span ng-click="preview()" ng-hide="previewed">
+      <span ng-click="preview()" ng-hide="previewed" class="clickable">
         preview
       </span>
-      <span ng-click="code()" ng-show="previewed">
+      <span ng-click="code()" ng-show="previewed" class="clickable">
         code
       </span>
     </span>
     <span class="title">{{snippet.title}}</span>
     <span>|</span>
-    <span class="remove">remove</span>
+    <span class="remove glyphicon glyphicon-remove clickable"></span>
   </div>
   <div class="render-area" ng-show="expanded">
     <span ng-hide="previewed" class="code">{{snippet.code}}</span>
