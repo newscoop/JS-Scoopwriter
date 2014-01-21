@@ -59,11 +59,14 @@ angular.module('authoringEnvironmentApp')
         });
         break;
       case 'embed':
-          return $('<div>').append($('<dropped-snippet>').attr({
-              'id': data.id,
-              'get': 'byId(id)',
-              'ng-controller': 'SnippetsCtrl'
-          })).alohaBlock();
+          return $('<div>')
+              .append($('<dropped-snippet>').attr({
+                  'id': data.id,
+                  'get': 'byId(id)',
+                  'ng-controller': 'SnippetsCtrl'
+              }))
+              .addClass('dropped-snippet')
+              .alohaBlock();
       default:
         $log.debug('getDropped function called on a malformed data object, no known type into it');
       }
