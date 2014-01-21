@@ -61,8 +61,7 @@ angular.module('authoringEnvironmentApp')
       case 'embed':
           return $('<div>')
               .append($('<dropped-snippet>').attr({
-                  'id': data.id,
-                  'get': 'byId(id)',
+                  'snippet': 'byId(' + data.id + ')',
                   'ng-controller': 'SnippetsCtrl'
               }))
               .addClass('dropped-snippet')

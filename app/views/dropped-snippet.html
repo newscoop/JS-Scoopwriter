@@ -1,7 +1,25 @@
 <div>
   <div class="controls">
-    <span class="title"></span>
-    <span class="toggle"></span>
+    <span ng-click="expanded=true" ng-show="!expanded">
+      expand
+    </span>
+    <span ng-click="expanded=false" ng-show="expanded">
+      collapse
+    </span>
+    <span ng-show="expanded">
+      <span ng-click="preview()" ng-hide="previewed">
+        preview
+      </span>
+      <span ng-click="code()" ng-show="previewed">
+        code
+      </span>
+    </span>
+    <span class="title">{{snippet.title}}</span>
+    <span>|</span>
+    <span class="remove">remove</span>
   </div>
-  <div class="render-area"></div>
+  <div class="render-area" ng-show="expanded">
+    <span ng-hide="previewed" class="code">{{snippet.code}}</span>
+    <span ng-show="previewed" class="preview"></span>
+  </div>
 </div>

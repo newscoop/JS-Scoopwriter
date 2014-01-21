@@ -6,28 +6,22 @@ angular.module('authoringEnvironmentApp')
             templateUrl: 'views/dropped-snippet.html',
             restrict: 'E',
             scope: {
-                id: '@',
-                get: '&'
+                snippet: '='
             },
             link: function postLink(scope, element, attrs) {
-                scope.preview = false;
-                function render() {
-                    if (scope.preview) {
-                        element.find('.render-area').html(s.code);
-                        element.find('.toggle').text('code');
-                    } else {
-                        element.find('.render-area').text(s.code);
-                        element.find('.toggle').text('preview');
-                    }
-                }
-                var s = scope.get({id: attrs.id});
-                element.find('.title').text(s.title);
-                element.find('.toggle')
-                    .on('click', function() {
-                        scope.preview = !scope.preview;
-                        render();
-                    });
-                render();
+                element.find('.remove').on('click', function() {
+                    // the parent is the aloha block. this is not the
+                    // nice clean way to do it, but it works for now
+                    element.parent().remove();
+                });
+                scope.preview = function() {
+                    element.find('.preview').html(scope.snippet.code);
+                    scope.previewed = true;
+                };
+                scope.code = function() {
+                    element.find('.preview').empty();
+                    scope.previewed = false;
+                };
             }
         };
     });
