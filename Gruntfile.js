@@ -83,6 +83,11 @@ module.exports = function (grunt) {
         }]
       }
     },
+    open: {
+      server: {
+        url: 'http://<%= connect.options.hostname %>:<%= connect.options.port %>/#/?nobackend'
+      }
+    },
     connect: {
       options: {
         port: 9000,
@@ -92,7 +97,7 @@ module.exports = function (grunt) {
       },
       livereload: {
         options: {
-          open: true,
+          open: false,
           base: [
             '.tmp',
             '<%= yeoman.app %>'
@@ -341,6 +346,7 @@ module.exports = function (grunt) {
       'concurrent:server',
       'autoprefixer',
       'connect:livereload',
+      'open',
       'watch'
     ]);
   });
@@ -373,6 +379,7 @@ module.exports = function (grunt) {
     'build'
   ]);
 
+  grunt.loadNpmTasks('grunt-open');
   grunt.loadNpmTasks('grunt-devcode');
   grunt.loadNpmTasks('grunt-contrib-less');
 };

@@ -40,7 +40,8 @@
     "karma-ng-html2js-preprocessor": "~0.1.0",
     "grunt-contrib-less": "~0.5.2",
     "grunt-devcode": "0.0.4-c",
-    "clean-css": "~2.0.2"
+    "clean-css": "~2.0.2",
+    "grunt-open": "~0.2.3"
   },
   "engines": {
     "node": ">=0.8.0"
