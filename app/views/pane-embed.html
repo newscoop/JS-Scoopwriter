@@ -1,0 +1,117 @@
+<section class="tabcontent embed-panel" ng-controller="SnippetsCtrl">
+  <div class="panel-title">
+    Embed Code
+  </div>
+  <div class="add-snippet">
+    <div class="heading">
+      <button
+         class="btn btn-sf-invisible"
+         data-test-button="add"
+         ng-click="adding = true"
+         ng-hide="adding"
+         >
+        <span class="glyphicon glyphicon-plus"></span>
+      </button>
+      <button
+         class="btn btn-sf-invisible"
+         ng-click="adding = false"
+         ng-show="adding"
+         >
+        <span class="glyphicon glyphicon-minus"></span>
+      </button>
+      ADD A SNIPPET
+    </div>
+    <div
+       ng-show="adding"
+       class="body"
+       >
+      <input
+         class="editor-input"
+         placeholder="Title"
+         ng-model="create.title"
+         >
+      <textarea
+         class="editor-input"
+         ng-model="create.code"
+         >
+      </textarea>
+      <div class="controls">
+        <button
+           class="btn btn-primary pull-right"
+           data-test-button="new"
+           ng-click="add()"
+           >
+          Save
+        </button>
+        <button
+           class="btn btn-default pull-right"
+           ng-click="cancel()"
+           >
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+  <div>
+    <div
+       ng-repeat="snippet in snippets"
+       ng-class="{collapsed: !snippet.expanded}"
+       class="panel panel-default"
+       data-draggable-type="embed"
+       data-id="{{snippet.id}}"
+       sf-draggable
+       >
+      <div class="panel-heading">
+        <span class="expand"></span>
+        <button
+           class="btn btn-sf-invisible pull-right"
+           ng-click="remove(snippet.id)"
+           >
+          <span class="glyphicon glyphicon-trash"></span>
+        </button>
+        <button
+           class="btn btn-sf-invisible pull-right"
+           ng-click="snippet.edit()"
+           >
+          <span class="glyphicon glyphicon-pencil"></span>
+        </button>
+        <button
+           class="btn btn-sf-invisible"
+           ng-hide="snippet.expanded"
+           ng-click="snippet.expanded = true"
+           >
+          <span class="glyphicon glyphicon-chevron-right"></span>
+        </button>
+        <button
+           class="btn btn-sf-invisible"
+           ng-show="snippet.expanded"
+           ng-click="snippet.expanded = false"
+           >
+          <span class="glyphicon glyphicon-chevron-down"></span>
+        </button>
+        <input class="title" ng-model="snippet.title" ng-readonly="!snippet.editing">
+      </div>
+      <div class="panel-body" ng-show="snippet.expanded">
+        <textarea
+           rows="3"
+           class="code"
+           ng-model="snippet.code"
+           ng-readonly="!snippet.editing"></textarea>
+        <div class="footer" ng-show="snippet.editing">
+          <button
+             class="btn btn-sf-invisible pull-right"
+             ng-click="snippet.editing = false"
+             >
+            <span class="glyphicon glyphicon-floppy-disk"></span>
+          </button>
+          <button
+             class="btn btn-sf-invisible pull-right"
+             ng-click="snippet.cancel()"
+             >
+            <span class="glyphicon glyphicon-remove"></span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
