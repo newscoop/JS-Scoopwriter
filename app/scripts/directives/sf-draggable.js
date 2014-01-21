@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('authoringEnvironmentApp')
-  .directive('sfDraggable', function (Dragdata, $log) {
+  .directive('sfDraggable', ['Dragdata', '$log', function (Dragdata, $log) {
     return {
       restrict: 'A',
       link: function postLink(scope, element, attrs) {
@@ -16,4 +16,4 @@ angular.module('authoringEnvironmentApp')
         });
       }
     };
-  });
+  }]);

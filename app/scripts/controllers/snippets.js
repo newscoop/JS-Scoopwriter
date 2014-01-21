@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('authoringEnvironmentApp')
-    .controller('SnippetsCtrl', function ($scope) {
+    .controller('SnippetsCtrl', ['$scope', function ($scope) {
         function decorate(snippet) {
             snippet.editing = false;
             snippet.expanded = false;
@@ -65,4 +65,4 @@ angular.module('authoringEnvironmentApp')
                 return s.id == id;
             });
         };
-    });
+    }]);
