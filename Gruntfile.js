@@ -311,7 +311,7 @@ module.exports = function (grunt) {
         'coffee',
         'less:dist',
         'copy:styles',
-        'imagemin',
+        // 'imagemin',
         'svgmin',
         'htmlmin'
       ]
