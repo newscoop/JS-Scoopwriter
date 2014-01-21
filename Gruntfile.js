@@ -64,7 +64,14 @@ module.exports = function (grunt) {
             env: 'development'
         }
       },
-      newscoop : {             // settings for task used with 'devcode:dist'
+      dist : {             // settings for task used with 'devcode:dist'
+        options: {
+            source: '<%= yeoman.app %>/',
+            dest: 'dist/',
+            env: 'dist'
+        }
+      },
+      newscoop : {             // settings for task used with 'devcode:newscoop'
         options: {
             source: 'dist/',
             dest: 'dist/',
@@ -360,6 +367,20 @@ module.exports = function (grunt) {
   ]);
 
   grunt.registerTask('build', [
+    'clean:dist',
+    'useminPrepare',
+    'concurrent:dist',
+    'autoprefixer',
+    'concat',
+    'ngmin',
+    'copy:dist',
+    'uglify',
+    'devcode:dist',
+    'rev',
+    'usemin'
+  ]);
+
+  grunt.registerTask('build-newscoop', [
     'clean:dist',
     'useminPrepare',
     'concurrent:dist',
