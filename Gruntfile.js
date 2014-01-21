@@ -64,7 +64,14 @@ module.exports = function (grunt) {
             env: 'development'
         }
       },
-      newscoop : {             // settings for task used with 'devcode:dist'
+      dist : {             // settings for task used with 'devcode:dist'
+        options: {
+            source: '<%= yeoman.app %>/',
+            dest: 'dist/',
+            env: 'dist'
+        }
+      },
+      newscoop : {             // settings for task used with 'devcode:newscoop'
         options: {
             source: 'dist/',
             dest: 'dist/',
@@ -83,6 +90,11 @@ module.exports = function (grunt) {
         }]
       }
     },
+    open: {
+      server: {
+        url: 'http://<%= connect.options.hostname %>:<%= connect.options.port %>/#/?nobackend'
+      }
+    },
     connect: {
       options: {
         port: 9000,
@@ -92,7 +104,7 @@ module.exports = function (grunt) {
       },
       livereload: {
         options: {
-          open: true,
+          open: false,
           base: [
             '.tmp',
             '<%= yeoman.app %>'
@@ -341,6 +353,7 @@ module.exports = function (grunt) {
       'concurrent:server',
       'autoprefixer',
       'connect:livereload',
+      'open',
       'watch'
     ]);
   });
@@ -362,6 +375,20 @@ module.exports = function (grunt) {
     'ngmin',
     'copy:dist',
     'uglify',
+    'devcode:dist',
+    'rev',
+    'usemin'
+  ]);
+
+  grunt.registerTask('build-newscoop', [
+    'clean:dist',
+    'useminPrepare',
+    'concurrent:dist',
+    'autoprefixer',
+    'concat',
+    'ngmin',
+    'copy:dist',
+    'uglify',
     'devcode:newscoop',
     'rev',
     'usemin'
@@ -373,6 +400,7 @@ module.exports = function (grunt) {
     'build'
   ]);
 
+  grunt.loadNpmTasks('grunt-open');
   grunt.loadNpmTasks('grunt-devcode');
   grunt.loadNpmTasks('grunt-contrib-less');
 };

@@ -9,7 +9,7 @@
     "angular-cookies": "~1.2.0",
     "angular-sanitize": "~1.2.0",
     "angular-route": "~1.2.0",
-    "ng-aloha-editor": "git@github.com:terwey/ng-aloha-editor.git#master",
+    "ng-aloha-editor": "https://github.com/terwey/ng-aloha-editor.git#master",
     "requirejs": "~2.1.9",
     "bootstrap": "~3.0.3"
   },
