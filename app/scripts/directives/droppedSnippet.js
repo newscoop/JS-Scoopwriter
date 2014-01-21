@@ -10,9 +10,24 @@ angular.module('authoringEnvironmentApp')
                 get: '&'
             },
             link: function postLink(scope, element, attrs) {
+                scope.preview = false;
+                function render() {
+                    if (scope.preview) {
+                        element.find('.render-area').html(s.code);
+                        element.find('.toggle').text('code');
+                    } else {
+                        element.find('.render-area').text(s.code);
+                        element.find('.toggle').text('preview');
+                    }
+                }
                 var s = scope.get({id: attrs.id});
                 element.find('.title').text(s.title);
-                element.find('.code').text(s.code);
+                element.find('.toggle')
+                    .on('click', function() {
+                        scope.preview = !scope.preview;
+                        render();
+                    });
+                render();
             }
         };
     });
