@@ -1502,6 +1502,7 @@ button:focus {
   }
 
   .dropped-snippet {
+      /*
       border: 1px solid grey;
       border-top-left-radius: 11px;
       border-top-right-radius: 11px;
@@ -1510,12 +1511,17 @@ button:focus {
       padding: 5px;
       background-color: rgb(220, 220, 220);
       position: relative;
-
+      */
+      .controls {
+          display: inline-block;
+          color: gray;
+          border: 1px solid gray;
+      }
       .render-area {
-          border: 1px solid black;
-          border-radius: 5px;
+          border: 1px solid gray;
+          color: gray;
           padding: 5px;
-          background-color: white;
+          background-color: gainsboro;
       }
   }
 }
