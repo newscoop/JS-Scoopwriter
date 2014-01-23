@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('authoringEnvironmentApp')
-    .service('Images', ['$http', function Images($http) {
+    .service('images', ['$http', function images($http) {
         // AngularJS will instantiate a singleton by calling "new" on this function
         var service = this;
         this.loaded = [];

@@ -13,7 +13,7 @@ angular.module('authoringEnvironmentApp')
         active: false,
         selected: true
     }, {
-        name: "Draggable",
+        name: "Images",
         icon:'chat',
         template: 'views/pane-draggable.html',
         position: 'left',

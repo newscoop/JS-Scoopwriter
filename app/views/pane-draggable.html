@@ -1,6 +1,17 @@
-<section class="tabcontent" id="media-tab" style="display: block;">
+<section
+   class="tabcontent image-panel"
+   id="media-tab"
+   style="display: block;"
+   ng-controller="ImagePaneCtrl"
+   >
   
-  <a class="btn pull-right attach-media" id="add-media" data-toggle="modal" role="button" href="#AddImage"><i class="icon-plus-sign"></i> Attach media</a>
+  <button
+     class="btn pull-right attach-media"
+     id="add-media"
+     data-test-button="image-attach"
+     role="button"
+     ng-click="attachModal()"
+     ><i class="icon-plus-sign"></i> Attach media</button>
   <div class="media-tab">
     <ul class="media-items media-images" id="media-images">
       <li class="media-image">

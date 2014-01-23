@@ -29,6 +29,7 @@ module.exports = function(config) {
       'app/scripts/aloha/lib/vendor/jquery-1.7.2.js',
       'app/scripts/aloha/lib/aloha.js',
       'app/bower_components/ng-aloha-editor/ng-aloha-editor.js',
+      'app/bower_components/bootstrap/dist/js/bootstrap.js',
     ],
 
     // list of files / patterns to exclude

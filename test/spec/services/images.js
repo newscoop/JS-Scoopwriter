@@ -7,8 +7,8 @@ describe('Service: Images', function () {
 
     // instantiate service
     var Images, $httpBackend;
-    beforeEach(inject(function (_Images_, _$httpBackend_) {
-        Images = _Images_;
+    beforeEach(inject(function (_images_, _$httpBackend_) {
+        Images = _images_;
         $httpBackend = _$httpBackend_;
         $httpBackend.expect('GET', '/api/images?page=1').respond({
             "items":[
