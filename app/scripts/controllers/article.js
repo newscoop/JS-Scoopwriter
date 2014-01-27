@@ -2,8 +2,8 @@
 
 angular.module('authoringEnvironmentApp')
   .controller('ArticleCtrl',
-              ['$scope', '$location', 'article', 'articletype', 'panes',
-               function ($scope, $location, article, articletype, panes) {
+              ['$scope', '$location', 'article', 'articleType', 'panes',
+               function ($scope, $location, article, articleType, panes) {
     var s, n, b, l;
       s = $location.search();
       n = s.f_article_number;
@@ -25,7 +25,7 @@ angular.module('authoringEnvironmentApp')
         articleId: n,
         language: l
     }, function(article) {
-      $scope.type = articletype.get({type: article.type});
+      $scope.type = articleType.get({type: article.type});
     });
       
       // used to filter

@@ -13,30 +13,40 @@ describe('the snippets panel', function() {
             element(by.css('[data-test-button="image-attach"]')).click();
         });
         it('shows the modal', function() {
-            browser.sleep(1000);
+            browser.sleep(2000);
             expect(element(by.css('.modal-title')).isDisplayed()).toBe(true);
         });
-        /* cannot make the following tests work
-        describe('after cancel', function() {
+        it('selects the archive source by default', function() {
+            browser.sleep(2000);
+            expect(element(by.css('.attach-image .archive')).isDisplayed())
+                .toBe(true);
+        });
+        describe('image attached', function() {
             beforeEach(function() {
-                element(by.css('[data-test-button="modal-close"]')).click();
-                element(by.css('[data-test-button="modal-close"]')).click();
+                element(by.css('.thumbnail')).click();
             });
-            it('hides the modal', function() {
-                browser.sleep(1000);
-                expect(element(by.css('.modal-title')).isDisplayed()).toBe(false);
+            it('attaches one image', function() {
+                expect(element(by.css('.media-image figure img')).isPresent())
+                    .toBe(true);
             });
-            describe('open again', function() {
+            describe('after cancel', function() {
                 beforeEach(function() {
-                    element(by.css('[data-test-button="image-attach"]')).click();
-                    element(by.css('[data-test-button="image-attach"]')).click();
+                    element(by.css('[data-test-button="modal-close"]')).click();
+                    element(by.css('[data-test-button="modal-close"]')).click();
                 });
-                it('shows the modal', function() {
-                    browser.sleep(1000);
-                    expect(element(by.css('.modal-title')).isDisplayed()).toBe(true);
+                it('hides the modal', function() {
+                    browser.sleep(2000);
+                    expect(element(by.css('.modal-title')).isDisplayed()).toBe(false);
+                });
+                it('it can drag', function() {
+                    browser.sleep(2000);
+                    // get the div with the images
+                    var mediaImages = element(by.id('media-images'));
+
+                    // get the first image
+                    var img = mediaImages.findElement(by.xpath('//img[@sf-draggable]'));
                 });
             });
         });
-        */
     });
 });

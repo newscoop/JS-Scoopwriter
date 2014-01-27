@@ -10,24 +10,10 @@ angular.module('authoringEnvironmentApp')
         this.html = '';
         this.visible = false;
         this.show = function(opt) {
-            function finish(html) {
-                service.html = html;
-                $(selector).modal('show');
-                service.visible = true;
-            }
             this.title = opt.title; // could also be undefined
-            // see also https://github.com/angular-ui/bootstrap/blob/master/src/modal/modal.js
-            var html = $templateCache.get(opt.templateUrl);
-            if (html) {
-                // the cache returns an array
-                finish(html[1]);
-            } else {
-                $http
-                    .get(opt.templateUrl, {cache: $templateCache})
-                    .success(function (html) {
-                        finish(html);
-                    });
-            }
+            this.url = opt.templateUrl;
+            $(selector).modal('show');
+            service.visible = true;
         };
         this.hide = function() {
             this.visible = false;

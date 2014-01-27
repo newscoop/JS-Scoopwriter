@@ -1,18 +1,18 @@
 'use strict';
 
-describe('Service: articletype', function () {
+describe('Service: articleType', function () {
 
   // load the service's module
   beforeEach(module('authoringEnvironmentApp'));
 
   // instantiate service
-  var articletype;
-  beforeEach(inject(function (_articletype_) {
-    articletype = _articletype_;
+  var articleType;
+  beforeEach(inject(function (_articleType_) {
+    articleType = _articleType_;
   }));
 
   it('should do something', function () {
-    expect(!!articletype).toBe(true);
+    expect(!!articleType).toBe(true);
   });
 
 });

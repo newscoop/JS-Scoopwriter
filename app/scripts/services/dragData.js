@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('authoringEnvironmentApp')
-  .service('Dragdata', ['$log', function Dragdata($log) {
+  .service('Dragdata', ['$log', 'articleType', function Dragdata($log, articleType) {
       // AngularJS will instantiate a singleton by calling "new" on this function
       this.converters = {
           'test': function($e) {
@@ -10,7 +10,8 @@ angular.module('authoringEnvironmentApp')
           },
           'image': function($e) {
               return {
-                  src: $e.attr('src')
+                  src: $e.attr('src'),
+                  width: $e.attr('data-width')
               };
           },
           'embed': function($e) {
@@ -55,7 +56,8 @@ angular.module('authoringEnvironmentApp')
         break;
       case 'image':
         return $('<img>').attr({
-          src: data.src
+          src: data.src,
+          style: 'width: ' + data.width
         });
         break;
       case 'embed':
