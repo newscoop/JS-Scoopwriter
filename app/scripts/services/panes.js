@@ -9,7 +9,7 @@ angular.module('authoringEnvironmentApp')
         name: "Topics",
         icon:'chat',
         template: 'views/pane-topics.html',
-        position: 'left',
+        position: 'right',
         active: false,
         selected: true
     }, {
@@ -23,7 +23,7 @@ angular.module('authoringEnvironmentApp')
         name: "Snippets",
         icon:'embeds',
         template: 'views/pane-embed.html',
-        position: 'right',
+        position: 'left',
         active: false,
         selected: true
     }];

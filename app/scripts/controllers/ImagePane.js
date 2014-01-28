@@ -11,5 +11,5 @@ angular.module('authoringEnvironmentApp')
                              templateUrl: 'views/attach-image.html'
                          });
                      };
-                     $scope.defaultWidth = '300px';
+                     $scope.defaultWidth = '100%';
                  }]);
