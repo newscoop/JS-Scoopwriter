@@ -55,11 +55,18 @@ angular.module('authoringEnvironmentApp')
         return $('<div>').text('test dropped');
         break;
       case 'image':
-        return $('<img>').attr({
-          src: data.src,
-          style: 'width: ' + data.width
-        });
-        break;
+          return $('<div>')
+              .append($('<img>').attr({
+                  src: data.src,
+                  style: 'width: ' + data.width
+              }).popover({
+                  title: 'Edit image',
+                  placement: 'top',
+                  trigger: 'hover'
+              }))
+              .addClass('dropped-image')
+              .alohaBlock();
+          break;
       case 'embed':
           return $('<div>')
               .append($('<dropped-snippet>').attr({
@@ -68,9 +75,9 @@ angular.module('authoringEnvironmentApp')
               }))
               .addClass('dropped-snippet')
               .alohaBlock();
+          break;
       default:
         $log.debug('getDropped function called on a malformed data object, no known type into it');
       }
     };
-
   }]);
