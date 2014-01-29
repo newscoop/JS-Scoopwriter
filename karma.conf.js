@@ -1,6 +1,9 @@
 // Karma configuration
 // http://karma-runner.github.io/0.10/config/configuration-file.html
 
+// Testing directives with templateUrl
+// http://www.portlandwebworks.com/blog/testing-angularjs-directives-handling-external-templates
+
 module.exports = function(config) {
   config.set({
     // base path, that will be used to resolve files and exclude
@@ -27,9 +30,11 @@ module.exports = function(config) {
       'test/spec/**/*.js',
       'app/scripts/aloha/lib/require.js',
       'app/scripts/aloha/lib/vendor/jquery-1.7.2.js',
-      'app/scripts/aloha/lib/aloha.js',
+      'app/scripts/aloha/lib/aloha-full.js',
       'app/bower_components/ng-aloha-editor/ng-aloha-editor.js',
       'app/bower_components/bootstrap/dist/js/bootstrap.js',
+      //include the directory where directive templates are stored
+      'app/views/*.html'
     ],
 
     // list of files / patterns to exclude
@@ -60,6 +65,13 @@ module.exports = function(config) {
 
     // Continuous Integration mode
     // if true, it capture browsers, run tests and exit
-    singleRun: false
+    singleRun: false,
+
+    // generate js files from html templates to expose them during
+    // testing. necessary in order to test directives with template
+    // URL
+    preprocessors: {
+        'app/views/*.html': 'html2js'
+    }
   });
 };
