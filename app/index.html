@@ -75,6 +75,8 @@
             load: "common/ui, common/format, common/paste, common/block, common/list, common/table, extra/draganddropfiles"
         }
     }
+    // Restore the global $ and jQuery variables of your project's jQuery
+    Aloha.settings.jQuery = window.jQuery.noConflict(true);
     </script>
     <script src="bower_components/ng-aloha-editor/libs/alohaeditor-0.23.26/aloha/lib/aloha.js"></script>
     
