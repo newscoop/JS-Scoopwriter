@@ -119,10 +119,10 @@
                             $httpBackend.whenGET(re).respond({
                                 "id":1,
                                 "location":"local",
-                                "basename":"cms-image-000000001.jpg",
+                                "basename":"French_election__N_2200069b.jpg",
                                 "thumbnailPath":"cms-thumb-000000001.jpg",
                                 "url":"",
-                                "description":"",
+                                "description":"image description",
                                 "width":"150",
                                 "height":"210",
                                 "photographer":"",

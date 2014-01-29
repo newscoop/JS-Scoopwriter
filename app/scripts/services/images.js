@@ -65,4 +65,7 @@ angular.module('authoringEnvironmentApp')
                 }
             });
         };
+        this.byId = function(id) {
+            return $http.get('/api/images/' + id);
+        };
     }]);

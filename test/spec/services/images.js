@@ -54,7 +54,7 @@ describe('Service: Images', function () {
     var mockSingle = {
         "id":1,
         "location":"local",
-        "basename":"cms-image-000000001.jpg",
+        "basename":"mock-single.jpg",
         "thumbnailPath":"cms-thumb-000000001.jpg",
         "url":"",
         "description":"",
@@ -77,6 +77,28 @@ describe('Service: Images', function () {
     afterEach(function() {
         $httpBackend.verifyNoOutstandingExpectation();
         $httpBackend.verifyNoOutstandingRequest();
+    });
+
+    it('can get an image by id', function() {
+        $httpBackend
+            .expect('GET', '/api/images/3')
+            .respond(mockSingle);
+        var callback = jasmine.createSpy('callback');
+        Images.byId(3).success(callback);
+        $httpBackend.flush();
+        expect(callback.mostRecentCall.args[0]).toEqual({
+            id : 1,
+            location : 'local',
+            basename : 'mock-single.jpg',
+            thumbnailPath : 'cms-thumb-000000001.jpg',
+            url : '',
+            description : '',
+            width : '150',
+            height : '210',
+            photographer : '',
+            photographerUrl : '',
+            place : ''
+        });
     });
 
     describe('after initialization', function() {

@@ -30,8 +30,9 @@ module.exports = function(config) {
       'test/spec/**/*.js',
       'app/scripts/aloha/lib/require.js',
       'app/scripts/aloha/lib/vendor/jquery-1.7.2.js',
-      'app/scripts/aloha/lib/aloha-full.js',
+      'test/configure.js',
       'app/bower_components/ng-aloha-editor/ng-aloha-editor.js',
+      'app/scripts/aloha/lib/aloha-full.js',
       'app/bower_components/bootstrap/dist/js/bootstrap.js',
       //include the directory where directive templates are stored
       'app/views/*.html'

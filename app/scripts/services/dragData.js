@@ -10,7 +10,7 @@ angular.module('authoringEnvironmentApp')
           },
           'image': function($e) {
               return {
-                  src: $e.attr('src'),
+                  id: $e.attr('data-id'),
                   width: $e.attr('data-width')
               };
           },
@@ -55,17 +55,11 @@ angular.module('authoringEnvironmentApp')
         return $('<div>').text('test dropped');
         break;
       case 'image':
-          return Aloha.jQuery('<div>')
-              .append($('<img>').attr({
-                  src: data.src,
-                  style: 'width: ' + data.width
-              }).popover({
-                  title: 'Edit image',
-                  placement: 'top',
-                  trigger: 'hover'
-              }))
-              .addClass('dropped-image')
-              .alohaBlock();
+          return $('<div dropped-image>').attr({
+              'data-id': data.id,
+              'ng-controller': 'DroppedImageCtrl',
+              'ng-style': 'style'
+          });
           break;
       case 'embed':
           return Aloha.jQuery('<div>')

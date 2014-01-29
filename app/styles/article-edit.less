@@ -1515,9 +1515,34 @@ button:focus {
     }
   }
 
-  .dropped-image {
-      /* float: left; */
-      margin: 5px 15px;
+  [dropped-image] {
+      margin: 0 15px;
+      
+      .dropped-image {
+          position: relative;
+          
+          .image {
+              width: 100%;
+          }
+          .close {
+              position: absolute;
+              top: 20px;
+              right: 5px;
+              cursor: pointer;
+              background: white;
+              opacity: 1;
+              padding: 0 5px;
+              visibility: hidden;
+          }
+          &:hover {
+              .image {
+                  opacity: 0.5;
+              }
+              .close {
+                  visibility: visible;
+              }
+          }
+      }
   }
   .dropped-snippet {
       /*

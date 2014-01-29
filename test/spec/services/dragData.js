@@ -50,12 +50,12 @@ describe('Service: Dragdata', function () {
       // initial element
       $i = $('<img>').attr({
         'data-draggable-type': 'image',
-        src: 'www.source.com/img.png'
+        'data-id': '3'
       });
       // expected intermediate data
       data = JSON.stringify({
         type: 'image',
-        src: 'www.source.com/img.png'
+        id: '3'
       });
     });
     it('finds no error', function() {
@@ -67,8 +67,7 @@ describe('Service: Dragdata', function () {
     });
     it('returns a whole element to be attached to the editable', function() {
       var $r = Dragdata.getDropped(data);
-      expect($r.is('img')).toBe(true);
-      expect($r.attr('src')).toBe('www.source.com/img.png');
+      expect($r.get(0).outerHTML).toBe('<div dropped-image="" data-id="3" ng-controller="DroppedImageCtrl" ng-style="style"></div>');
     });
   });
 });
