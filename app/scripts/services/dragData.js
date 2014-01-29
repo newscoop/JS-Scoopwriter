@@ -55,7 +55,7 @@ angular.module('authoringEnvironmentApp')
         return $('<div>').text('test dropped');
         break;
       case 'image':
-          return $('<div>')
+          return Aloha.jQuery('<div>')
               .append($('<img>').attr({
                   src: data.src,
                   style: 'width: ' + data.width
@@ -68,7 +68,7 @@ angular.module('authoringEnvironmentApp')
               .alohaBlock();
           break;
       case 'embed':
-          return $('<div>')
+          return Aloha.jQuery('<div>')
               .append($('<dropped-snippet>').attr({
                   'snippet': 'byId(' + data.id + ')',
                   'ng-controller': 'SnippetsCtrl'
