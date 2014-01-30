@@ -1,0 +1,17 @@
+<div
+   class="archive"
+   ng-controller="MediaArchiveCtrl"
+   >
+  <img
+     class="thumbnail"
+     ng-repeat="image in images.displayed"
+     ng-src="images/{{image.basename}}"
+     ng-click="images.attach(image.id)"
+     >
+  <div
+     class="morer"
+     ng-mouseover="images.more()"
+     >
+    ... load more ...
+  </div>
+</div>

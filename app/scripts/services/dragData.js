@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('authoringEnvironmentApp')
-  .service('Dragdata', ['$log', function Dragdata($log) {
+  .service('Dragdata', ['$log', 'articleType', function Dragdata($log, articleType) {
       // AngularJS will instantiate a singleton by calling "new" on this function
       this.converters = {
           'test': function($e) {
@@ -10,7 +10,8 @@ angular.module('authoringEnvironmentApp')
           },
           'image': function($e) {
               return {
-                  src: $e.attr('src')
+                  id: $e.attr('data-id'),
+                  width: $e.attr('data-width')
               };
           },
           'embed': function($e) {
@@ -54,21 +55,23 @@ angular.module('authoringEnvironmentApp')
         return $('<div>').text('test dropped');
         break;
       case 'image':
-        return $('<img>').attr({
-          src: data.src
-        });
-        break;
+          return $('<div dropped-image>').attr({
+              'data-id': data.id,
+              'ng-controller': 'DroppedImageCtrl',
+              'ng-style': 'style'
+          });
+          break;
       case 'embed':
-          return $('<div>')
+          return Aloha.jQuery('<div>')
               .append($('<dropped-snippet>').attr({
                   'snippet': 'byId(' + data.id + ')',
                   'ng-controller': 'SnippetsCtrl'
               }))
               .addClass('dropped-snippet')
               .alohaBlock();
+          break;
       default:
         $log.debug('getDropped function called on a malformed data object, no known type into it');
       }
     };
-
   }]);

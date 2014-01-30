@@ -3,12 +3,19 @@
 describe('Directive: droppedSnippet', function () {
 
     // load the directive's module
-    beforeEach(module('authoringEnvironmentApp'));
+    beforeEach(module(
+        'authoringEnvironmentApp',
+        'app/views/dropped-snippet.html'
+    ));
 
     var element,
     scope;
 
-    beforeEach(inject(function ($rootScope, $compile) {
+    beforeEach(inject(function ($rootScope, $compile, $templateCache) {
+        //assign the template to the expected url called by the directive and put it in the cache
+        var template = $templateCache.get('app/views/dropped-snippet.html');
+        $templateCache.put('views/dropped-snippet.html',template);
+
         scope = $rootScope.$new();
         scope.foo = function() {
             return {
@@ -19,6 +26,7 @@ describe('Directive: droppedSnippet', function () {
         spyOn(scope, 'foo').andCallThrough();
         element = angular.element('<dropped-snippet snippet="foo(3)"></dropped-snippet>');
         element = $compile(element)(scope);
+        scope.$digest();
     }));
 
     xit('gets the snippet correctly', function() {

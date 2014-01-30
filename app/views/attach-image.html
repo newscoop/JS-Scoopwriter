@@ -1,0 +1,20 @@
+<div class="attach-image" ng-controller="AttachImageCtrl">
+  <div class="row">
+    <div class="col-md-2 sources list-group">
+      <a
+         class="list-group-item"
+         ng-repeat="source in sources"
+         ng-click="select(source)"
+         ng-class="{active: selected.value==source.value}"
+         data-test="select-{{selected.value}}"
+         ng-bind="source.description"
+         >
+      </a>
+    </div>
+    <div
+       class="col-md-10 source"
+       ng-include="selected.url"
+       >
+    </div>
+  </div>
+</div>

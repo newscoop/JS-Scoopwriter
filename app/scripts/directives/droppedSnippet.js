@@ -14,13 +14,13 @@ angular.module('authoringEnvironmentApp')
                     // nice clean way to do it, but it works for now
                     element.parent().remove();
                 });
-                scope.preview = function() {
+                scope.expand = function() {
                     element.find('.preview').html(scope.snippet.code);
-                    scope.previewed = true;
+                    scope.expanded = true;
                 };
-                scope.code = function() {
+                scope.collapse = function() {
                     element.find('.preview').empty();
-                    scope.previewed = false;
+                    scope.expanded = false;
                 };
             }
         };

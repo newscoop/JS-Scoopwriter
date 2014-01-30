@@ -157,18 +157,4 @@ describe('The Editor UI', function() {
         });
     });
 
-    describe('Drag and Drop', function() {
-        it('it can drag', function() {
-            // find the draggable pane
-            var anchor = element(by.xpath('//a[@data-original-title="Draggable"]'));
-            anchor.click();
-
-            // get the div with the images
-            var mediaImages = element(by.id('media-images'));
-
-            // get the first image
-            var img = mediaImages.findElement(by.xpath('//img[@sf-draggable]'));
-        });
-
-    });
 });

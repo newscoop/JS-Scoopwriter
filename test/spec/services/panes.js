@@ -30,7 +30,7 @@ describe('Service: panes', function () {
     });
     describe('activated a pane on the opposite side', function() {
       beforeEach(function() {
-        panes.active(p[2]);
+        panes.active(p[0]);
       });
       it('should tell the layout', function() {
         expect(p.layout).toEqual({

@@ -72,9 +72,11 @@
     // Load your Plugins here, can't be done after Aloha has loaded
     Aloha.settings = {
         plugins: {
-            load: "common/ui, common/format, common/paste, common/block, common/list, common/table, extra/draganddropfiles, common/image"
+            load: "common/ui, common/format, common/paste, common/block, common/list, common/table, extra/draganddropfiles"
         }
     }
+    // Restore the global $ and jQuery variables of your project's jQuery
+    Aloha.settings.jQuery = window.jQuery.noConflict(true);
     </script>
     <script src="bower_components/ng-aloha-editor/libs/alohaeditor-0.23.26/aloha/lib/aloha.js"></script>
     
@@ -112,6 +114,16 @@
         <script src="scripts/services/snippet.js"></script>
         <script src="scripts/controllers/snippets.js"></script>
         <script src="scripts/directives/droppedSnippet.js"></script>
+        <script src="scripts/services/images.js"></script>
+        <script src="scripts/services/modal.js"></script>
+        <script src="scripts/controllers/modal.js"></script>
+        <script src="scripts/controllers/ImagePane.js"></script>
+        <script src="scripts/controllers/media-archive.js"></script>
+        <script src="scripts/controllers/attach-image.js"></script>
+        <script src="scripts/services/page-tracker.js"></script>
+        <script src="scripts/directives/dropped-image.js"></script>
+        <script src="scripts/controllers/dropped-image.js"></script>
+        <script src="scripts/services/configuration.js"></script>
         <!-- endbuild -->
 
         <script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>

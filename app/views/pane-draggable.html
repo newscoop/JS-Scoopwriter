@@ -1,9 +1,25 @@
-<section class="tabcontent" id="media-tab" style="display: block;">
-  
-  <a class="btn pull-right attach-media" id="add-media" data-toggle="modal" role="button" href="#AddImage"><i class="icon-plus-sign"></i> Attach media</a>
+<section
+   class="tabcontent image-panel"
+   id="media-tab"
+   style="display: block;"
+   ng-controller="ImagePaneCtrl"
+   >
+  <div>  
+    <button
+       class="btn pull-right attach-media"
+       id="add-media"
+       data-test-button="image-attach"
+       role="button"
+       ng-click="attachModal()"
+       ><i class="icon-plus-sign"></i> Attach media</button>
+  </div>
   <div class="media-tab">
     <ul class="media-items media-images" id="media-images">
-      <li class="media-image">
+      <li
+         class="media-image"
+         ng-repeat="image in images.attached"
+         >
+        <!--
         <div class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown"><b class="caret"></b></a>
           <ul class="dropdown-menu sf-dropdown-simple pull-right">
@@ -14,145 +30,21 @@
             <li><a href="#"><i class="icon-trash"></i> Delete</a></li>
           </ul>
         </div>
-
+        -->
         <figure>
-          <img src="images/media1.jpg" sf-draggable data-draggable-type="image">
+          <img
+             ng-src="images/{{image.basename}}"
+             sf-draggable
+             data-draggable-type="image"
+             data-width="{{defaultWidth}}"
+             data-id="{{image.id}}"
+             >
         </figure>
-
-        
-
         <div class="media-description approved">
-          Das Kleinbasel: auf der Sonnenseite des Lebens und der Stadt.
-          <span class="size-info">2000 x 1500</span>
+          {{image.description || "No description"}}
+          <span class="size-info">{{image.width}} x {{image.height}}</span>
         </div>
-
       </li>
-
-
-      <li class="media-image">
-        <div class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown"><b class="caret"></b></a>
-          <ul class="dropdown-menu sf-dropdown-simple pull-right">
-            <li><a href="#"><i class="icon-eye-open"></i> View metadata</a></li>
-            <li><a href="#"><i class="icon-ok"></i> Place image</a></li>
-            <li><a href="#"><i class="icon-ban-circle"></i> Forbid</a></li>
-            <li><a href="#"><i class="icon-download-alt"></i> Download</a></li>
-            <li><a href="#"><i class="icon-trash"></i> Delete</a></li>
-          </ul>
-        </div>
-
-        <figure>
-          <img src="images/media2.jpg" sf-draggable data-draggable-type="image">
-        </figure>
-
-        
-
-        <div class="media-description approved">
-          Das Kleinbasel: auf der Sonnenseite des Lebens und der Stadt.
-          <span class="size-info">2000 x 1500</span>
-        </div>
-
-      </li>
-
     </ul>
-
-    <ul class="media-items media-videos" id="media-videos">
-      <li class="media-video">
-        <div class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown"><b class="caret"></b></a>
-          <ul class="dropdown-menu sf-dropdown-simple pull-right">
-            <li><a href="#"><i class="icon-eye-open"></i> View metadata</a></li>
-            <li><a href="#"><i class="icon-ok"></i> Place video</a></li>
-            <li><a href="#"><i class="icon-ban-circle"></i> Forbid</a></li>
-            <li><a href="#"><i class="icon-download-alt"></i> Download</a></li>
-            <li><a href="#"><i class="icon-trash"></i> Delete</a></li>
-          </ul>
-        </div>
-
-        <figure>
-          <img src="images/video1.jpg">
-        </figure>
-
-        <div class="media-description approved">
-          The Last Bison - Switzerland Real Switzerland Summer!
-        </div>
-
-      </li>
-
-    </ul>
-
-    <ul class="media-items media-sounds" id="media-sounds">
-      <li class="media-sound">
-        <div class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown"><b class="caret"></b></a>
-          <ul class="dropdown-menu sf-dropdown-simple pull-right">
-            <li><a href="#"><i class="icon-eye-open"></i> View metadata</a></li>
-            <li><a href="#"><i class="icon-ok"></i> Place sound</a></li>
-            <li><a href="#"><i class="icon-ban-circle"></i> Forbid</a></li>
-            <li><a href="#"><i class="icon-download-alt"></i> Download</a></li>
-            <li><a href="#"><i class="icon-trash"></i> Delete</a></li>
-          </ul>
-        </div>
-        <div class="media-description">
-          Lorem pid ultricies dapibus facilisis, auctor etiam proin turpis diam
-        </div>
-      </li>
-      <li class="media-sound">
-        <div class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown"><b class="caret"></b></a>
-          <ul class="dropdown-menu sf-dropdown-simple pull-right">
-            <li><a href="#"><i class="icon-eye-open"></i> View metadata</a></li>
-            <li><a href="#"><i class="icon-ok"></i> Place sound</a></li>
-            <li><a href="#"><i class="icon-ban-circle"></i> Forbid</a></li>
-            <li><a href="#"><i class="icon-download-alt"></i> Download</a></li>
-            <li><a href="#"><i class="icon-trash"></i> Delete</a></li>
-          </ul>
-        </div>
-        <div class="media-description">
-          Vel et adipiscing vut! Massa et dis et arcu purus penatibus augue
-        </div>
-      </li>
-
-    </ul>
-
-    <ul class="media-items media-files" id="media-files">
-      <li class="media-file">
-        <div class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown"><b class="caret"></b></a>
-          <ul class="dropdown-menu sf-dropdown-simple pull-right">
-            <li><a href="#"><i class="icon-eye-open"></i> View metadata</a></li>
-            <li><a href="#"><i class="icon-ok"></i> Place sound</a></li>
-            <li><a href="#"><i class="icon-ban-circle"></i> Forbid</a></li>
-            <li><a href="#"><i class="icon-download-alt"></i> Download</a></li>
-            <li><a href="#"><i class="icon-trash"></i> Delete</a></li>
-          </ul>
-        </div>
-        <div class="media-description">
-          Lorem pid ultricies dapibus (PDF, 500kb)
-        </div>
-      </li>
-
-      <li class="media-file">
-        <div class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown"><b class="caret"></b></a>
-          <ul class="dropdown-menu sf-dropdown-simple pull-right">
-            <li><a href="#"><i class="icon-eye-open"></i> View metadata</a></li>
-            <li><a href="#"><i class="icon-ok"></i> Place sound</a></li>
-            <li><a href="#"><i class="icon-ban-circle"></i> Forbid</a></li>
-            <li><a href="#"><i class="icon-download-alt"></i> Download</a></li>
-            <li><a href="#"><i class="icon-trash"></i> Delete</a></li>
-          </ul>
-        </div>
-        <div class="media-description">
-          Elementum, mattis dapibus (PDF, 340kb)
-        </div>
-      </li>
-      
-
-    </ul>
-
-
-
-
   </div>
 </section>
