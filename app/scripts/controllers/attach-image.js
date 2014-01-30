@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('authoringEnvironmentApp')
-    .controller('AttachImageCtrl', function ($scope) {
+    .controller('AttachImageCtrl', ['$scope', function ($scope) {
         $scope.sources = [{
             value: 'computer',
             url: 'views/attach-image/computer.html',
@@ -19,4 +19,4 @@ angular.module('authoringEnvironmentApp')
         $scope.select = function(source) {
             $scope.selected = source;
         };
-    });
+    }]);

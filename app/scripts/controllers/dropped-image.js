@@ -3,14 +3,14 @@
 angular.module('authoringEnvironmentApp')
   .controller(
       'DroppedImageCtrl',
-      ['images', '$scope', '$log',
-       function (images, $scope, $log) {
+      ['images', '$scope', '$log', 'configuration',
+       function (images, $scope, $log, configuration) {
            $scope.images = images;
            $scope.basename = 'spinner.jpg';
            $scope.caption = '... loading ...';
            $scope.style = {
-               width: '100%',
-               float: 'none'
+               width: configuration.image.width.big,
+               float: configuration.image.float
            };
            $scope.click = function(e) {
                $log.debug(e);
@@ -19,13 +19,13 @@ angular.module('authoringEnvironmentApp')
                    var action = $target.attr('data-id')
                    switch(action) {
                        case 'small':
-                       $scope.style.width='20%';
+                       $scope.style.width=configuration.image.width.small;
                        break;
                        case 'medium':
-                       $scope.style.width='50%';
+                       $scope.style.width=configuration.image.width.medium;
                        break;
                        case 'big':
-                       $scope.style.width='100%';
+                       $scope.style.width=configuration.image.width.big;
                        break;
                        case 'left':
                        $scope.style.float='left';

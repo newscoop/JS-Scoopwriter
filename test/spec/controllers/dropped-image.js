@@ -24,7 +24,7 @@ describe('Controller: DroppedImageCtrl', function () {
         };
         DroppedImageCtrl = $controller('DroppedImageCtrl', {
             $scope: scope,
-            images: images
+            configuration: {image:{width:{}}}
         });
     }));
 
