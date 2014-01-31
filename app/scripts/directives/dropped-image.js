@@ -2,40 +2,26 @@
 
 angular.module('authoringEnvironmentApp')
     .directive('droppedImage', function () {
-        var buttons = [{
-            text: 'big'
-        }, {
-            text: 'medium'
-        }, {
-            text: 'small'
-        }, {
-            text: 'left'
-        }, {
-            text: 'right'
-        }, {
-            text: 'center'
-        }];
-        var popoverMarkup = buttons.map(function(b) {
-            return $('<button>')
-                .attr({
-                'data-id': b.text
-                })
-                .text(b.text)
-                .addClass('btn btn-default btn-xs')
-                .get(0)
-                .outerHTML;
-        }).join('');
         return {
             templateUrl: 'views/dropped-image.html',
             restrict: 'A',
             link: function postLink(scope, element, attrs) {
                 var id = element.attr('data-id');
                 scope.get(id);
+                scope.images.include(id);
 
                 // handler for close button
                 $(element).find('.close').click(function() {
+                    scope.images.exclude(id);
                     element.remove();
                 });
+
+                var popoverMarkup = $(element)
+                    .find('.popover-markup')
+                    .detach()
+                    .attr('style', '')
+                    .get(0)
+                    .outerHTML;
 
                 // popover from modern jQuery (where bootstrap is
                 // attached) and alohaBlock from aloha jQuery which is

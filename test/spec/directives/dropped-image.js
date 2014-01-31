@@ -23,6 +23,10 @@ describe('Directive: droppedImage', function () {
                 width: '200px'
             };
         };
+        scope.images = {
+            include: function() {},
+            exclude: function() {}
+        };
         spyOn(scope, 'get').andCallThrough();
         element = angular
             .element('<div dropped-image ng-style="style" data-id="4"></div>');

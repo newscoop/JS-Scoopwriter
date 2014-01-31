@@ -4,47 +4,52 @@
    style="display: block;"
    ng-controller="ImagePaneCtrl"
    >
-  <div>  
+  <div class="attach-image-section">
     <button
-       class="btn pull-right attach-media"
+       class="btn pull-right attach-media btn-sf-invisible"
        id="add-media"
        data-test-button="image-attach"
        role="button"
        ng-click="attachModal()"
        ><i class="icon-plus-sign"></i> Attach media</button>
   </div>
-  <div class="media-tab">
-    <ul class="media-items media-images" id="media-images">
-      <li
-         class="media-image"
-         ng-repeat="image in images.attached"
-         >
-        <!--
-        <div class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown"><b class="caret"></b></a>
-          <ul class="dropdown-menu sf-dropdown-simple pull-right">
-            <li><a href="#"><i class="icon-eye-open"></i> View metadata</a></li>
-            <li><a href="#"><i class="icon-ok"></i> Place image</a></li>
-            <li><a href="#"><i class="icon-ban-circle"></i> Forbid</a></li>
-            <li><a href="#"><i class="icon-download-alt"></i> Download</a></li>
-            <li><a href="#"><i class="icon-trash"></i> Delete</a></li>
-          </ul>
-        </div>
-        -->
-        <figure>
-          <img
-             ng-src="images/{{image.basename}}"
-             sf-draggable
-             data-draggable-type="image"
-             data-width="{{defaultWidth}}"
-             data-id="{{image.id}}"
-             >
-        </figure>
-        <div class="media-description approved">
-          {{image.description || "No description"}}
-          <span class="size-info">{{image.width}} x {{image.height}}</span>
-        </div>
-      </li>
-    </ul>
+  <div class="images-wrapper">
+    <div class="media-tab">
+      <ul class="media-items media-images" id="media-images">
+        <li
+           class="media-image"
+           ng-repeat="image in images.attached"
+           >
+          <div ng-if="image.included" class="attached">
+            <span class="glyphicon glyphicon-ok"></span>
+          </div>
+          <!--
+              <div class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><b class="caret"></b></a>
+                <ul class="dropdown-menu sf-dropdown-simple pull-right">
+                  <li><a href="#"><i class="icon-eye-open"></i> View metadata</a></li>
+                  <li><a href="#"><i class="icon-ok"></i> Place image</a></li>
+                  <li><a href="#"><i class="icon-ban-circle"></i> Forbid</a></li>
+                  <li><a href="#"><i class="icon-download-alt"></i> Download</a></li>
+                  <li><a href="#"><i class="icon-trash"></i> Delete</a></li>
+                </ul>
+              </div>
+              -->
+          <figure>
+            <img
+               ng-src="images/{{image.basename}}"
+               sf-draggable
+               data-draggable-type="image"
+               data-width="{{defaultWidth}}"
+               data-id="{{image.id}}"
+               >
+          </figure>
+          <div class="media-description approved">
+            {{image.description || "No description"}}
+            <span class="size-info">{{image.width}} x {{image.height}}</span>
+          </div>
+        </li>
+      </ul>
+    </div>
   </div>
 </section>

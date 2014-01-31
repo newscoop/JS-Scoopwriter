@@ -11,7 +11,7 @@
 @tabpane-background:  #f5f5f5;
 @tabpane-border:      #7c7c7c;
 @tabpane-width:       330px;
-@tabcontent-padding:  15px;
+@tabcontent-padding:  0;
 
 @main-article-color:  #ffffff;
 @main-article-border: #cacaca;
@@ -1068,8 +1068,8 @@ button:focus {
           float: left;
           margin-right: 10px;
           img {
-            width: 62px;
             max-width: 62px;
+            max-height: 42px;
           }
         }
         
@@ -1439,17 +1439,54 @@ button:focus {
       padding: 5px;
   }
 
+  .btn-sf-invisible {
+      background: none;
+      border: none;
+      padding: 0;
+  }
+
   .attach-image {
       font-size: 12px;
       
       .archive {
           max-height: 400px;
           overflow: scroll;
-          
-          .thumbnail {
+
+          .thumbnail-wrapper {
+              border-width: 1px;
+              border-style: solid;
+              border-color: #d0d0d0;
+              border-radius: 2px;
               display: inline-block;
-              max-height: 100px;
               margin: 10px;
+              .toggler {
+                  display: none;
+                  position: absolute;
+                  color: white;
+                  background: #0079cc;
+                  padding: 7px;
+                  line-height: 0;
+              }
+              .thumbnail {
+                  display: inline-block;
+                  max-height: 100px;
+                  border-color: white;
+                  border-width: 6px;
+                  margin: 0;
+                  padding: 0;
+              }
+          }
+          .thumbnail-wrapper:hover {
+              .toggler {
+                  display: inline;
+              }
+          }
+          .thumbnail-wrapper.attached, .thumbnail-wrapper:hover {
+              border-color: white;
+              .thumbnail {
+                  border-radius: 0;
+                  border-color: #0079CC;
+              }
           }
           .morer {
               height: 300px;
@@ -1460,9 +1497,39 @@ button:focus {
   }
 
   .image-panel {
-      .attach-media {
-          background: none;
-          border: none;
+      .attach-image-section {
+          overflow: hidden;
+      }
+      .images-wrapper {
+          position: relative;
+          height: 100%;
+          .media-tab {
+              position: absolute;
+              top: 0;
+              right: 0;
+              bottom: 0;
+              left: 0;
+              overflow: auto;
+              padding-top: 12px;
+              li {
+                  overflow: hidden; /* for the green attached checkmark */
+              }
+              .attach-media {
+                  background: none;
+                  border: none;
+              }
+              .attached {
+                  border-radius: 20px;
+                  display: inline;
+                  position: absolute;
+                  right: -3px;
+                  top: -4px;
+                  color: white;
+                  background: green;
+                  padding: 7px;
+                  line-height: 0;
+              }
+          }
       }
   }
 
@@ -1472,11 +1539,6 @@ button:focus {
       border: 1px solid #d0d0d0;
       resize: none;
       margin: 5px 0;
-    }
-    .btn-sf-invisible {
-      background: none;
-      border: none;
-      padding: 0;
     }
     .snippets-list-wrapper {
         position: relative;
@@ -1554,19 +1616,34 @@ button:focus {
       
       .dropped-image {
           position: relative;
+          text-align: center; /* to align the image within */
           
           .image {
               width: 100%;
           }
+          .popover {
+              max-width: none;
+              [data-id="small"] .glyphicon-stop {
+                  font-size: xx-small;
+              }
+              [data-id="medium"] .glyphicon-stop {
+                  font-size: smaller
+              }
+          }
           .close {
               position: absolute;
-              top: 20px;
-              right: 5px;
+              top: 5%;
+              right: 5%;
               cursor: pointer;
               background: white;
               opacity: 1;
-              padding: 0 5px;
+              padding: 0.5%;
+              font-size: 120%;
               visibility: hidden;
+          }
+          .caption {
+              text-align: center;
+              padding: 2%;
           }
           &:hover {
               .image {

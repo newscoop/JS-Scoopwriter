@@ -5,7 +5,7 @@ angular.module('authoringEnvironmentApp')
         return {
             image: {
                 width: {
-                    small: '20%',
+                    small: '30%',
                     medium: '50%',
                     big: '100%'
                 },
