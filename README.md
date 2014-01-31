@@ -1,5 +1,8 @@
-# Run the demo
+# About
+This project is at the moment mainly targeted at `Newscoop` which is an open source CMS for news by Sourcefabric. However it should be flexible enough to be used for other projects too.
 
+# Getting started
+## Setup
 In order to run this you need `node.js` and `npm`. Checkout the repo,
 then install the dependencies:
 
@@ -8,22 +11,32 @@ then install the dependencies:
     $ npm install .
     $ bower install .
 
-You will need also other node scripts like `grunt`, `karma` or
-`protractor` that are usually installed globally and thus not listed
-among the dependencies.
+## Standalone with mocked backend
+For the standalone demo there is a Mocked Backend included (also used for E2E). You will need `grunt` for this to work.
 
-Build the assets with `grunt` and then serve the `dist` directory with
-any static server, for example `serve` installable with `npm` or
-apache:
+	$ grunt server
+	
 
-    $ grunt build
-    $ cd dist/
-    $ serve
+## Building the Project
+If you want to create a build of the project it's as simple as taking `grunt` and doing a build. This will include, minimize etc all the required assets.
 
-# Run tests
+	$ grunt build
+	
+The resulting build files end up in the `dist/` directory.
+Inside the `dist/` dir you can now run a local server like `serve` (available from `npm`) to test.
 
-Unit tests are run with `grunt test`. They depend on karma.
+	$ cd dist/
+	$ serve
 
-Integration tests are run with protractor:
+# Tests
+## Unit Tests
+
+Unit tests depend on `karma`
+
+	$ grunt test
+
+## E2E Tests
+
+Integration tests depend on `protractor` and `selenium`
 
     $ protractor protractorConf.js
