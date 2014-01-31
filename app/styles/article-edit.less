@@ -1394,6 +1394,10 @@ button:focus {
 .authoring-environment {
   background: #f8f8f8;
 
+  section {
+      height: 100%; /* for scrolling in child panes */
+  }
+
   .modal-dialog.large {
       width: 80%;
   }
@@ -1427,6 +1431,12 @@ button:focus {
     text-rendering: optimizelegibility;
     padding-bottom: 10px;
     border-bottom: 1px solid #ddd;
+  }
+
+  .draggable-panel-heading {
+      font-size: 11px;
+      text-transform: uppercase;
+      padding: 5px;
   }
 
   .attach-image {
@@ -1468,9 +1478,31 @@ button:focus {
       border: none;
       padding: 0;
     }
+    .snippets-list-wrapper {
+        position: relative;
+        height: 100%;
+        .snippets-list {
+            overflow: auto;
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+        }
+    }
     .add-snippet {
       background-color: #ebebeb;
       margin: 10px 0;
+      .heading {
+          button {
+              line-height: 1em;
+              
+              .add-text {
+                  font-size: 12px;
+                  padding: 0 5px;
+              }
+          }
+      }
       .body {
         padding: 5px;
         .controls {
@@ -1508,9 +1540,11 @@ button:focus {
       resize: none;
       background: none;
       box-sizing: content-box;
+      font-weight: 200;
       
       &[readonly] {
         border: none;
+        color: #737373;
       }
     }
   }
