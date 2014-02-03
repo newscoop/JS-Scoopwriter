@@ -1,42 +1,9 @@
-<div class="dropped-image" ng-click="click($event)">
-  <!-- the following element is not intended to be used directly. its
-  content will be read by javascript (the directive) and used with the
-  bootstrap popover. it is written here because it is much easier to
-  modify it, comparing to a javascript multi string -->
-  <div class="popover-markup" style="display:none">
-    <button
-       class="btn btn-default btn-xs"
-       data-id="small">
-      <span class="glyphicon glyphicon-stop"></span> small
-    </button><button
-       class="btn btn-default btn-xs"
-       data-id="medium">
-      <span class="glyphicon glyphicon-stop"></span> medium
-    </button><button
-       class="btn btn-default btn-xs"
-       data-id="big">
-      <span class="glyphicon glyphicon-stop"></span> big
-    </button><button
-       class="btn btn-default btn-xs"
-       data-id="original">
-      original
-    </button>
-    <button
-       class="btn btn-default btn-xs"
-       data-id="left">
-      <span class="glyphicon glyphicon-align-left"></span>
-    </button><button
-       class="btn btn-default btn-xs"
-       data-id="center">
-      <span class="glyphicon glyphicon-align-center"></span>
-    </button><button
-       class="btn btn-default btn-xs"
-       data-id="right">
-      <span class="glyphicon glyphicon-align-right"></span>
-    </button>
-  </div>
-  <img ng-src="images/{{basename}}" class="image" ng-style="style.image">
+<div
+   class="dropped-image"
+   ng-click="selectThis"
+   >
+  <img ng-src="images/{{image.basename}}" class="image" ng-style="style.image">
   <div class="close"><span class="glyphicon glyphicon-remove"></span></div>
-  <div class="caption" ng-bind="caption"></div>
+  <div class="caption" ng-bind="image.caption"></div>
   <div style="clear:both;"></div>
 </div>

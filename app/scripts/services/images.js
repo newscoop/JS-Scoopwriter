@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('authoringEnvironmentApp')
-    .service('images', ['$http', 'pageTracker', function images($http, pageTracker) {
+    .service('images', ['$http', 'pageTracker', 'configuration', function images($http, pageTracker, configuration) {
         /* more info about the page tracker in its tests */
         // AngularJS will instantiate a singleton by calling "new" on this function
         var service = this;
@@ -9,6 +9,8 @@ angular.module('authoringEnvironmentApp')
         this.loaded = [];
         this.displayed = [];
         this.attached = [];
+        this.includedIndex = 0;
+        this.included = {};
         /* at the beginning we want do display the results immediately */
         this.init = function() {
             this.load(this.tracker.next())
@@ -66,6 +68,19 @@ angular.module('authoringEnvironmentApp')
                 throw Error('trying to include a not attached image');
             } else {
                 this.attached[index].included = true;
+                this.includedIndex++;
+                var image = _.cloneDeep(this.attached[index]);
+                var defaultSize = 'big';
+                image.size = defaultSize;
+                image.style = {
+                    container: {
+                        width: configuration.image.width[defaultSize]
+                    },
+                    image: {
+                    }
+                };
+                this.included[this.includedIndex] = image;
+                return this.includedIndex;
             }
         };
         this.exclude = function(id) {

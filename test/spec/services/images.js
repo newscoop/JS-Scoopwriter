@@ -149,6 +149,13 @@ describe('Service: Images', function () {
                     var i = images.byId(3);
                     expect(i.included).toBe(true);
                 });
+                it('puts the image in a map', function() {
+                    expect(images.included[1]).toBeDefined();
+                });
+                it('gives the image default style', function() {
+                    expect(images.included[1].style.container.width)
+                        .toBe('100%');
+                });
                 describe('image excluded', function() {
                     beforeEach(function() {
                         images.exclude(3);

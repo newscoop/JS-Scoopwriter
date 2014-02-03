@@ -1406,6 +1406,20 @@ button:focus {
   .navbar-fixed-top.navbar.navbar-default {
     top: @hostTop;
   }
+  .popover {
+      max-width: none;
+      .small .glyphicon-stop {
+          font-size: xx-small;
+      }
+      .medium .glyphicon-stop {
+          font-size: smaller
+      }
+      &.no-arrow {
+          .arrow {
+              display: none;
+          }
+      }
+  }
   .sf-upper-toolbar {
     display: inline-block; /* to trigger block context */
     width: 100%; /* goes with `inline-block` */
@@ -1620,15 +1634,6 @@ button:focus {
           
           .image {
               width: 100%;
-          }
-          .popover {
-              max-width: none;
-              [data-id="small"] .glyphicon-stop {
-                  font-size: xx-small;
-              }
-              [data-id="medium"] .glyphicon-stop {
-                  font-size: smaller
-              }
           }
           .close {
               position: absolute;
