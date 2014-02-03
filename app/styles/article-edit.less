@@ -41,7 +41,7 @@ html, body.article-edit {
 .tablist {
   width:@tablist-width;
   position:fixed;
-  top:@subnav-height + @topspace + @editor-toolbar;
+  top:@subnav-height + @hostTop + @editor-toolbar;
   bottom:0;
   z-index:20;
   background: @tablist-background;
@@ -123,7 +123,7 @@ html, body.article-edit {
 .tabpane {
   position:fixed;
   width:@tabpane-width;
-  top:@subnav-height + @topspace + @editor-toolbar;
+  top:@subnav-height + @hostTop + @editor-toolbar;
   bottom:0;
   background: @tabpane-background;
   border-color:@tabpane-border;
@@ -1388,7 +1388,7 @@ button:focus {
   padding-top: 10px;
 }
 
-@hostTop: 67px; /* The system hosting the editor will need some room at the top for its own toolbar */
+@hostTop: 0px; /* The system hosting the editor will need some room at the top for its own toolbar */
 @bigButtonSidePadding: 20px; /* Side padding for some buttons in the toolbars */
 
 .authoring-environment {
