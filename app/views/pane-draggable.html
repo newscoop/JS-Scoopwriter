@@ -4,14 +4,19 @@
    style="display: block;"
    ng-controller="ImagePaneCtrl"
    >
+  <div class="panel-title">
+    Images
+  </div>
   <div class="attach-image-section">
     <button
-       class="btn pull-right attach-media btn-sf-invisible"
+       class="btn btn-default"
        id="add-media"
        data-test-button="image-attach"
        role="button"
        ng-click="attachModal()"
-       ><i class="icon-plus-sign"></i> Attach media</button>
+       ><span class="glyphicon glyphicon-plus-sign"></span>
+      Attach image
+    </button>
   </div>
   <div class="images-wrapper">
     <div class="media-tab">
@@ -20,21 +25,14 @@
            class="media-image"
            ng-repeat="image in images.attached"
            >
+          <div class="detach"
+               ng-click="images.toggleAttach(image.id)"
+               >
+            <span class="glyphicon glyphicon-remove"></span>
+          </div>
           <div ng-if="image.included" class="attached">
             <span class="glyphicon glyphicon-ok"></span>
           </div>
-          <!--
-              <div class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><b class="caret"></b></a>
-                <ul class="dropdown-menu sf-dropdown-simple pull-right">
-                  <li><a href="#"><i class="icon-eye-open"></i> View metadata</a></li>
-                  <li><a href="#"><i class="icon-ok"></i> Place image</a></li>
-                  <li><a href="#"><i class="icon-ban-circle"></i> Forbid</a></li>
-                  <li><a href="#"><i class="icon-download-alt"></i> Download</a></li>
-                  <li><a href="#"><i class="icon-trash"></i> Delete</a></li>
-                </ul>
-              </div>
-              -->
           <figure>
             <img
                ng-src="images/{{image.basename}}"

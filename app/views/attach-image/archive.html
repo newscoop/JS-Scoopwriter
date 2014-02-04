@@ -6,6 +6,7 @@
      ng-repeat="image in images.displayed"
      class="thumbnail-wrapper"
      ng-class="{attached: images.isAttached(image.id)}"
+     ng-click="images.toggleAttach(image.id)"
      >
     <div class="toggler">
       <span class="glyphicon" ng-class="images.togglerClass(image.id)"></span>
@@ -13,7 +14,6 @@
     <img
        class="thumbnail"
        ng-src="images/{{image.basename}}"
-       ng-click="images.toggleAttach(image.id)"
        >
   </div>
   <div
