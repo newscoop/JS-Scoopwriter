@@ -1458,6 +1458,32 @@ button:focus {
       padding: 0;
   }
 
+  .fixed-image {
+      background: #f8f8f8;
+      border: 3px dashed #e0e0e0;
+      padding: 2%;
+      position: relative;
+      .fixed-image-dropped {
+          position: absolute;
+          top: 0;
+          right: 0;
+          width: 100%;
+          height: 100%;
+          -webkit-transition: opacity 1s ease-in-out;
+          -moz-transition: opacity 1s ease-in-out;
+          -o-transition: opacity 1s ease-in-out;
+          transition: opacity 1s ease-in-out;          
+      }
+      .fixed-image-title {
+          width: 100%;
+          background: url("../images/dragfiles.png") no-repeat 50% 0;
+          margin-top: 5%;
+          padding-top: 100px;
+          text-align: center;
+          color: #a0a0a0;
+          font-size: 24px;
+      }
+  }
   .attach-image {
       font-size: 12px;
       .web {

@@ -10,6 +10,15 @@ angular.module('authoringEnvironmentApp')
                     big: '100%'
                 },
                 float: 'none'
+            },
+            additionalFields: {
+                news: [{
+                    name: 'main_image',
+                    fieldWeight: 1,
+                    type: 'fixed_image',
+                    isContentField: true,
+                    description: 'Article Main Image'
+                }]
             }
         };
     });
