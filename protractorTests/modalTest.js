@@ -1,7 +1,7 @@
 describe('the snippets panel', function() {
     var paneButton;
     beforeEach(function() {
-        browser.get('http://127.0.0.1:9000/#/?nobackend');
+        browser.get('http://127.0.0.1:9000/#access_token=test?nobackend');
         element(by.css('[data-original-title="Images"]')).click();
     });
     it('does not show the modal', function() {

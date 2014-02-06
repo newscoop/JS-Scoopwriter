@@ -11,7 +11,7 @@ angular.module('authoringEnvironmentApp', [
   'mgcrea.ngStrap.popover'
 ])
   // devcode: !newscoop
-  .constant('endpoint', 'http://tw-merge.lab.sourcefabric.org')
+  .constant('endpoint', 'http://tw-merge.lab.sourcefabric.org/content-api')
   // endcode
   // devcode: newscoop
   .constant('endpoint', '')

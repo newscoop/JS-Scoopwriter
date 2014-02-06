@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('authoringEnvironmentApp')
-    .service('images', ['$http', 'pageTracker', 'configuration', function images($http, pageTracker, configuration) {
+    .service('images', ['$http', 'pageTracker', 'configuration', 'endpoint', '$log', function images($http, pageTracker, configuration, endpoint, $log) {
         /* more info about the page tracker in its tests */
         // AngularJS will instantiate a singleton by calling "new" on this function
         var service = this;
@@ -11,18 +11,20 @@ angular.module('authoringEnvironmentApp')
         this.attached = [];
         this.includedIndex = 0;
         this.included = {};
+        this.itemsPerPage = 10;
         /* at the beginning we want do display the results immediately */
         this.init = function() {
             this.load(this.tracker.next())
                 .success(function(data) {
                     service.displayed = data.items;
+                    service.itemsPerPage = data.pagination.itemsPerPage;
                     /* prepare the next batch, for an happy user */
                     service.more();
                 })
         };
         /* synchronously show more items and asynchronously ask for loading */
         this.more = function() {
-            var additional = service.loaded.splice(0, 10);
+            var additional = service.loaded.splice(0, this.itemsPerPage);
             this.displayed = this.displayed.concat(additional);
             this.load(this.tracker.next())
                 .success(function(data) {
@@ -30,7 +32,7 @@ angular.module('authoringEnvironmentApp')
                 })
         };
         this.load = function(page) {
-            var url = '/api/images?page=' + page;
+            var url = endpoint + '/images?page=' + page;
             var promise = $http.get(url);
             promise.error(function() {
                 service.tracker.remove(page);
@@ -50,15 +52,54 @@ angular.module('authoringEnvironmentApp')
                 // already attached, do nothing
                 return;
             } else {
-                var i = _.cloneDeep(_.find(this.displayed, match));
-                i.incomplete = true;
-                this.attached.push(i);
-                this.updateAttached();
+                var url = endpoint+'/articles/64';
+                var link = '<'+endpoint+'/images/'+id+'>';
+                /* this could cause some troubles depending on the
+                 * setting of the server (OPTIONS request), thus debug
+                 * log may be useful to reproduce the original
+                 * request */
+                $log.debug('sending a link request');
+                $log.debug(url);
+                $log.debug(link);
+                $http({
+                    url: url,
+                    method: 'LINK',
+                    headers: {
+                        Link: link
+                    }
+                }).success(function() {
+                    var i = _.cloneDeep(_.find(service.displayed, match));
+                    i.incomplete = true;
+                    service.attached.push(i);
+                    service.updateAttached();
+                });
             }
         };
         this.detach = function(id) {
             var match = this.matchMaker(id);
-            _.remove(this.attached, match);
+            if (_.find(this.attached, match)) {
+                var url = endpoint+'/articles/64';
+                var link = '<'+endpoint+'/images/'+id+'>';
+                /* this could cause some troubles depending on the
+                 * setting of the server (OPTIONS request), thus debug
+                 * log may be useful to reproduce the original
+                 * request */
+                $log.debug('sending an unlink request');
+                $log.debug(url);
+                $log.debug(link);
+                $http({
+                    url: url,
+                    method: 'UNLINK',
+                    headers: {
+                        Link: link
+                    }
+                }).success(function() {
+                    _.remove(service.attached, match);
+                });
+            } else {
+                // already attached, do nothing
+                return;
+            }
         };
         this.include = function(id) {
             var match = this.matchMaker(id);
@@ -98,7 +139,7 @@ angular.module('authoringEnvironmentApp')
             this.attached.forEach(function(a) {
                 if (a.incomplete) {
                     $http
-                        .get('/api/images/' + a.id)
+                        .get(endpoint + '/images/' + a.id)
                         .success(function(data) {
                             _.forOwn(data, function(value, key) {
                                 if (!(key in a)) {

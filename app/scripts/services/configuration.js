@@ -4,9 +4,10 @@ angular.module('authoringEnvironmentApp')
     .factory('configuration', function () {
         return {
             auth: {
-                client_id: '2_66ch74l8s8g8c0wg8cggwkkss0404o04gwsk88kc4cwcs84os4',
-                client_secret: '5rjd21cgrjks0oo880sg88kg8o048gcwows8s0w0ow08g48wk4',
-                redirect_uri: 'https://tw-merge.lab.sourcefabric.org'
+                client_id: '3_uutz7mlvof4kc4wckcgcs4wg8oosgwg8gg4cg0wkkk0cc0w0k',
+                client_secret: '2q1prvmzi8w0s4ssg8c80wk0cg840g8sko488g4g04c4gskgoc',
+                redirect_uri: 'http://localhost:9000',
+                server: 'http://tw-merge.lab.sourcefabric.org/oauth/v2/auth?'
             },
             article: {
                 width: {

@@ -39,7 +39,7 @@ angular.module('authoringEnvironmentApp')
 
     // AngularJS will instantiate a singleton by calling "new" on this function
     return $resource(
-      endpoint + '/api/articles/:articleId?language=:language',
+      endpoint + '/articles/:articleId?language=:language',
       {},
       {
         query: {

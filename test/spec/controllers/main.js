@@ -28,6 +28,6 @@ describe('Controller: MainCtrl', function () {
         expect(MainCtrl).toBeDefined();
     });
     it('redirects the user at the beginning because the token is not there', function() {
-        expect($window.location.href).toBe('http://tw-merge.lab.sourcefabric.org/oauth/v2/auth?client_id=3_uutz7mlvof4kc4wckcgcs4wg8oosgwg8gg4cg0wkkk0cc0w0k&redirect_uri=http%3A%2F%2Flocalhost:9000&response_type=token');
+        expect($window.location.href).toBe('http://tw-merge.lab.sourcefabric.org/oauth/v2/auth?client_id=3_uutz7mlvof4kc4wckcgcs4wg8oosgwg8gg4cg0wkkk0cc0w0k&redirect_uri=http%3A%2F%2Flocalhost%3A9000&response_type=token');
     });
 });

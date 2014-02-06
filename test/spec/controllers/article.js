@@ -19,8 +19,8 @@ describe('Controller: ArticleCtrl', function () {
             $scope: scope
         });
         $httpBackend = _$httpBackend_;
-        $httpBackend.whenGET(/\/api\/articles\/[\d]/).respond(article);
-        $httpBackend.whenGET(/\/api\/articleTypes\/.*/).respond(articleTypeNews);
+        $httpBackend.whenGET(/\/content-api\/articles\/[\d]/).respond(article);
+        $httpBackend.whenGET(/\/content-api\/articleTypes\/.*/).respond(articleTypeNews);
         $httpBackend.flush();
     }));
 
