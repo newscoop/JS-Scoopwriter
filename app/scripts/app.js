@@ -16,7 +16,7 @@ angular.module('authoringEnvironmentApp', [
   // devcode: newscoop
   .constant('endpoint', '')
   // endcode
-  .config(function ($routeProvider) {
+  .config(['$routeProvider', '$httpProvider', function ($routeProvider, $httpProvider) {
     $routeProvider
       .when('/', {
         templateUrl: 'views/main.html',
@@ -25,4 +25,5 @@ angular.module('authoringEnvironmentApp', [
       .otherwise({
         redirectTo: '/'
       });
-  });
+    $httpProvider.interceptors.push('authInterceptor');
+  }]);
