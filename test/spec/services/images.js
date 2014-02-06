@@ -69,36 +69,14 @@ describe('Service: Images', function () {
     beforeEach(module('authoringEnvironmentApp'));
 
     // instantiate service
-    var Images, $httpBackend;
+    var images, $httpBackend;
     beforeEach(inject(function (_images_, _$httpBackend_) {
-        Images = _images_;
+        images = _images_;
         $httpBackend = _$httpBackend_;
     }));
     afterEach(function() {
         $httpBackend.verifyNoOutstandingExpectation();
         $httpBackend.verifyNoOutstandingRequest();
-    });
-
-    it('can get an image by id', function() {
-        $httpBackend
-            .expect('GET', '/api/images/3')
-            .respond(mockSingle);
-        var callback = jasmine.createSpy('callback');
-        Images.byId(3).success(callback);
-        $httpBackend.flush();
-        expect(callback.mostRecentCall.args[0]).toEqual({
-            id : 1,
-            location : 'local',
-            basename : 'mock-single.jpg',
-            thumbnailPath : 'cms-thumb-000000001.jpg',
-            url : '',
-            description : '',
-            width : '150',
-            height : '210',
-            photographer : '',
-            photographerUrl : '',
-            place : ''
-        });
     });
 
     describe('after initialization', function() {
@@ -109,45 +87,84 @@ describe('Service: Images', function () {
             $httpBackend
                 .expect('GET', '/api/images?page=2')
                 .respond(mock);
-            Images.init();
+            images.init();
             $httpBackend.flush(1);
         });
         it('shows the first batch of images immediately', function () {
-            expect(Images.loaded.length).toBe(0);
-            expect(Images.displayed.length).toBe(10);
+            expect(images.loaded.length).toBe(0);
+            expect(images.displayed.length).toBe(10);
             $httpBackend.flush();
         });
         it('loads the second batch of images but does not show them', function () {
             $httpBackend.flush();
-            expect(Images.loaded.length).toBe(10);
-            expect(Images.displayed.length).toBe(10);
+            expect(images.loaded.length).toBe(10);
+            expect(images.displayed.length).toBe(10);
         });
         describe('image attached to the article', function() {
             beforeEach(function() {
                 $httpBackend
                     .expect('GET', '/api/images/3')
                     .respond(mockSingle);
-                expect(Images.attached.length).toBe(0);
-                Images.attach(3);
+                expect(images.attached.length).toBe(0);
+                images.toggleAttach(3);
                 $httpBackend.flush();
             });
             it('updates the attached', function() {
-                expect(Images.attached.length).toBe(1);
-                expect(Images.attached[0].width).toBe('150');
+                expect(images.attached.length).toBe(1);
+                expect(images.attached[0].width).toBe('150');
             });
             it('does not attach duplicates', function() {
-                Images.attach(3);
-                expect(Images.attached.length).toBe(1);
+                images.attach(3);
+                expect(images.attached.length).toBe(1);
             });
             it('attaches others', function() {
                 $httpBackend
                     .expect('GET', '/api/images/4')
                     .respond(mockSingle);
-                Images.attach(4);
-                expect(Images.attached.length).toBe(2);
+                images.toggleAttach(4);
+                expect(images.attached.length).toBe(2);
                 $httpBackend.flush();
             });
-            afterEach(function() {
+            it('gets an image by id', function() {
+                var image = images.byId(3);
+                expect(image).toEqual({ id : 3, basename : 'cms-image-000000003.jpg', incomplete : false, location : 'local', thumbnailPath : 'cms-thumb-000000001.jpg', url : '', description : '', width : '150', height : '210', photographer : '', photographerUrl : '', place : '' });
+            });
+            it('provides the correct toggler class', function() {
+                expect(images.togglerClass(3)).toBe('glyphicon-minus');
+                expect(images.togglerClass(4)).toBe('glyphicon-plus');
+            });
+            describe('same image detached', function() {
+                beforeEach(function() {
+                    images.toggleAttach(3);
+                });
+                it('detaches the image', function() {
+                    expect(images.isAttached(3)).toBe(false);
+                });
+            });
+            describe('image included', function() {
+                beforeEach(function() {
+                    images.include(3);
+                });
+                it('sets the image as included', function() {
+                    var i = images.byId(3);
+                    expect(i.included).toBe(true);
+                });
+                it('puts the image in a map', function() {
+                    expect(images.included[1]).toBeDefined();
+                });
+                it('gives the image default style', function() {
+                    expect(images.included[1].style.container.width)
+                        .toBe('100%');
+                });
+                describe('image excluded', function() {
+                    beforeEach(function() {
+                        images.exclude(3);
+                    });
+                    it('sets the image as not included', function() {
+                        var i = images.byId(3);
+                        expect(i.included).toBe(false);
+                    });
+                });
             });
         });
         it('handles the loaded buffer properly', function() {
@@ -155,18 +172,18 @@ describe('Service: Images', function () {
             $httpBackend
                 .expect('GET', '/api/images?page=3')
                 .respond(mock);
-            expect(Images.loaded.length).toBe(10);
-            expect(Images.displayed.length).toBe(10);
-            Images.more();
-            expect(Images.loaded.length).toBe(0);
-            expect(Images.displayed.length).toBe(20);
+            expect(images.loaded.length).toBe(10);
+            expect(images.displayed.length).toBe(10);
+            images.more();
+            expect(images.loaded.length).toBe(0);
+            expect(images.displayed.length).toBe(20);
             $httpBackend.flush();
-            expect(Images.loaded.length).toBe(10);
-            expect(Images.displayed.length).toBe(20);
+            expect(images.loaded.length).toBe(10);
+            expect(images.displayed.length).toBe(20);
             $httpBackend.expectGET('/api/images?page=4').respond({});
-            Images.more();
-            expect(Images.loaded.length).toBe(0);
-            expect(Images.displayed.length).toBe(30);
+            images.more();
+            expect(images.loaded.length).toBe(0);
+            expect(images.displayed.length).toBe(30);
             $httpBackend.flush();
         });
     });
@@ -184,14 +201,14 @@ describe('Service: Images', function () {
             $httpBackend
                 .expect('GET', '/api/images?page=4')
                 .respond(mock);
-            Images.init();
-            Images.more();
-            Images.more();
+            images.init();
+            images.more();
+            images.more();
             $httpBackend.flush();
         });
         it('does not overlap the requests', function() {
-            expect(Images.loaded.length).toBe(30);
-            expect(Images.displayed.length).toBe(10);
+            expect(images.loaded.length).toBe(30);
+            expect(images.displayed.length).toBe(10);
             /* the most important part of this test is not visible
              * here, it depends on the http request expectations and
              * `afterEach` controls */

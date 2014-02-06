@@ -67,7 +67,7 @@ describe('Service: Dragdata', function () {
     });
     it('returns a whole element to be attached to the editable', function() {
       var $r = Dragdata.getDropped(data);
-      expect($r.get(0).outerHTML).toBe('<div dropped-image="" data-id="3" ng-controller="DroppedImageCtrl" ng-style="style"></div>');
+      expect($r.get(0).outerHTML).toBe('<div dropped-image="" data-id="3" ng-controller="DroppedImageCtrl" ng-style="style.container"></div>');
     });
   });
 });

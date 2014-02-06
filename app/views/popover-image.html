@@ -1,0 +1,65 @@
+<div class="popover no-arrow"
+     ng-mouseleave="$hide()"
+     >
+  <!-- all popups work on the last selected image, which is selected
+  when it is clicked. this is why it is important to hide the popover
+  when the user leaves its surface, otherwise an open popup may affect
+  an image clicked later -->
+  <div class="arrow"></div>
+  <h3 class="popover-title" ng-bind="title" ng-show="title"></h3>
+  <div class="popover-content">
+    <div
+       class="popover-markup"
+       ng-controller="DroppedImageCtrl"
+       >
+      <button
+         class="btn btn-default btn-xs small"
+         ng-click="size('small')"
+         >
+        <span class="glyphicon glyphicon-stop"></span> small
+      </button><button
+                  class="btn btn-default btn-xs medium"
+                  ng-click="size('medium')"
+                  >
+        <span class="glyphicon glyphicon-stop"></span> medium
+      </button><button
+                  class="btn btn-default btn-xs"
+                  ng-click="size('big')"
+                  >
+        <span class="glyphicon glyphicon-stop"></span> big
+      </button><button
+                  class="btn btn-default btn-xs"
+                  data-id="original"
+                  ng-click="size('original')"
+                  >
+        original
+      </button>
+      <span class="pixels"><input
+                              class="pixels"
+                              ng-model="pixels"
+                              ng-change="pixelsChanged()"
+                              type="number"
+                              onclick="event.stopPropagation()"
+                              /> px</span>
+      <button
+         class="btn btn-default btn-xs"
+         data-id="left"
+         ng-click="align('left')"
+         >
+        <span class="glyphicon glyphicon-align-left"></span>
+      </button><button
+                  class="btn btn-default btn-xs"
+                  data-id="center"
+                  ng-click="align('center')"
+                  >
+        <span class="glyphicon glyphicon-align-center"></span>
+      </button><button
+                  class="btn btn-default btn-xs"
+                  data-id="right"
+                  ng-click="align('right')"
+                  >
+        <span class="glyphicon glyphicon-align-right"></span>
+      </button>
+    </div>
+  </div>
+</div>

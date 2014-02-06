@@ -11,7 +11,7 @@
 @tabpane-background:  #f5f5f5;
 @tabpane-border:      #7c7c7c;
 @tabpane-width:       330px;
-@tabcontent-padding:  15px;
+@tabcontent-padding:  0;
 
 @main-article-color:  #ffffff;
 @main-article-border: #cacaca;
@@ -41,7 +41,7 @@ html, body.article-edit {
 .tablist {
   width:@tablist-width;
   position:fixed;
-  top:@subnav-height + @topspace + @editor-toolbar;
+  top:@subnav-height + @hostTop + @editor-toolbar;
   bottom:0;
   z-index:20;
   background: @tablist-background;
@@ -123,7 +123,7 @@ html, body.article-edit {
 .tabpane {
   position:fixed;
   width:@tabpane-width;
-  top:@subnav-height + @topspace + @editor-toolbar;
+  top:@subnav-height + @hostTop + @editor-toolbar;
   bottom:0;
   background: @tabpane-background;
   border-color:@tabpane-border;
@@ -1015,17 +1015,16 @@ button:focus {
     margin-bottom: 15px;
 
     &:before {
-      font-size: 11px;
+      font-size: 12px;
       color: #666;
       position: absolute;
       top: -10px;
       padding-right: 5px;
       background: @tabpane-background;
-      text-transform: uppercase;
     }
 
     &.media-images:before {
-      content: "Images";
+      content: "Attached Images";
     }
     &.media-videos:before {
       content: "Videos";
@@ -1068,8 +1067,8 @@ button:focus {
           float: left;
           margin-right: 10px;
           img {
-            width: 62px;
             max-width: 62px;
+            max-height: 42px;
           }
         }
         
@@ -1388,7 +1387,7 @@ button:focus {
   padding-top: 10px;
 }
 
-@hostTop: 67px; /* The system hosting the editor will need some room at the top for its own toolbar */
+@hostTop: 0px; /* The system hosting the editor will need some room at the top for its own toolbar */
 @bigButtonSidePadding: 20px; /* Side padding for some buttons in the toolbars */
 
 .authoring-environment {
@@ -1405,6 +1404,20 @@ button:focus {
   /* more selectors to increase specificity */
   .navbar-fixed-top.navbar.navbar-default {
     top: @hostTop;
+  }
+  .popover {
+      max-width: none;
+      .small .glyphicon-stop {
+          font-size: xx-small;
+      }
+      .medium .glyphicon-stop {
+          font-size: smaller
+      }
+      &.no-arrow {
+          .arrow {
+              display: none;
+          }
+      }
   }
   .sf-upper-toolbar {
     display: inline-block; /* to trigger block context */
@@ -1439,17 +1452,105 @@ button:focus {
       padding: 5px;
   }
 
+  .btn-sf-invisible {
+      background: none;
+      border: none;
+      padding: 0;
+  }
+
+  .fixed-image {
+      background: #f8f8f8;
+      border: 3px dashed #e0e0e0;
+      padding: 2%;
+      position: relative;
+      .fixed-image-dropped {
+          position: absolute;
+          top: 0;
+          right: 0;
+          width: 100%;
+          height: 100%;
+          -webkit-transition: opacity 1s ease-in-out;
+          -moz-transition: opacity 1s ease-in-out;
+          -o-transition: opacity 1s ease-in-out;
+          transition: opacity 1s ease-in-out;          
+      }
+      .fixed-image-title {
+          width: 100%;
+          background: url("../images/dragfiles.png") no-repeat 50% 0;
+          margin-top: 5%;
+          padding-top: 100px;
+          text-align: center;
+          color: #a0a0a0;
+          font-size: 24px;
+      }
+  }
   .attach-image {
       font-size: 12px;
-      
+      .web {
+          input {
+              width: 100%;
+          }
+      }
+      .computer {
+          .drag-area {
+              background: #f8f8f8;
+              border: 3px dashed #e0e0e0;
+              padding: 2%;
+          }
+          .drag-area-title {
+              width: 100%;
+              background: url("../images/dragfiles.png") no-repeat 50% 0;
+              margin-top: 5%;
+              padding-top: 100px;
+              text-align: center;
+              color: #a0a0a0;
+              font-size: 24px;
+          }
+          .drag-area-button {
+              text-align: center;
+              margin-top: 30px;
+          }
+      }
       .archive {
           max-height: 400px;
           overflow: scroll;
-          
-          .thumbnail {
+
+          .thumbnail-wrapper {
+              position: relative;
+              border-width: 1px;
+              border-style: solid;
+              border-color: #d0d0d0;
+              border-radius: 2px;
               display: inline-block;
-              max-height: 100px;
               margin: 10px;
+              .toggler {
+                  display: none;
+                  position: absolute;
+                  color: white;
+                  background: #0079cc;
+                  padding: 7px;
+                  line-height: 0;
+              }
+              .thumbnail {
+                  display: inline-block;
+                  max-height: 100px;
+                  border-color: white;
+                  border-width: 6px;
+                  margin: 0;
+                  padding: 0;
+              }
+          }
+          .thumbnail-wrapper:hover {
+              .toggler {
+                  display: inline;
+              }
+          }
+          .thumbnail-wrapper.attached, .thumbnail-wrapper:hover {
+              border-color: white;
+              .thumbnail {
+                  border-radius: 0;
+                  border-color: #0079CC;
+              }
           }
           .morer {
               height: 300px;
@@ -1460,9 +1561,49 @@ button:focus {
   }
 
   .image-panel {
-      .attach-media {
-          background: none;
-          border: none;
+      .attach-image-section {
+          overflow: hidden;
+          padding: 3% 0;
+      }
+      .images-wrapper {
+          position: relative;
+          height: 100%;
+          .media-tab {
+              position: absolute;
+              top: 0;
+              right: 0;
+              bottom: 0;
+              left: 0;
+              overflow: auto;
+              padding-top: 12px;
+              li {
+                  overflow: hidden; /* for the green attached checkmark */
+              }
+              .attach-media {
+                  background: none;
+                  border: none;
+              }
+              .detach {
+                  position: absolute;
+                  right: 3px;
+                  top: 2px;
+                  color: gainsboro;
+                  &:hover {
+                      color: gray;
+                  }
+              }
+              .attached {
+                  border-radius: 20px;
+                  display: inline;
+                  position: absolute;
+                  right: -3px;
+                  top: -4px;
+                  color: white;
+                  background: green;
+                  padding: 7px;
+                  line-height: 0;
+              }
+          }
       }
   }
 
@@ -1472,11 +1613,6 @@ button:focus {
       border: 1px solid #d0d0d0;
       resize: none;
       margin: 5px 0;
-    }
-    .btn-sf-invisible {
-      background: none;
-      border: none;
-      padding: 0;
     }
     .snippets-list-wrapper {
         position: relative;
@@ -1554,19 +1690,25 @@ button:focus {
       
       .dropped-image {
           position: relative;
+          text-align: center; /* to align the image within */
           
           .image {
               width: 100%;
           }
           .close {
               position: absolute;
-              top: 20px;
-              right: 5px;
+              top: 5%;
+              right: 5%;
               cursor: pointer;
               background: white;
               opacity: 1;
-              padding: 0 5px;
+              padding: 0.5%;
+              font-size: 120%;
               visibility: hidden;
+          }
+          .caption {
+              text-align: center;
+              padding: 2%;
           }
           &:hover {
               .image {

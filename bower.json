@@ -12,13 +12,15 @@
     "ng-aloha-editor": "https://github.com/terwey/ng-aloha-editor.git#master",
     "requirejs": "~2.1.9",
     "bootstrap": "~3.0.3",
-    "lodash": "~2.4.1"
+    "lodash": "~2.4.1",
+    "angular-strap": "~2.0.0"
   },
   "devDependencies": {
     "angular-mocks": "~1.2.0",
     "angular-scenario": "~1.2.0"
   },
   "resolutions": {
-    "angular": "1.2.4"
+    "angular": "1.2.4",
+    "ng-aloha-editor": "v0.0.2"
   }
 }

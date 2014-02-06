@@ -2,8 +2,8 @@
 
 angular.module('authoringEnvironmentApp')
   .controller('ArticleCtrl',
-              ['$scope', '$location', 'article', 'articleType', 'panes',
-               function ($scope, $location, article, articleType, panes) {
+              ['$scope', '$location', 'article', 'articleType', 'panes', 'configuration',
+               function ($scope, $location, article, articleType, panes, configuration) {
     var s, n, b, l;
       s = $location.search();
       n = s.f_article_number;
@@ -25,7 +25,12 @@ angular.module('authoringEnvironmentApp')
         articleId: n,
         language: l
     }, function(article) {
-      $scope.type = articleType.get({type: article.type});
+        $scope.type = articleType.get({type: article.type}, function() {
+            var additional = configuration.additionalFields[article.type];
+            additional.forEach(function(field) {
+                $scope.type.fields.push(field);
+            });
+      });
     });
       
       // used to filter
@@ -36,7 +41,8 @@ angular.module('authoringEnvironmentApp')
           var known = [
               'text',
               'long_text',
-              'body'
+              'body',
+              'fixed_image'
           ];
           if (known.indexOf(field.type) == -1) {
               return false;

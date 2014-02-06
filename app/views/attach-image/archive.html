@@ -2,12 +2,20 @@
    class="archive"
    ng-controller="MediaArchiveCtrl"
    >
-  <img
-     class="thumbnail"
+  <div
      ng-repeat="image in images.displayed"
-     ng-src="images/{{image.basename}}"
-     ng-click="images.attach(image.id)"
+     class="thumbnail-wrapper"
+     ng-class="{attached: images.isAttached(image.id)}"
+     ng-click="images.toggleAttach(image.id)"
      >
+    <div class="toggler">
+      <span class="glyphicon" ng-class="images.togglerClass(image.id)"></span>
+    </div>
+    <img
+       class="thumbnail"
+       ng-src="images/{{image.basename}}"
+       >
+  </div>
   <div
      class="morer"
      ng-mouseover="images.more()"

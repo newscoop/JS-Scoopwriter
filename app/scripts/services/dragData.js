@@ -58,7 +58,7 @@ angular.module('authoringEnvironmentApp')
           return $('<div dropped-image>').attr({
               'data-id': data.id,
               'ng-controller': 'DroppedImageCtrl',
-              'ng-style': 'style'
+              'ng-style': 'style.container'
           });
           break;
       case 'embed':

@@ -5,7 +5,10 @@ angular.module('authoringEnvironmentApp', [
   'ngResource',
   'ngSanitize',
   'ngRoute',
-  'ngAlohaEditor'
+  'ngAlohaEditor',
+  'mgcrea.ngStrap.helpers.dimensions',
+  'mgcrea.ngStrap.tooltip',
+  'mgcrea.ngStrap.popover'
 ])
   // devcode: !newscoop
   .constant('endpoint', 'http://tw-merge.lab.sourcefabric.org')

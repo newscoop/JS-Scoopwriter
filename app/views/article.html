@@ -11,10 +11,17 @@
     <section
        class="article-full-text"
        ng-repeat="field in editableFields = (type.fields | orderBy:'fieldWeight' | filter:editable)"
+       ng-switch on="field.type"
        >
+        <fixed-image-placeholder
+           ng-switch-when="fixed_image"
+           ng-controller="FixedImagePlaceholderCtrl"
+           >
+        </fixed-image-placeholder>
         <div
+           ng-switch-default
            ng-class="aes-{{field.name}}"
-           data-aloha-content='{{article.fields[field.name]}}'
+           data-aloha-content='article.fields[field.name]'
            aloha
            sf-droppable
            >
