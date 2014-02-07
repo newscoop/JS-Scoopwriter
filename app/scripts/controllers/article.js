@@ -2,8 +2,8 @@
 
 angular.module('authoringEnvironmentApp')
   .controller('ArticleCtrl',
-              ['$scope', '$location', 'article', 'articleType', 'panes', 'configuration',
-               function ($scope, $location, article, articleType, panes, configuration) {
+              ['$scope', '$location', 'article', 'articleType', 'panes', 'configuration', 'mode',
+               function ($scope, $location, article, articleType, panes, configuration, mode) {
     var s, n, b, l;
       s = $location.search();
       n = s.f_article_number;
@@ -20,6 +20,8 @@ angular.module('authoringEnvironmentApp')
       // devcode: newscoop
       b = ''; // plugin
       // endcode
+
+    $scope.mode = mode;
       
     $scope.article = article.get({
         articleId: n,
