@@ -552,84 +552,72 @@ html, body.article-edit {
         display:none;  
     }
 
-    .zen-mode {
+    &.zen-mode {
+        .tablist {display:none;}
+        .tabpane {display:none;}
         background: #fff;
         .navbar-fixed-top {
             display:none;
         }
-        .main-background-container {
-            background:#fff;
-            .subnav-fixed {
-                display:none;
+        .zen-buttons {
+            position: fixed;
+            display: block;
+            right: 5px;
+            top: 5px;
+            z-index: 100;
+            .zen-close {
+                padding: 0 9px;
             }
-            .editor-toolbar {
-                top:0;
-                .navbar-fixed-top {
-                    display: block;
-                }
-                .toolbar .btn {
-                    padding: 4px 10px;
-                    background: none !important;
-                    border: 0;
-                    .box-shadow(none);
-                    &.active {
-                        background:#fff !important;
-                    }
-                }
-            }
-            .tablist {
-                display:none;
-            }
-            .tabpane {
-                display:none;
-            }
-            .scratchpad {
-                display:none !important;
-            }
-            .main-article-container {
-                border:0;
-                padding-top:20px;
-            }
-            .zen-buttons {
-                position: fixed;
+        }
+        .subnav-fixed {
+            display:none;
+        }
+        .editor-toolbar {
+            top:0;
+            .navbar-fixed-top {
                 display: block;
-                right: 5px;
-                top: 5px;
-                z-index: 100;
-                .zen-close {
-                    border:0;
-                    background:none;
-                    .box-shadow(none);
-                    margin-top:3px;
+            }
+            .toolbar .btn {
+                padding: 4px 10px;
+                background: none !important;
+                border: 0;
+                .box-shadow(none);
+                &.active {
+                    background:#fff !important;
                 }
             }
+        }
+        .scratchpad {
+            display:none !important;
+        }
+        .main-article-container {
+            border:0;
+            padding-top:20px;
+        }
 
-            .switch-article-view {
-                top:3px;
-                left: 3px !important;
-                z-index:100;
-                .switch-view-tabs {
+        .switch-article-view {
+            top:3px;
+            left: 3px !important;
+            z-index:100;
+            .switch-view-tabs {
+                border:0;
+                .border-radius(0px);
+                li {
                     border:0;
                     .border-radius(0px);
-                    li {
-                        border:0;
-                        .border-radius(0px);
-                        float:left;
-                        .opacity(10);
-                        &:hover {
-                            background-color:#fff;
-                            .opacity(30);
-                        }
-                        &.active-view {
-                            background-color:transparent;
-                            .opacity(100);
-                        }
+                    float:left;
+                    .opacity(10);
+                    &:hover {
+                        background-color:#fff;
+                        .opacity(30);
+                    }
+                    &.active-view {
+                        background-color:transparent;
+                        .opacity(100);
                     }
                 }
             }
-
         }
-        
     }
 
 

@@ -4,6 +4,18 @@
    ng-controller="ArticleCtrl"
    ng-class="{'shrink-left': panes.layout.left, 'shrink-right': panes.layout.right}"
    >
+  <div class="zen-buttons">
+    <button class="btn btn-primary">
+      Save
+    </button>
+    <button
+       class="btn btn-sf-invisible zen-close"
+       id="test-go-normal"
+       ng-click="mode.goNormal()"
+       >
+      <span class="glyphicon glyphicon-remove"></span>
+    </button>
+  </div>
     <section class="article-date">
         <p>{{article.published | date}}</p>
     </section>
