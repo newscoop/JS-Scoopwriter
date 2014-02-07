@@ -27,4 +27,10 @@ describe('Controller: ArticleCtrl', function () {
     it('initialises', function () {
         expect(!!ArticleCtrl).toBe(true);
     });
+    it('proxies platform', function() {
+        expect(scope.platform).toBeDefined();
+    });
+    it('proxies panes', function() {
+        expect(scope.panes).toBeDefined();
+    });
 });

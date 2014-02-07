@@ -28,6 +28,9 @@ describe('Service: panes', function () {
         right: false
       });
     });
+    it('should tell the article class', function() {
+      expect(p.articleClass).toEqual('shrink-left ');
+    });
     describe('activated a pane on the opposite side', function() {
       beforeEach(function() {
         panes.active(p[0]);
@@ -38,6 +41,10 @@ describe('Service: panes', function () {
           left: true
         });
       });
+        it('should tell the article class', function() {
+            expect(p.articleClass).toMatch('shrink-right');
+            expect(p.articleClass).toMatch('shrink-left');
+        });
     });
   });
 });
