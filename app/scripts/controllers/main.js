@@ -1,12 +1,13 @@
 'use strict';
 
 angular.module('authoringEnvironmentApp')
-  .controller('MainCtrl', ['token', '$scope', '$window', 'mode', function (token, $scope, $window, mode) {
-    token.get().$promise.then(function(data) {
-        $window.sessionStorage.token = data.access_token;
-    });
-    $scope.$on('$viewContentLoaded', function(){
-        jQuery('#cs-specific').prependTo('.main-background-container');
-    });
-    $scope.mode = mode;
-  }]);
+    .controller('MainCtrl', ['$scope', '$window', 'mode', function ($scope, $window, mode) {
+        if('token' in $window.sessionStorage) {
+            $scope.$on('$viewContentLoaded', function(){
+                jQuery('#cs-specific').prependTo('.main-background-container');
+            });
+            $scope.mode = mode;
+        } else {
+            $window.location.href = 'http://tw-merge.lab.sourcefabric.org/oauth/v2/auth?client_id=3_uutz7mlvof4kc4wckcgcs4wg8oosgwg8gg4cg0wkkk0cc0w0k&redirect_uri=http%3A%2F%2Flocalhost:9000&response_type=token';
+        }
+    }]);

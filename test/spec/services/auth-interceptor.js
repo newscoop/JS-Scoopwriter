@@ -6,13 +6,13 @@ describe('Service: AuthInterceptor', function () {
   beforeEach(module('authoringEnvironmentApp'));
 
   // instantiate service
-  var AuthInterceptor;
+  var authInterceptor;
   beforeEach(inject(function (_authInterceptor_) {
-    AuthInterceptor = _authInterceptor_;
+    authInterceptor = _authInterceptor_;
   }));
 
   it('should do something', function () {
-    expect(!!AuthInterceptor).toBe(true);
+    expect(!!authInterceptor).toBe(true);
   });
 
 });

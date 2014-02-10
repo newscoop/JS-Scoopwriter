@@ -23,7 +23,8 @@ angular.module('authoringEnvironmentApp', [
         controller: 'MainCtrl'
       })
       .otherwise({
-        redirectTo: '/'
+        templateUrl: 'views/authentication.html',
+          controller: 'AuthenticationCtrl'
       });
     $httpProvider.interceptors.push('authInterceptor');
   }]);
