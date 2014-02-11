@@ -16,7 +16,15 @@ describe('Controller: ArticleCtrl', function () {
     beforeEach(inject(function ($controller, $rootScope, _$httpBackend_) {
         scope = $rootScope.$new();
         ArticleCtrl = $controller('ArticleCtrl', {
-            $scope: scope
+            $scope: scope,
+            $location: {
+                search: function() {
+                    return {
+                        article_number: 64,
+                        language_id: 'de'
+                    };
+                }
+            }
         });
         $httpBackend = _$httpBackend_;
         $httpBackend.whenGET(/\/content-api\/articles\/[\d]/).respond(article);

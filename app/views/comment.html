@@ -1,0 +1,36 @@
+<div
+   class="root {{model.showStatus}} comment-{{model.status}}"
+   >
+  <input type="checkbox" ng-model="model.selected" />
+  <div class="right">
+    <div class="image-and-author-details">
+      <!--img class="author" ng-src="model.image" /-->
+      <div class="date-and-name">
+        <div class="date" ng-bind="model.created | date: 'dd.M.yyyy'"></div>
+        <div
+           ng-bind="model.author"
+           ng-click="model.toggle()"
+           ></div>
+      </div>
+      <span class="label label-default" ng-bind="model.status"></span>
+    </div>
+    <div
+       class="subject"
+       ng-bind="model.subject"
+       ng-click="model.toggle()"
+       ></div>
+    <div ng-bind="model.message" class="comment"></div>
+  </div>
+  <div class="controls">
+    <span class="glyphicon glyphicon-chevron-up"
+          ng-click="model.collapse()"
+          ></span>
+    <span class="glyphicon glyphicon-pencil"></span>
+    <span class="glyphicon glyphicon-share-alt"></span>
+    <span class="glyphicon glyphicon-thumbs-up"></span>
+    <span class="glyphicon glyphicon-trash"
+          ng-click="model.remove()"
+          ></span>
+  </div>
+</div>
+

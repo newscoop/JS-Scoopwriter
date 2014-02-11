@@ -6,7 +6,7 @@ angular.module('authoringEnvironmentApp')
         // AngularJS will instantiate a singleton by calling "new" on this function
         var service = this;
         var root = configuration.API.full;
-        this.article = article;
+        this.article = article.instance;
         this.tracker = pageTracker.getTracker({max: 100});
         this.loaded = [];
         this.displayed = [];

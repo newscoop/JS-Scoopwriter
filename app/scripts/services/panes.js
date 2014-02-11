@@ -26,6 +26,13 @@ angular.module('authoringEnvironmentApp')
         position: 'left',
         active: false,
         selected: true
+    }, {
+        name: 'Comments',
+        icon:'comments',
+        template: 'views/pane-comments.html',
+        position: 'left',
+        active: false,
+        selected: true
     }];
 
     panes.layout = {
