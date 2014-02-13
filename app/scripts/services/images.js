@@ -1,11 +1,12 @@
 'use strict';
 
 angular.module('authoringEnvironmentApp')
-    .service('images', ['$http', 'pageTracker', 'configuration', '$log', function images($http, pageTracker, configuration, $log) {
+    .service('images', ['$http', 'pageTracker', 'configuration', '$log', 'article', function images($http, pageTracker, configuration, $log, article) {
         /* more info about the page tracker in its tests */
         // AngularJS will instantiate a singleton by calling "new" on this function
         var service = this;
         var root = configuration.API.full;
+        this.article = article;
         this.tracker = pageTracker.getTracker({max: 100});
         this.loaded = [];
         this.displayed = [];
@@ -53,7 +54,7 @@ angular.module('authoringEnvironmentApp')
                 // already attached, do nothing
                 return;
             } else {
-                var url = root+'/articles/64';
+                var url = root+'/articles/' + service.article.number;
                 var link = '<'+root+'/images/'+id+'>';
                 /* this could cause some troubles depending on the
                  * setting of the server (OPTIONS request), thus debug
@@ -79,7 +80,7 @@ angular.module('authoringEnvironmentApp')
         this.detach = function(id) {
             var match = this.matchMaker(id);
             if (_.find(this.attached, match)) {
-                var url = root+'/articles/64';
+                var url = root+'/articles/' + service.article.number;
                 var link = '<'+root+'/images/'+id+'>';
                 /* this could cause some troubles depending on the
                  * setting of the server (OPTIONS request), thus debug
