@@ -10,12 +10,6 @@ angular.module('authoringEnvironmentApp', [
   'mgcrea.ngStrap.tooltip',
   'mgcrea.ngStrap.popover'
 ])
-  // devcode: !newscoop
-  .constant('endpoint', 'http://tw-merge.lab.sourcefabric.org/content-api')
-  // endcode
-  // devcode: newscoop
-  .constant('endpoint', '')
-  // endcode
   .config(['$routeProvider', '$httpProvider', function ($routeProvider, $httpProvider) {
     $routeProvider
       .when('/', {

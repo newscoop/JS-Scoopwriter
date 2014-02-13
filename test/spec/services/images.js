@@ -46,7 +46,7 @@ describe('Service: Images', function () {
             }
         ],
         "pagination":{
-            "itemsPerPage":10,
+            "itemsPerPage":500,
             "currentPage":1,
             "itemsCount":149735,
             "nextPageLink":"https:\/\/tw-merge.lab.sourcefabric.org\/content-api\/images?page=2&items_per_page=10"
@@ -83,10 +83,10 @@ describe('Service: Images', function () {
     describe('after initialization', function() {
         beforeEach(function() {
             $httpBackend
-                .expect('GET', e+'/images?page=1')
+                .expect('GET', e+'/images?items_per_page=500&page=1')
                 .respond(mock);
             $httpBackend
-                .expect('GET', e+'/images?page=2')
+                .expect('GET', e+'/images?items_per_page=500&page=2')
                 .respond(mock);
             images.init();
             $httpBackend.flush(1);
@@ -181,7 +181,7 @@ describe('Service: Images', function () {
         it('handles the loaded buffer properly', function() {
             $httpBackend.flush();
             $httpBackend
-                .expect('GET', e+'/images?page=3')
+                .expect('GET', e+'/images?items_per_page=500&page=3')
                 .respond(mock);
             expect(images.loaded.length).toBe(10);
             expect(images.displayed.length).toBe(10);
@@ -191,7 +191,7 @@ describe('Service: Images', function () {
             $httpBackend.flush();
             expect(images.loaded.length).toBe(10);
             expect(images.displayed.length).toBe(20);
-            $httpBackend.expectGET(e+'/images?page=4').respond({});
+            $httpBackend.expectGET(e+'/images?items_per_page=500&page=4').respond({});
             images.more();
             expect(images.loaded.length).toBe(0);
             expect(images.displayed.length).toBe(30);
@@ -201,16 +201,16 @@ describe('Service: Images', function () {
     describe('after loading pages successively', function() {
         beforeEach(function() {
             $httpBackend
-                .expect('GET', e+'/images?page=1')
+                .expect('GET', e+'/images?items_per_page=500&page=1')
                 .respond(mock);
             $httpBackend
-                .expect('GET', e+'/images?page=2')
+                .expect('GET', e+'/images?items_per_page=500&page=2')
                 .respond(mock);
             $httpBackend
-                .expect('GET', e+'/images?page=3')
+                .expect('GET', e+'/images?items_per_page=500&page=3')
                 .respond(mock);
             $httpBackend
-                .expect('GET', e+'/images?page=4')
+                .expect('GET', e+'/images?items_per_page=500&page=4')
                 .respond(mock);
             images.init();
             images.more();

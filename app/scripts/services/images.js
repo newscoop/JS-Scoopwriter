@@ -1,10 +1,11 @@
 'use strict';
 
 angular.module('authoringEnvironmentApp')
-    .service('images', ['$http', 'pageTracker', 'configuration', 'endpoint', '$log', function images($http, pageTracker, configuration, endpoint, $log) {
+    .service('images', ['$http', 'pageTracker', 'configuration', '$log', function images($http, pageTracker, configuration, $log) {
         /* more info about the page tracker in its tests */
         // AngularJS will instantiate a singleton by calling "new" on this function
         var service = this;
+        var root = configuration.API.full;
         this.tracker = pageTracker.getTracker({max: 100});
         this.loaded = [];
         this.displayed = [];
@@ -32,7 +33,7 @@ angular.module('authoringEnvironmentApp')
                 })
         };
         this.load = function(page) {
-            var url = endpoint + '/images?items_per_page=500&page=' + page;
+            var url = root + '/images?items_per_page=500&page=' + page;
             var promise = $http.get(url);
             promise.error(function() {
                 service.tracker.remove(page);
@@ -52,8 +53,8 @@ angular.module('authoringEnvironmentApp')
                 // already attached, do nothing
                 return;
             } else {
-                var url = endpoint+'/articles/64';
-                var link = '<'+endpoint+'/images/'+id+'>';
+                var url = root+'/articles/64';
+                var link = '<'+root+'/images/'+id+'>';
                 /* this could cause some troubles depending on the
                  * setting of the server (OPTIONS request), thus debug
                  * log may be useful to reproduce the original
@@ -78,8 +79,8 @@ angular.module('authoringEnvironmentApp')
         this.detach = function(id) {
             var match = this.matchMaker(id);
             if (_.find(this.attached, match)) {
-                var url = endpoint+'/articles/64';
-                var link = '<'+endpoint+'/images/'+id+'>';
+                var url = root+'/articles/64';
+                var link = '<'+root+'/images/'+id+'>';
                 /* this could cause some troubles depending on the
                  * setting of the server (OPTIONS request), thus debug
                  * log may be useful to reproduce the original
@@ -139,7 +140,7 @@ angular.module('authoringEnvironmentApp')
             this.attached.forEach(function(a) {
                 if (a.incomplete) {
                     $http
-                        .get(endpoint + '/images/' + a.id)
+                        .get(root + '/images/' + a.id)
                         .success(function(data) {
                             _.forOwn(data, function(value, key) {
                                 if (!(key in a)) {
