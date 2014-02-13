@@ -73,6 +73,7 @@ describe('Service: Images', function () {
     var images, $httpBackend;
     beforeEach(inject(function (_images_, _$httpBackend_) {
         images = _images_;
+        images.article = {number: 64};
         $httpBackend = _$httpBackend_;
     }));
     afterEach(function() {
