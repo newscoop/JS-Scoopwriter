@@ -32,7 +32,7 @@ angular.module('authoringEnvironmentApp')
                 })
         };
         this.load = function(page) {
-            var url = endpoint + '/images?page=' + page;
+            var url = endpoint + '/images?items_per_page=500&page=' + page;
             var promise = $http.get(url);
             promise.error(function() {
                 service.tracker.remove(page);
