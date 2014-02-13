@@ -1,12 +1,24 @@
 'use strict';
 
 angular.module('authoringEnvironmentApp')
-  .controller('MainCtrl', ['token', '$scope', '$window', 'mode', function (token, $scope, $window, mode) {
-    token.get().$promise.then(function(data) {
-        $window.sessionStorage.token = data.access_token;
-    });
-    $scope.$on('$viewContentLoaded', function(){
-        jQuery('#cs-specific').prependTo('.main-background-container');
-    });
-    $scope.mode = mode;
-  }]);
+    .controller('MainCtrl', ['$scope', '$window', 'mode', 'configuration', function ($scope, $window, mode, configuration) {
+        if('token' in $window.sessionStorage) {
+            $scope.$on('$viewContentLoaded', function(){
+                jQuery('#cs-specific').prependTo('.main-background-container');
+            });
+            $scope.mode = mode;
+        } else {
+            var pars = {
+                client_id: configuration.auth.client_id,
+                redirect_uri: configuration.auth.redirect_uri,
+                response_type: 'token'
+            };
+            var arr = [];
+            var e = encodeURIComponent;
+            angular.forEach(pars, function(value, key) {
+                arr.push(e(key) + '=' + e(value));
+            });
+            var href = configuration.auth.server + arr.join('&');
+            $window.location.href = href;
+        }
+    }]);

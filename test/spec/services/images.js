@@ -1,6 +1,7 @@
 'use strict';
 
 describe('Service: Images', function () {
+    var e = 'http://tw-merge.lab.sourcefabric.org/content-api';
     var mock = {
         "items":[
             {
@@ -45,10 +46,10 @@ describe('Service: Images', function () {
             }
         ],
         "pagination":{
-            "itemsPerPage":10,
+            "itemsPerPage":500,
             "currentPage":1,
             "itemsCount":149735,
-            "nextPageLink":"https:\/\/tw-merge.lab.sourcefabric.org\/api\/images?page=2&items_per_page=10"
+            "nextPageLink":"https:\/\/tw-merge.lab.sourcefabric.org\/content-api\/images?page=2&items_per_page=10"
         }
     };
     var mockSingle = {
@@ -82,10 +83,10 @@ describe('Service: Images', function () {
     describe('after initialization', function() {
         beforeEach(function() {
             $httpBackend
-                .expect('GET', '/api/images?page=1')
+                .expect('GET', e+'/images?items_per_page=500&page=1')
                 .respond(mock);
             $httpBackend
-                .expect('GET', '/api/images?page=2')
+                .expect('GET', e+'/images?items_per_page=500&page=2')
                 .respond(mock);
             images.init();
             $httpBackend.flush(1);
@@ -103,7 +104,10 @@ describe('Service: Images', function () {
         describe('image attached to the article', function() {
             beforeEach(function() {
                 $httpBackend
-                    .expect('GET', '/api/images/3')
+                    .expect('LINK', e+'/articles/64')
+                    .respond({});
+                $httpBackend
+                    .expect('GET', e+'/images/3')
                     .respond(mockSingle);
                 expect(images.attached.length).toBe(0);
                 images.toggleAttach(3);
@@ -119,11 +123,14 @@ describe('Service: Images', function () {
             });
             it('attaches others', function() {
                 $httpBackend
-                    .expect('GET', '/api/images/4')
+                    .expect('LINK', e+'/articles/64')
+                    .respond({});
+                $httpBackend
+                    .expect('GET', e+'/images/4')
                     .respond(mockSingle);
                 images.toggleAttach(4);
-                expect(images.attached.length).toBe(2);
                 $httpBackend.flush();
+                expect(images.attached.length).toBe(2);
             });
             it('gets an image by id', function() {
                 var image = images.byId(3);
@@ -135,7 +142,11 @@ describe('Service: Images', function () {
             });
             describe('same image detached', function() {
                 beforeEach(function() {
+                    $httpBackend
+                        .expect('UNLINK', e+'/articles/64')
+                        .respond({});
                     images.toggleAttach(3);
+                    $httpBackend.flush();
                 });
                 it('detaches the image', function() {
                     expect(images.isAttached(3)).toBe(false);
@@ -170,7 +181,7 @@ describe('Service: Images', function () {
         it('handles the loaded buffer properly', function() {
             $httpBackend.flush();
             $httpBackend
-                .expect('GET', '/api/images?page=3')
+                .expect('GET', e+'/images?items_per_page=500&page=3')
                 .respond(mock);
             expect(images.loaded.length).toBe(10);
             expect(images.displayed.length).toBe(10);
@@ -180,7 +191,7 @@ describe('Service: Images', function () {
             $httpBackend.flush();
             expect(images.loaded.length).toBe(10);
             expect(images.displayed.length).toBe(20);
-            $httpBackend.expectGET('/api/images?page=4').respond({});
+            $httpBackend.expectGET(e+'/images?items_per_page=500&page=4').respond({});
             images.more();
             expect(images.loaded.length).toBe(0);
             expect(images.displayed.length).toBe(30);
@@ -190,16 +201,16 @@ describe('Service: Images', function () {
     describe('after loading pages successively', function() {
         beforeEach(function() {
             $httpBackend
-                .expect('GET', '/api/images?page=1')
+                .expect('GET', e+'/images?items_per_page=500&page=1')
                 .respond(mock);
             $httpBackend
-                .expect('GET', '/api/images?page=2')
+                .expect('GET', e+'/images?items_per_page=500&page=2')
                 .respond(mock);
             $httpBackend
-                .expect('GET', '/api/images?page=3')
+                .expect('GET', e+'/images?items_per_page=500&page=3')
                 .respond(mock);
             $httpBackend
-                .expect('GET', '/api/images?page=4')
+                .expect('GET', e+'/images?items_per_page=500&page=4')
                 .respond(mock);
             images.init();
             images.more();

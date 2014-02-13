@@ -2,8 +2,8 @@
 
 angular.module('authoringEnvironmentApp')
     .controller('ImagePaneCtrl',
-                ['$scope', 'images', 'modal', 'article', 'articleType', '$location',
-                 function ($scope, images, modal, article, articleType, $location) {
+                ['$scope', 'images', 'modal', 'article', 'articleType', '$location', 'configuration',
+                 function ($scope, images, modal, article, articleType, $location, conf) {
                      $scope.images = images;
                      $scope.attachModal = function() {
                          modal.show({
@@ -12,4 +12,5 @@ angular.module('authoringEnvironmentApp')
                          });
                      };
                      $scope.defaultWidth = '100%';
+                     $scope.root = conf.API.rootURI;
                  }]);
