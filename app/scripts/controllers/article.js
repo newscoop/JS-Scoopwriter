@@ -2,8 +2,8 @@
 
 angular.module('authoringEnvironmentApp')
   .controller('ArticleCtrl',
-              ['$scope', '$location', 'article', 'articleType', 'panes', 'configuration', 'mode',
-               function ($scope, $location, article, articleType, panes, configuration, mode) {
+              ['$scope', '$location', 'article', 'articleType', 'panes', 'configuration', 'mode', 'platform',
+               function ($scope, $location, article, articleType, panes, configuration, mode, platform) {
     var s, n, b, l;
       s = $location.search();
       n = s.f_article_number;
@@ -53,5 +53,6 @@ angular.module('authoringEnvironmentApp')
       };
 
   $scope.panes = panes.query();
+  $scope.platform = platform;
 
   }]);

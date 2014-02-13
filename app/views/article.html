@@ -2,7 +2,7 @@
    class="main-article-container"
    id="main-article"
    ng-controller="ArticleCtrl"
-   ng-class="{'shrink-left': panes.layout.left, 'shrink-right': panes.layout.right}"
+   ng-class="[panes.articleClass, platform.current]"
    >
   <div class="zen-buttons">
     <button class="btn btn-primary">
@@ -15,6 +15,25 @@
        >
       <span class="glyphicon glyphicon-remove"></span>
     </button>
+  </div>
+  <div
+     class="switch-article-view"
+     id="switch_article_view"
+     >
+    <ul class="switch-view-tabs">
+      <li target-view="desktop"
+          ng-click="platform.go.desktop()"
+          ng-class="{'active-view': platform.current=='desktop'}"
+          ></li>
+      <li target-view="tablet"
+          ng-click="platform.go.tablet()"
+          ng-class="{'active-view': platform.current=='tablet'}"
+          ></li>
+      <li target-view="mobile"
+          ng-click="platform.go.mobile()"
+          ng-class="{'active-view': platform.current=='mobile'}"
+          ></li>
+    </ul>
   </div>
     <section class="article-date">
         <p>{{article.published | date}}</p>

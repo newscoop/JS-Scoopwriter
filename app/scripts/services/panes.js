@@ -33,6 +33,18 @@ angular.module('authoringEnvironmentApp')
       left: false
     };
 
+    panes.articleClass = '';
+      
+    function classFromLayout(layout) {
+        var c = '';
+        angular.forEach(layout, function(value, key) {
+            if (value) {
+                c += 'shrink-'+key+' ';
+            }
+        });
+        return c;
+    };
+
     // Public API here
     return {
       query: function () {
@@ -49,6 +61,7 @@ angular.module('authoringEnvironmentApp')
           }
         });
         panes.layout = this.layout();
+        panes.articleClass = classFromLayout(panes.layout);
       },
       layout: function () {
         var l = $filter('filter')(panes, {
