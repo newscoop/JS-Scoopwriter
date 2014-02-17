@@ -1,7 +1,8 @@
 'use strict';
 
 angular.module('authoringEnvironmentApp')
-    .controller('FixedImagePlaceholderCtrl', ['$scope', 'images', function ($scope, images) {
+    .controller('FixedImagePlaceholderCtrl', ['$scope', 'images', 'configuration', function ($scope, images, configuration) {
+	$scope.root = configuration.API.rootURI;
         $scope.style = {
             opacity: 0
         };
