@@ -57,8 +57,8 @@ angular.module('authoringEnvironmentApp')
             return deferred.promise;
         };
         this.matchMaker = function(id) {
-            return function(noodle) {
-                return parseInt(noodle.id) == parseInt(id);
+            return function(needle) {
+                return parseInt(needle.id) == parseInt(id);
             };
         };
 

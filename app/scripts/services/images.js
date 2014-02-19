@@ -44,8 +44,8 @@ angular.module('authoringEnvironmentApp')
         // produce a matching function suitable for finding. find it
         // confusing? hey that's functional programming dude!
         this.matchMaker = function(id) {
-            return function(noodle) {
-                return parseInt(noodle.id) == parseInt(id);
+            return function(needle) {
+                return parseInt(needle.id) == parseInt(id);
             };
         };
         this.attach = function(id) {
