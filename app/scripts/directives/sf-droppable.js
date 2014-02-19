@@ -25,6 +25,7 @@ angular.module('authoringEnvironmentApp')
           })
           .on('drop', sel, function(e) {  
             e.preventDefault(); // to prevent browser element appending
+            e.stopPropagation();
             var target = $(e.target);
             var dropped = Dragdata
               .getDropped(e.originalEvent.dataTransfer.getData('Text'));

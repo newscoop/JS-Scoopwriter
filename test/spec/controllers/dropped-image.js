@@ -34,9 +34,16 @@ describe('Controller: DroppedImageCtrl', function () {
         DroppedImageCtrl = $controller('DroppedImageCtrl', {
             $scope: scope,
             images: images,
-            configuration: {image:{width:{
-                small: '20%'
-            }}}
+            configuration: {
+                API: {
+                    rootURI: 'root'
+                },
+                image: {
+                    width: {
+                        small: '20%'
+                    }
+                }
+            }
         });
     }));
 

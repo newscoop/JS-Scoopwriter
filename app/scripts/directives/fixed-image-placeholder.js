@@ -7,6 +7,7 @@ angular.module('authoringEnvironmentApp')
             restrict: 'E',
             link: function postLink(scope, element, attrs) {
                 element.on('drop', function(e) {
+                    e.preventDefault();
                     var data = e.originalEvent.dataTransfer.getData('Text');
                     scope.onDrop(data);
                 });

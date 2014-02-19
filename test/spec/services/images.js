@@ -73,7 +73,7 @@ describe('Service: Images', function () {
     var images, $httpBackend;
     beforeEach(inject(function (_images_, _$httpBackend_) {
         images = _images_;
-        images.article = {number: 64};
+        images.article = { number: 64, language: 'de'};
         $httpBackend = _$httpBackend_;
     }));
     afterEach(function() {
@@ -105,7 +105,7 @@ describe('Service: Images', function () {
         describe('image attached to the article', function() {
             beforeEach(function() {
                 $httpBackend
-                    .expect('LINK', e+'/articles/64')
+                    .expect('LINK', e+'/articles/64/de')
                     .respond({});
                 $httpBackend
                     .expect('GET', e+'/images/3')
@@ -124,7 +124,7 @@ describe('Service: Images', function () {
             });
             it('attaches others', function() {
                 $httpBackend
-                    .expect('LINK', e+'/articles/64')
+                    .expect('LINK', e+'/articles/64/de')
                     .respond({});
                 $httpBackend
                     .expect('GET', e+'/images/4')
@@ -144,7 +144,7 @@ describe('Service: Images', function () {
             describe('same image detached', function() {
                 beforeEach(function() {
                     $httpBackend
-                        .expect('UNLINK', e+'/articles/64')
+                        .expect('UNLINK', e+'/articles/64/de')
                         .respond({});
                     images.toggleAttach(3);
                     $httpBackend.flush();
