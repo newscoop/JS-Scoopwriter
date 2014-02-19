@@ -19,8 +19,8 @@ describe('the snippets panel', function() {
         it('selects the archive source by default', function() {
             expect(element(by.css('.attach-image .archive')).isDisplayed())
                 .toBe(true);
-        });
-        /*
+        }); 
+        /* These tests have become obsolete with time, they should be updated
         describe('image attached', function() {
             beforeEach(function() {
                 element(by.css('.thumbnail')).click();
