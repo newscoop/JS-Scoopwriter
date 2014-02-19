@@ -5,6 +5,7 @@ angular.module('authoringEnvironmentApp')
       'DroppedImageCtrl',
       ['images', '$scope', '$log', 'configuration',
        function (images, $scope, $log, configuration) {
+	   $scope.root = configuration.API.rootURI;
            $scope.images = images;
            $scope.pixels = '';
            $scope.change = function(e) {
