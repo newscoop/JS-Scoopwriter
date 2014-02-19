@@ -1,41 +1,27 @@
 'use strict';
 
 angular.module('authoringEnvironmentApp')
-  .controller('ArticleCtrl',
-              ['$scope', '$location', 'article', 'articleType', 'panes', 'configuration', 'mode', 'platform',
-               function ($scope, $location, article, articleType, panes, configuration, mode, platform) {
-    var s, n, b, l;
-      s = $location.search();
-      n = s.f_article_number;
-      //l = s.f_language_id;
-      // devcode: !newscoop
-      if (n === undefined) {
-        n = 64;
-      }
-      /*if (l === undefined) {
-        l = 'en';
-      }*/
-      //article.language = l;
-      article.number = n;
-      b = 'http://tw-merge.lab.sourcefabric.org'; // standalone
-      // endcode
-      // devcode: newscoop
-      b = ''; // plugin
-      // endcode
+  .controller('ArticleCtrl', ['$scope', '$location', 'article', 'articleType', 'panes', 'configuration', 'mode', 'platform', function ($scope, $location, article, articleType, panes, configuration, mode, platform) {
 
-    $scope.mode = mode;
+      var search = $location.search();
+      var n = search.article_number;
+      var l = search.language_id;
+
+      $scope.mode = mode;
       
-    $scope.article = article.get({
-        articleId: n,
-        language: l
-    }, function(article) {
-        $scope.type = articleType.get({type: article.type}, function() {
-            var additional = configuration.additionalFields[article.type];
-            additional.forEach(function(field) {
-                $scope.type.fields.push(field);
-            });
+      article.init({
+          articleId: n,
+          language: l
       });
-    });
+      article.promise.then(function(article) {
+          $scope.article = article;
+          $scope.type = articleType.get({type: article.type}, function() {
+              var additional = configuration.additionalFields[article.type];
+              additional.forEach(function(field) {
+                  $scope.type.fields.push(field);
+              });
+          });
+      });
       
       // used to filter
       $scope.editable = function(field) {

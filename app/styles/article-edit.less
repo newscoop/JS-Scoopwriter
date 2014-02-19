@@ -33,6 +33,9 @@ html, body.article-edit {
 .aloha-ui-toolbar {display:none !important;}
 .aloha-sidebar-bar {display:none !important;}
 
+@approved-comment-green: #009933;
+@new-comment-blue: #0066ff;
+
 .authoring-environment {
 
     .main-article-title {
@@ -125,6 +128,73 @@ html, body.article-edit {
         }
     }
 
+    comment {
+        display: block;
+        .root {
+            border-left: solid 3px gray;
+            border-bottom: solid 1px gainsboro;
+            padding: 10px;
+            margin: 1px;
+            &.comment-new {
+                border-left-color: @new-comment-blue;
+                .label {
+                    background: @new-comment-blue;
+                }
+            };
+            &.comment-approved {
+                border-left-color: @approved-comment-green;
+                .label {
+                    background: @approved-comment-green;
+                }
+            };
+            height: 100%;
+            input[type="checkbox"] {
+                float: left;
+                height: 100%;
+                width: 22px;
+            }
+            .right {
+                position: relative;
+                height: 100%;
+                margin-left: 25px;
+                .author {
+                    float: left;
+                }
+                .date-and-name {
+                    color: rgb(185, 185, 185);
+                    display: inline-block;
+                }
+                .label {
+                    position: absolute;
+                    top: 5px;
+                    right: 5px;
+                }
+            }
+            .controls {
+                .glyphicon-chevron-up {
+                    float: left;
+                }
+                text-align: right;
+            }
+        }
+        .collapsed {
+            .comment, .label, .date, .controls, .author {
+                display: none;
+            }
+            .image-and-author-details, .subject {
+                display: inline;
+            }
+        }
+        .expanded {
+            .subject {
+                font-weight: 500;
+            }
+            .comment {
+                font-size: small;
+            }
+        }
+    }
+
     .tabpane {
         position:fixed;
         width:@tabpane-width;
@@ -156,7 +226,7 @@ html, body.article-edit {
         .tabcontent {
             display:block;
             padding:@tabcontent-padding;
-            padding-bottom: @tabcontent-padding + 30px; //because of scratchpad
+            //padding-bottom: @tabcontent-padding + 30px; //because of scratchpad
         }
     }
 
@@ -1596,26 +1666,58 @@ html, body.article-edit {
         }
     }
 
+    /* how to make a div vertically scrollable if the height is variable?
+       this is not so easy, and thus we decided that the only way is
+       javascript. these classes provide the relevant stop points for
+       expanding sections in the several panels */
+    .comments-panel {
+        @panel-height: 191px;
+        .add-element.expanded {
+            height: @panel-height;
+        }
+        .list {
+            right: @pane-padding;
+            bottom: @pane-padding;
+            left: @pane-padding;
+        }
+        .list.high {
+            top: 100px;
+        }
+        .list.low {
+            top: @panel-height + 75px;
+        }
+    }
     .embed-panel {
+        .add-element.expanded {
+            height: 250px;
+        }
+        .list {
+            right: @pane-padding;
+            bottom: @pane-padding;
+            left: @pane-padding;
+            &.high {
+                top: 100px;
+            }
+            &.low {
+                top: 325px;
+            }
+        }
+    }
+    /* end of the javascript scroll part */
+
+    .embed-panel, .comments-panel {
         .editor-input {
             width: 100%;
             border: 1px solid #d0d0d0;
             resize: none;
             margin: 5px 0;
         }
-        .snippets-list-wrapper {
-            position: relative;
-            height: 100%;
-            .snippets-list {
-                overflow: auto;
-                position: absolute;
-                top: 0;
-                right: 0;
-                bottom: 0;
-                left: 0;
-            }
+        .list {
+            overflow: auto;
+            position: absolute;
         }
-        .add-snippet {
+        .add-element {
+            overflow: auto;
             background-color: #ebebeb;
             margin: 10px 0;
             .heading {

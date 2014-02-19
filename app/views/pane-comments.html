@@ -1,0 +1,71 @@
+<section class="tabcontent comments-panel" ng-controller="CommentsCtrl">
+  <div class="panel-title">
+    Comments
+  </div>
+  <div class="add-element" ng-class="{expanded: adding}">
+    <div class="heading">
+      <button
+         class="btn btn-sf-invisible"
+         data-test-button="add"
+         ng-click="adding = true"
+         ng-hide="adding"
+         >
+        <span class="glyphicon glyphicon-plus"></span><span class="add-text">POST A COMMENT</span>
+      </button>
+      <button
+         class="btn btn-sf-invisible"
+         ng-click="adding = false"
+         ng-show="adding"
+         >
+        <span class="glyphicon glyphicon-minus"></span><span class="add-text">ADD A COMMENT</span>
+      </button>
+    </div>
+    <div
+       ng-show="adding"
+       class="body"
+       >
+      <!--div class="input-name">Author</div>
+      <input
+         class="editor-input"
+         placeholder="Author"
+         ng-model="create.author"
+         -->
+      <div class="input-name">Subject</div>
+      <input
+         class="editor-input"
+         placeholder="Subject"
+         ng-model="create.subject"
+         >
+      <div class="input-name">Comment</div>
+      <textarea
+         class="editor-input"
+         ng-model="create.message"
+         >
+      </textarea>
+      <div class="controls">
+        <button
+           class="btn btn-primary pull-right"
+           data-test-button="new"
+           ng-click="add({comment:create})"
+           >
+          Send
+        </button>
+        <button
+           class="btn btn-default pull-right"
+           ng-click="cancel()"
+           >
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="list"
+       ng-class="{low: adding, high: !adding}"
+       >
+    <comment
+       model="comment"
+       ng-repeat="comment in comments.displayed"
+       >
+    </comment>
+  </div>
+</section>
