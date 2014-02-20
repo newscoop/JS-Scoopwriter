@@ -1706,6 +1706,11 @@ html, body.article-edit {
     /* end of the javascript scroll part */
 
     .embed-panel, .comments-panel {
+        textarea {
+            width: 100%;
+            padding: 5px;
+            resize: none;
+        }
         .editor-input {
             width: 100%;
             border: 1px solid #d0d0d0;
@@ -1751,20 +1756,21 @@ html, body.article-edit {
                 border: 1px solid gray;
             }
         }
-        .title {
+        .title, .subject {
             border: none;
             background: none;
             box-sizing: content-box;
-
             &.editable {
                 border-bottom: 1px dashed black;
             }
         }
+        .message {
+            margin: 5px 0;
+            height: 10em;
+        }
         .code {
-            width: 100%;
             overflow: hidden;
             text-overflow: ellipsis;
-            resize: none;
             background: none;
             box-sizing: content-box;
             font-weight: 200;

@@ -10,6 +10,11 @@ angular.module('authoringEnvironmentApp')
                 create: {
                     method: 'POST',
                     transformRequest: transform.formEncode
+                },
+                save: {
+                    method: 'POST',
+                    url: f + '/comments/article/:articleNumber/:languageCode/:commentId',
+                    transformRequest: transform.formEncode
                 }
             });
         this.displayed = [];
@@ -77,6 +82,33 @@ angular.module('authoringEnvironmentApp')
                     this.expand();
                 }
             };
+
+            comment.isEdited = false;
+            comment.edit = function() {
+                this.editing = {
+                    subject: this.subject,
+                    message: this.message
+                };
+                this.isEdited = true;
+            };
+            comment.cancel = function() {
+                this.isEdited = false;
+            };
+            comment.save = function() {
+                var comment = this;
+                article.promise.then(function(article) {
+                    service.resource.save({
+                        articleNumber: article.number,
+                        languageCode: article.language,
+                        commentId: comment.id
+                    }, {comment: comment.editing}, function() {
+                        comment.subject = comment.editing.subject;
+                        comment.message = comment.editing.message;
+                        comment.isEdited = false;
+                    });
+                });
+            };
+
             comment.remove = function() {
                 var comment = this;
                 article.promise.then(function(article) {

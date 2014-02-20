@@ -5,8 +5,8 @@ describe('Service: Comments', function () {
     var comments = [{
         id: 26822,
         author: "Inihe Ublinschä",
-        subject: "-",
-        message: "«Das Anliegen, die Spekulation mit Grundbesitz einzudämmen ... , sei zwar verständlich, doch die Initiative sei dazu ungeeignet». Warum, meine Damen und Herren? Weil sie die Spekulation eindämmt? Klassisch: Wasser predigen, und Wein trinken wollen.",
+        subject: "subject",
+        message: "message",
         thread_level: 0,
         thread_order: 1,
         status: "approved",
@@ -77,7 +77,7 @@ describe('Service: Comments', function () {
             }, spies.success);
             $httpBackend.flush();
             expect(spies.success).toHaveBeenCalled();
-            expect(spies.data).toHaveBeenCalledWith('{"message":"hey, Joe, let us go!"}');
+            expect(spies.data).toHaveBeenCalledWith('message=hey%2C+Joe%2C+let+us+go!');
         });
     });
 
@@ -129,6 +129,63 @@ describe('Service: Comments', function () {
                 });
                 it('removes itself', function() {
                     expect(comments.displayed.length).toBe(2);
+                });
+            });
+            it('is not being edited', function() {
+                expect(comment.isEdited).toBe(false);
+            });
+            describe('being edited', function() {
+                beforeEach(function() {
+                    comment.edit();
+                });
+                it('updates its editing content', function() {
+                    expect(comment.editing.subject).toBe('subject');
+                    expect(comment.editing.message).toBe('message');
+                });
+                it('knows that it is being edited', function() {
+                    expect(comment.isEdited).toBe(true);
+                });
+                describe('fields changed', function() {
+                    beforeEach(function() {
+                        comment.editing.subject = 'edited subject';
+                        comment.editing.message = 'edited message';
+                    });
+                    describe('canceled', function() {
+                        beforeEach(function() {
+                            comment.cancel();
+                        });
+                        it('is not being edited anymore', function() {
+                            expect(comment.isEdited).toBe(false);
+                        });
+                        describe('edited', function() {
+                            beforeEach(function() {
+                                comment.edit();
+                            });
+                            it('resets the contents', function() {
+                                expect(comment.editing.subject)
+                                    .toBe('subject');
+                                expect(comment.editing.message)
+                                    .toBe('message');
+                            });
+                        });
+                    });
+                    describe('saved', function() {
+                        beforeEach(function() {
+                            $httpBackend.expect(
+                                'POST',
+                                'http://tw-merge.lab.sourcefabric.org/content-api/comments/article/64/de/26822'
+                            ).respond(200, '');
+                            comment.save();
+                            $httpBackend.flush();
+                        });
+                        it('is done with editing', function() {
+                            expect(comment.isEdited).toBe(false);
+                        });
+                        it('gets updated', function() {
+                            expect(comment.subject).toBe('edited subject');
+                            expect(comment.message).toBe('edited message');
+                        });
+                    });
                 });
             });
         });
