@@ -17,7 +17,7 @@
          ng-click="adding = false"
          ng-show="adding"
          >
-        <span class="glyphicon glyphicon-minus"></span><span class="add-text">ADD A COMMENT</span>
+        <span class="glyphicon glyphicon-minus"></span><span class="add-text">POST A COMMENT</span>
       </button>
     </div>
     <div
@@ -62,9 +62,19 @@
   <div class="list"
        ng-class="{low: adding, high: !adding}"
        >
+    <div class="filters">
+      <span class="label">Filter comments by:</span>
+      <span
+         ng-repeat="(key, value) in statuses"
+         class="{{key}}-check"
+         >
+        <input ng-model="value" type="checkbox" ng-change="toggle(key)">
+        {{key}}
+      </span>
+    </div>
     <comment
        model="comment"
-       ng-repeat="comment in comments.displayed"
+       ng-repeat="comment in comments.displayed | filter:filter"
        >
     </comment>
   </div>
