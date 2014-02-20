@@ -25,19 +25,18 @@ angular.module('authoringEnvironmentApp')
       
       // used to filter
       $scope.editable = function(field) {
-          if (field.isContentField == 0) {
-              return false;
-          }
           var known = [
-              'text',
-              'long_text',
-              'body',
-              'fixed_image'
+              'date',
+              'dateline',
+              'main_image',
+              'lede',
+              'body'
           ];
-          if (known.indexOf(field.type) == -1) {
+          if (known.indexOf(field.name) == -1) {
               return false;
-          };
-          return true;
+          } else {
+              return true;
+          }
       };
 
   $scope.panes = panes.query();
