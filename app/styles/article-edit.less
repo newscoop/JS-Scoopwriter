@@ -35,6 +35,7 @@ html, body.article-edit {
 
 @approved-comment-green: #009933;
 @new-comment-blue: #0088CC;
+@comment-gray: #b9b9b9;
 
 .authoring-environment {
 
@@ -180,7 +181,7 @@ html, body.article-edit {
                     float: left;
                 }
                 .date-and-name {
-                    color: rgb(185, 185, 185);
+                    color: @comment-gray;
                     display: inline-block;
                 }
                 .label {
@@ -1732,13 +1733,14 @@ html, body.article-edit {
         }
         .list {
             .filters {
-                font-size: 11px;
+                font-size: 13px;
                 padding: 5px 0;
                 text-transform: capitalize;
-                .label { color: grey; }
+                .filters-label { color: @comment-gray; }
                 .new-check { color: @new-comment-blue;}
                 .approved-check { color: @approved-comment-green;}
                 .hidden-check { color: gainsboro;}
+                * { margin: 2px; }
             }
             overflow: auto;
             position: absolute;
