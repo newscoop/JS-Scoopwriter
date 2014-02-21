@@ -31,7 +31,7 @@ angular.module('authoringEnvironmentApp')
             additionalFields: {
                 news: [{
                     name: 'main_image',
-                    fieldWeight: 1,
+                    fieldWeight: 10,
                     type: 'fixed_image',
                     isContentField: true,
                     description: 'Article Main Image'
