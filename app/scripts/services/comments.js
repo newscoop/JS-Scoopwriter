@@ -15,6 +15,10 @@ angular.module('authoringEnvironmentApp')
                     method: 'POST',
                     url: f + '/comments/article/:articleNumber/:languageCode/:commentId',
                     transformRequest: transform.formEncode
+                },
+                delete: {
+                    method: 'DELETE',
+                    url: f + '/comments/article/:articleNumber/:languageCode/:commentId'
                 }
             });
         this.displayed = [];

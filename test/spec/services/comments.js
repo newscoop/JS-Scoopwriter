@@ -56,6 +56,20 @@ describe('Service: Comments', function () {
         afterEach(function() {
             $httpBackend.verifyNoOutstandingExpectation();
         });
+        it('deletes a comment', function() {
+            var spy = jasmine.createSpy('spy');
+            $httpBackend.expect(
+                'DELETE',
+                'http://tw-merge.lab.sourcefabric.org/content-api/comments/article/64/de/12'
+            ).respond(200, '');
+            comments.resource.delete({
+                articleNumber: 64,
+                languageCode: 'de',
+                commentId: 12
+            }, spy);
+            $httpBackend.flush();
+            expect(spy).toHaveBeenCalled();
+        });
 
         it('saves a comment', function() {
             var spies = {
