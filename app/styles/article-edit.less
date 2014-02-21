@@ -34,7 +34,7 @@ html, body.article-edit {
 .aloha-sidebar-bar {display:none !important;}
 
 @approved-comment-green: #009933;
-@new-comment-blue: #0066ff;
+@new-comment-blue: #0088CC;
 
 .authoring-environment {
 
@@ -1731,6 +1731,15 @@ html, body.article-edit {
             margin: 5px 0;
         }
         .list {
+            .filters {
+                font-size: 11px;
+                padding: 5px 0;
+                text-transform: capitalize;
+                .label { color: grey; }
+                .new-check { color: @new-comment-blue;}
+                .approved-check { color: @approved-comment-green;}
+                .hidden-check { color: gainsboro;}
+            }
             overflow: auto;
             position: absolute;
         }
