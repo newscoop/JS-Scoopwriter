@@ -1,9 +1,14 @@
 'use strict';
 
 angular.module('authoringEnvironmentApp')
-    .service('comments', ['configuration', 'article', '$http', '$q', '$resource', 'transform', function comments(configuration, article, $http, $q, $resource, transform) {
+    .service('comments', ['configuration', 'article', '$http', '$q', '$resource', 'transform', 'pageTracker', '$log', function comments(configuration, article, $http, $q, $resource, transform, pageTracker, $log) {
         var service = this;
         var f = configuration.API.full;
+        var itemsPerPage = 50;
+        this.canLoadMore = true;
+        this.loaded = [];
+        this.displayed = [];
+        this.tracker = pageTracker.getTracker();
         this.resource = $resource(
             f + '/comments/article/:articleNumber/:languageCode', {
             }, {
@@ -21,7 +26,6 @@ angular.module('authoringEnvironmentApp')
                     url: f + '/comments/article/:articleNumber/:languageCode/:commentId'
                 }
             });
-        this.displayed = [];
         this.add = function(par) {
             var deferred = $q.defer();
             article.promise.then(function(article) {
@@ -48,9 +52,28 @@ angular.module('authoringEnvironmentApp')
             return deferred.promise;
         };
         this.init = function() {
-            this.load(1).then(function(data){
+            this.load(this.tracker.next()).then(function(data){
                 service.displayed = data.items.map(decorate);
+                if (service.canLoadMore) {
+                    // prepare the next batch
+                    service.load(service.tracker.next()).then(function(data) {
+                        service.loaded = service.loaded.concat(data.items);
+                    });
+                };
             });
+        };
+        this.more = function() {
+            if (this.canLoadMore) {
+                var additional = this.loaded.splice(0, itemsPerPage);
+                additional = additional.map(decorate);
+                this.displayed = this.displayed.concat(additional);
+                var next = this.tracker.next();
+                this.load(next).then(function(data) {
+                    service.loaded = service.loaded.concat(data.items);
+                });
+            } else {
+                $log.error('More comments required, but the service cannot load more of them. In this case the user should not be able to trigger this request');
+            }
         };
         this.load = function(page) {
             var deferred = $q.defer();
@@ -58,9 +81,16 @@ angular.module('authoringEnvironmentApp')
                 var url = configuration.API.full +
                     '/comments/article/' + article.number +
                     '/' + article.language +
-                    '?page=' + page;
+                    '?items_per_page=' + itemsPerPage +
+                    '&page=' + page;
                 $http.get(url).success(function(data) {
                     deferred.resolve(data);
+                    if (pageTracker.isLastPage(data.pagination)) {
+                        service.canLoadMore = false;
+                    }
+                }, function() {
+                    // in case of failure remove the page from the tracker
+                    service.tracker.remove(page);
                 });
             });
             return deferred.promise;

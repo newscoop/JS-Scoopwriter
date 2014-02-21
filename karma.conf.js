@@ -29,7 +29,7 @@ module.exports = function(config) {
       'app/scripts/services/*.js',
       'app/scripts/controllers/*.js',
       'app/scripts/directives/*.js',
-      'test/mock/**/*.js',
+      'test/globals.js',
       'test/spec/**/*.js',
       'app/scripts/aloha/lib/require.js',
       'app/scripts/aloha/lib/vendor/jquery-1.7.2.js',
