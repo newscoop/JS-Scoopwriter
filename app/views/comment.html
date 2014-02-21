@@ -18,14 +18,42 @@
        class="subject"
        ng-bind="model.subject"
        ng-click="model.toggle()"
+       ng-hide="model.isEdited"
        ></div>
-    <div ng-bind="model.message" class="comment"></div>
+    <input
+       class="editable subject"
+       ng-model="model.editing.subject"
+       ng-show="model.isEdited"
+       />
+    <div
+       ng-bind="model.message"
+       ng-hide="model.isEdited"
+       class="comment"></div>
+    <textarea
+       class="message"
+       ng-model="model.editing.message"
+       ng-show="model.isEdited"
+       ></textarea>
   </div>
   <div class="controls">
     <span class="glyphicon glyphicon-chevron-up"
           ng-click="model.collapse()"
           ></span>
-    <span class="glyphicon glyphicon-pencil"></span>
+    <span
+       class="glyphicon glyphicon-pencil"
+       ng-click="model.edit()"
+       ng-hide="model.isEdited"
+       ></span>
+    <span
+       class="glyphicon glyphicon-floppy-disk"
+       ng-click="model.save()"
+       ng-show="model.isEdited"
+       ></span>
+    <span
+       class="glyphicon glyphicon-remove"
+       ng-click="model.cancel()"
+       ng-show="model.isEdited"
+       ></span>
     <span class="glyphicon glyphicon-share-alt"></span>
     <span class="glyphicon glyphicon-thumbs-up"></span>
     <span class="glyphicon glyphicon-trash"
