@@ -38,7 +38,7 @@ describe('Controller: CommentsCtrl', function () {
         expect(scope.statuses.new).toBe(false);
     });
     it('does not filter', function() {
-        expect(scope.filter(comments.any)).toBe(true);
+        expect(scope.selected(comments.any)).toBe(true);
     });
     describe('the `all` status', function() {
         var status;
@@ -60,10 +60,10 @@ describe('Controller: CommentsCtrl', function () {
             expect(scope.statuses.all).toBe(false);
         });
         it('accepts `new` comments', function() {
-            expect(scope.filter(comments['new'])).toBe(true);
+            expect(scope.selected(comments['new'])).toBe(true);
         });
         it('rejects other comments', function() {
-            expect(scope.filter(comments.any)).toBe(false);
+            expect(scope.selected(comments.any)).toBe(false);
         });
         describe('new comments unselected', function() {
             beforeEach(function() {
@@ -78,20 +78,20 @@ describe('Controller: CommentsCtrl', function () {
                 scope.toggle('approved');
             });
             it('accepts `new` comments', function() {
-                expect(scope.filter(comments.new)).toBe(true);
+                expect(scope.selected(comments.new)).toBe(true);
             });
             it('accepts `approved` comments', function() {
-                expect(scope.filter(comments.approved)).toBe(true);
+                expect(scope.selected(comments.approved)).toBe(true);
             });
             it('rejects other comments', function() {
-                expect(scope.filter(comments.any)).toBe(false);
+                expect(scope.selected(comments.any)).toBe(false);
             });
             describe('all comments selected', function() {
                 beforeEach(function() {
                     scope.toggle('all');
                 });
                 it('accepts all comments', function() {
-                    expect(scope.filter(comments.any)).toBe(true);
+                    expect(scope.selected(comments.any)).toBe(true);
                 });
                 it('checks `all`', function() {
                     expect(scope.statuses.all).toBe(true);

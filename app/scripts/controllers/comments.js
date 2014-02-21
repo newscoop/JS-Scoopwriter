@@ -37,7 +37,7 @@ angular.module('authoringEnvironmentApp')
             approved: false,
             hidden: false
         };
-        $scope.filter = function(comment) {
+        $scope.selected = function(comment) {
             if ($scope.statuses.all) {
                 return true;
             }
