@@ -13,15 +13,30 @@ describe('Service: pageTracker', function () {
     beforeEach(module('authoringEnvironmentApp'));
 
     // instantiate service
-    var PageTracker, tracker;
+    var pageTracker, tracker;
     beforeEach(inject(function (_pageTracker_) {
-        PageTracker = _pageTracker_;
-        tracker = PageTracker.getTracker({max: 5});
+        pageTracker = _pageTracker_;
+        tracker = pageTracker.getTracker();
     }));
+
+    it('tells us when a pagination section belongs to a last page', function() {
+        expect(pageTracker.isLastPage({
+            "itemsPerPage":5,
+            "currentPage":"2",
+            "itemsCount":10,
+            "previousPageLink":"http:\/\/tw-merge.lab.sourcefabric.org\/content-api\/comments\/article\/533522\/de?page=1&items_per_page=5&access_token=NWI3NTZjOGJjMTA5YjFlOGE0M2FkYzQ5ZjE5MjhiZjMyZTcwNTQ2NmYwZTVkODAyMTZkODRmZDI3ZDUxZmY0Yg"
+        })).toBe(true);
+        expect(pageTracker.isLastPage({
+            "itemsPerPage":"3",
+            "currentPage":"2",
+            "itemsCount":"10",
+            "previousPageLink":"http:\/\/tw-merge.lab.sourcefabric.org\/content-api\/comments\/article\/533522\/de?page=1&items_per_page=5&access_token=NWI3NTZjOGJjMTA5YjFlOGE0M2FkYzQ5ZjE5MjhiZjMyZTcwNTQ2NmYwZTVkODAyMTZkODRmZDI3ZDUxZmY0Yg"
+        })).toBe(false);
+    });
 
     describe('first page added', function() {
         beforeEach(function() {
-            tracker.next(1);
+            tracker.next();
         });
         it('tells us what is the next page to fetch', function() {
             expect(tracker.next()).toBe(2);
@@ -56,9 +71,6 @@ describe('Service: pageTracker', function () {
         });
         it('gives us pages to the max', function() {
             expect(asked).toEqual([1, 2, 3, 4, 5]);
-        });
-        it('returns a special value after the max', function() {
-            expect(tracker.next()).toBe('none');
         });
     });
 
