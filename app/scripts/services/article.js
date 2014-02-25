@@ -38,13 +38,17 @@ angular.module('authoringEnvironmentApp')
         };
 
         var resource = $resource(
-            configuration.API.full + '/articles/:articleId?language=:language',
-            {},
-            {
+            configuration.API.full + '/articles/:articleId?language=:language', {
+                articleId: '',
+                language: 'en'
+            }, {
                 query: {
                     method: 'GET',
-                    params: {articleId: '', language: 'en'},
                     isArray: true
+                },
+                save: {
+                    url: configuration.API.full + '/articles/:articleId/:language',
+                    method: 'PATCH',
                 }
             });
 
