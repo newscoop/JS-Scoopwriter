@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('authoringEnvironmentApp')
-    .service('images', ['$http', 'pageTracker', 'configuration', '$log', 'article', function images($http, pageTracker, configuration, $log, article) {
+    .service('images', ['$http', 'pageTracker', 'configuration', '$log', 'article', 'modal', function images($http, pageTracker, configuration, $log, article, modal) {
         /* more info about the page tracker in its tests */
         // AngularJS will instantiate a singleton by calling "new" on this function
         var service = this;
@@ -12,6 +12,7 @@ angular.module('authoringEnvironmentApp')
         this.tracker = pageTracker.getTracker({max: 100});
         this.loaded = [];
         this.displayed = [];
+        this.collected = [];
         this.attached = [];
         this.includedIndex = 0;
         this.included = {};
@@ -50,11 +51,31 @@ angular.module('authoringEnvironmentApp')
                 return parseInt(needle.id) == parseInt(id);
             };
         };
+        this.collect = function(id) {
+            var match = this.matchMaker(id);
+            if(!this.isCollected(id)) {
+                this.collected.push(_.find(this.displayed, match));
+            }
+        };
+        this.discard = function(id) {
+            var match = this.matchMaker(id);
+            _.remove(this.collected, match);
+        };
+        this.discardAll = function() {
+            service.collected = [];
+            modal.hide();
+        };
+        this.attachAll = function() {
+            service.collected.forEach(function(image) {
+                service.attach(image.id);
+            });
+            service.collected = [];
+            modal.hide();
+        };
         this.attach = function(id) {
             var match = this.matchMaker(id);
             if (_.find(this.attached, match)) {
-                // already attached, do nothing
-                return;
+                $log.debug('image already attached, ignoring attach request');
             } else {
                 var url =
                     root + '/articles/' + service.article.number +
@@ -64,7 +85,7 @@ angular.module('authoringEnvironmentApp')
                  * setting of the server (OPTIONS request), thus debug
                  * log may be useful to reproduce the original
                  * request */
-                $log.debug('sending a link request');
+                $log.debug('sending link request');
                 $log.debug(url);
                 $log.debug(link);
                 $http({
@@ -74,10 +95,17 @@ angular.module('authoringEnvironmentApp')
                         Link: link
                     }
                 }).success(function() {
-                    var i = _.cloneDeep(_.find(service.displayed, match));
-                    i.incomplete = true;
-                    service.attached.push(i);
-                    service.updateAttached();
+                    var image = _.find(service.displayed, match);
+                    service.attached.push(image);
+                    $http
+                        .get(root + '/images/' + image.id)
+                        .success(function(data) {
+                            _.forOwn(data, function(value, key) {
+                                if (!(key in image)) {
+                                    image[key] = value;
+                                }
+                            });
+                        });
                 });
             }
         };
@@ -105,8 +133,7 @@ angular.module('authoringEnvironmentApp')
                     _.remove(service.attached, match);
                 });
             } else {
-                // already attached, do nothing
-                return;
+                $log.debug('image already detached, ignoring attach request');
             }
         };
         this.include = function(id) {
@@ -143,24 +170,11 @@ angular.module('authoringEnvironmentApp')
                 this.attached[index].included = false;
             }
         };
-        this.updateAttached = function() {
-            this.attached.forEach(function(a) {
-                if (a.incomplete) {
-                    $http
-                        .get(root + '/images/' + a.id)
-                        .success(function(data) {
-                            _.forOwn(data, function(value, key) {
-                                if (!(key in a)) {
-                                    a[key] = value;
-                                }
-                            });
-                            a.incomplete = false;
-                        });
-                }
-            });
-        };
         this.findAttached = function(id) {
             return _.find(this.attached, this.matchMaker(id));
+        };
+        this.findCollected = function(id) {
+            return _.find(this.collected, this.matchMaker(id));
         };
         this.byId = function(id) {
             var i = this.findAttached(id);
@@ -173,14 +187,17 @@ angular.module('authoringEnvironmentApp')
         this.isAttached = function(id) {
             return (typeof this.findAttached(id)) != 'undefined';
         };
-        this.togglerClass = function(id) {
-            return this.isAttached(id) ? 'glyphicon-minus' : 'glyphicon-plus';
+        this.isCollected = function(id) {
+            return (typeof this.findCollected(id)) != 'undefined';
         };
-        this.toggleAttach = function(id) {
-            if (this.isAttached(id)) {
-                this.detach(id);
+        this.togglerClass = function(id) {
+            return this.isCollected(id) ? 'glyphicon-minus' : 'glyphicon-plus';
+        };
+        this.toggleCollect = function(id) {
+            if (this.isCollected(id)) {
+                this.discard(id);
             } else {
-                this.attach(id);
+                this.collect(id);
             }
         };
     }]);

@@ -45,9 +45,13 @@ html, body.article-edit {
  * precise about comment colors. it will probably disappear with time */
 @comment-gray: #b9b9b9;
 
+
 /* used in "post a comment", "add a snippet" in the panels, and in
  * other parts of the panels */
 @add-element-gray: #ebebeb;
+
+@thumbnail-max-height: 100px;
+
 
 .authoring-environment {
     /* there is also a not editable one, probably it will be removed */
@@ -1713,6 +1717,58 @@ html, body.article-edit {
     }
     .attach-image {
         font-size: 12px;
+        .basket-head {
+            color: gainsboro;
+            background: #333333;
+            padding: 5px;
+            .description {
+                color: rgb(231, 231, 231);
+                margin-right: 20px;
+            }
+        }
+        .basket {
+            background: #666666;
+            max-height: @thumbnail-max-height + 50;
+            white-space: nowrap; /* to scroll horizontally */
+            overflow: auto;
+        }
+        .thumbnail-wrapper {
+            position: relative;
+            border-width: 1px;
+            border-style: solid;
+            border-color: #d0d0d0;
+            border-radius: 2px;
+            display: inline-block;
+            margin: 10px;
+            .toggler {
+                display: none;
+                position: absolute;
+                color: white;
+                background: #0079cc;
+                padding: 7px;
+                line-height: 0;
+            }
+            .thumbnail {
+                display: inline-block;
+                max-height: @thumbnail-max-height;
+                border-color: white;
+                border-width: 6px;
+                margin: 0;
+                padding: 0;
+            }
+        }
+        .archive .thumbnail-wrapper:hover {
+            .toggler {
+                display: inline;
+            }
+        }
+        .thumbnail-wrapper.attached, .thumbnail-wrapper:hover {
+            border-color: white;
+            .thumbnail {
+                border-radius: 0;
+                border-color: #0079CC;
+            }
+        }
         .web {
             input {
                 width: 100%;
@@ -1741,44 +1797,6 @@ html, body.article-edit {
         .archive {
             max-height: 400px;
             overflow: scroll;
-
-            .thumbnail-wrapper {
-                position: relative;
-                border-width: 1px;
-                border-style: solid;
-                border-color: #d0d0d0;
-                border-radius: 2px;
-                display: inline-block;
-                margin: 10px;
-                .toggler {
-                    display: none;
-                    position: absolute;
-                    color: white;
-                    background: #0079cc;
-                    padding: 7px;
-                    line-height: 0;
-                }
-                .thumbnail {
-                    display: inline-block;
-                    max-height: 100px;
-                    border-color: white;
-                    border-width: 6px;
-                    margin: 0;
-                    padding: 0;
-                }
-            }
-            .thumbnail-wrapper:hover {
-                .toggler {
-                    display: inline;
-                }
-            }
-            .thumbnail-wrapper.attached, .thumbnail-wrapper:hover {
-                border-color: white;
-                .thumbnail {
-                    border-radius: 0;
-                    border-color: #0079CC;
-                }
-            }
         }
     }
 

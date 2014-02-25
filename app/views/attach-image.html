@@ -17,4 +17,38 @@
        >
     </div>
   </div>
+  <div class="row basket-head">
+    <span class="description">ATTACHED IMAGES</span>
+    <span class="badge" ng-bind="images.collected.length"></span>
+    images
+  </div>
+  <div class="row basket">
+    <div
+       ng-repeat="image in images.collected"
+       class="thumbnail-wrapper"
+       ng-class="{attached: images.isAttached(image.id)}"
+       ng-click="images.toggleAttach(image.id)"
+       >
+      <img
+         class="thumbnail" 
+         ng-src="{{root}}/images/{{image.basename}}"
+         >
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button
+       type="button"
+       class="btn btn-default"
+       ng-click="images.discardAll();"
+       data-test-button="modal-close"
+       data-dismiss="modal">
+      Discard
+    </button>
+    <button
+       type="button"
+       ng-click="images.attachAll()"
+       class="btn btn-primary">
+      Attach Images
+    </button>
+  </div>
 </div>
