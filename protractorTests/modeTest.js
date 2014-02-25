@@ -11,7 +11,7 @@
 
 describe('start page', function() {
     beforeEach(function() {
-        browser.get('http://127.0.0.1:9000/#access_token=test?nobackend');
+        browser.get('http://127.0.0.1:9000/#access_token=test?article_number=64&language=de&nobackend');
         // browser.sleep(3000);
     });
 
