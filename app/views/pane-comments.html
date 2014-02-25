@@ -1,4 +1,22 @@
 <section class="tabcontent comments-panel" ng-controller="CommentsCtrl">
+  <div
+     class="panel-title-button-group btn-group pull-right"
+     bs-radio-group
+     ng-model="globalShowStatus"
+     >
+    <label class="btn btn-default">
+      <input
+         type="radio"
+         value="expanded"
+         ><span class="glyphicon glyphicon-th-list"></span>
+    </label>
+    <label class="btn btn-default">
+      <input
+         type="radio"
+         value="collapsed"
+         ><span class="glyphicon glyphicon-th"></span>
+    </label>
+  </div>
   <div class="panel-title">
     Comments
   </div>

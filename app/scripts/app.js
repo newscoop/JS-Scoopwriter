@@ -6,11 +6,12 @@ angular.module('authoringEnvironmentApp', [
   'ngSanitize',
   'ngRoute',
   'ngAlohaEditor',
+  'mgcrea.ngStrap.button',
   'mgcrea.ngStrap.helpers.dimensions',
   'mgcrea.ngStrap.tooltip',
   'mgcrea.ngStrap.popover'
 ])
-  .config(['$routeProvider', '$httpProvider', function ($routeProvider, $httpProvider) {
+  .config(['$routeProvider', '$httpProvider', '$buttonProvider', function ($routeProvider, $httpProvider, $buttonProvider) {
     $routeProvider
       .when('/', {
         templateUrl: 'views/main.html',
@@ -21,4 +22,5 @@ angular.module('authoringEnvironmentApp', [
           controller: 'AuthenticationCtrl'
       });
     $httpProvider.interceptors.push('authInterceptor');
+    $buttonProvider.defaults.toggleEvent = 'change';
   }]);
