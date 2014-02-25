@@ -92,9 +92,15 @@
     </div>
     <comment
        model="comment"
-       ng-repeat="comment in comments.displayed | filter:selected"
+       ng-repeat="comment in filtered = (comments.displayed | filter:selected)"
        >
     </comment>
+    <div
+       class="empty-message"
+       ng-show="filtered.length < 1"
+       >
+      No any comment matches your selection
+    </div>
     <div
        class="more-button-wrapper"
        ng-show="comments.canLoadMore"

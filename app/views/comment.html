@@ -36,9 +36,11 @@
        ></textarea>
   </div>
   <div class="controls">
-    <span class="glyphicon glyphicon-chevron-up"
-          ng-click="model.collapse()"
-          ></span>
+    <span
+       class="glyphicon glyphicon-chevron-up"
+       ng-hide="model.isEdited"
+       ng-click="model.collapse()"
+       ></span>
     <span
        class="glyphicon glyphicon-pencil"
        ng-click="model.edit()"
@@ -54,11 +56,19 @@
        ng-click="model.cancel()"
        ng-show="model.isEdited"
        ></span>
-    <span class="glyphicon glyphicon-share-alt"></span>
-    <span class="glyphicon glyphicon-thumbs-up"></span>
-    <span class="glyphicon glyphicon-trash"
-          ng-click="model.remove()"
-          ></span>
+    <span
+       class="glyphicon glyphicon-share-alt"
+       ng-hide="model.isEdited"
+       ></span>
+    <span
+       class="glyphicon glyphicon-thumbs-up"
+       ng-hide="model.isEdited"
+       ></span>
+    <span
+       class="glyphicon glyphicon-trash"
+       ng-hide="model.isEdited"
+       ng-click="model.remove()"
+       ></span>
   </div>
 </div>
 
