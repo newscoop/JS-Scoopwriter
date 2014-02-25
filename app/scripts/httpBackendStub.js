@@ -129,6 +129,33 @@
                                 "place":""
                             });
 
+                            var re = new RegExp('/content-api/comments/.*');
+                            $httpBackend.whenGET(re).respond({
+                                "items":[{
+                                    id: 26822,
+                                    author: "Inihe Ublinschä",
+                                    subject: "subject",
+                                    message: "message",
+                                    thread_level: 0,
+                                    thread_order: 1,
+                                    status: "approved",
+                                    created: "2013-11-28T18:10:09+0000",
+                                    updated: "2013-11-28T18:10:09+0000",
+                                    recommended: 0
+                                }, {
+                                    id: 26828,
+                                    author: "More Timat",
+                                    subject: "ungeeignet..",
+                                    message: "Mir fiel derselbe Satz auf: «Das Anliegen, die Spekulation mit Grundbesitz einzudämmen ... , sei zwar verständlich, doch die Initiative sei dazu ungeeignet» Ja was gibts denn für geeignete Mittel möchte ich gerne wissen. Enteignung? Verstaatlichung des gesamten Bodens und Verpachtung im Baurecht für 99 Jahre? Vorschläge willkommen!",
+                                    thread_level: 0,
+                                    thread_order: 2,
+                                    status: "approved",
+                                    created: "2013-11-28T21:30:43+0000",
+                                    updated: "2013-11-28T21:30:43+0000",
+                                    recommended: 1
+                                }]
+                            });
+
                             var snippetsForArticle = snippetsGeneric;
 
 			    var snippet = snippetGenerator(1, 'Generic');

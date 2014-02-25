@@ -59,4 +59,10 @@ angular.module('authoringEnvironmentApp')
             $scope.adding = false;
             $scope.create = {};
         };
+        $scope.globalShowStatus = 'collapsed';
+        $scope.$watch('globalShowStatus', function() {
+            comments.displayed.map(function(comment) {
+                comment.showStatus = $scope.globalShowStatus;
+            });
+        });
     }]);

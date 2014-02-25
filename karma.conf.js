@@ -25,6 +25,7 @@ module.exports = function(config) {
       'app/bower_components/angular-strap/dist/modules/dimensions.min.js',
       'app/bower_components/angular-strap/dist/modules/tooltip.min.js',
       'app/bower_components/angular-strap/dist/modules/popover.min.js',
+      'app/bower_components/angular-strap/dist/modules/button.min.js',
       'app/scripts/*.js',
       'app/scripts/services/*.js',
       'app/scripts/controllers/*.js',
