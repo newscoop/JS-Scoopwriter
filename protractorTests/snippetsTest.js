@@ -1,7 +1,7 @@
 describe('the snippets panel', function() {
     var paneButton;
     beforeEach(function() {
-        browser.get('http://127.0.0.1:9000/#access_token=test?nobackend');
+        browser.get('http://127.0.0.1:9000/#access_token=test?article_number=64&language=de&nobackend');
         paneButton = element(by.css('[data-original-title="Snippets"]'));
     });
     it('button is present', function() {
