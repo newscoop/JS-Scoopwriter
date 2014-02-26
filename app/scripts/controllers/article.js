@@ -1,13 +1,44 @@
 'use strict';
 
 angular.module('authoringEnvironmentApp')
-  .controller('ArticleCtrl', ['$scope', '$location', 'article', 'articleType', 'panes', 'configuration', 'mode', 'platform', function ($scope, $location, article, articleType, panes, configuration, mode, platform) {
+  .controller('ArticleCtrl', ['$scope', '$location', 'article', 'articleType', 'panes', 'configuration', 'mode', 'platform', '$timeout', function ($scope, $location, article, articleType, panes, configuration, mode, platform, $timeout) {
 
+      var delay = 2000;
       var search = $location.search();
       var n = search.article_number;
-      var l = search.language_id;
+      var l = search.language;
 
+      function save() {
+          if ($scope.modified) {
+              article
+                  .resource
+                  .save({
+                      articleId: n,
+                      language: l
+                  }, $scope.article, function() {
+                      $scope.modified = false;
+                      $scope.$timeout(save, delay);
+                  }, function() {
+                      $scope.$timeout(save, delay);
+                  });
+          } else {
+              $timeout(save, delay);
+          }
+      }
+
+      $scope.article = null;
+      $scope.$timeout = $timeout; // for testability
       $scope.mode = mode;
+      $scope.modified = false;
+      $scope.$watch('article', function(newValue, oldValue) {
+          if (null === oldValue) {
+              // initialisation
+              return;
+          } else {
+              $scope.modified = true;
+          }
+      }, true);
+      $timeout(save, delay);
       
       article.init({
           articleId: n,
@@ -21,6 +52,7 @@ angular.module('authoringEnvironmentApp')
                   $scope.type.fields.push(field);
               });
           });
+          $scope.modified = false;
       });
       
       // used to filter
