@@ -22,5 +22,10 @@ describe('Service: Transform', function () {
         expect(result).toBe('i%5Bam%5D%5Ba%5D%5Bsimple%5D=json');
         expect(headers).toEqual({ 'Content-Type' : 'application/x-www-form-urlencoded' });
     });
+    it('has a simpler interface to be used outside interceptors', function() {
+        var data = {i:{am:{a:{simple:'json'}}}};
+        var result = transform.formEncodeData(data);
+        expect(result).toBe('i%5Bam%5D%5Ba%5D%5Bsimple%5D=json');
+    });
 
 });
