@@ -38,7 +38,21 @@ html, body.article-edit {
 @comment-gray: #b9b9b9;
 
 .authoring-environment {
-
+    .save-status {
+        float: right;
+        color: rgb(179, 179, 179);
+        margin: 0 2%;
+        line-height: 2em;
+        &.attention {
+            color: gray;
+        }
+        &.error {
+            color: darkred;
+        }
+    }
+    .controls {
+        float: right;
+    }
     /* following styles have been copied from Tageswoche frontend */
     .article-field {
         margin: 10px 0;

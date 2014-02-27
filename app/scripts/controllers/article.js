@@ -17,8 +17,10 @@ angular.module('authoringEnvironmentApp')
                       language: l
                   }, $scope.article, function() {
                       $scope.modified = false;
+                      $scope.status = 'Saved';
                       $scope.$timeout(save, delay);
                   }, function() {
+                      $scope.status = 'Error saving';
                       $scope.$timeout(save, delay);
                   });
           } else {
@@ -30,12 +32,15 @@ angular.module('authoringEnvironmentApp')
       $scope.$timeout = $timeout; // for testability
       $scope.mode = mode;
       $scope.modified = false;
+      $scope.status = 'Initialising';
       $scope.$watch('article', function(newValue, oldValue) {
           if (null === oldValue) {
               // initialisation
-              return;
+              $scope.modified = false;
+              $scope.status = 'Just downloaded';
           } else {
               $scope.modified = true;
+              $scope.status = 'Modified';
           }
       }, true);
       $timeout(save, delay);
@@ -52,7 +57,6 @@ angular.module('authoringEnvironmentApp')
                   $scope.type.fields.push(field);
               });
           });
-          $scope.modified = false;
       });
       
       // used to filter
