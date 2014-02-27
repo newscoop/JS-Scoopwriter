@@ -47,6 +47,7 @@ describe('Controller: ArticleCtrl', function () {
     });
     it('is not modified', function() {
         expect(scope.modified).toBe(false);
+        expect(scope.status).toBe('Just downloaded');
     });
     describe('with a changed field', function() {
         beforeEach(function() {
@@ -56,6 +57,7 @@ describe('Controller: ArticleCtrl', function () {
         });
         it('knows something changed', function() {
             expect(scope.modified).toBe(true);
+            expect(scope.status).toBe('Modified');
         });
         describe('delay elapsed', function() {
             beforeEach(function() {
@@ -73,6 +75,7 @@ describe('Controller: ArticleCtrl', function () {
                 });
                 it('does not feel different anymore', function() {
                     expect(scope.modified).toBe(false);
+                    expect(scope.status).toBe('Saved');
                 });
             });
         });
@@ -80,7 +83,7 @@ describe('Controller: ArticleCtrl', function () {
             beforeEach(function() {
                 $httpBackend
                     .expect('PATCH', rootURI + '/articles/123/de')
-                    .respond('500', 'error');
+                    .respond(500, 'error');
                 $timeout.flush();
                 spyOn(scope, '$timeout').andCallThrough();
             });
@@ -92,10 +95,15 @@ describe('Controller: ArticleCtrl', function () {
                     $httpBackend.verifyNoOutstandingRequest();
                 });
                 it('still feels different', function() {
-                    expect(scope.modified).toBe(false);
+                    expect(scope.modified).toBe(true);
                 });
                 it('will retry later', function() {
                     expect(scope.$timeout).toHaveBeenCalled();
+                });
+                it('tells the user', function() {
+                    /* Attention: if you change this, change also the
+                     * corresponding styling in the view */
+                    expect(scope.status).toBe('Error saving');
                 });
             });
         });

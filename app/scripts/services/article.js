@@ -48,7 +48,7 @@ angular.module('authoringEnvironmentApp')
                 },
                 save: {
                     url: configuration.API.full + '/articles/:articleId/:language',
-                    method: 'PATCH',
+                    method: 'PATCH'
                 }
             });
 
