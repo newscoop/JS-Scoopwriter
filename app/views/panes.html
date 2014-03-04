@@ -18,9 +18,19 @@
         </ul>
     </div>
     <div class="tabpane left-tabpane"  ng-class="{'open-tabpane':tabpaneIsOpen('left')}">
-        <section ng-repeat="pane in panes|filter:{position:'left', selected:true}" ng-show="pane.active" ng-include="pane.template"></section>
+        <section
+           ng-repeat="pane in panes|filter:{position:'left', selected:true}"
+           ng-show="pane.active"
+           ng-include="pane.template"
+           class="pane {{pane.name}}"
+           ></section>
     </div>
     <div class="tabpane right-tabpane" ng-class="{'open-tabpane':tabpaneIsOpen('right')}">
-        <section ng-repeat="pane in panes|filter:{position:'right', selected:true}" ng-show="pane.active" ng-include="pane.template"></section>
+        <section
+           ng-repeat="pane in panes|filter:{position:'right', selected:true}"
+           ng-show="pane.active"
+           ng-include="pane.template"
+           class="pane {{pane.name}}"
+           ></section>
     </div>
 </div>
