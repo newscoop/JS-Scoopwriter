@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('authoringEnvironmentApp')
-  .controller('ArticleCtrl', ['$scope', '$location', 'article', 'articleType', 'panes', 'configuration', 'mode', 'platform', '$timeout', function ($scope, $location, article, articleType, panes, configuration, mode, platform, $timeout) {
+  .controller('ArticleCtrl', ['$scope', '$location', 'article', 'articleType', 'panes', 'configuration', 'mode', 'platform', '$timeout', 'circularBufferFactory', function ($scope, $location, article, articleType, panes, configuration, mode, platform, $timeout, circularBufferFactory) {
 
       var delay = 2000;
       var search = $location.search();
@@ -9,41 +9,44 @@ angular.module('authoringEnvironmentApp')
       var l = search.language;
 
       function save() {
-          if ($scope.modified) {
-              article
-                  .resource
-                  .save({
-                      articleId: n,
-                      language: l
-                  }, $scope.article, function() {
-                      $scope.modified = false;
-                      $scope.status = 'Saved';
-                      $scope.$timeout(save, delay);
-                  }, function() {
-                      $scope.status = 'Error saving';
-                      $scope.$timeout(save, delay);
-                  });
-          } else {
-              $timeout(save, delay);
-          }
+          article
+              .resource
+              .save({
+                  articleId: n,
+                  language: l
+              }, $scope.article, function() {
+                  $scope.modified = false;
+                  $scope.status = 'Saved';
+              }, function() {
+                  $scope.status = 'Error saving';
+                  $scope.$timeout(save, delay);
+              });
       }
 
-      $scope.article = null;
       $scope.$timeout = $timeout; // for testability
       $scope.mode = mode;
       $scope.modified = false;
       $scope.status = 'Initialising';
-      $scope.$watch('article', function(newValue, oldValue) {
-          if (null === oldValue) {
+      $scope.history = circularBufferFactory.create({size:5});
+      // function attached to this variable for testability
+      $scope.watchCallback = function(newValue, oldValue) {
+          $scope.history.push(oldValue);
+          if (angular.equals(newValue, oldValue)) {
               // initialisation
               $scope.modified = false;
               $scope.status = 'Just downloaded';
           } else {
-              $scope.modified = true;
-              $scope.status = 'Modified';
+              // modified
+              if ($scope.modified) {
+                  // already waiting
+              } else {
+                  $scope.modified = true;
+                  $scope.status = 'Modified';
+                  $timeout(save, delay);
+              }
           }
-      }, true);
-      $timeout(save, delay);
+      };
+      $scope.$watch('article', $scope.watchCallback, true);
       
       article.init({
           articleId: n,
