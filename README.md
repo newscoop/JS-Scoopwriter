@@ -23,7 +23,7 @@ If you want to create a build of the project it's as simple as taking `grunt` an
 	$ grunt build
 	
 The resulting build files end up in the `dist/` directory.
-Inside the `dist/` dir you can now run a local server like `serve` (available from `npm`) to test.
+Inside the `dist/` dir you can now run a local server like `serve` (available from `npm`, package `node-serve`) to test.
 
 	$ cd dist/
 	$ serve
