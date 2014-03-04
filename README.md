@@ -9,7 +9,7 @@ then install the dependencies:
     $ git clone <repo address>
     $ cd aes/
     $ npm install .
-    $ bower install .
+    $ bower install
 
 ## Standalone with mocked backend
 For the standalone demo there is a Mocked Backend included (also used for E2E). You will need `grunt` for this to work.
