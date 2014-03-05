@@ -55,12 +55,14 @@ angular.module('authoringEnvironmentApp')
         comments.init();
         $scope.add = function(par) {
             $scope.isSending = true;
-            // XXX: on errors isSending is not set back to false,
-            // leaving the add comment form disabled
             comments.add(par).then(function() {
                 $scope.adding = false; // collapse the form
                 $scope.isSending = false;
                 $scope.create = {};
+            }, function () {
+                // on failures (e.g. timeouts) we re-enable the form, allowing
+                // user to submit a comment again
+                $scope.isSending = false;
             });
         };
         $scope.cancel = function() {

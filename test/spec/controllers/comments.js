@@ -10,6 +10,9 @@ describe('Controller: CommentsCtrl', function () {
     commentsThenMethod = function (callback) {
         callback();
     },
+    commentsThenErrorMethod = function (callback, errorCallback) {
+        errorCallback();
+    },
     commentsService = {
         init: function() {},
         add: function (comment) {
@@ -76,6 +79,18 @@ describe('Controller: CommentsCtrl', function () {
             // after an update, isSending flag should be back to false
             scope.add(comment);
             expect(scope.isSending).toBe(false);
+        });
+
+       it('clears isSending flag on errors', function () {
+            var origThen = commentsThenMethod;
+
+            // simulate an error response when scope.add() is invoked
+            commentsThenMethod = commentsThenErrorMethod;
+
+            scope.add(comment);
+            expect(scope.isSending).toBe(false);
+
+            commentsThenMethod = origThen;
         });
     });
 
