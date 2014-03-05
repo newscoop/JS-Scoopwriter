@@ -46,13 +46,23 @@ angular.module('authoringEnvironmentApp')
             }
             return false;
         };
+
+         // whether or not a new comment is being sent at this very moment
+        $scope.isSending = false;
+
         $scope.comments = comments;
         $scope.create = {};
         comments.init();
         $scope.add = function(par) {
+            $scope.isSending = true;
             comments.add(par).then(function() {
                 $scope.adding = false; // collapse the form
+                $scope.isSending = false;
                 $scope.create = {};
+            }, function () {
+                // on failures (e.g. timeouts) we re-enable the form, allowing
+                // user to submit a comment again
+                $scope.isSending = false;
             });
         };
         $scope.cancel = function() {

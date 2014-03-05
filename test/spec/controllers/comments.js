@@ -7,8 +7,19 @@ describe('Controller: CommentsCtrl', function () {
 
     var CommentsCtrl,
     scope,
+    commentsThenMethod = function (callback) {
+        callback();
+    },
+    commentsThenErrorMethod = function (callback, errorCallback) {
+        errorCallback();
+    },
     commentsService = {
-        init: function() {}
+        init: function() {},
+        add: function (comment) {
+            return {
+                then: commentsThenMethod
+            };
+        }
     },
     comments = {
         'new': {
@@ -40,6 +51,49 @@ describe('Controller: CommentsCtrl', function () {
     it('does not filter', function() {
         expect(scope.selected(comments.any)).toBe(true);
     });
+
+    describe('disabled form when comment is being posted', function () {
+        var comment = {
+            subject: "Comment subject",
+            message: "Comment message",
+        };
+
+        it('isSending flag initially cleared', function () {
+            expect(scope.isSending).toBe(false);
+        });
+
+        it('sets isSending flag before posting a comment', function () {
+            var origThen = commentsThenMethod;
+
+            // prevent any actions after posting is done, we want to
+            // examine the state as it was when the posting started
+            commentsThenMethod = function (callback) { };
+
+            scope.add(comment);
+            expect(scope.isSending).toBe(true);
+
+            commentsThenMethod = origThen;
+        });
+
+        it('clears isSending flag when posting is done', function () {
+            // after an update, isSending flag should be back to false
+            scope.add(comment);
+            expect(scope.isSending).toBe(false);
+        });
+
+       it('clears isSending flag on errors', function () {
+            var origThen = commentsThenMethod;
+
+            // simulate an error response when scope.add() is invoked
+            commentsThenMethod = commentsThenErrorMethod;
+
+            scope.add(comment);
+            expect(scope.isSending).toBe(false);
+
+            commentsThenMethod = origThen;
+        });
+    });
+
     describe('the `all` status', function() {
         var status;
         beforeEach(function() {
