@@ -53,13 +53,16 @@ angular.module('authoringEnvironmentApp')
             });
 
         var deferred = $q.defer();
-
+        
         return {
+            modified: false,
             resource: resource,
             promise: deferred.promise,
             init: function(par) {
+                var service = this;
                 resource.get(par).$promise.then(function(data) {
                     deferred.resolve(data);
+                    service.init = function() {}; // ignore successive calls
                 });
             }
         };

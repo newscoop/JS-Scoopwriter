@@ -34,6 +34,13 @@
       </ul>
     </span>
   </div>
+  <button
+     class="btn btn-primary btn-sm save-button"
+     ng-disabled="!articleService.modified"
+     ng-click="save()"
+     >
+    Save
+  </button>
   <div
      class="save-status"
      ng-bind="status"

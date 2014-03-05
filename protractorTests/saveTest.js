@@ -5,6 +5,6 @@ describe('the save toolbar', function() {
         status = element(by.css('.save-status'));
     });
     it('status is correct', function() {
-        expect(status.getText()).toBe('Just downloaded');
+        expect(status.getText()).toBe('Saved');
     });
 });
