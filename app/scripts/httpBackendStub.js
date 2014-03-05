@@ -26,6 +26,9 @@
 			    $httpBackend
                                 .whenGET(re)
                                 .respond(article);
+			    $httpBackend
+                                .when('PATCH', re)
+                                .respond({});
                             var re = new RegExp(root + '/articleTypes.*');
 			    $httpBackend
                                 .whenGET(re)

@@ -28,6 +28,21 @@ Inside the `dist/` dir you can now run a local server like `serve` (available fr
 	$ cd dist/
 	$ serve
 
+## Creating new angular entities
+
+Until now, we created new entities using yeoman:
+
+    $ yo angular:service my-awesome-servire
+
+Note that the name has to be separated by hyphens, and yeoman will
+convert it to camel case. Note also that yeoman will create services
+starting with an uppercase letter like `MyAwesomeService`, but this is
+wrong: services are singletons so a name like `myAwesomeService` is
+closer to javascript good practices, that say to call just class names
+uppercase. Controllers, on the other hand, should have uppercase names
+since any instance will be generated on its own and will be
+independent.
+
 # Tests
 ## Unit Tests
 
@@ -37,6 +52,11 @@ Unit tests depend on `karma`
 
 ## E2E Tests
 
-Integration tests depend on `protractor` and `selenium`
+Integration tests depend on `protractor` and `selenium`. Run them using:
 
     $ protractor protractorConf.js
+
+Be sure to have the application served where the tests will try to
+connect (at the current moment `127.0.0.1:9000`), for example running:
+
+    $ grunt server
