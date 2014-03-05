@@ -52,6 +52,11 @@ Unit tests depend on `karma`
 
 ## E2E Tests
 
-Integration tests depend on `protractor` and `selenium`
+Integration tests depend on `protractor` and `selenium`. Run them using:
 
     $ protractor protractorConf.js
+
+Be sure to have the application served where the tests will try to
+connect (at the current moment `127.0.0.1:9000`), for example running:
+
+    $ grunt server
