@@ -46,12 +46,20 @@ angular.module('authoringEnvironmentApp')
             }
             return false;
         };
+
+         // whether or not a new comment is being sent at this very moment
+        $scope.isSending = false;
+
         $scope.comments = comments;
         $scope.create = {};
         comments.init();
         $scope.add = function(par) {
+            $scope.isSending = true;
+            // XXX: on errors isSending is not set back to false,
+            // leaving the add comment form disabled
             comments.add(par).then(function() {
                 $scope.adding = false; // collapse the form
+                $scope.isSending = false;
                 $scope.create = {};
             });
         };
