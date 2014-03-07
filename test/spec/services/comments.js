@@ -97,6 +97,7 @@ describe('Service: Comments', function () {
             expect(spies.data).toHaveBeenCalledWith('message=hey%2C+Joe%2C+let+us+go!');
         });
     });
+
     describe('not paginated', function() {
         // instantiate service
         var comments, $httpBackend, response;
@@ -121,6 +122,27 @@ describe('Service: Comments', function () {
             comments.init();
         }));
 
+        it('init() resets everything to default values', function () {
+            // prevent load() to do anything (any subsequent changes),
+            // here we just want to test if default values has been set
+            comments.load = function () {
+                return {
+                    then: function () {}
+                }
+            };
+
+            comments.canLoadMore = false;
+            comments.loaded.push(items[0], items[1]);
+            comments.displayed.push(items[0]);
+            comments.tracker.next();
+
+            comments.init();
+
+            expect(comments.canLoadMore).toBe(true);
+            expect(comments.loaded.length).toBe(0);
+            expect(comments.displayed.length).toBe(0);
+            expect(comments.tracker.next()).toBe(2);
+        });
 
         describe('server answered', function() {
             beforeEach(function() {

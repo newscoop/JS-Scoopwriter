@@ -52,6 +52,18 @@ angular.module('authoringEnvironmentApp')
             return deferred.promise;
         };
         this.init = function() {
+            // reset everything to initial state (set back to default
+            // values) and load article comments.
+            //
+            // XXX: from user experience perspective this might not be
+            // ideal (to reload everything, e.g. after adding a new comment),
+            // but for now we stick with that as a reasonable compromise
+            // between UX and complexity of the logic in code
+            service.tracker = pageTracker.getTracker();
+            service.canLoadMore = true;
+            service.loaded = [];
+            service.displayed = [];
+
             this.load(this.tracker.next()).then(function(data){
                 service.displayed = data.items.map(decorate);
                 if (service.canLoadMore) {
