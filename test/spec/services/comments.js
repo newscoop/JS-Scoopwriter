@@ -3,28 +3,41 @@
 describe('Service: Comments', function () {
 
     var items = [{
-        id: 26822,
-        author: "Inihe Ublinschä",
-        subject: "subject",
-        message: "message",
-        thread_level: 0,
-        thread_order: 1,
-        status: "approved",
-        created: "2013-11-28T18:10:09+0000",
-        updated: "2013-11-28T18:10:09+0000",
-        recommended: 0
-    }, {
-        id: 26828,
-        author: "More Timat",
-        subject: "ungeeignet..",
-        message: "Mir fiel derselbe Satz auf: «Das Anliegen, die Spekulation mit Grundbesitz einzudämmen ... , sei zwar verständlich, doch die Initiative sei dazu ungeeignet» Ja was gibts denn für geeignete Mittel möchte ich gerne wissen. Enteignung? Verstaatlichung des gesamten Bodens und Verpachtung im Baurecht für 99 Jahre? Vorschläge willkommen!",
-        thread_level: 0,
-        thread_order: 2,
-        status: "approved",
-        created: "2013-11-28T21:30:43+0000",
-        updated: "2013-11-28T21:30:43+0000",
-        recommended: 1
-    }];
+            "id":24,
+            "author":"Boom-boom Boba",
+            "subject":"I approve",
+            "message":"I approve this choice, and I do congratulate. Cheers!",
+            "thread_level":0,
+            "thread_order":1,
+            "status":"approved",
+            "created":"2013-05-02T10:11:13+0200",
+            "updated":"-0001-11-30T00:00:00+0100",
+            "recommended":0
+        }, {
+            "id":25,
+            "author":"Black Persona",
+            "subject":"",
+            "message":"no screw that!",
+            "thread_level":0,
+            "thread_order":3,
+            "status":"approved",
+            "created":"2013-05-02T10:13:28+0200",
+            "updated":"2014-03-06T11:57:11+0100",
+            "recommended":0
+        }, {
+            "id":58,
+            "author":"yorick",
+            "parent":41,
+            "subject":"ahfadfh",
+            "message":"adfhadhg",
+            "thread_level":2,
+            "thread_order":2,
+            "status":"approved",
+            "created":"2014-03-04T14:37:55+0100",
+            "updated":"2014-03-04T14:37:55+0100",
+            "recommended":0
+        }
+    ];
 
     // load the service's module
     beforeEach(module('authoringEnvironmentApp'));
@@ -84,6 +97,7 @@ describe('Service: Comments', function () {
             expect(spies.data).toHaveBeenCalledWith('message=hey%2C+Joe%2C+let+us+go!');
         });
     });
+
     describe('not paginated', function() {
         // instantiate service
         var comments, $httpBackend, response;
@@ -108,13 +122,34 @@ describe('Service: Comments', function () {
             comments.init();
         }));
 
+        it('init() resets everything to default values', function () {
+            // prevent load() to do anything (any subsequent changes),
+            // here we just want to test if default values has been set
+            comments.load = function () {
+                return {
+                    then: function () {}
+                }
+            };
+
+            comments.canLoadMore = false;
+            comments.loaded.push(items[0], items[1]);
+            comments.displayed.push(items[0]);
+            comments.tracker.next();
+
+            comments.init();
+
+            expect(comments.canLoadMore).toBe(true);
+            expect(comments.loaded.length).toBe(0);
+            expect(comments.displayed.length).toBe(0);
+            expect(comments.tracker.next()).toBe(2);
+        });
 
         describe('server answered', function() {
             beforeEach(function() {
                 $httpBackend.flush();
             });
             it('has comments', function () {
-                expect(comments.displayed.length).toBe(2);
+                expect(comments.displayed.length).toBe(3);
             });
             describe('comment created', function() {
                 var p = {
@@ -143,7 +178,7 @@ describe('Service: Comments', function () {
                             return location;
                         });
                     $httpBackend.flush();
-                    expect(comments.displayed.length).toBe(3);
+                    expect(comments.displayed.length).toBe(4);
                 });
             });
             describe('a single comment', function() {
@@ -156,7 +191,7 @@ describe('Service: Comments', function () {
                         comments.displayed[0].remove();
                     });
                     it('removes itself', function() {
-                        expect(comments.displayed.length).toBe(2);
+                        expect(comments.displayed.length).toBe(3);
                     });
                 });
                 it('is not being edited', function() {
@@ -167,8 +202,11 @@ describe('Service: Comments', function () {
                         comment.edit();
                     });
                     it('updates its editing content', function() {
-                        expect(comment.editing.subject).toBe('subject');
-                        expect(comment.editing.message).toBe('message');
+                        expect(comment.editing.subject).toBe('I approve');
+                        expect(comment.editing.message).toBe(
+                            'I approve this choice, and I do ' +
+                            'congratulate. Cheers!'
+                        );
                     });
                     it('knows that it is being edited', function() {
                         expect(comment.isEdited).toBe(true);
@@ -191,9 +229,11 @@ describe('Service: Comments', function () {
                                 });
                                 it('resets the contents', function() {
                                     expect(comment.editing.subject)
-                                        .toBe('subject');
-                                    expect(comment.editing.message)
-                                        .toBe('message');
+                                        .toBe('I approve');
+                                    expect(comment.editing.message).toBe(
+                                        'I approve this choice, and I do ' +
+                                        'congratulate. Cheers!'
+                                    );
                                 });
                             });
                         });
@@ -201,7 +241,7 @@ describe('Service: Comments', function () {
                             beforeEach(function() {
                                 $httpBackend.expect(
                                     'POST',
-                                    'http://tw-merge.lab.sourcefabric.org/content-api/comments/article/64/de/26822'
+                                    'http://tw-merge.lab.sourcefabric.org/content-api/comments/article/64/de/24'
                                 ).respond(200, '');
                                 comment.save();
                                 $httpBackend.flush();
@@ -225,7 +265,7 @@ describe('Service: Comments', function () {
             response = {
                 items: items,
                 "pagination":{
-                    "itemsPerPage":2,
+                    "itemsPerPage":3,
                     "currentPage":1,
                     "itemsCount":149735
                 }
@@ -252,11 +292,11 @@ describe('Service: Comments', function () {
         it('performs two requests', function() {
             $httpBackend.verifyNoOutstandingExpectation();
         });
-        it('shows two comments', function() {
-            expect(comments.displayed.length).toBe(2);
+        it('shows three comments', function() {
+            expect(comments.displayed.length).toBe(3);
         });
         it('already loaded the next comments', function() {
-            expect(comments.loaded.length).toBe(2);
+            expect(comments.loaded.length).toBe(3);
         });
         describe('requesting new comments', function() {
             beforeEach(function() {
@@ -265,17 +305,17 @@ describe('Service: Comments', function () {
                     'http://tw-merge.lab.sourcefabric.org/content-api/comments/article/64/de?items_per_page=50&page=3'
                 ).respond(response);
             });
-            it('immediately shows the two loaded comments', function() {
+            it('immediately shows the three loaded comments', function() {
                 expect(comments.loaded.length).toBe(0);
-                expect(comments.displayed.length).toBe(4);
+                expect(comments.displayed.length).toBe(6);
             });
             describe('after a response', function() {
                 beforeEach(function() {
                     $httpBackend.flush();
                 });
                 it('adds the newly loaded comments', function() {
-                    expect(comments.loaded.length).toBe(2);
-                    expect(comments.displayed.length).toBe(4);
+                    expect(comments.loaded.length).toBe(3);
+                    expect(comments.displayed.length).toBe(6);
                 });
             });
         });
