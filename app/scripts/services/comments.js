@@ -1,14 +1,23 @@
 'use strict';
 
+/**
+* AngularJS Service for managing article comments.
+*
+* @class comments
+*/
 angular.module('authoringEnvironmentApp')
     .service('comments', ['configuration', 'article', '$http', '$q', '$resource', 'transform', 'pageTracker', '$log', function comments(configuration, article, $http, $q, $resource, transform, pageTracker, $log) {
-        var service = this;
-        var f = configuration.API.full;
-        var itemsPerPage = 50;
-        this.canLoadMore = true;
-        this.loaded = [];
-        this.displayed = [];
+        var service = this;     // alias for the comments service itself
+        var f = configuration.API.full;  // base API URL
+        var itemsPerPage = 50;      // max number of comments per page
+        this.canLoadMore = true;    // are there more comments to be loaded?
+        this.loaded = [];           // list of all comments loaded so far
+        this.displayed = [];        // list of currently displayed comments
+
+        // helper service for tracking which comments pages have been loaded
         this.tracker = pageTracker.getTracker();
+
+        // helper object for communication with the backend API
         this.resource = $resource(
             f + '/comments/article/:articleNumber/:languageCode', {
             }, {
@@ -26,6 +35,20 @@ angular.module('authoringEnvironmentApp')
                     url: f + '/comments/article/:articleNumber/:languageCode/:commentId'
                 }
             });
+
+        /**
+        * Asynchronously adds a new comment and displays it after it has been
+        * successfully stored on the server.
+        *
+        * @method add
+        * @param par {Object} A wrapper around the object containing
+        *   comment data. As such it can be directly passed to the relevant
+        *   method of this.resource object.
+        *   @param par.comment {Object} The actual object with comment data.
+        *     @param par.comment.subject {String} Comment's subject
+        *     @param par.comment.message {String} Comment's body
+        * @return {Object} A promise object
+        */
         this.add = function(par) {
             var deferred = $q.defer();
             article.promise.then(function(article) {
@@ -51,14 +74,18 @@ angular.module('authoringEnvironmentApp')
             });
             return deferred.promise;
         };
+
+        /**
+        * Initializes all internal variables to their default values, then
+        * loads and displays the first batch of article comments.
+        *
+        * @method init
+        */
         this.init = function() {
-            // reset everything to initial state (set back to default
-            // values) and load article comments.
-            //
-            // XXX: from user experience perspective this might not be
-            // ideal (to reload everything, e.g. after adding a new comment),
-            // but for now we stick with that as a reasonable compromise
-            // between UX and complexity of the logic in code
+            // XXX: from user experience perspective current behavior might
+            // not be ideal (to reload everything, e.g. after adding a new
+            // comment), but for now we stick with it as a reasonable
+            // compromise between UX and complexity of the logic in code
             service.tracker = pageTracker.getTracker();
             service.canLoadMore = true;
             service.loaded = [];
@@ -74,6 +101,16 @@ angular.module('authoringEnvironmentApp')
                 };
             });
         };
+
+        /**
+        * If there are more comments to be loaded from the server, the method
+        * first takes one page of comments from the pre-loaded comments list
+        * and appends them to the end of the displayed comments list. After
+        * that it also asynchronously loads the next page of comments from
+        * the server.
+        *
+        * @method more
+        */
         this.more = function() {
             if (this.canLoadMore) {
                 var additional = this.loaded.splice(0, itemsPerPage);
@@ -87,6 +124,15 @@ angular.module('authoringEnvironmentApp')
                 $log.error('More comments required, but the service cannot load more of them. In this case the user should not be able to trigger this request');
             }
         };
+
+        /**
+        * Asynchronously loads a single page of article comments.
+        *
+        * @method load
+        * @param page {Number} Index of the page to load
+        *     (NOTE: page indices start with 1)
+        * @return {Object} A promise object
+        */
         this.load = function(page) {
             var deferred = $q.defer();
             article.promise.then(function (article) {
@@ -107,20 +153,70 @@ angular.module('authoringEnvironmentApp')
             });
             return deferred.promise;
         };
+
+        /**
+        * Creates and returns a comparison function. This functions accepts an
+        * object with the "id" attribute as a parameter and returns true if
+        * object.id is equal to the value of the "id" parameter passed to
+        * the method. If not, the created comparison function returns false.
+        *
+        * The returned comparison function can be used, for instance, as a
+        * parameter to various utility functions - one example would be
+        * a function, which filters given array based on some criteria.
+        *
+        * @method matchMaker
+        * @param id {Number} Value to which the object.id will be compared in
+        *   the comparison function (can also be a numeric string).
+        *   NOTE: before comparison the parameter is converted to integer
+        *   using the built-in parseInt() function.
+        *
+        * @return {Function} Generated comparison function.
+        */
         this.matchMaker = function(id) {
             return function(needle) {
                 return parseInt(needle.id) == parseInt(id);
             };
         };
 
+        /**
+        * Decorates an object containing raw comment data (as returned by
+        * the API) with properties and methods, turning it into a
+        * self-contained "comment entity", which knows how to manage itself
+        * (e.g. editing, saving, removing...)
+        *
+        * @class decorate
+        * @param comment {Object} Object containing comment's (meta)data
+        * @return {Object} Decorated comment object
+        */
         function decorate(comment) {
+            /**
+            * @class comment
+            */
+
+            // comment's current display status (collapsed or expanded)
             comment.showStatus = 'collapsed';
+
+            /**
+            * Sets comment's display status to collapsed.
+            * @method collapse
+            */
             comment.collapse = function() {
                 this.showStatus = 'collapsed';
             };
+
+            /**
+            * Sets comment's display status to expanded.
+            * @method expand
+            */
             comment.expand = function() {
                 this.showStatus = 'expanded';
             };
+
+            /**
+            * Changes comment's display status from expanded to collapsed or
+            * vice versa.
+            * @method toggle
+            */
             comment.toggle = function() {
                 if ('expanded' == this.showStatus) {
                     this.collapse();
@@ -129,7 +225,13 @@ angular.module('authoringEnvironmentApp')
                 }
             };
 
+            // a flag indicating whether the comment is currently being edited
             comment.isEdited = false;
+
+            /**
+            * Puts comment into edit mode.
+            * @method edit
+            */
             comment.edit = function() {
                 this.editing = {
                     subject: this.subject,
@@ -137,9 +239,19 @@ angular.module('authoringEnvironmentApp')
                 };
                 this.isEdited = true;
             };
+
+            /**
+            * End comment's edit mode.
+            * @method cancel
+            */
             comment.cancel = function() {
                 this.isEdited = false;
             };
+
+            /**
+            * Asynchronously saves/updates the comment and ends the edit mode.
+            * @method save
+            */
             comment.save = function() {
                 var comment = this;
                 article.promise.then(function(article) {
@@ -155,6 +267,10 @@ angular.module('authoringEnvironmentApp')
                 });
             };
 
+            /**
+            * Asynchronously deletes the comment.
+            * @method remove
+            */
             comment.remove = function() {
                 var comment = this;
                 article.promise.then(function(article) {
@@ -170,6 +286,7 @@ angular.module('authoringEnvironmentApp')
                     });
                 });
             };
+
             return comment;
         };
     }]);
