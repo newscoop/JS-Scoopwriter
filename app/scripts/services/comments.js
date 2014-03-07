@@ -10,14 +10,43 @@ angular.module('authoringEnvironmentApp')
         var service = this;     // alias for the comments service itself
         var f = configuration.API.full;  // base API URL
         var itemsPerPage = 50;      // max number of comments per page
-        this.canLoadMore = true;    // are there more comments to be loaded?
-        this.loaded = [];           // list of all comments loaded so far
-        this.displayed = [];        // list of currently displayed comments
 
-        // helper service for tracking which comments pages have been loaded
+        /**
+        * A flag indicating whether there are more comments to be loaded.
+        * @property canLoadMore
+        * @type Boolean
+        * @default true
+        */
+        this.canLoadMore = true;
+
+        /**
+        * A list of all comments loaded so far.
+        * @property loaded
+        * @type Array
+        * @default []
+        */
+        this.loaded = [];
+
+        /**
+        * A list of currently displayed comments.
+        * @property displayed
+        * @type Array
+        * @default []
+        */
+        this.displayed = [];
+
+        /**
+        * Helper service for tracking which comments pages have been loaded.
+        * @property tracker
+        * @type Object (instance of pageTracker)
+        */
         this.tracker = pageTracker.getTracker();
 
-        // helper object for communication with the backend API
+        /**
+        * Helper object for communication with the backend API.
+        * @property tracker
+        * @type Object (as created by Angular's $resource factory)
+        */
         this.resource = $resource(
             f + '/comments/article/:articleNumber/:languageCode', {
             }, {
@@ -193,7 +222,12 @@ angular.module('authoringEnvironmentApp')
             * @class comment
             */
 
-            // comment's current display status (collapsed or expanded)
+            /**
+            * How the comment is currently displayed (collapsed or expanded).
+            * @property showStatus
+            * @type String
+            * @default "collapsed"
+            */
             comment.showStatus = 'collapsed';
 
             /**
@@ -225,7 +259,12 @@ angular.module('authoringEnvironmentApp')
                 }
             };
 
-            // a flag indicating whether the comment is currently being edited
+            /**
+            * A flag indicating whether the comment is currently being edited.
+            * @property isEdited
+            * @type Boolean
+            * @default false
+            */
             comment.isEdited = false;
 
             /**
