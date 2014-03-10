@@ -1,7 +1,7 @@
 'use strict';
 
 /**
-* AngularJS Service for for tracking which batches of content have been loaded
+* AngularJS Service for tracking which batches of content have been loaded
 * from the backend server. Useful when implementing pagination behavior.
 *
 * @class pageTracker
