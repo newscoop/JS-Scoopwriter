@@ -113,8 +113,16 @@ angular.module('authoringEnvironmentApp')
             };
         };
 
+        /* decorator pattern. this function adds methods and
+         * properties to a comment element */
         function decorate(comment) {
             comment.showStatus = 'collapsed';
+            comment.isEdited = false;
+            comment.reply = {
+                subject: '',
+                message: ''
+            };
+            comment.replyDisabled = false;
             comment.collapse = function() {
                 this.showStatus = 'collapsed';
             };
@@ -128,8 +136,6 @@ angular.module('authoringEnvironmentApp')
                     this.expand();
                 }
             };
-
-            comment.isEdited = false;
             comment.edit = function() {
                 this.editing = {
                     subject: this.subject,
@@ -154,7 +160,6 @@ angular.module('authoringEnvironmentApp')
                     });
                 });
             };
-
             comment.remove = function() {
                 var comment = this;
                 article.promise.then(function(article) {
@@ -168,6 +173,19 @@ angular.module('authoringEnvironmentApp')
                             service.matchMaker(comment.id)
                         );
                     });
+                });
+            };
+            comment.sendReply = function() {
+                var comment = this;
+                var data = angular.copy(comment.reply);
+                data.parent = comment.id;
+                comment.replyDisabled = true;
+                service.add(data).then(function() {
+                    comment.replyDisabled = false;
+                    comment.reply = {
+                        subject: '',
+                        message: ''
+                    };
                 });
             };
             return comment;
