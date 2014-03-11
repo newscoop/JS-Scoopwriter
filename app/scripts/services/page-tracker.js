@@ -45,13 +45,9 @@ angular.module('authoringEnvironmentApp')
         * Creates and returns a new tracker object.
         *
         * @method getTracker
-        * @param [opt] {Object} not used
         * @return {Object} New tracker object.
         */
         this.getTracker = function(opt) {
-            // XXX: is there any reason to keep the opt parameter? Seems like
-            // it's not used anymore, therefore it should be safe to remove it?
-
             /**
             * @class tracker
             */
