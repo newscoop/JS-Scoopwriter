@@ -21,9 +21,6 @@ angular.module('authoringEnvironmentApp')
                 throw Error('a circular buffer needs an integer size option');
             }
 
-            /**
-            * @class circularBuffer
-            */
             return {
                 /**
                 * Options used to initialize the buffer.
