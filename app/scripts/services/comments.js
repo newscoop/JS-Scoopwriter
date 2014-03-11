@@ -231,6 +231,20 @@ angular.module('authoringEnvironmentApp')
             comment.showStatus = 'collapsed';
 
             /**
+            * A flag indicating whether the comment is currently being edited.
+            * @property isEdited
+            * @type Boolean
+            * @default false
+            */
+            comment.isEdited = false;
+
+            comment.reply = {
+                subject: '',
+                message: ''
+            };
+            comment.replyDisabled = false;
+
+            /**
             * Sets comment's display status to collapsed.
             * @method collapse
             */
@@ -258,14 +272,6 @@ angular.module('authoringEnvironmentApp')
                     this.expand();
                 }
             };
-
-            /**
-            * A flag indicating whether the comment is currently being edited.
-            * @property isEdited
-            * @type Boolean
-            * @default false
-            */
-            comment.isEdited = false;
 
             /**
             * Puts comment into edit mode.
@@ -326,6 +332,19 @@ angular.module('authoringEnvironmentApp')
                 });
             };
 
+            comment.sendReply = function() {
+                var comment = this;
+                var data = angular.copy(comment.reply);
+                data.parent = comment.id;
+                comment.replyDisabled = true;
+                service.add(data).then(function() {
+                    comment.replyDisabled = false;
+                    comment.reply = {
+                        subject: '',
+                        message: ''
+                    };
+                });
+            };
             return comment;
         };
     }]);

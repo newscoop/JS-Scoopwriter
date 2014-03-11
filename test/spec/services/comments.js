@@ -105,9 +105,9 @@ describe('Service: Comments', function () {
     });
 
     describe('not paginated', function() {
-        // instantiate service
-        var comments, $httpBackend, response;
-        beforeEach(inject(function (_comments_, _$httpBackend_, _article_) {
+        var comments, $httpBackend, response, $q;
+        beforeEach(inject(function (_comments_, _$httpBackend_, _article_, _$q_) {
+            $q = _$q_;
             response = {
                 items: items
             };
@@ -202,6 +202,38 @@ describe('Service: Comments', function () {
                 });
                 it('is not being edited', function() {
                     expect(comment.isEdited).toBe(false);
+                });
+                describe('being replied', function() {
+                    var deferred = $q.defer();
+                    beforeEach(function() {
+                        comment.reply.subject = 'reply subject';
+                        comment.reply.message = 'reply message';
+                        spyOn(comments, 'add').andCallFake(function() {
+                            return deferred.promise;
+                        });
+                        comment.sendReply();
+                    });
+                    it('requires the creation of a new corresponding comment', function() {
+                        expect(comments.add.mostRecentCall.args[1])
+                            .toEqual({
+                                comment: {
+                                    subject: 'reply subject',
+                                    message: 'reply message',
+                                    parent: 24
+                                }
+                            });
+                    });
+                    it('disables the reply', function() {
+                        expect(comment.replyDisabled).toBe(true);
+                    });
+                    describe('on success', function() {
+                        beforeEach(function() {
+                            deferred.resolve();
+                        });
+                        it('is not disabled anymore', function() {
+                            expect(comment.replyDisabled).toBe(false);
+                        });
+                    });
                 });
                 describe('being edited', function() {
                     beforeEach(function() {
