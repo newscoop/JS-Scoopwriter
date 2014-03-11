@@ -238,10 +238,27 @@ angular.module('authoringEnvironmentApp')
             */
             comment.isEdited = false;
 
+            /**
+            * Object holding a subject and a message of a new reply currently
+            * being added to the comment.
+            *
+            * @property reply
+            * @type Object
+            * @default {subject: '', message: ''}
+            */
             comment.reply = {
                 subject: '',
                 message: ''
             };
+
+            /**
+            * A flag indicating whether replying to the comment is currently
+            * disabled or not.
+            *
+            * @property replyDisabled
+            * @type Boolean
+            * @default false
+            */
             comment.replyDisabled = false;
 
             /**
@@ -332,6 +349,11 @@ angular.module('authoringEnvironmentApp')
                 });
             };
 
+            /**
+            * Asynchronously adds a new reply to the comment.
+            * @method sendReply
+            * @return {Object} The comment object itself.
+            */
             comment.sendReply = function() {
                 var comment = this;
                 var data = angular.copy(comment.reply);
