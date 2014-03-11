@@ -3,7 +3,8 @@
 angular.module('authoringEnvironmentApp')
   .factory('panes', function ($filter) {
     var panes = [{
-        name: "topics",
+        name: 'Topics',
+        id: 'topics',
         icon:'chat',
         template: 'views/pane-topics.html',
         position: 'right',
@@ -11,7 +12,8 @@ angular.module('authoringEnvironmentApp')
         active: false,
         selected: true
     }, {
-        name: "images",
+        name: 'Images',
+        id: 'images',
         icon:'media',
         template: 'views/pane-draggable.html',
         position: 'left',
@@ -19,7 +21,8 @@ angular.module('authoringEnvironmentApp')
         active: false,
         selected: true
     }, {
-        name: "snippets",
+        name: 'Snippets',
+        id: 'snippets',
         icon:'embeds',
         template: 'views/pane-embed.html',
         position: 'left',
@@ -27,7 +30,8 @@ angular.module('authoringEnvironmentApp')
         active: false,
         selected: true
     }, {
-        name: 'comments',
+        name: 'Comments',
+        id: 'comments',
         icon:'comments',
         template: 'views/pane-comments.html',
         position: 'left',

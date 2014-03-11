@@ -1,8 +1,8 @@
 <div ng-controller="SfPanesCtrl">
     <div class="tablist left-tablist">
         <ul class="navigation-tabs">
-            <li ng-repeat="pane in panes|filter:{position:'left', selected:true}" ng-class="{'active':pane.active}" ng-click="flipActive(pane)" tabname="{{pane.name|lowercase}}">
-                <a draggable="true" control="tab" rel="tooltip" data-placement="{{pane.position}}" data-original-title="{{pane.name}}">
+            <li ng-repeat="pane in panes|filter:{position:'left', selected:true}" ng-class="{'active':pane.active}" ng-click="flipActive(pane)" tabname="{{pane.id}}">
+                <a draggable="true" control="tab" rel="tooltip" data-placement="{{pane.position}}" data-original-title="{{pane.id}}">
                     <i class="big-icon-{{pane.icon}}"></i><span class="badge badge-inverse hide notifications"></span><span class="badge badge-info hide config-notif">!</span>
                 </a>
             </li>
@@ -10,8 +10,8 @@
     </div>
     <div class="tablist right-tablist">
         <ul class="navigation-tabs">
-            <li ng-repeat="pane in panes|filter:{position:'right', selected:true}" ng-class="{'active':pane.active}" ng-click="flipActive(pane)" tabname="{{pane.name|lowercase}}">
-                <a draggable="true" control="tab" rel="tooltip" data-placement="{{pane.position}}" data-original-title="{{pane.name}}">
+            <li ng-repeat="pane in panes|filter:{position:'right', selected:true}" ng-class="{'active':pane.active}" ng-click="flipActive(pane)" tabname="{{pane.id}}">
+                <a draggable="true" control="tab" rel="tooltip" data-placement="{{pane.position}}" data-original-title="{{pane.id}}">
                     <i class="big-icon-{{pane.icon}}"></i><span class="badge badge-inverse hide notifications"></span><span class="badge badge-info hide config-notif">!</span>
                 </a>
             </li>
@@ -22,7 +22,7 @@
            ng-repeat="pane in panes|filter:{position:'left', selected:true}"
            ng-show="pane.active"
            ng-include="pane.template"
-           class="pane {{pane.name}}"
+           class="pane {{pane.id}}"
            ></section>
     </div>
     <div class="tabpane right-tabpane" ng-class="{'open-tabpane':tabpaneIsOpen('right')}">
@@ -30,7 +30,7 @@
            ng-repeat="pane in panes|filter:{position:'right', selected:true}"
            ng-show="pane.active"
            ng-include="pane.template"
-           class="pane {{pane.name}}"
+           class="pane {{pane.id}}"
            ></section>
     </div>
 </div>
