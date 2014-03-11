@@ -17,14 +17,6 @@ angular.module('authoringEnvironmentApp')
         var service = this;  // alias for the modal service itself
 
         /**
-        * XXX: not used? should probably be removed, right?
-        * @property html
-        * @type String
-        * @default ''
-        */
-        this.html = '';
-
-        /**
         * A flag indicating whether the modal is visible or not
         * @property visible
         * @type Boolean
