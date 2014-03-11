@@ -39,7 +39,7 @@ angular.module('authoringEnvironmentApp')
         *
         * @method show
         * @param opt {Object} Object containing modal options.
-        *   @param opt.title {String} Title of the modal box.
+        *   @param [opt.title] {String} Title of the modal box.
         *   @param opt.templateUrl {String} URL of modal's HTML template.
         */
         this.show = function(opt) {
