@@ -3,7 +3,7 @@
 /**
 * AngularJS Service for displaying a modal box (overlay) on a page.
 *
-* @class pageTracker
+* @class modal
 */
 angular.module('authoringEnvironmentApp')
     .service('modal',
