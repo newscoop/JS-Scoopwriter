@@ -5,7 +5,7 @@
  * var firstElementInRepeater = element(by.repeater("pane in panes|filter:{position:'left', selected:true}").row(0));
  *
  * search by data-attribute
- * var anchor = element(by.xpath('//a[@data-original-title="Draggable"]'));
+ * var anchor = element(by.xpath('//a[@data-original-title="draggable"]'));
  * anchor.click();
  */
 

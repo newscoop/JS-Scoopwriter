@@ -2,42 +2,47 @@
 
 angular.module('authoringEnvironmentApp')
   .factory('panes', function ($filter) {
-    // Service logic
-    // ...
-
     var panes = [{
-        name: "Topics",
+        name: 'Topics',
+        id: 'topics',
         icon:'chat',
         template: 'views/pane-topics.html',
         position: 'right',
+        size: 'small',
         active: false,
         selected: true
     }, {
-        name: "Images",
+        name: 'Images',
+        id: 'images',
         icon:'media',
         template: 'views/pane-draggable.html',
         position: 'left',
+        size: 'small',
         active: false,
         selected: true
     }, {
-        name: "Snippets",
+        name: 'Snippets',
+        id: 'snippets',
         icon:'embeds',
         template: 'views/pane-embed.html',
         position: 'left',
+        size: 'small',
         active: false,
         selected: true
     }, {
         name: 'Comments',
+        id: 'comments',
         icon:'comments',
         template: 'views/pane-comments.html',
         position: 'left',
+        size: 'big',
         active: false,
         selected: true
     }];
 
     panes.layout = {
-      right: false,
-      left: false
+      right: null,
+      left: null
     };
 
     panes.articleClass = '';
@@ -45,8 +50,13 @@ angular.module('authoringEnvironmentApp')
     function classFromLayout(layout) {
         var c = '';
         angular.forEach(layout, function(value, key) {
-            if (value) {
+            switch (value) {
+            case 'small':
                 c += 'shrink-'+key+' ';
+                break;
+            case 'big':
+                c += 'shrink-'+key+'-more ';
+                break;
             }
         });
         return c;
@@ -67,22 +77,22 @@ angular.module('authoringEnvironmentApp')
             p.active = false;
           }
         });
-        panes.layout = this.layout();
+        panes.layout = this.layout(panes);
         panes.articleClass = classFromLayout(panes.layout);
       },
-      layout: function () {
-        var l = $filter('filter')(panes, {
-          position:'left',
-          active: true
-        }).length;
-        var r = $filter('filter')(panes, {
-          position:'right',
-          active: true
-        }).length;
-        return {
-          left: l>0 ? true : false,
-          right: r>0 ? true : false
-        };
+      layout: function (panes) {
+          var layout = {
+              left: null,
+              right: null
+          };
+          panes.forEach(function(pane) {
+              if (pane.active) {
+                  // i assume that there is a single active pane for
+                  // side at a time
+                  layout[pane.position] = pane.size;
+              };
+          });
+          return layout;
       }
     };
   });

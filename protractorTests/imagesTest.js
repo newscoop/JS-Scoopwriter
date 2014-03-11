@@ -1,8 +1,8 @@
-describe('the snippets panel', function() {
+describe('the images panel', function() {
     var paneButton;
     beforeEach(function() {
         browser.get('http://127.0.0.1:9000/#access_token=test?article_number=64&language=de&nobackend');
-        paneButton = element(by.css('[data-original-title="Images"]'));
+        paneButton = element(by.css('[data-original-title="images"]'));
     });
     it('button is present', function() {
         expect(paneButton.isPresent()).toBe(true);

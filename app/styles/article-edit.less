@@ -10,8 +10,12 @@
 @tablist-background:  #a1a1a1;
 @tabpane-background:  #f5f5f5;
 @tabpane-border:      #7c7c7c;
+/* default width, but some panes may be wider */
 @tabpane-width:       330px;
-@tabcontent-padding:  0;
+/* we can have two types of panes, small ones (most of them) and big
+  ones (comments, for example) */
+@small-big-pane-delta: 200px;
+@tabcontent-padding: 0;
 
 @main-article-color:  #ffffff;
 @main-article-border: #cacaca;
@@ -50,8 +54,10 @@ html, body.article-edit {
             color: darkred;
         }
     }
-    .controls {
-        float: right;
+    .navbar {
+        .controls {
+            float: right;
+        }
     }
     /* following styles have been copied from Tageswoche frontend */
     .article-field {
@@ -243,7 +249,6 @@ html, body.article-edit {
 
     .tabpane {
         position:fixed;
-        width:@tabpane-width;
         top:@subnav-height + @hostTop + @editor-toolbar;
         bottom:0;
         background: @tabpane-background;
@@ -273,6 +278,12 @@ html, body.article-edit {
             display:block;
             padding:@tabcontent-padding;
             //padding-bottom: @tabcontent-padding + 30px; //because of scratchpad
+        }
+        .pane {
+            width: @tabpane-width;
+            &.comments {
+                width: @tabpane-width + @small-big-pane-delta;
+            }
         }
     }
 
@@ -456,6 +467,12 @@ html, body.article-edit {
         }
         &.shrink-right {
             margin-right: @main-article-margin-side-shrinked;
+        }
+        &.shrink-left-more {
+            margin-left: @main-article-margin-side-shrinked + @small-big-pane-delta;
+        }
+        &.shrink-right-more {
+            margin-right: @main-article-margin-side-shrinked + @small-big-pane-delta;
         }
     }
 
@@ -1810,6 +1827,14 @@ html, body.article-edit {
             box-sizing: content-box;
             &.editable {
                 border-bottom: 1px dashed black;
+                /*
+                  about this width: the same elements are used in different
+                  ways among different panels. either we write
+                  different code for every panel, or the design should
+                  be coherent. for the moment i picked a compromise
+                  value that works in both cases
+                */
+                width: 70%;
             }
         }
         .message {

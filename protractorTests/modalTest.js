@@ -1,10 +1,10 @@
-describe('the snippets panel', function() {
+describe('the images modal', function() {
     var paneButton;
     beforeEach(function() {
         browser.get('http://127.0.0.1:9000/#access_token=test?article_number=64&language=de&nobackend');
-        element(by.css('[data-original-title="Images"]')).click();
+        element(by.css('[data-original-title="images"]')).click();
     });
-    it('does not show the modal', function() {
+    it('does not show at the beginning', function() {
         expect(element(by.css('.modal-dialog')).isDisplayed()).toBe(false);
     });
     describe('after click', function() {
@@ -13,7 +13,7 @@ describe('the snippets panel', function() {
             element(by.css('[data-test-button="image-attach"]')).click();
             browser.sleep(500);
         });
-        it('shows the modal', function() {
+        it('shows itself', function() {
             expect(element(by.css('.modal-title')).isDisplayed()).toBe(true);
         });
         it('selects the archive source by default', function() {

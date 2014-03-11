@@ -21,6 +21,8 @@ describe('Controller: CommentsCtrl', function () {
             };
         }
     },
+    /* samples of comments with different statuses in order to test
+     * filtering */
     comments = {
         'new': {
             status: 'new',
