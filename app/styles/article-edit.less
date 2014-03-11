@@ -180,13 +180,25 @@ html, body.article-edit {
         }
     }
 
+    .nested comment {
+        @indent-step: 20px;
+        .level-0 {
+            margin-left: @indent-step * 0;
+        }
+        .level-1 {
+            margin-left: @indent-step * 1;
+        }
+        .level-2 {
+            margin-left: @indent-step * 2;
+        }
+        .level-3 {
+            margin-left: @indent-step * 3;
+        }
+    }
     comment {
         display: block;
         .root {
             border-left: solid 3px gray;
-            border-bottom: solid 1px gainsboro;
-            padding: 10px;
-            margin: 1px;
             &.comment-new {
                 border-left-color: @new-comment-blue;
                 .label {
@@ -199,7 +211,6 @@ html, body.article-edit {
                     background: @approved-comment-green;
                 }
             };
-            height: 100%;
             input[type="checkbox"] {
                 float: left;
                 height: 100%;
@@ -217,9 +228,7 @@ html, body.article-edit {
                     display: inline-block;
                 }
                 .label {
-                    position: absolute;
-                    top: 5px;
-                    right: 5px;
+                    margin: 3px 0 0 5px;
                 }
             }
             .controls {
@@ -235,6 +244,12 @@ html, body.article-edit {
                     /* a trick until we get a "real" reply-to icon */
                     transform: rotate(180deg);
                 }
+            }
+            .wrapped {
+                border-bottom: solid 1px gainsboro;
+                padding: 10px;
+                margin: 5px 0;
+                height: 100%;
             }
         }
         .collapsed {

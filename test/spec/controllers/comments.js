@@ -14,6 +14,7 @@ describe('Controller: CommentsCtrl', function () {
         errorCallback();
     },
     commentsService = {
+        displayed: [],
         init: function() {},
         add: function (comment) {
             return {
@@ -33,6 +34,9 @@ describe('Controller: CommentsCtrl', function () {
         any: {
             status: 'whatever'
         }
+    },
+    log = {
+        debug: jasmine.createSpy('debug mock')
     };
 
     // Initialize the controller and a mock scope
@@ -40,7 +44,8 @@ describe('Controller: CommentsCtrl', function () {
         scope = $rootScope.$new();
         CommentsCtrl = $controller('CommentsCtrl', {
             $scope: scope,
-            comments: commentsService
+            comments: commentsService,
+            $log: log
         });
     }));
 
@@ -53,7 +58,64 @@ describe('Controller: CommentsCtrl', function () {
     it('does not filter', function() {
         expect(scope.selected(comments.any)).toBe(true);
     });
-
+    it('has a nested sorting', function() {
+        expect(scope.sorting.text).toBe('Nested');
+    });
+    describe('when it can load more comments', function() {
+        beforeEach(function() {
+            spyOn(commentsService, 'init');
+            commentsService.canLoadMore = true;
+        });
+        describe('when sorting changed', function() {
+            beforeEach(function() {
+                scope.sorting = scope.sortings[1];
+                scope.$apply();
+            });
+            it('triggers the watch handler', function() {
+                expect(log.debug).toHaveBeenCalledWith('sorting changed');
+            });
+            it('has a chronological sorting', function() {
+                expect(scope.sorting.text).toBe('Chronological');
+            });
+            it('reinitialises', function() {
+                expect(commentsService.init)
+                    .toHaveBeenCalledWith({sorting:'chronological'});
+            });
+            describe('when sorting changed again', function() {
+                beforeEach(function() {
+                    scope.sorting = scope.sortings[0];
+                    scope.$apply();
+                });
+                it('triggers the watch handler', function() {
+                    expect(log.debug).toHaveBeenCalledWith('sorting changed');
+                });
+                it('has a chronological sorting', function() {
+                    expect(scope.sorting.text).toBe('Nested');
+                });
+                it('reinitialises', function() {
+                    expect(commentsService.init)
+                        .toHaveBeenCalledWith({sorting:'nested'});
+                });
+            });
+        });
+    });
+    describe('when it cannot load more comments', function() {
+        beforeEach(function() {
+            spyOn(commentsService, 'init');
+            commentsService.canLoadMore = false;
+        });
+        describe('when sorting changed', function() {
+            beforeEach(function() {
+                scope.sorting = scope.sortings[1];
+            });
+            it('has a chronological sorting', function() {
+                expect(scope.sorting.text).toBe('Chronological');
+            });
+            it('does not reinitialise', function() {
+                expect(commentsService.init).not.toHaveBeenCalled();
+            });
+        });
+    });
     describe('disabled form when comment is being posted', function () {
         var comment = {
             subject: "Comment subject",

@@ -1,18 +1,81 @@
 <div
-   class="root {{model.showStatus}} comment-{{model.status}}"
+   class="root {{model.showStatus}} comment-{{model.status}} level-{{model.thread_level}}"
    >
-  <input type="checkbox" ng-model="model.selected" />
-  <div class="right">
-    <div class="image-and-author-details">
-      <!--img class="author" ng-src="model.image" /-->
-      <div class="date-and-name">
-        <div class="date" ng-bind="model.created | date: 'dd.M.yyyy'"></div>
-        <div
-           ng-bind="model.author"
-           ng-click="model.toggle()"
-           ></div>
+  <div class="wrapped"> <!-- needed just for style reasons -->
+    <input type="checkbox" ng-model="model.selected" />
+    <div class="right">
+      <div class="image-and-author-details">
+        <!--img class="author" ng-src="model.image" /-->
+        <div class="date-and-name">
+          <div class="date" ng-bind="model.created | date: 'dd.M.yyyy'"></div>
+          <div
+             ng-bind="model.author"
+             ng-click="model.toggle()"
+             ></div>
+        </div>
+        <span
+           class="label label-default pull-right"
+           ng-bind="model.status"></span>
+        <img
+           class="pull-right"
+           ng-src="/images/icon-nested-comment-level-{{model.thread_level}}.png"
+           />
       </div>
-      <span class="label label-default" ng-bind="model.status"></span>
+      <div
+         class="subject"
+         ng-bind="model.subject"
+         ng-click="model.toggle()"
+         ng-hide="model.isEdited"
+         ></div>
+      <input
+         class="editable subject"
+         ng-model="model.editing.subject"
+         ng-show="model.isEdited"
+         />
+      <div
+         ng-bind="model.message"
+         ng-hide="model.isEdited"
+         class="comment"></div>
+      <textarea
+         class="message"
+         ng-model="model.editing.message"
+         ng-show="model.isEdited"
+         ></textarea>
+    </div>
+    <div class="controls">
+      <span
+         class="glyphicon glyphicon-chevron-up"
+         ng-hide="model.isEdited"
+         ng-click="model.collapse()"
+         ></span>
+      <span
+         class="glyphicon glyphicon-pencil"
+         ng-click="model.edit()"
+         ng-hide="model.isEdited"
+         ></span>
+      <span
+         class="glyphicon glyphicon-floppy-disk"
+         ng-click="model.save()"
+         ng-show="model.isEdited"
+         ></span>
+      <span
+         class="glyphicon glyphicon-remove"
+         ng-click="model.cancel()"
+         ng-show="model.isEdited"
+         ></span>
+      <span
+         class="glyphicon glyphicon-share-alt"
+         ng-hide="model.isEdited"
+         ></span>
+      <span
+         class="glyphicon glyphicon-thumbs-up"
+         ng-hide="model.isEdited"
+         ></span>
+      <span
+         class="glyphicon glyphicon-trash"
+         ng-hide="model.isEdited"
+         ng-click="model.remove()"
+         ></span>
     </div>
     <div
        class="subject"
@@ -128,4 +191,3 @@
        ></span>
   </div>
 </div>
-
