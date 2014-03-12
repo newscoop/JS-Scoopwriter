@@ -76,6 +76,7 @@ angular.module('authoringEnvironmentApp')
         *   @param par.comment {Object} The actual object with comment data.
         *     @param par.comment.subject {String} Comment's subject
         *     @param par.comment.message {String} Comment's body
+        *     @param [par.comment.parent] {Number} ID of the parent comment
         * @return {Object} A promise object
         */
         this.add = function(par) {
@@ -386,13 +387,13 @@ angular.module('authoringEnvironmentApp')
             * @method sendReply
             */
             comment.sendReply = function () {
-                var comment = this,
-                    data = angular.copy(comment.reply);
+                var comment = this,  // alias for the comment object itself
+                    replyData = angular.copy(comment.reply);
 
-                data.parent = comment.id;
+                replyData.parent = comment.id;
                 comment.sendingReply = true;
 
-                service.add(data).then(function () {
+                service.add({'comment': replyData}).then(function () {
                     comment.sendingReply = false;
                     comment.isReplyMode = false;
 
@@ -400,8 +401,16 @@ angular.module('authoringEnvironmentApp')
                         subject: 'Re: ' + comment.subject,
                         message: ''
                     };
+
                     // TODO: display new comment (reply) in DOM ---> add it to
                     // the list of displayed comments (at the right place!)
+
+                    // the thing is add() should not reload everything after
+                    // successfully adding a new comment, this logic needs
+                    // to be refined
+                }, function (reason) {
+                    // XXX: what here?  How to notify the user about
+                    // the error in the user interface?
                 });
             };
 
