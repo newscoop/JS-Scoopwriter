@@ -1,5 +1,11 @@
 'use strict';
 
+/**
+* Module with tests for the comments service.
+*
+* @module Comments service tests
+*/
+
 describe('Service: Comments', function () {
 
     var items = [{
