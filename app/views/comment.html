@@ -82,32 +82,37 @@
   </div>
 
 
-  <div class="controls">
+  <div class="controls" ng-hide="model.isReplyMode">
     <span
        class="glyphicon glyphicon-chevron-up"
        ng-hide="model.isEdited"
        ng-click="model.collapse()"
+       title="Collapse"
        ></span>
     <span
        class="glyphicon glyphicon-pencil"
        ng-click="model.edit()"
        ng-hide="model.isEdited"
+       title="Edit"
        ></span>
     <span
        class="glyphicon glyphicon-floppy-disk"
        ng-click="model.save()"
        ng-show="model.isEdited"
+       title="Save"
        ></span>
     <span
        class="glyphicon glyphicon-remove"
        ng-click="model.cancel()"
        ng-show="model.isEdited"
+       title="Cancel"
        ></span>
     <span
        class="glyphicon glyphicon-share-alt"
        style="-webkit-transform: rotate(180deg)"
        ng-hide="model.isEdited"
        ng-click="model.replyTo()"
+       title="Reply"
        ></span> <!-- TODO: set rotation in CSS class of course ...
         and make it cros .browser!
       transform:rotate(7deg);
@@ -117,15 +122,18 @@
     <span
        class="glyphicon glyphicon-share-alt"
        ng-hide="model.isEdited"
+       title="Share"
        ></span>
     <span
        class="glyphicon glyphicon-thumbs-up"
        ng-hide="model.isEdited"
+       title="Recommend"
        ></span>
     <span
        class="glyphicon glyphicon-trash"
        ng-hide="model.isEdited"
        ng-click="model.remove()"
+       title="Delete"
        ></span>
   </div>
 </div>
