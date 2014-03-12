@@ -35,6 +35,51 @@
        ng-show="model.isEdited"
        ></textarea>
   </div>
+
+  <!-- reply-to-comment form -->
+  <div class="right"
+     ng-show="model.isReplyMode"
+     style="border: 1px dotted red"
+     ><!-- TODO: remove border -->
+    <span class="add-reply-text">REPLY TO THIS COMMENT</span>
+
+    <div class="input-name">Subject</div>
+    <input
+       class="editor-input"
+       placeholder="Subject"
+       ng-model="model.reply.subject"
+       ng-disabled="model.sendingReply"
+       >
+
+    <div class="input-name">Message</div>
+    <textarea
+       class="editor-input"
+       ng-model="model.reply.message"
+       ng-disabled="model.sendingReply"
+       ></textarea>
+
+    <div class="replyToControls">
+      <button
+         class="btn btn-primary pull-right"
+         ng-click="model.sendReply()"
+         ng-disabled="model.sendingReply"
+         >
+        Reply
+      </button>
+      <button
+         class="btn btn-default pull-right"
+         ng-click="model.cancelReply()"
+         ng-disabled="model.sendingReply"
+         >
+        Cancel
+      </button>
+    </div>
+
+    <div class="clearfix"></div>&nbsp;
+    <!-- TODO: temp clearfix, later od it in CSS -->
+  </div>
+
+
   <div class="controls">
     <span
        class="glyphicon glyphicon-chevron-up"
@@ -56,6 +101,17 @@
        ng-click="model.cancel()"
        ng-show="model.isEdited"
        ></span>
+    <span
+       class="glyphicon glyphicon-share-alt"
+       style="-webkit-transform: rotate(180deg)"
+       ng-hide="model.isEdited"
+       ng-click="model.replyTo()"
+       ></span> <!-- TODO: set rotation in CSS class of course ...
+        and make it cros .browser!
+      transform:rotate(7deg);
+      -ms-transform:rotate(7deg); /* IE 9 */
+      -webkit-transform:rotate(7deg); /* Opera, Chrome, and Safari */
+      -->
     <span
        class="glyphicon glyphicon-share-alt"
        ng-hide="model.isEdited"
