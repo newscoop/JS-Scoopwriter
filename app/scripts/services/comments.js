@@ -89,7 +89,29 @@ angular.module('authoringEnvironmentApp')
                     var url = headers('X-Location');
                     if (url) {
                         $http.get(url).success(function(data) {
-                            service.displayed.push(decorate(data));
+                            // insert new comment at the right position in
+                            // displayed comments list OR at the end of the
+                            // list if comment has no parent
+                            var newComment = decorate(data),
+                                parentIdx;
+
+                            if ('parent' in newComment) {
+
+                                parentIdx = _.findIndex(
+                                    service.displayed,
+                                    { 'id': newComment.parent }
+                                );
+
+                                // XXX: but then ... probably insert it
+                                // as the _last_ child of the parent (so
+                                // that it is indeed a last reply)
+                                service.displayed.splice(
+                                    parentIdx + 1, 0, newComment);
+
+                                newComment.expand();
+                            } else {
+                                service.displayed.push(newComment);
+                            }
                         });
                     } else {
                         // the header may not be available if the server
@@ -396,18 +418,10 @@ angular.module('authoringEnvironmentApp')
                 service.add({'comment': replyData}).then(function () {
                     comment.sendingReply = false;
                     comment.isReplyMode = false;
-
                     comment.reply = {
                         subject: 'Re: ' + comment.subject,
                         message: ''
                     };
-
-                    // TODO: display new comment (reply) in DOM ---> add it to
-                    // the list of displayed comments (at the right place!)
-
-                    // the thing is add() should not reload everything after
-                    // successfully adding a new comment, this logic needs
-                    // to be refined
                 }, function (reason) {
                     // XXX: what here?  How to notify the user about
                     // the error in the user interface?
