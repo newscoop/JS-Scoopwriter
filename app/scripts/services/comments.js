@@ -334,6 +334,7 @@ angular.module('authoringEnvironmentApp')
                     message: this.message
                 };
                 this.isEdited = true;
+                this.isReplyMode = false;
             };
 
             /**
