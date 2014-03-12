@@ -37,46 +37,48 @@
   </div>
 
   <!-- reply-to-comment form -->
-  <div class="right"
-     ng-show="model.isReplyMode"
-     style="border: 1px dotted red"
-     ><!-- TODO: remove border -->
-    <span class="add-reply-text">REPLY TO THIS COMMENT</span>
+  <div class="add-reply right" ng-show="model.isReplyMode">
 
-    <div class="input-name">Subject</div>
-    <input
-       class="editor-input"
-       placeholder="Subject"
-       ng-model="model.reply.subject"
-       ng-disabled="model.sendingReply"
-       >
-
-    <div class="input-name">Message</div>
-    <textarea
-       class="editor-input"
-       ng-model="model.reply.message"
-       ng-disabled="model.sendingReply"
-       ></textarea>
-
-    <div class="replyToControls">
-      <button
-         class="btn btn-primary pull-right"
-         ng-click="model.sendReply()"
-         ng-disabled="model.sendingReply"
-         >
-        Reply
-      </button>
-      <button
-         class="btn btn-default pull-right"
-         ng-click="model.cancelReply()"
-         ng-disabled="model.sendingReply"
-         >
-        Cancel
-      </button>
+    <div class="heading">
+      <span class="add-reply-text">REPLY TO THIS COMMENT</span>
     </div>
 
-    <div class="clearfix"></div>&nbsp;
-    <!-- TODO: temp clearfix, later od it in CSS -->
+    <div class="body">
+      <div class="input-name">Subject</div>
+      <input
+         class="editor-input"
+         placeholder="Subject"
+         ng-model="model.reply.subject"
+         ng-disabled="model.sendingReply"
+         >
+
+      <div class="input-name">Message</div>
+      <textarea
+         class="editor-input"
+         ng-model="model.reply.message"
+         ng-disabled="model.sendingReply"
+         ></textarea>
+
+      <div class="replyToControls">
+        <button
+           class="btn btn-primary pull-right"
+           ng-click="model.sendReply()"
+           ng-disabled="model.sendingReply"
+           >
+          Reply
+        </button>
+        <button
+           class="btn btn-default pull-right"
+           ng-click="model.cancelReply()"
+           ng-disabled="model.sendingReply"
+           >
+          Cancel
+        </button>
+      </div>
+
+      <div class="clearfix"></div>&nbsp;
+      <!-- TODO: temp clearfix, later od it in CSS -->
+    </div>
   </div>
 
 
