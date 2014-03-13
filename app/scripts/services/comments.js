@@ -369,10 +369,6 @@ angular.module('authoringEnvironmentApp')
             * @method replyTo
             */
             comment.replyTo = function () {
-                this.reply = {
-                    subject: this.reply.subject,
-                    message: this.reply.message
-                };
                 comment.isReplyMode = true;
             };
 
@@ -403,9 +399,6 @@ angular.module('authoringEnvironmentApp')
                         subject: 'Re: ' + comment.subject,
                         message: ''
                     };
-                }, function (reason) {
-                    // XXX: what here?  How to notify the user about
-                    // the error in the user interface?
                 });
             };
 
