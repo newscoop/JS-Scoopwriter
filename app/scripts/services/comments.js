@@ -65,59 +65,6 @@ angular.module('authoringEnvironmentApp')
                 }
             });
 
-
-        /**
-        * Event handler for successfully adding a new comment. It inserts the
-        * new comment at the right position between displayed comments (if it
-        * is a reply to an existing comment) or at the end of the displayed
-        * comments list if the new comment has no parent.
-        *
-        * @class onCommentAdded
-        * @param data {Object} Object containing comment's (meta)data as
-        *   returned by the API.
-        */
-        function onCommentAdded(data) {
-            var i,
-                item,
-                newComment = decorate(data),
-                parentFound = false,
-                parentLevel;
-
-            newComment.expand();
-
-            // new comment has no parrent, add it to the end of the list
-            if (!newComment.hasOwnProperty('parent')) {
-                service.displayed.push(newComment);
-                return;
-            }
-
-            // First locate the parent comment and remember its level. Then
-            // find the first comment after the parent that is NOT under the
-            // parent (= has the same or lower level index) and insert the new
-            // comment right before it (so that the new comment becomes the
-            // last child of its parent).
-            for (i = 0; i < service.displayed.length; i++) {
-                item = service.displayed[i];
-                if (!parentFound) {
-                    if (item.id === newComment.parent) {
-                        parentFound = true;
-                        parentLevel = item.thread_level;
-                    }
-                } else {
-                    if (item.thread_level <= parentLevel) {
-                        service.displayed.splice(i, 0, newComment);
-                        break;
-                    }
-                }
-            }
-
-            // If, for some reason, parent is not found, append the new
-            // comment to the end of the displayed comments list.
-            if (!parentFound) {
-                service.displayed.push(newComment);
-            }
-        }
-
         /**
         * Asynchronously adds a new comment and displays it after it has been
         * successfully stored on the server.
@@ -141,7 +88,11 @@ angular.module('authoringEnvironmentApp')
                 }, par, function(data, headers) {
                     var url = headers('X-Location');
                     if (url) {
-                        $http.get(url).success(onCommentAdded);
+                        $http.get(url).success(function (data) {
+                            // just add the new comment to the end and filters
+                            // will take care of the correct ordering
+                            service.displayed.push(decorate(data));
+                        });
                     } else {
                         // the header may not be available if the server
                         // is on a different domain (we are in this
