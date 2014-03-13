@@ -200,41 +200,105 @@ describe('Service: Comments', function () {
                         expect(comments.displayed.length).toBe(3);
                     });
                 });
-                it('is not being edited', function() {
+
+                it('is not being edited by default', function () {
                     expect(comment.isEdited).toBe(false);
                 });
-                describe('being replied', function() {
-                    var deferred = $q.defer();
-                    beforeEach(function() {
+
+                it('is collapsed by default', function () {
+                    expect(comment.showStatus).toBe('collapsed');
+                });
+
+                it('is not in reply-to mode by default', function () {
+                    expect(comment.isReplyMode).toBe(false);
+                });
+
+                it('sendingReply flag is not set by default', function () {
+                    expect(comment.sendingReply).toBe(false);
+                });
+
+                describe('replyTo() method', function () {
+                    it('enters into reply-to mode', function () {
+                        comment.isReplyMode = false;
+                        comment.replyTo();
+                        expect(comment.isReplyMode).toBe(true);
+                    });
+                });
+
+                describe('cancelReply() method', function () {
+                    it('exits from reply-to mode', function () {
+                        comment.isReplyMode = true;
+                        comment.cancelReply();
+                        expect(comment.isReplyMode).toBe(false);
+                    });
+                });
+
+                describe('sendReply() method', function () {
+                    var deferred;
+
+                    beforeEach(inject(function ($q) {
+                        deferred = $q.defer()
                         comment.reply.subject = 'reply subject';
                         comment.reply.message = 'reply message';
-                        spyOn(comments, 'add').andCallFake(function() {
+                        spyOn(comments, 'add').andCallFake(function () {
                             return deferred.promise;
                         });
+                    }));
+
+                    it('sets sendingReply flag', function () {
+                        comment.sendingReply = false;
                         comment.sendReply();
+                        expect(comment.sendingReply).toBe(true);
                     });
-                    it('requires the creation of a new corresponding comment', function() {
-                        expect(comments.add.mostRecentCall.args[1])
-                            .toEqual({
-                                comment: {
-                                    subject: 'reply subject',
-                                    message: 'reply message',
-                                    parent: 24
-                                }
-                            });
-                    });
-                    it('disables the reply', function() {
-                        expect(comment.replyDisabled).toBe(true);
-                    });
-                    describe('on success', function() {
-                        beforeEach(function() {
-                            deferred.resolve();
+
+                    it('invokes add() with correct arguments', function () {
+                        comment.sendReply();
+                        expect(comments.add.mostRecentCall.args[0]).toEqual({
+                            comment: {
+                                subject: 'reply subject',
+                                message: 'reply message',
+                                parent: 24
+                            }
                         });
-                        it('is not disabled anymore', function() {
-                            expect(comment.replyDisabled).toBe(false);
+                    });
+
+                    describe('on success', function () {
+                        var $rootScope;
+
+                        beforeEach(inject(function (_$rootScope_) {
+                            $rootScope = _$rootScope_;
+                        }));
+
+                        it('clears sendingReply flag', function () {
+                            comment.sendingReply = true;
+                            comment.sendReply();
+                            deferred.resolve();
+                            $rootScope.$apply();
+
+                            expect(comment.sendingReply).toBe(false);
+                        });
+
+                        it('exits from reply-to mode', function () {
+                            comment.isReplyMode = true;
+                            comment.sendReply();
+                            deferred.resolve();
+                            $rootScope.$apply();
+
+                            expect(comment.isReplyMode).toBe(false);
+                        });
+
+                        it('resets reply object to default', function () {
+                            comment.sendReply();
+                            deferred.resolve();
+                            $rootScope.$apply();
+
+                            expect(comment.reply.subject).toBe(
+                                'Re: I approve');
+                            expect(comment.reply.message).toBe('');
                         });
                     });
                 });
+
                 describe('being edited', function() {
                     beforeEach(function() {
                         comment.edit();
@@ -249,6 +313,13 @@ describe('Service: Comments', function () {
                     it('knows that it is being edited', function() {
                         expect(comment.isEdited).toBe(true);
                     });
+
+                    it('disables reply-to mode', function () {
+                        comment.isReplyMode = true;
+                        comment.edit();
+                        expect(comment.isReplyMode).toBe(false);
+                    });
+
                     describe('fields changed', function() {
                         beforeEach(function() {
                             comment.editing.subject = 'edited subject';
