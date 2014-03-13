@@ -69,7 +69,8 @@ angular.module('authoringEnvironmentApp')
               'dateline',
               'main_image',
               'lede',
-              'body'
+              'body',
+              'title'
           ];
           if (known.indexOf(field.name) == -1) {
               return false;
