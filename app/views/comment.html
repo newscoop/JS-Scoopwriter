@@ -44,7 +44,6 @@
     </div>
 
     <div class="body">
-      <div class="input-name">Subject</div>
       <input
          class="editor-input"
          placeholder="Subject"
@@ -52,9 +51,9 @@
          ng-disabled="model.sendingReply"
          >
 
-      <div class="input-name">Message</div>
       <textarea
          class="editor-input"
+         placeholder="Comment reply here..."
          ng-model="model.reply.message"
          ng-disabled="model.sendingReply"
          ></textarea>
