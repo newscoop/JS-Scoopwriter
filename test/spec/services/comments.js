@@ -102,6 +102,8 @@ describe('Service: Comments', function () {
             expect(spies.success).toHaveBeenCalled();
             expect(spies.data).toHaveBeenCalledWith('message=hey%2C+Joe%2C+let+us+go!');
         });
+
+        // TODO: add test for toggleRecommended when correct URL is known
     });
 
     describe('matchMaker() method', function () {
@@ -337,6 +339,10 @@ describe('Service: Comments', function () {
                     });
                 });
 
+                it('"recommended" flag is a Boolean', function () {
+                    expect(typeof comment.recommended).toBe('boolean');
+                });
+
                 describe('replyTo() method', function () {
                     it('enters into reply-to mode', function () {
                         comment.isReplyMode = false;
@@ -416,6 +422,51 @@ describe('Service: Comments', function () {
                                 'Re: I approve');
                             expect(comment.reply.message).toBe('');
                         });
+                    });
+                });
+
+                describe('toggleRecommended() method', function () {
+
+                    beforeEach(inject(function () {
+                        spyOn(comments.resource, 'toggleRecommended')
+                        .andCallFake(function () {
+                            var method = comments.resource.toggleRecommended;
+                            if (method.mostRecentCall.args.length >= 3) {
+                                // the third argument is a success handler and
+                                // we invoke it to simulate a successful
+                                // response
+                                method.mostRecentCall.args[2]();
+                            }
+                        });
+                    }));
+
+                    it('provides correct arguments to resource', function () {
+                        var callArgs;
+
+                        comment.toggleRecommended();
+
+                        callArgs = comments.resource.toggleRecommended
+                            .mostRecentCall.args;
+                        expect(callArgs.length).toBeGreaterThan(0);
+                        expect(callArgs[0]).toEqual({
+                            articleNumber: 64,
+                            languageCode: 'de',
+                            commentId: 24
+                        });
+                    });
+
+                    it('toggles "recommended" flag from false to true',
+                        function () {
+                            comment.recommended = false;
+                            comment.toggleRecommended();
+                            expect(comment.recommended).toBe(true);
+                    });
+
+                    it('toggles "recommended" flag from true to false',
+                        function () {
+                            comment.recommended = true;
+                            comment.toggleRecommended();
+                            expect(comment.recommended).toBe(false);
                     });
                 });
 
