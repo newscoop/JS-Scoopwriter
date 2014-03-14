@@ -76,6 +76,7 @@ angular.module('authoringEnvironmentApp')
         *   @param par.comment {Object} The actual object with comment data.
         *     @param par.comment.subject {String} Comment's subject
         *     @param par.comment.message {String} Comment's body
+        *     @param [par.comment.parent] {Number} ID of the parent comment
         * @return {Object} A promise object
         */
         this.add = function(par) {
@@ -87,7 +88,9 @@ angular.module('authoringEnvironmentApp')
                 }, par, function(data, headers) {
                     var url = headers('X-Location');
                     if (url) {
-                        $http.get(url).success(function(data) {
+                        $http.get(url).success(function (data) {
+                            // just add the new comment to the end and filters
+                            // will take care of the correct ordering
                             service.displayed.push(decorate(data));
                         });
                     } else {
@@ -127,7 +130,7 @@ angular.module('authoringEnvironmentApp')
                     service.load(service.tracker.next()).then(function(data) {
                         service.loaded = service.loaded.concat(data.items);
                     });
-                };
+                }
             });
         };
 
@@ -231,11 +234,53 @@ angular.module('authoringEnvironmentApp')
             comment.showStatus = 'collapsed';
 
             /**
+            * A flag indicating whether the comment is currently being edited.
+            * @property isEdited
+            * @type Boolean
+            * @default false
+            */
+            comment.isEdited = false;
+
+            /**
+            * Object holding a subject and a message of the new reply to
+            * the comment.
+            *
+            * @property reply
+            * @type Object
+            * @default {subject: 'Re: <comment-subject>', message: ''}
+            */
+            comment.reply = {
+                subject: 'Re: ' + comment.subject,
+                message: ''
+            };
+
+            /**
+            * A flag indicating whether or not a reply-to-comment mode is
+            * currently active.
+            *
+            * @property isReplyMode
+            * @type Boolean
+            * @default false
+            */
+            comment.isReplyMode = false;
+
+            /**
+            * A flag indicating whether or not a reply is currently being
+            * sent to the server.
+            *
+            * @property sendingReply
+            * @type Boolean
+            * @default false
+            */
+            comment.sendingReply = false;
+
+            /**
             * Sets comment's display status to collapsed.
             * @method collapse
             */
             comment.collapse = function() {
                 this.showStatus = 'collapsed';
+                this.isReplyMode = false;
             };
 
             /**
@@ -260,14 +305,6 @@ angular.module('authoringEnvironmentApp')
             };
 
             /**
-            * A flag indicating whether the comment is currently being edited.
-            * @property isEdited
-            * @type Boolean
-            * @default false
-            */
-            comment.isEdited = false;
-
-            /**
             * Puts comment into edit mode.
             * @method edit
             */
@@ -277,6 +314,7 @@ angular.module('authoringEnvironmentApp')
                     message: this.message
                 };
                 this.isEdited = true;
+                this.isReplyMode = false;
             };
 
             /**
@@ -326,6 +364,44 @@ angular.module('authoringEnvironmentApp')
                 });
             };
 
+            /**
+            * Enters into reply-to-comment mode.
+            * @method replyTo
+            */
+            comment.replyTo = function () {
+                comment.isReplyMode = true;
+            };
+
+            /**
+            * Exits from reply-to-comment mode.
+            * @method cancelReply
+            */
+            comment.cancelReply = function () {
+                comment.isReplyMode = false;
+            };
+
+            /**
+            * Asynchronously adds a new reply to the comment and displays it
+            * after successfully storing it on the server.
+            * @method sendReply
+            */
+            comment.sendReply = function () {
+                var comment = this,  // alias for the comment object itself
+                    replyData = angular.copy(comment.reply);
+
+                replyData.parent = comment.id;
+                comment.sendingReply = true;
+
+                service.add({'comment': replyData}).then(function () {
+                    comment.sendingReply = false;
+                    comment.isReplyMode = false;
+                    comment.reply = {
+                        subject: 'Re: ' + comment.subject,
+                        message: ''
+                    };
+                });
+            };
+
             return comment;
-        };
+        }
     }]);

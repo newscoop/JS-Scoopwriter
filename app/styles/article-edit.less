@@ -226,6 +226,11 @@ html, body.article-edit {
                     float: left;
                 }
                 text-align: right;
+
+                .glyphicon-share-alt.rotate180 {
+                    /* a trick until we get a "real" reply-to icon */
+                    transform: rotate(180deg);
+                }
             }
         }
         .collapsed {
@@ -1775,6 +1780,8 @@ html, body.article-edit {
             border: 1px solid #d0d0d0;
             resize: none;
             margin: 5px 0;
+            padding: 5px;
+            font-size: 90%;
         }
         .list {
             .filters {
@@ -1806,6 +1813,25 @@ html, body.article-edit {
             }
             .body {
                 padding: 5px;
+                .controls {
+                    overflow: hidden;
+                }
+            }
+        }
+        .add-reply {
+            overflow: auto;
+            background-color: #ebebeb;
+            margin: 10px 0;
+            padding: 5px;
+            .heading {
+                margin-bottom: 5px;
+                .add-reply-text {
+                    line-height: 1em;
+                    font-size: 12px;
+                    padding: 0;
+                }
+            }
+            .body {
                 .controls {
                     overflow: hidden;
                 }

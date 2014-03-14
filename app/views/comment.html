@@ -35,39 +35,96 @@
        ng-show="model.isEdited"
        ></textarea>
   </div>
-  <div class="controls">
+
+  <!-- reply-to-comment form -->
+  <div class="add-reply right" ng-show="model.isReplyMode">
+
+    <div class="heading">
+      <span class="add-reply-text">REPLY TO THIS COMMENT</span>
+    </div>
+
+    <div class="body">
+      <input
+         class="editor-input"
+         placeholder="Subject"
+         ng-model="model.reply.subject"
+         ng-disabled="model.sendingReply"
+         >
+
+      <textarea
+         class="editor-input"
+         placeholder="Comment reply here..."
+         ng-model="model.reply.message"
+         ng-disabled="model.sendingReply"
+         ></textarea>
+
+      <div class="replyToControls">
+        <button
+           class="btn btn-primary pull-right"
+           ng-click="model.sendReply()"
+           ng-disabled="model.sendingReply"
+           >
+          Reply
+        </button>
+        <button
+           class="btn btn-default pull-right"
+           ng-click="model.cancelReply()"
+           ng-disabled="model.sendingReply"
+           >
+          Cancel
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+
+  <div class="controls" ng-hide="model.isReplyMode">
     <span
        class="glyphicon glyphicon-chevron-up"
        ng-hide="model.isEdited"
        ng-click="model.collapse()"
+       title="Collapse"
        ></span>
     <span
        class="glyphicon glyphicon-pencil"
        ng-click="model.edit()"
        ng-hide="model.isEdited"
+       title="Edit"
        ></span>
     <span
        class="glyphicon glyphicon-floppy-disk"
        ng-click="model.save()"
        ng-show="model.isEdited"
+       title="Save"
        ></span>
     <span
        class="glyphicon glyphicon-remove"
        ng-click="model.cancel()"
        ng-show="model.isEdited"
+       title="Cancel"
+       ></span>
+    <span
+       class="glyphicon glyphicon-share-alt rotate180"
+       ng-hide="model.isEdited"
+       ng-click="model.replyTo()"
+       title="Reply"
        ></span>
     <span
        class="glyphicon glyphicon-share-alt"
        ng-hide="model.isEdited"
+       title="Share"
        ></span>
     <span
        class="glyphicon glyphicon-thumbs-up"
        ng-hide="model.isEdited"
+       title="Recommend"
        ></span>
     <span
        class="glyphicon glyphicon-trash"
        ng-hide="model.isEdited"
        ng-click="model.remove()"
+       title="Delete"
        ></span>
   </div>
 </div>
