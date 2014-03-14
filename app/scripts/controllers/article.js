@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('authoringEnvironmentApp')
-  .controller('ArticleCtrl', ['$scope', '$location', 'article', 'articleType', 'panes', 'configuration', 'mode', 'platform', '$timeout', 'circularBufferFactory', function ($scope, $location, article, articleType, panes, configuration, mode, platform, $timeout, circularBufferFactory) {
+  .controller('ArticleCtrl', ['$scope', '$location', 'article', 'articleType', 'panes', 'configuration', 'mode', 'platform', '$timeout', 'circularBufferFactory', '$log', function ($scope, $location, article, articleType, panes, configuration, mode, platform, $timeout, circularBufferFactory, $log) {
 
       var delay = 2000;
       var search = $location.search();
@@ -28,21 +28,27 @@ angular.module('authoringEnvironmentApp')
       $scope.modified = false;
       $scope.status = 'Initialising';
       $scope.history = circularBufferFactory.create({size:5});
-      // function attached to this variable for testability
+
       $scope.watchCallback = function(newValue, oldValue) {
-          $scope.history.push(oldValue);
           if (angular.equals(newValue, oldValue)) {
               // initialisation
               $scope.modified = false;
               $scope.status = 'Just downloaded';
           } else {
-              // modified
-              if ($scope.modified) {
-                  // already waiting
+              if (newValue && oldValue) {
+                  $scope.history.push(oldValue);
+                  // modified
+                  if ($scope.modified) {
+                      // already waiting
+                  } else {
+                      $scope.modified = true;
+                      $scope.status = 'Modified';
+                      $timeout(save, delay);
+                  }
               } else {
-                  $scope.modified = true;
-                  $scope.status = 'Modified';
-                  $timeout(save, delay);
+                  // used also for testing
+                  oldValue || $log.debug('the old article value is', oldValue);
+                  newValue || $log.debug('the new article value is', newValue);
               }
           }
       };
