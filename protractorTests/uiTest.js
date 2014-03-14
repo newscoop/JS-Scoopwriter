@@ -15,6 +15,11 @@ describe('The Editor UI', function() {
         // browser.sleep(3000);
     });
 
+    it('has an editable article title', function() {
+        expect(element.all(by.css('.article-editable-title')).count())
+            .toBe(1);
+    });
+
     describe('Pane Interaction', function() {
         var TabList = function(side) {
             return element(by.className(side+'-tablist'));

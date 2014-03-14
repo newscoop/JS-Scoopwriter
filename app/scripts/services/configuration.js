@@ -32,9 +32,11 @@ angular.module('authoringEnvironmentApp')
                 news: [{
                     name: 'main_image',
                     fieldWeight: 10,
-                    type: 'fixed_image',
                     isContentField: true,
-                    description: 'Article Main Image'
+                }, {
+                    name: 'title',
+                    fieldWeight: 0,
+                    isContentField: true
                 }]
             }
         };
