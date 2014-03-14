@@ -265,6 +265,15 @@ angular.module('authoringEnvironmentApp')
             comment.isEdited = false;
 
             /**
+            * A flag indicating whether the comment is marked as
+            * recommended or not.
+            * @property isRecommended
+            * @type Boolean
+            * @default false
+            */
+            comment.isRecommended = false;
+
+            /**
             * Object holding a subject and a message of the new reply to
             * the comment.
             *

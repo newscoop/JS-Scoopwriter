@@ -82,7 +82,6 @@
 
     </div>
 
-
     <div class="controls" ng-hide="model.isReplyMode">
       <span
          class="glyphicon glyphicon-chevron-up"
@@ -116,9 +115,15 @@
          title="{{(model.thread_level < 2) ? 'Reply' : ''}}"
          ></span>
       <span
-         class="glyphicon glyphicon-thumbs-up"
+         class="glyphicon glyphicon-share-alt"
          ng-hide="model.isEdited"
-         title="Recommend"
+         title="Share"
+         ></span>
+      <span
+         class="glyphicon glyphicon-thumbs-up"
+         ng-class="{recommended: model.isRecommended}"
+         ng-hide="model.isEdited"
+         title="{{model.isRecommended ? 'Unrecommend' : 'Recommend'}}"
          ></span>
       <span
          class="glyphicon glyphicon-trash"
@@ -128,3 +133,4 @@
          ></span>
     </div>
   </div>
+</div>
