@@ -63,6 +63,11 @@ connect (at the current moment `127.0.0.1:9000`), for example running:
 
 ## Coverage report
 
+In order to get coverage reports, uncomment the `reporters` section in
+the karma conf file. It is better to keep coverage disabled if some
+tests are failing, and enable it just if all the tests succeed. When
+coverage is enabled, no details about failing tests are shown.
+
 After running the tests, coverage reports are produced in the
 `coverage` folder. In order to read them, fire your browser to one of
 the index files, for example with Mac OSX:

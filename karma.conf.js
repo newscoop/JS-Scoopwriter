@@ -82,7 +82,10 @@ module.exports = function(config) {
         // included in the coverage reports. refer to
         // http://karma-runner.github.io/0.8/config/coverage.html
         'app/scripts/*/*.js': 'coverage'
-    },
+    }
+    /* uncomment the following to get coverage reports *
+    ,
     reporters: ['coverage']
+    /**/
   });
 };
