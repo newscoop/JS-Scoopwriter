@@ -66,6 +66,10 @@ angular.module('authoringEnvironmentApp')
                 delete: {
                     method: 'DELETE',
                     url: f + '/comments/article/:articleNumber/:languageCode/:commentId'
+                },
+                toggleRecommended: {  // TODO: not yet correct config
+                    method: 'PATCH',
+                    url: f + '/comments/article/:articleNumber/:languageCode/:commentId'
                 }
             });
 
@@ -267,11 +271,10 @@ angular.module('authoringEnvironmentApp')
             /**
             * A flag indicating whether the comment is marked as
             * recommended or not.
-            * @property isRecommended
+            * @property recommended
             * @type Boolean
-            * @default false
             */
-            comment.isRecommended = false;
+            comment.recommended = !!comment.recommended;  // to Boolean
 
             /**
             * Object holding a subject and a message of the new reply to
@@ -431,6 +434,27 @@ angular.module('authoringEnvironmentApp')
                         subject: 'Re: ' + comment.subject,
                         message: ''
                     };
+                });
+            };
+
+            /**
+            * Asynchronously toggle the comment between being and not-being
+            * marked as recommended.
+            * @method toggleRecommended
+            */
+            comment.toggleRecommended = function () {
+                var comment = this;
+                article.promise.then(function(article) {
+                    service.resource.toggleRecommended({
+                            articleNumber: article.number,
+                            languageCode: article.language,
+                            commentId: comment.id
+                        },
+                        {},
+                        function () {
+                            comment.recommended = !comment.recommended;
+                        }
+                    );
                 });
             };
 

@@ -121,9 +121,10 @@
          ></span>
       <span
          class="glyphicon glyphicon-thumbs-up"
-         ng-class="{recommended: model.isRecommended}"
+         ng-class="{recommended: model.recommended}"
          ng-hide="model.isEdited"
-         title="{{model.isRecommended ? 'Unrecommend' : 'Recommend'}}"
+         ng-click="model.toggleRecommended()"
+         title="{{model.recommended ? 'Unrecommend' : 'Recommend'}}"
          ></span>
       <span
          class="glyphicon glyphicon-trash"
