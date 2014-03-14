@@ -60,3 +60,14 @@ Be sure to have the application served where the tests will try to
 connect (at the current moment `127.0.0.1:9000`), for example running:
 
     $ grunt server
+
+## Coverage report
+
+After running the tests, coverage reports are produced in the
+`coverage` folder. In order to read them, fire your browser to one of
+the index files, for example with Mac OSX:
+
+    $ open "coverage/Chrome 33.0.1750 (Mac OS X 10.9.2)/index.html"
+
+In order to change the way coverage is generated, act on the karma
+conf file

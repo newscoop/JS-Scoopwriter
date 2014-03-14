@@ -41,7 +41,8 @@
     "grunt-contrib-less": "~0.9.0",
     "grunt-devcode": "0.0.4-c",
     "clean-css": "~2.0.2",
-    "grunt-open": "~0.2.3"
+    "grunt-open": "~0.2.3",
+    "karma-coverage": "~0.2.0"
   },
   "engines": {
     "node": ">=0.8.0"

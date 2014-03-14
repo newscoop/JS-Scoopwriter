@@ -73,11 +73,16 @@ module.exports = function(config) {
     // if true, it capture browsers, run tests and exit
     singleRun: false,
 
-    // generate js files from html templates to expose them during
-    // testing. necessary in order to test directives with template
-    // URL
     preprocessors: {
-        'app/views/*.html': 'html2js'
-    }
+        // generate js files from html templates to expose them during
+        // testing. necessary in order to test directives with template
+        // URL
+        'app/views/*.html': 'html2js',
+        // change the following in order to change which files are
+        // included in the coverage reports. refer to
+        // http://karma-runner.github.io/0.8/config/coverage.html
+        'app/scripts/*/*.js': 'coverage'
+    },
+    reporters: ['coverage']
   });
 };
