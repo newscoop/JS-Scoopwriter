@@ -33,7 +33,7 @@ describe('Directive: droppedImage', function () {
         };
         scope.images = {
             include: function() {},
-            exclude: function() {}
+            exclude: jasmine.createSpy('images exclude')
         };
         scope.select = jasmine.createSpy();
         spyOn(scope, 'get').andCallThrough();
@@ -70,6 +70,14 @@ describe('Directive: droppedImage', function () {
         });
         it('shows the popover', function() {
             expect(scope.select).toHaveBeenCalledWith(64);
+        });
+    });
+    describe('on remove', function() {
+        beforeEach(function() {
+            $(element).find('.close').click();
+        });
+        it('excludes the image from the article', function() {
+            expect(scope.images.exclude).toHaveBeenCalledWith('4');
         });
     });
 });

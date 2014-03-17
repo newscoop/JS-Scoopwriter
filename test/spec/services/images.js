@@ -177,6 +177,15 @@ describe('Service: Images', function () {
                         expect(i.included).toBe(false);
                     });
                 });
+                describe('image excluded with a string id', function() {
+                    beforeEach(function() {
+                        images.exclude('3');
+                    });
+                    it('sets the image as not included', function() {
+                        var i = images.byId(3);
+                        expect(i.included).toBe(false);
+                    });
+                });
             });
         });
         it('handles the loaded buffer properly', function() {
