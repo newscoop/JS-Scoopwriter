@@ -5,20 +5,22 @@ describe('Directive: droppedImage', function () {
     // load the directive's module
     beforeEach(module(
         'authoringEnvironmentApp',
-        'app/views/dropped-image.html'
+        'app/views/dropped-image.html',
+        'app/views/popover-image.html'
     ));
 
     var element,
-    scope;
+    scope,
+    templates;
 
     beforeEach(inject(function ($rootScope, $templateCache, $compile) {
         // assign the template to the expected url called by the
         // directive and put it in the cache
-        var templates = {
-            image: $templateCache.get('app/views/dropped-image.html'),
+        templates = {
+            dropped: $templateCache.get('app/views/dropped-image.html'),
             popover: $templateCache.get('app/views/popover-image.html')
         };
-        $templateCache.put('views/dropped-image.html', templates.image);
+        $templateCache.put('views/dropped-image.html', templates.dropped);
         $templateCache.put('views/popover-image.html', templates.popover);
 
         scope = $rootScope.$new();
@@ -27,11 +29,13 @@ describe('Directive: droppedImage', function () {
             scope.style = {
                 width: '200px'
             };
+            return 64;
         };
         scope.images = {
             include: function() {},
             exclude: function() {}
         };
+        scope.select = jasmine.createSpy();
         spyOn(scope, 'get').andCallThrough();
         element = angular
             .element('<div dropped-image ng-style="style.container" data-id="4"></div>');
@@ -39,24 +43,33 @@ describe('Directive: droppedImage', function () {
         scope.$digest();
     }));
 
-    xit('gets the image', function() {
-        expect(scope.get).toHaveBeenCalledWith('4');
+    it('finds valid popover template in the cache', function() {
+        expect(templates.popover).toBeTruthy();
     });
-    xit('renders the image', inject(function () {
-        var $i = $(element).find('img');
-        expect($i.size()).toBe(1);
-        expect($i.attr('src')).toBe('images/image.jpg');
+    it('finds valid dropped template in the cache', function() {
+        expect(templates.dropped).toBeTruthy();
+    });
+    it('gets the image', inject(function($compile) {
+        expect(scope.get).toHaveBeenCalledWith('4');
     }));
-    xit('sets the style', function() {
-        expect($(element).attr('ng-style')).toBe('style');
-        expect($(element).attr('style')).toBe('width: 200px;');
+    describe('the image element', function() {
+        var $i;
+        beforeEach(function() {
+            $i = $(element).find('img');
+        });
+        it('is one', function() {
+            expect($i.size()).toBe(1);
+        });
+        it('has the right src', function() {
+            expect($i.attr('src')).toBe('/images/');
+        });
     });
     describe('on click', function() {
         beforeEach(function() {
             $(element).click();
         });
-        xit('shows the popover', function() {
-            expect($(element).find('.popover').size()).toBe(1);
+        it('shows the popover', function() {
+            expect(scope.select).toHaveBeenCalledWith(64);
         });
     });
 });
