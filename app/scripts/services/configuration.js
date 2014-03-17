@@ -4,14 +4,14 @@ angular.module('authoringEnvironmentApp')
     .factory('configuration', function () {
         return {
             API: {
-                rootURI: 'http://tw-merge.lab.sourcefabric.org',
+                rootURI: 'http://newscoop.aes.sourcefabric.net',
                 endpoint: '/content-api',
-                full: 'http://tw-merge.lab.sourcefabric.org/content-api'
+                full: 'http://newscoop.aes.sourcefabric.net/content-api'
             },
             auth: {
-                client_id: '3_uutz7mlvof4kc4wckcgcs4wg8oosgwg8gg4cg0wkkk0cc0w0k',
+                client_id: '7_6203opwgvx8g4skgskksgkws8cs44ks8s4cw4sc8cg4wsk8c40',
                 redirect_uri: 'http://localhost:9000',
-                server: 'http://tw-merge.lab.sourcefabric.org/oauth/v2/auth?'
+                server: 'http://newscoop.aes.sourcefabric.net/oauth/v2/auth?'
             },
             article: {
                 width: {
