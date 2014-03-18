@@ -199,7 +199,7 @@ angular.module('authoringEnvironmentApp')
                     if (pageTracker.isLastPage(data.pagination)) {
                         service.canLoadMore = false;
                     }
-                }, function() {
+                }).error(function () {
                     // in case of failure remove the page from the tracker
                     service.tracker.remove(page);
                 });

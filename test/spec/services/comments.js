@@ -441,23 +441,39 @@ describe('Service: Comments', function () {
         });
 
         describe('requesting new comments', function() {
+            var location;
+
             beforeEach(function() {
-                comments.more();
-                $httpBackend.expectGET(
-                    rootURI + '/comments/article/64/de/nested?items_per_page=50&page=3'
-                ).respond(response);
+                location = rootURI +
+                    '/comments/article/64/de?items_per_page=50&page=3';
+                $httpBackend.expectGET(location).respond(response);
             });
+
             it('immediately shows the three loaded comments', function() {
+                comments.more();
                 expect(comments.loaded.length).toBe(0);
                 expect(comments.displayed.length).toBe(6);
             });
+
             describe('after a response', function() {
-                beforeEach(function() {
-                    $httpBackend.flush();
-                });
                 it('adds the newly loaded comments', function() {
+                    comments.more();
+                    $httpBackend.flush();
                     expect(comments.loaded.length).toBe(3);
                     expect(comments.displayed.length).toBe(6);
+                });
+
+                it('on error the requested comments page is removed',
+                    function () {
+                        var removeMethod = spyOn(comments.tracker, 'remove');
+                        $httpBackend.resetExpectations();
+                        $httpBackend.expectGET(location).respond(500, '');
+
+                        comments.more();
+                        $httpBackend.flush();
+
+                        expect(removeMethod.callCount).toBe(1);
+                        expect(removeMethod).toHaveBeenCalledWith(3);
                 });
             });
         });
