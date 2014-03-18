@@ -5,7 +5,7 @@
 
 	console.log('=== STUBBED BACKEND ===');
 
-        var root = 'http://tw-merge.lab.sourcefabric.org/content-api';
+        var root = 'http://newscoop.aes.sourcefabric.net/content-api';
 
 	initStubbedBackend();
 
