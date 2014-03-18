@@ -24,8 +24,8 @@ describe('Controller: FixedImagePlaceholderCtrl', function () {
         });
     }));
 
-    it('hides the dropped image at the beginning', function () {
-        expect(scope.style.opacity).toBe(0);
+    it('knows that no image has been dropped at the beginning', function() {
+        expect(scope.dropped).toBe(false);
     });
     describe('dropped image', function() {
         beforeEach(function() {
@@ -42,6 +42,9 @@ describe('Controller: FixedImagePlaceholderCtrl', function () {
         });
         it('updates the source', function() {
             expect(scope.image.basename).toBe('mocked.jpg');
+        });
+        it('knows that some image has been dropped', function() {
+            expect(scope.dropped).toBe(true);
         });
     });
 });
