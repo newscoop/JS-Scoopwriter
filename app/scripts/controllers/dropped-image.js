@@ -5,30 +5,37 @@ angular.module('authoringEnvironmentApp')
       'DroppedImageCtrl',
       ['images', '$scope', '$log', 'configuration',
        function (images, $scope, $log, configuration) {
+           /* utility function to help us in case of weird errors,
+            * making them more explicit */
+           function getIncluded(id) {
+               var i = images.included[id];
+               if (typeof i == 'undefined') {
+                   var error = 'image with id '+id+' is not included in the article';
+                   $log.error(error);
+                   throw Error(error);
+               } else {
+                   return i;
+               }
+           };
+           /* ofter used in the following code */
+           function getSelected() {
+               return getIncluded(images.selected);
+           };
 	   $scope.root = configuration.API.rootURI;
            $scope.images = images;
            $scope.pixels = '';
-           $scope.change = function(e) {
-               var $t = $(e.target);
-               if ($t.is('.pixels')) {
-                   $scope.style.width='auto';
-                   $scope.style.image = {width: $t.val() + 'px'};
-                   $scope.size = action;
-               }
-           };
            $scope.get = function(id) {
                var includedId = images.include(id);
-               var image = images.included[includedId];
+               var image = getIncluded(includedId);
                $scope.id = id;
                $scope.image = image;
-               $scope.style = image.style;
                return includedId;
            };
            $scope.select = function(includedId) {
                images.selected = includedId;
            };
            $scope.size = function(s) {
-               var i = images.included[images.selected];
+               var i = getSelected();
                i.size = s;
                i.style.container.width = configuration.image.width[s];
                if ('big'==s) {
@@ -44,12 +51,12 @@ angular.module('authoringEnvironmentApp')
            $scope.pixelsChanged = function() {
                if (angular.isNumber($scope.pixels)) {
                    var p = $scope.pixels + 'px';
-                   var i = images.included[images.selected];
+                   var i = getSelected();
                    i.style.image.width = p;
                }
            };
            $scope.align = function(s) {
-               var i = images.included[images.selected];
+               var i = getSelected();
                var float, margin;
                switch (s) {
                case 'left':
@@ -69,7 +76,7 @@ angular.module('authoringEnvironmentApp')
                    margin = '0 auto';
                    break;
                default:
-                   $log.debug('no known action '+action);
+                   $log.error('no known action '+action);
                }
                i.style.container.float = float;
                i.style.container.margin = margin;
