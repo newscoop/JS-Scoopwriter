@@ -182,12 +182,18 @@ angular.module('authoringEnvironmentApp')
                 } else {
                     var sortingPart = '';
                 }
-                var url = configuration.API.full +
-                    '/comments/article/' + article.number +
-                    '/' + article.language +
-                    sortingPart +
-                    '?items_per_page=' + itemsPerPage +
-                    '&page=' + page;
+                var url = [
+                    configuration.API.full,
+                    '/comments/article/',
+                    article.number,
+                    '/',
+                    article.language,
+                    sortingPart,
+                    '?items_per_page=',
+                    itemsPerPage,
+                    '&page=',
+                    page
+                ].join('');
                 $http.get(url).success(function(data) {
                     deferred.resolve(data);
                     if (pageTracker.isLastPage(data.pagination)) {
