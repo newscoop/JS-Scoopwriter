@@ -66,6 +66,16 @@ angular.module('authoringEnvironmentApp')
                 */
                 dump: function() {
                     return angular.copy(this.arr);
+                },
+                prev: function(optionalCount) {
+                    var count = optionalCount || 1;
+                    var intCount = parseInt(count, 10);
+                    if (intCount < 1) {
+                        throw Error(intCount + ' is not a valid value for the `prev` function, check the tests or the code');
+                    }
+                    var index = this.arr.length - intCount;
+                    var positiveIndex = index >= 0 ? index : 0;
+                    return this.arr[positiveIndex];
                 }
             };
         };

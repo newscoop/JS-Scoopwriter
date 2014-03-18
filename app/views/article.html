@@ -5,7 +5,11 @@
    ng-class="[panes.articleClass, platform.current]"
    >
   <div class="zen-buttons">
-    <button class="btn btn-primary">
+    <button
+       class="btn btn-primary"
+       ng-disabled="!articleService.modified"
+       ng-click="save()"
+       >
       Save
     </button>
     <button

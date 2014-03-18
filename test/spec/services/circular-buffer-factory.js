@@ -42,6 +42,26 @@ describe('Service: CircularBufferFactory', function () {
                 expect(circularBuffer.dump())
                     .toEqual([2, 3, 4]);
             });
+            it('gives the previous element', function() {
+                expect(circularBuffer.prev()).toBe(4);
+            });
+            it('gives the previous element', function() {
+                expect(circularBuffer.prev(1)).toBe(4);
+            });
+            it('gives the element before the previous', function() {
+                expect(circularBuffer.prev(2)).toBe(3);
+            });
+            it('gives the first element', function() {
+                expect(circularBuffer.prev(3)).toBe(2);
+            });
+            it('gives the first element if looking too far behind', function() {
+                expect(circularBuffer.prev(100)).toBe(2);
+            });
+            it('throws an exception if negative values are used', function() {
+                expect(function() {
+                    circularBuffer.prev(-100);
+                }).toThrow();
+            });
         });
     });
 

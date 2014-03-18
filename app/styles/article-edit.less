@@ -46,10 +46,14 @@ html, body.article-edit {
     .article-editable-title {
         font-size: 36px;
     }
+    .save-button {
+        float: right;
+        margin: 0 20px 0 0;
+    }
     .save-status {
         float: right;
         color: rgb(179, 179, 179);
-        margin: 0 2%;
+        margin: 0 20px;
         line-height: 2em;
         &.attention {
             color: gray;
@@ -1732,7 +1736,7 @@ html, body.article-edit {
        javascript. these classes provide the relevant stop points for
        expanding sections in the several panels */
     .comments-panel {
-        @panel-height: 191px;
+        @panel-height: 200px;
         .add-element.expanded {
             height: @panel-height;
         }
