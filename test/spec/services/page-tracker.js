@@ -24,13 +24,13 @@ describe('Service: pageTracker', function () {
             "itemsPerPage":5,
             "currentPage":"2",
             "itemsCount":10,
-            "previousPageLink":"http:\/\/tw-merge.lab.sourcefabric.org\/content-api\/comments\/article\/533522\/de?page=1&items_per_page=5&access_token=NWI3NTZjOGJjMTA5YjFlOGE0M2FkYzQ5ZjE5MjhiZjMyZTcwNTQ2NmYwZTVkODAyMTZkODRmZDI3ZDUxZmY0Yg"
+            "previousPageLink":rootURI+"/comments\/article\/533522\/de?page=1&items_per_page=5&access_token=NWI3NTZjOGJjMTA5YjFlOGE0M2FkYzQ5ZjE5MjhiZjMyZTcwNTQ2NmYwZTVkODAyMTZkODRmZDI3ZDUxZmY0Yg"
         })).toBe(true);
         expect(pageTracker.isLastPage({
             "itemsPerPage":"3",
             "currentPage":"2",
             "itemsCount":"10",
-            "previousPageLink":"http:\/\/tw-merge.lab.sourcefabric.org\/content-api\/comments\/article\/533522\/de?page=1&items_per_page=5&access_token=NWI3NTZjOGJjMTA5YjFlOGE0M2FkYzQ5ZjE5MjhiZjMyZTcwNTQ2NmYwZTVkODAyMTZkODRmZDI3ZDUxZmY0Yg"
+            "previousPageLink":rootURI+"/comments\/article\/533522\/de?page=1&items_per_page=5&access_token=NWI3NTZjOGJjMTA5YjFlOGE0M2FkYzQ5ZjE5MjhiZjMyZTcwNTQ2NmYwZTVkODAyMTZkODRmZDI3ZDUxZmY0Yg"
         })).toBe(false);
     });
 

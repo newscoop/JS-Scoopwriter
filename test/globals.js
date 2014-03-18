@@ -1,1 +1,1 @@
-var rootURI = 'http://tw-merge.lab.sourcefabric.org/content-api';
+var rootURI = 'http://newscoop.aes.sourcefabric.net/content-api';
