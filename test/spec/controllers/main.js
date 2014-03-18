@@ -15,7 +15,7 @@ describe('Controller: MainCtrl', function () {
     // Initialize the controller and a mock scope
     beforeEach(inject(function ($controller, $rootScope, $httpBackend) {
         $httpBackend
-            .expectGET('http://tw-merge.lab.sourcefabric.org/oauth/v2/token?client_id=1_2gkjgb9tl0sgwow8w4ksg4ws4wkw8884c848kwgkw4k8gc4woc&client_secret=60mtm1heov8kwskss8gcg0cokwckkkk0cowocos4swc4g80s80&grant_type=client_credentials')
+            .expectGET('http://newscoop.aes.sourcefabric.net/oauth/v2/token?client_id=1_2gkjgb9tl0sgwow8w4ksg4ws4wkw8884c848kwgkw4k8gc4woc&client_secret=60mtm1heov8kwskss8gcg0cokwckkkk0cowocos4swc4g80s80&grant_type=client_credentials')
             .respond({});
         $scope = $rootScope.$new();
         MainCtrl = $controller('MainCtrl', {
@@ -28,6 +28,6 @@ describe('Controller: MainCtrl', function () {
         expect(MainCtrl).toBeDefined();
     });
     it('redirects the user at the beginning because the token is not there', function() {
-        expect($window.location.href).toBe('http://tw-merge.lab.sourcefabric.org/oauth/v2/auth?client_id=3_uutz7mlvof4kc4wckcgcs4wg8oosgwg8gg4cg0wkkk0cc0w0k&redirect_uri=http%3A%2F%2Flocalhost%3A9000&response_type=token');
+        expect($window.location.href).toBe('http://newscoop.aes.sourcefabric.net/oauth/v2/auth?client_id=7_6203opwgvx8g4skgskksgkws8cs44ks8s4cw4sc8cg4wsk8c40&redirect_uri=http%3A%2F%2Flocalhost%3A9000&response_type=token');
     });
 });

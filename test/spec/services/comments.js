@@ -89,7 +89,7 @@ describe('Service: Comments', function () {
             spyOn(spies, 'success');
             $httpBackend.expect(
                 'POST',
-                'http://tw-merge.lab.sourcefabric.org/content-api/comments/article/64/de',
+                rootURI + '/comments/article/64/de',
                 spies.data
             ).respond(200, '');
             comments.resource.save({
@@ -114,7 +114,7 @@ describe('Service: Comments', function () {
             $httpBackend = _$httpBackend_;
             $httpBackend.expect(
                 'GET',
-                'http://tw-merge.lab.sourcefabric.org/content-api/comments/article/64/de?items_per_page=50&page=1'
+                rootURI + '/comments/article/64/de?items_per_page=50&page=1'
             ).respond(response);
             comments = _comments_;
             _article_.promise = {
@@ -174,7 +174,7 @@ describe('Service: Comments', function () {
                         .toEqual({ comment : { subject : 'subj', message : 'message', author : 'sancio' } });
                 });
                 it('adds the comment on success', function() {
-                    var location = 'http://tw-merge.lab.sourcefabric.org/content-api/comments/26996';
+                    var location = rootURI + '/comments/26996';
                     $httpBackend.expect(
                         'GET',
                         location
@@ -350,7 +350,7 @@ describe('Service: Comments', function () {
                             beforeEach(function() {
                                 $httpBackend.expect(
                                     'POST',
-                                    'http://tw-merge.lab.sourcefabric.org/content-api/comments/article/64/de/24'
+                                    rootURI + '/comments/article/64/de/24'
                                 ).respond(200, '');
                                 comment.save();
                                 $httpBackend.flush();
@@ -381,10 +381,10 @@ describe('Service: Comments', function () {
             };
             $httpBackend = _$httpBackend_;
             $httpBackend.expectGET(
-                'http://tw-merge.lab.sourcefabric.org/content-api/comments/article/64/de?items_per_page=50&page=1'
+                rootURI + '/comments/article/64/de?items_per_page=50&page=1'
             ).respond(response);
             $httpBackend.expectGET(
-                'http://tw-merge.lab.sourcefabric.org/content-api/comments/article/64/de?items_per_page=50&page=2'
+                rootURI + '/comments/article/64/de?items_per_page=50&page=2'
             ).respond(response);
             comments = _comments_;
             _article_.promise = {
@@ -411,7 +411,7 @@ describe('Service: Comments', function () {
             beforeEach(function() {
                 comments.more();
                 $httpBackend.expectGET(
-                    'http://tw-merge.lab.sourcefabric.org/content-api/comments/article/64/de?items_per_page=50&page=3'
+                    rootURI + '/comments/article/64/de?items_per_page=50&page=3'
                 ).respond(response);
             });
             it('immediately shows the three loaded comments', function() {

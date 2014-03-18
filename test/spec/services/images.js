@@ -1,7 +1,7 @@
 'use strict';
 
 describe('Service: Images', function () {
-    var e = 'http://tw-merge.lab.sourcefabric.org/content-api';
+    var e = rootURI;
     var mock = {
         "items":[
             {
