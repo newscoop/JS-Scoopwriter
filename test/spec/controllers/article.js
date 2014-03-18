@@ -147,7 +147,7 @@ describe('Controller: ArticleCtrl', function () {
             scope = $rootScope.$new();
             articleService.modified = true;
             $httpBackend
-                .expectGET('http://tw-merge.lab.sourcefabric.org/content-api/articleTypes/news')
+                .expectGET('http://newscoop.aes.sourcefabric.net/content-api/articleTypes/news')
                 .respond({});
             ArticleCtrl = $controller('ArticleCtrl', {
                 $scope: scope,
@@ -188,7 +188,7 @@ describe('Controller: ArticleCtrl', function () {
             scope = $rootScope.$new();
             articleService.modified = false;
             $httpBackend
-                .expectGET('http://tw-merge.lab.sourcefabric.org/content-api/articleTypes/news')
+                .expectGET('http://newscoop.aes.sourcefabric.net/content-api/articleTypes/news')
                 .respond({});
             ArticleCtrl = $controller('ArticleCtrl', {
                 $scope: scope,
