@@ -23,14 +23,12 @@ describe('Service: pageTracker', function () {
         expect(pageTracker.isLastPage({
             "itemsPerPage":5,
             "currentPage":"2",
-            "itemsCount":10,
-            "previousPageLink":rootURI+"/comments\/article\/533522\/de?page=1&items_per_page=5&access_token=NWI3NTZjOGJjMTA5YjFlOGE0M2FkYzQ5ZjE5MjhiZjMyZTcwNTQ2NmYwZTVkODAyMTZkODRmZDI3ZDUxZmY0Yg"
+            "itemsCount":10
         })).toBe(true);
         expect(pageTracker.isLastPage({
             "itemsPerPage":"3",
             "currentPage":"2",
-            "itemsCount":"10",
-            "previousPageLink":rootURI+"/comments\/article\/533522\/de?page=1&items_per_page=5&access_token=NWI3NTZjOGJjMTA5YjFlOGE0M2FkYzQ5ZjE5MjhiZjMyZTcwNTQ2NmYwZTVkODAyMTZkODRmZDI3ZDUxZmY0Yg"
+            "itemsCount":"10"
         })).toBe(false);
     });
 
