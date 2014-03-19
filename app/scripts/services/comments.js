@@ -67,7 +67,7 @@ angular.module('authoringEnvironmentApp')
                     method: 'DELETE',
                     url: f + '/comments/article/:articleNumber/:languageCode/:commentId'
                 },
-                toggleRecommended: {  // TODO: not yet correct config
+                toggleRecommended: {
                     method: 'PATCH',
                     url: f + '/comments/article/:articleNumber/:languageCode/:commentId'
                 }
@@ -450,7 +450,9 @@ angular.module('authoringEnvironmentApp')
                             languageCode: article.language,
                             commentId: comment.id
                         },
-                        {},
+                        {comment: {
+                            recommended: !comment.recommended
+                        }},
                         function () {
                             comment.recommended = !comment.recommended;
                         }

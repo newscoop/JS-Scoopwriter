@@ -103,7 +103,11 @@ describe('Service: Comments', function () {
             expect(spies.data).toHaveBeenCalledWith('message=hey%2C+Joe%2C+let+us+go!');
         });
 
-        // TODO: add test for toggleRecommended when correct URL is known
+        // describe('toggleRecommended() action', function () {
+
+        // // toggleRecommended
+
+        // });
     });
 
     describe('matchMaker() method', function () {
