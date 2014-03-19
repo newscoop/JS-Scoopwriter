@@ -447,15 +447,21 @@ describe('Service: Comments', function () {
                     it('provides correct arguments to resource', function () {
                         var callArgs;
 
+                        comment.recommended = true;
                         comment.toggleRecommended();
 
                         callArgs = comments.resource.toggleRecommended
                             .mostRecentCall.args;
-                        expect(callArgs.length).toBeGreaterThan(0);
+                        expect(callArgs.length).toBeGreaterThan(1);
                         expect(callArgs[0]).toEqual({
                             articleNumber: 64,
                             languageCode: 'de',
                             commentId: 24
+                        });
+                        expect(callArgs[1]).toEqual({
+                            comment: {
+                                recommended: false
+                            }
                         });
                     });
 
