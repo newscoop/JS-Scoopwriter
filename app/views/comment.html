@@ -111,6 +111,7 @@
       <span
          class="glyphicon glyphicon-share-alt rotate180"
          ng-hide="model.isEdited"
+         ng-if="model.thread_level < 2"
          ng-click="model.replyTo()"
          title="Reply"
          ></span>
