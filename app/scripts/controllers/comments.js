@@ -8,7 +8,7 @@
 */
 angular.module('authoringEnvironmentApp')
     .controller('CommentsCtrl', ['$scope', 'comments', '$log', function ($scope, comments, $log) {
-        var others = ['new', 'approved', 'hidden'];
+        var others = ['pending', 'approved', 'hidden'];
         $scope.sortings = [{
             text: 'Nested'
         }, {
@@ -47,7 +47,7 @@ angular.module('authoringEnvironmentApp')
         };
         $scope.statuses = {
             all: true,
-            'new': false, // reserved word
+            pending: false,
             approved: false,
             hidden: false
         };

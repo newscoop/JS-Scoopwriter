@@ -31,8 +31,8 @@ describe('Controller: CommentsCtrl', function () {
     /* samples of comments with different statuses in order to test
      * filtering */
     comments = {
-        'new': {
-            status: 'new',
+        pending: {
+            status: 'pending',
         },
         approved: {
             status: 'approved',
@@ -58,8 +58,8 @@ describe('Controller: CommentsCtrl', function () {
     it('proxies comments', function () {
         expect(scope.comments).toBeDefined();
     });
-    it('has the new filter unchecked', function() {
-        expect(scope.statuses.new).toBe(false);
+    it('has the pending filter unchecked', function() {
+        expect(scope.statuses.pending).toBe(false);
     });
     it('does not filter', function() {
         expect(scope.selected(comments.any)).toBe(true);
@@ -190,25 +190,25 @@ describe('Controller: CommentsCtrl', function () {
             expect(status).toBe(true);
         });
     });
-    describe('new comments selected', function() {
+    describe('pending comments selected', function() {
         beforeEach(function() {
-            scope.toggle('new');
+            scope.toggle('pending');
         });
-        it('checks the `new` filter', function() {
-            expect(scope.statuses['new']).toBe(true);
+        it('checks the `pending` filter', function() {
+            expect(scope.statuses['pending']).toBe(true);
         });
         it('unchecks the `all` filter', function() {
             expect(scope.statuses.all).toBe(false);
         });
-        it('accepts `new` comments', function() {
-            expect(scope.selected(comments['new'])).toBe(true);
+        it('accepts `pending` comments', function() {
+            expect(scope.selected(comments['pending'])).toBe(true);
         });
         it('rejects other comments', function() {
             expect(scope.selected(comments.any)).toBe(false);
         });
-        describe('new comments unselected', function() {
+        describe('pending comments unselected', function() {
             beforeEach(function() {
-                scope.toggle('new');
+                scope.toggle('pending');
             });
             it('activates all again', function() {
                 expect(scope.statuses.all).toBe(true);
@@ -218,8 +218,8 @@ describe('Controller: CommentsCtrl', function () {
             beforeEach(function() {
                 scope.toggle('approved');
             });
-            it('accepts `new` comments', function() {
-                expect(scope.selected(comments.new)).toBe(true);
+            it('accepts `pending` comments', function() {
+                expect(scope.selected(comments.pending)).toBe(true);
             });
             it('accepts `approved` comments', function() {
                 expect(scope.selected(comments.approved)).toBe(true);
@@ -237,8 +237,8 @@ describe('Controller: CommentsCtrl', function () {
                 it('checks `all`', function() {
                     expect(scope.statuses.all).toBe(true);
                 });
-                it('unchecks `new`', function() {
-                    expect(scope.statuses['new']).toBe(false);
+                it('unchecks `pending`', function() {
+                    expect(scope.statuses['pending']).toBe(false);
                 });
                 it('unchecks `approved`', function() {
                     expect(scope.statuses.approved).toBe(false);

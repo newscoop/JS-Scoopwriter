@@ -11,9 +11,26 @@
              ng-click="model.toggle()"
              ></div>
         </div>
-        <span
-           class="label label-default pull-right"
-           ng-bind="model.status"></span>
+        <div class="dropdown status-dropdown pull-right">
+          <button
+             class="btn dropdown-toggle status-button"
+             type="button"
+             data-toggle="dropdown">
+            {{model.status}}
+            <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu">
+            <li ng-click="model.changeStatus('pending')">
+              Pending
+            </li>
+            <li ng-click="model.changeStatus('approved')">
+              Approved
+            </li>
+            <li ng-click="model.changeStatus('hidden')">
+              Hidden
+            </li>
+          </ul>
+        </div>
         <img
            class="pull-right"
            ng-src="/images/icon-nested-comment-level-{{model.thread_level}}.png"
