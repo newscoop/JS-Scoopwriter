@@ -104,6 +104,41 @@ describe('Service: Comments', function () {
         });
     });
 
+    describe('matchMaker() method', function () {
+        var comments;
+
+        beforeEach(inject(function (_comments_) {
+            comments = _comments_;
+        }));
+
+        it('returns a function', function () {
+            var func = comments.matchMaker(42);
+            expect(typeof func).toBe('function');
+        });
+
+        describe('returned function', function () {
+            it('returns true if <argument>.id equals <id> passed at creation',
+                function () {
+                    var param = {id: 42},
+                        func = comments.matchMaker(42);
+                    expect(func(param)).toBe(true);
+            });
+
+            it('returns false if <argument>.id does not equal <id>' +
+               'passed at creation', function () {
+                    var param = {id: 42},
+                        func = comments.matchMaker(11);
+                    expect(func(param)).toBe(false);
+            });
+
+            it('returns true based on equality, not identity', function () {
+                    var param = {id: '42'},
+                        func = comments.matchMaker(42);
+                    expect(func(param)).toBe(true);
+            });
+        });
+    });
+
     describe('not paginated', function() {
         var comments, $httpBackend, response, $q;
         beforeEach(inject(function (_comments_, _$httpBackend_, _article_, _$q_) {
@@ -170,14 +205,16 @@ describe('Service: Comments', function () {
                 };
                 beforeEach(function() {
                     spyOn(comments.resource, 'create');
-                    comments.add(p);
                 });
                 it('creates a comment', function() {
+                    comments.add(p);
                     expect(comments.resource.create.mostRecentCall.args[1])
                         .toEqual({ comment : { subject : 'subj', message : 'message', author : 'sancio' } });
                 });
                 it('adds the comment on success', function() {
                     var location = rootURI + '/comments/26996';
+
+                    comments.add(p);
                     $httpBackend.expect(
                         'GET',
                         location
@@ -189,18 +226,58 @@ describe('Service: Comments', function () {
                     $httpBackend.flush();
                     expect(comments.displayed.length).toBe(4);
                 });
+
+               it('calls init() when no X-Location header', function() {
+                    spyOn(comments, 'init');
+
+                    expect(comments.init.callCount).toBe(0);
+                    comments.add(p);
+                    comments.resource.create
+                        .mostRecentCall.args[2]({}, function() {
+                            return '';  // simulate no X-Location header
+                        });
+                    expect(comments.init.callCount).toBe(1);
+                });
             });
+
             describe('a single comment', function() {
                 var comment;
                 beforeEach(function() {
                     comment = comments.displayed[0];
                 });
+
                 describe('removed', function() {
-                    beforeEach(function() {
-                        comments.displayed[0].remove();
-                    });
+                    var deferred,
+                        $rootScope;
+
+                    beforeEach(inject(function (comments, $q, _$rootScope_) {
+                        deferred = $q.defer();
+                        $rootScope = _$rootScope_;
+
+                        spyOn(comments.resource, 'delete')
+                        .andCallFake(function () {
+                            deferred.resolve();
+                            $rootScope.$apply();
+                            return {$promise: deferred.promise};
+                        });
+                    }));
+
                     it('removes itself', function() {
+                        comment.remove();
                         expect(comments.displayed.length).toBe(3);
+                    });
+
+                    it('removes from diplayed comments list', function () {
+                        var index;
+
+                        comment.remove();
+                        deferred.resolve();
+                        $rootScope.$apply();
+
+                        expect(comments.displayed.length).toBe(2);
+                        // also check that correct comment was deleted
+                        index = _.findIndex(comments.displayed, { 'id': 24 });
+                        expect(index).toBe(-1);
                     });
                 });
 
@@ -218,6 +295,46 @@ describe('Service: Comments', function () {
 
                 it('sendingReply flag is not set by default', function () {
                     expect(comment.sendingReply).toBe(false);
+                });
+
+                describe('collapse() method', function () {
+                    it('sets display status to "collapsed"', function () {
+                        comment.showStatus = 'expanded';
+                        comment.collapse();
+                        expect(comment.showStatus).toBe('collapsed');
+                    });
+
+                    it('exits from reply-to mode', function () {
+                        comment.isReplyMode = true;
+                        comment.collapse();
+                        expect(comment.isReplyMode).toBe(false);
+                    });
+                });
+
+                describe('expand() method', function () {
+                    it('sets display status to "expanded"', function () {
+                        comment.showStatus = 'collapsed';
+                        comment.expand();
+                        expect(comment.showStatus).toBe('expanded');
+                    });
+                });
+
+                describe('toggle() method', function () {
+                    it('triggers a collapse of an expanded comment',
+                        function () {
+                            spyOn(comment, 'collapse');
+                            comment.showStatus = 'expanded';
+                            comment.toggle();
+                            expect(comment.collapse).toHaveBeenCalled();
+                    });
+
+                    it('triggers an expansion of a collapsed comment',
+                        function () {
+                            spyOn(comment, 'expand');
+                            comment.showStatus = 'collapsed';
+                            comment.toggle();
+                            expect(comment.expand).toHaveBeenCalled();
+                    });
                 });
 
                 describe('replyTo() method', function () {
@@ -240,7 +357,7 @@ describe('Service: Comments', function () {
                     var deferred;
 
                     beforeEach(inject(function ($q) {
-                        deferred = $q.defer()
+                        deferred = $q.defer();
                         comment.reply.subject = 'reply subject';
                         comment.reply.message = 'reply message';
                         spyOn(comments, 'add').andCallFake(function () {
@@ -371,6 +488,7 @@ describe('Service: Comments', function () {
             });
         });
     });
+
     describe('paginated', function() {
         var response, comments, $httpBackend;
         beforeEach(inject(function (_comments_, _$httpBackend_, _article_) {
@@ -441,23 +559,56 @@ describe('Service: Comments', function () {
         });
 
         describe('requesting new comments', function() {
+            var location;
+
             beforeEach(function() {
-                comments.more();
-                $httpBackend.expectGET(
-                    rootURI + '/comments/article/64/de/nested?items_per_page=50&page=3'
-                ).respond(response);
+                location = rootURI +
+                    '/comments/article/64/de/nested?items_per_page=50&page=3';
+                $httpBackend.expectGET(location).respond(response);
             });
+
             it('immediately shows the three loaded comments', function() {
+                comments.more();
                 expect(comments.loaded.length).toBe(0);
                 expect(comments.displayed.length).toBe(6);
             });
+
+            it('logs an error when there are no more somments to load',
+                inject(function ($log) {
+                    var callArgs,
+                        errorMethod = spyOn($log, 'error');
+
+                    comments.canLoadMore = false;
+                    comments.more();
+
+                    expect(errorMethod.callCount).toBe(1);
+                    callArgs = errorMethod.mostRecentCall.args;
+                    expect(callArgs.length).toBe(1);
+                    expect(typeof callArgs[0]).toBe('string');
+                    expect(
+                        callArgs[0].indexOf('More comments required')
+                    ).toBe(0);
+            }));
+
             describe('after a response', function() {
-                beforeEach(function() {
-                    $httpBackend.flush();
-                });
                 it('adds the newly loaded comments', function() {
+                    comments.more();
+                    $httpBackend.flush();
                     expect(comments.loaded.length).toBe(3);
                     expect(comments.displayed.length).toBe(6);
+                });
+
+                it('on error the requested comments page is removed',
+                    function () {
+                        var removeMethod = spyOn(comments.tracker, 'remove');
+                        $httpBackend.resetExpectations();
+                        $httpBackend.expectGET(location).respond(500, '');
+
+                        comments.more();
+                        $httpBackend.flush();
+
+                        expect(removeMethod.callCount).toBe(1);
+                        expect(removeMethod).toHaveBeenCalledWith(3);
                 });
             });
         });
