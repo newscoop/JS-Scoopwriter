@@ -103,13 +103,19 @@ describe('Service: Comments', function () {
             expect(spies.data).toHaveBeenCalledWith('message=hey%2C+Joe%2C+let+us+go!');
         });
 
-        // describe('toggleRecommended() action', function () {
+        describe('toggleRecommended action', function () {
+            it('invokes correct API method', function () {
+                $httpBackend.expectPATCH(
+                    rootURI + '/comments/article/42/pl/1234'
+                ).respond(200, {});
 
-        // // toggleRecommended 
-        // mock httpBackend (expect) in preveri, da je toggleRecommended res
-        // klical PATCH [API url] ... in da je poklical spy-a in da 
-
-        // });
+                comments.resource.toggleRecommended({
+                    articleNumber: 42,
+                    languageCode: 'pl',
+                    commentId: 1234
+                }, {});
+            });
+        });
     });
 
     describe('matchMaker() method', function () {
