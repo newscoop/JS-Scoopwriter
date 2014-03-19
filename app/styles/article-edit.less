@@ -180,64 +180,92 @@ html, body.article-edit {
         }
     }
 
+    .nested .liner {
+        /*
+          this background image allows us to show vertical lines without
+          having to nest the comments within other elements
+          */
+        background: url('../images/comments-nested-bg.png') repeat-y 0 0;
+    }
+    .nested comment {
+        @indent-step: 20px;
+        &.level-0 {
+            margin-left: @indent-step * 0;
+        }
+        &.level-1 {
+            margin-left: @indent-step * 1;
+        }
+        &.level-2 {
+            margin-left: @indent-step * 2;
+        }
+        &.level-3 {
+            margin-left: @indent-step * 3;
+        }
+    }
     comment {
         display: block;
-        .root {
-            border-left: solid 3px gray;
-            border-bottom: solid 1px gainsboro;
-            padding: 10px;
-            margin: 1px;
-            &.comment-new {
+        background: white;
+        border-bottom: solid 3px white;
+        &.comment-new {
+            .left-border-wrapper {
                 border-left-color: @new-comment-blue;
-                .label {
-                    background: @new-comment-blue;
-                }
-            };
-            &.comment-approved {
+            }
+            .label {
+                background: @new-comment-blue;
+            }
+        };
+        &.comment-approved {
+            .left-border-wrapper {
                 border-left-color: @approved-comment-green;
-                .label {
-                    background: @approved-comment-green;
-                }
-            };
+            }
+            .label {
+                background: @approved-comment-green;
+            }
+        };
+        input[type="checkbox"] {
+            float: left;
             height: 100%;
-            input[type="checkbox"] {
+            width: 22px;
+        }
+        .right {
+            position: relative;
+            height: 100%;
+            margin-left: 25px;
+            .author {
                 float: left;
-                height: 100%;
-                width: 22px;
             }
-            .right {
-                position: relative;
-                height: 100%;
-                margin-left: 25px;
-                .author {
-                    float: left;
-                }
-                .date-and-name {
-                    color: @comment-gray;
-                    display: inline-block;
-                }
-                .label {
-                    position: absolute;
-                    top: 5px;
-                    right: 5px;
-                }
+            .date-and-name {
+                color: @comment-gray;
+                display: inline-block;
             }
-            .controls {
-                .glyphicon {
-                    cursor: pointer;
-                }
-                .glyphicon-chevron-up {
-                    float: left;
-                }
-                text-align: right;
-
-                .glyphicon-share-alt.rotate180 {
-                    /* a trick until we get a "real" reply-to icon */
-                    transform: rotate(180deg);
-                }
+            .label {
+                margin: 3px 0 0 5px;
             }
         }
-        .collapsed {
+        .controls {
+            .glyphicon {
+                cursor: pointer;
+            }
+            .glyphicon-chevron-up {
+                float: left;
+            }
+            text-align: right;
+
+            .glyphicon-share-alt.rotate180 {
+                /* a trick until we get a "real" reply-to icon */
+                transform: rotate(180deg);
+            }
+        }
+        .left-border-wrapper {
+            border-left: solid 3px gray;
+            height: 100%;
+            .bottom-border-wrapper {
+                border-bottom: solid 1px gainsboro;
+                padding: 10px;
+                height: 100%;
+            }
+        }
+        &.collapsed {
             .comment, .label, .date, .controls, .author {
                 display: none;
             }
@@ -245,7 +273,7 @@ html, body.article-edit {
                 display: inline;
             }
         }
-        .expanded {
+        &.expanded {
             .subject {
                 font-weight: 500;
             }

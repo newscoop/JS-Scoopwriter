@@ -1,8 +1,14 @@
 'use strict';
 
 angular.module('authoringEnvironmentApp')
-    .controller('CommentsCtrl', ['$scope', 'comments', function ($scope, comments) {
+    .controller('CommentsCtrl', ['$scope', 'comments', '$log', function ($scope, comments, $log) {
         var others = ['new', 'approved', 'hidden'];
+        $scope.sortings = [{
+            text: 'Nested'
+        }, {
+            text: 'Chronological'
+        }];
+        $scope.sorting = $scope.sortings[0];
         $scope.toggle = function(name) {
             var previouslyChecked = $scope.statuses[name];
             $scope.statuses[name] = !previouslyChecked;
@@ -74,5 +80,21 @@ angular.module('authoringEnvironmentApp')
             comments.displayed.map(function(comment) {
                 comment.showStatus = $scope.globalShowStatus;
             });
+        });
+        $scope.$watch('sorting', function() {
+            /* this log here is a way to test that the handler has
+             * been called, it is mocked in tests */
+            $log.debug('sorting changed');
+            if(comments.canLoadMore) {
+                if ($scope.sorting.text == 'Nested') {
+                    comments.init({
+                        sorting: 'nested'
+                    });
+                } else {
+                    comments.init({
+                        sorting: 'chronological'
+                    });
+                }
+            }
         });
     }]);

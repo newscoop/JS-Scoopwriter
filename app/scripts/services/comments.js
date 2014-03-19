@@ -9,7 +9,11 @@ angular.module('authoringEnvironmentApp')
     .service('comments', ['configuration', 'article', '$http', '$q', '$resource', 'transform', 'pageTracker', '$log', function comments(configuration, article, $http, $q, $resource, transform, pageTracker, $log) {
         var service = this;     // alias for the comments service itself
         var f = configuration.API.full;  // base API URL
-        var itemsPerPage = 50;      // max number of comments per page
+        /* max number of comments per page, decrease it in order to
+         * test pagination, and sorting change with paginated
+         * comments */
+        var itemsPerPage = 50;
+        var sorting = 'nested';
 
         /**
         * A flag indicating whether there are more comments to be loaded.
@@ -113,7 +117,7 @@ angular.module('authoringEnvironmentApp')
         *
         * @method init
         */
-        this.init = function() {
+        this.init = function(opt) {
             // XXX: from user experience perspective current behavior might
             // not be ideal (to reload everything, e.g. after adding a new
             // comment), but for now we stick with it as a reasonable
@@ -122,6 +126,11 @@ angular.module('authoringEnvironmentApp')
             service.canLoadMore = true;
             service.loaded = [];
             service.displayed = [];
+            if(opt && opt.sorting) {
+                sorting = opt.sorting;
+            } else {
+                sorting = 'nested';
+            }
 
             this.load(this.tracker.next()).then(function(data){
                 service.displayed = data.items.map(decorate);
@@ -168,11 +177,23 @@ angular.module('authoringEnvironmentApp')
         this.load = function(page) {
             var deferred = $q.defer();
             article.promise.then(function (article) {
-                var url = configuration.API.full +
-                    '/comments/article/' + article.number +
-                    '/' + article.language +
-                    '?items_per_page=' + itemsPerPage +
-                    '&page=' + page;
+                if (sorting == 'nested') {
+                    var sortingPart = '/nested';
+                } else {
+                    var sortingPart = '';
+                }
+                var url = [
+                    configuration.API.full,
+                    '/comments/article/',
+                    article.number,
+                    '/',
+                    article.language,
+                    sortingPart,
+                    '?items_per_page=',
+                    itemsPerPage,
+                    '&page=',
+                    page
+                ].join('');
                 $http.get(url).success(function(data) {
                     deferred.resolve(data);
                     if (pageTracker.isLastPage(data.pagination)) {

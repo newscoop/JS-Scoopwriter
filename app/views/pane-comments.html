@@ -81,10 +81,10 @@
     </div>
   </div>
   <div class="list"
-       ng-class="{low: adding, high: !adding}"
+       ng-class="{low: adding, high: !adding, nested: sorting.text=='Nested'}"
        >
     <div class="filters">
-      <span class="filters-label">Filter comments by:</span>
+      <span class="filters-label">View:</span>
       <span
          ng-repeat="(key, value) in statuses"
          class="{{key}}-check"
@@ -92,12 +92,21 @@
         <input ng-model="value" type="checkbox" ng-change="toggle(key)">
         {{key}}
       </span>
+      <select
+         class="pull-right"
+         ng-model="sorting"
+         ng-options="s.text for s in sortings"
+         >
+      </select>
     </div>
-    <comment
-       model="comment"
-       ng-repeat="comment in filtered = (comments.displayed | filter:selected)"
-       >
-    </comment>
+    <div class="liner"> <!-- does the style trick for the vertical lines -->
+      <comment
+         model="comment"
+         ng-repeat="comment in filtered = (comments.displayed | filter:selected | sortComments:sorting.text)"
+         class="{{comment.showStatus}} comment-{{comment.status}} level-{{comment.thread_level}}"
+         >
+      </comment>
+    </div>
     <div
        class="empty-message"
        ng-show="filtered.length < 1"

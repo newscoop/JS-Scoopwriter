@@ -114,7 +114,7 @@ describe('Service: Comments', function () {
             $httpBackend = _$httpBackend_;
             $httpBackend.expect(
                 'GET',
-                rootURI + '/comments/article/64/de?items_per_page=50&page=1'
+                rootURI + '/comments/article/64/de/nested?items_per_page=50&page=1'
             ).respond(response);
             comments = _comments_;
             _article_.promise = {
@@ -156,6 +156,9 @@ describe('Service: Comments', function () {
             });
             it('has comments', function () {
                 expect(comments.displayed.length).toBe(3);
+            });
+            it('cannot load more', function() {
+                expect(comments.canLoadMore).toBe(false);
             });
             describe('comment created', function() {
                 var p = {
@@ -381,10 +384,10 @@ describe('Service: Comments', function () {
             };
             $httpBackend = _$httpBackend_;
             $httpBackend.expectGET(
-                rootURI + '/comments/article/64/de?items_per_page=50&page=1'
+                rootURI + '/comments/article/64/de/nested?items_per_page=50&page=1'
             ).respond(response);
             $httpBackend.expectGET(
-                rootURI + '/comments/article/64/de?items_per_page=50&page=2'
+                rootURI + '/comments/article/64/de/nested?items_per_page=50&page=2'
             ).respond(response);
             comments = _comments_;
             _article_.promise = {
@@ -407,11 +410,41 @@ describe('Service: Comments', function () {
         it('already loaded the next comments', function() {
             expect(comments.loaded.length).toBe(3);
         });
+        it('can load more', function() {
+            expect(comments.canLoadMore).toBe(true);
+        });
+        describe('if a different sorting is specified', function() {
+            beforeEach(function() {
+                $httpBackend
+                    .expectGET(rootURI + '/comments/article/64/de?items_per_page=50&page=1')
+                    .respond({})
+                comments.init({
+                    sorting: 'chronological'
+                });
+            });
+            it('changes the location', function () {
+                $httpBackend.verifyNoOutstandingExpectation();
+            });
+            describe('if a different sorting is specified again', function() {
+                beforeEach(function() {
+                    $httpBackend
+                        .expectGET(rootURI + '/comments/article/64/de/nested?items_per_page=50&page=1')
+                        .respond({})
+                    comments.init({
+                        sorting: 'nested'
+                    });
+                });
+                it('changes the location again', function () {
+                    $httpBackend.verifyNoOutstandingExpectation();
+                });
+            });
+        });
+
         describe('requesting new comments', function() {
             beforeEach(function() {
                 comments.more();
                 $httpBackend.expectGET(
-                    rootURI + '/comments/article/64/de?items_per_page=50&page=3'
+                    rootURI + '/comments/article/64/de/nested?items_per_page=50&page=3'
                 ).respond(response);
             });
             it('immediately shows the three loaded comments', function() {
