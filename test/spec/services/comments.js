@@ -563,7 +563,7 @@ describe('Service: Comments', function () {
 
             beforeEach(function() {
                 location = rootURI +
-                    '/comments/article/64/de?items_per_page=50&page=3';
+                    '/comments/article/64/de/nested?items_per_page=50&page=3';
                 $httpBackend.expectGET(location).respond(response);
             });
 
