@@ -105,7 +105,9 @@ describe('Service: Comments', function () {
 
         // describe('toggleRecommended() action', function () {
 
-        // // toggleRecommended
+        // // toggleRecommended 
+        // mock httpBackend (expect) in preveri, da je toggleRecommended res
+        // klical PATCH [API url] ... in da je poklical spy-a in da 
 
         // });
     });
@@ -430,17 +432,29 @@ describe('Service: Comments', function () {
                 });
 
                 describe('toggleRecommended() method', function () {
+                    var $http,
+                        $httpBackend;
 
-                    beforeEach(inject(function () {
-                        spyOn(comments.resource, 'toggleRecommended')
-                        .andCallFake(function () {
-                            var method = comments.resource.toggleRecommended;
-                            if (method.mostRecentCall.args.length >= 3) {
-                                // the third argument is a success handler and
-                                // we invoke it to simulate a successful
-                                // response
-                                method.mostRecentCall.args[2]();
-                            }
+                    beforeEach(inject(function (_$http_, _$httpBackend_) {
+                        var spy;
+
+                        $http = _$http_;
+                        $httpBackend = _$httpBackend_;
+                        $httpBackend.whenPATCH('/backend').respond(200, {});
+
+                        spy = spyOn(comments.resource, 'toggleRecommended');
+
+                        // Simulate `comments.resource` issuing an HTTP request
+                        // in the background and invoking provided success
+                        // handler (if any) on asynchronous response.
+                        spy.andCallFake(function () {
+                            var onSuccess = function () {
+                                if (spy.mostRecentCall.args.length >= 3) {
+                                    spy.mostRecentCall.args[2]();
+                                }
+                            };
+                            $http({method: 'PATCH', url: '/backend'})
+                                .success(onSuccess);
                         });
                     }));
 
@@ -452,6 +466,7 @@ describe('Service: Comments', function () {
 
                         callArgs = comments.resource.toggleRecommended
                             .mostRecentCall.args;
+
                         expect(callArgs.length).toBeGreaterThan(1);
                         expect(callArgs[0]).toEqual({
                             articleNumber: 64,
@@ -469,6 +484,7 @@ describe('Service: Comments', function () {
                         function () {
                             comment.recommended = false;
                             comment.toggleRecommended();
+                            $httpBackend.flush();
                             expect(comment.recommended).toBe(true);
                     });
 
@@ -476,6 +492,7 @@ describe('Service: Comments', function () {
                         function () {
                             comment.recommended = true;
                             comment.toggleRecommended();
+                            $httpBackend.flush();
                             expect(comment.recommended).toBe(false);
                     });
                 });
