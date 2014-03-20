@@ -108,8 +108,9 @@
          ng-show="model.isEdited"
          title="Cancel"
          ></span>
+         <!-- TODO - here change the logic of the icon -->
       <span
-         class="glyphicon glyphicon-share-alt rotate180"
+         class="fa fa-reply"
          ng-hide="model.isEdited"
          ng-if="model.thread_level < 2"
          ng-click="model.replyTo()"
