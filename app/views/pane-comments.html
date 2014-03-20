@@ -4,19 +4,14 @@
      bs-radio-group
      ng-model="globalShowStatus"
      >
-    <label class="btn btn-default">
-      <input
-         type="radio"
-         value="expanded"
-         ><span class="glyphicon glyphicon-th-list"></span>
-    </label>
-    <label class="btn btn-default">
-      <input
-         type="radio"
-         value="collapsed"
-         ><span class="glyphicon glyphicon-th"></span>
-    </label>
+    <button type="button"
+        class="btn btn-default"
+        ng-class="{active: {{globalShowStatus === 'expanded'}} }"
+        title="{{globalShowStatus === 'expanded' ? 'Collapse' : 'Expand'}} Comments"
+        ng-click="toggleShowStatus()"
+        ><i class="fa fa-sort"></i></button>
   </div>
+
   <div class="panel-title">
     Comments
   </div>

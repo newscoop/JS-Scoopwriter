@@ -81,6 +81,12 @@ angular.module('authoringEnvironmentApp')
                 comment.showStatus = $scope.globalShowStatus;
             });
         });
+
+        $scope.toggleShowStatus = function () {
+            $scope.globalShowStatus = ($scope.globalShowStatus === 'expanded')
+                ? 'collapsed' : 'expanded';
+        };
+
         $scope.$watch('sorting', function() {
             /* this log here is a way to test that the handler has
              * been called, it is mocked in tests */
