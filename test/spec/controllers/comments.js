@@ -1,5 +1,11 @@
 'use strict';
 
+/**
+* Module with tests for the comments controller.
+*
+* @module Comments controller tests
+*/
+
 describe('Controller: CommentsCtrl', function () {
 
     // load the controller's module
@@ -61,6 +67,23 @@ describe('Controller: CommentsCtrl', function () {
     it('has a nested sorting', function() {
         expect(scope.sorting.text).toBe('Nested');
     });
+
+    describe('scope\'s toggleShowStatus() method', function () {
+        it('sets global show status from "expanded" to "collapsed"',
+            function () {
+                scope.globalShowStatus = 'expanded';
+                scope.toggleShowStatus();
+                expect(scope.globalShowStatus).toBe('collapsed');
+        });
+
+        it('sets global show status from "collapsed" to "expanded"',
+            function () {
+                scope.globalShowStatus = 'collapsed';
+                scope.toggleShowStatus();
+                expect(scope.globalShowStatus).toBe('expanded');
+        });
+    });
+
     describe('when it can load more comments', function() {
         beforeEach(function() {
             spyOn(commentsService, 'init');

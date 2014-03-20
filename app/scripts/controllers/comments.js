@@ -1,5 +1,11 @@
 'use strict';
 
+/**
+* AngularJS controller for managing article comments (as a group,
+* not individual comments).
+*
+* @class CommentsCtrl
+*/
 angular.module('authoringEnvironmentApp')
     .controller('CommentsCtrl', ['$scope', 'comments', '$log', function ($scope, comments, $log) {
         var others = ['new', 'approved', 'hidden'];
@@ -82,6 +88,11 @@ angular.module('authoringEnvironmentApp')
             });
         });
 
+        /**
+        * Changes global comments display status from expanded to collapsed or
+        * vice versa.
+        * @method toggleShowStatus
+        */
         $scope.toggleShowStatus = function () {
             $scope.globalShowStatus = ($scope.globalShowStatus === 'expanded')
                 ? 'collapsed' : 'expanded';
