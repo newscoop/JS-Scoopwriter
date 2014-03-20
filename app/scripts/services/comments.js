@@ -6,7 +6,7 @@
 * @class comments
 */
 angular.module('authoringEnvironmentApp')
-    .service('comments', ['configuration', 'article', '$http', '$q', '$resource', 'transform', 'pageTracker', '$log', function comments(configuration, article, $http, $q, $resource, transform, pageTracker, $log) {
+    .service('comments', ['configuration', 'article', '$http', '$q', '$resource', 'transform', 'pageTracker', '$log', 'nestedSort', function comments(configuration, article, $http, $q, $resource, transform, pageTracker, $log, nestedSort) {
         var service = this;     // alias for the comments service itself
         var f = configuration.API.full;  // base API URL
         /* max number of comments per page, decrease it in order to
@@ -96,6 +96,7 @@ angular.module('authoringEnvironmentApp')
                             // just add the new comment to the end and filters
                             // will take care of the correct ordering
                             service.displayed.push(decorate(data));
+                            nestedSort.sort(service.displayed);
                         });
                     } else {
                         // the header may not be available if the server
@@ -134,6 +135,7 @@ angular.module('authoringEnvironmentApp')
 
             this.load(this.tracker.next()).then(function(data){
                 service.displayed = data.items.map(decorate);
+                nestedSort.sort(service.displayed);
                 if (service.canLoadMore) {
                     // prepare the next batch
                     service.load(service.tracker.next()).then(function(data) {

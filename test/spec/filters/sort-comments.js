@@ -10,19 +10,19 @@ describe('Filter: sortComments', function () {
 
     var mock = [{
         created:"2013-04-17T20:25:53+0000",
-        thread_order: 3
+        nestedPosition: 3
     }, {
         created:"2013-04-17T23:53:19+0000",
-        thread_order: 1
+        nestedPosition: 1
     }, {
         created:"2013-04-18T04:04:55+0000",
-        thread_order: 2
+        nestedPosition: 2
     }, {
         created:"2013-02-12T16:22:45+0000",
-        thread_order: 5
+        nestedPosition: 5
     }, {
         created:"2013-04-19T04:04:55+0000",
-        thread_order: 4
+        nestedPosition: 4
     }];
 
     // load the filter's module
@@ -40,7 +40,7 @@ describe('Filter: sortComments', function () {
                 sorted = filterFactory(mock, 'Nested');
 
             for (i = 0; i < sorted.length; i++) {
-                expect(sorted[i].thread_order).toBe(i + 1);
+                expect(sorted[i].nestedPosition).toBe(i + 1);
             }
         });
     });
