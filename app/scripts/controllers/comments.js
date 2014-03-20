@@ -13,6 +13,8 @@ angular.module('authoringEnvironmentApp')
             text: 'Nested'
         }, {
             text: 'Chronological'
+        }, {
+            text: 'Chronological (asc.)'  // oldest first
         }];
         $scope.sorting = $scope.sortings[0];
         $scope.toggle = function(name) {

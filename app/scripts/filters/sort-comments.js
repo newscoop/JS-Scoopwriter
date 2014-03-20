@@ -33,6 +33,8 @@ angular.module('authoringEnvironmentApp')
                 arr = _.sortBy(input, dateCallback);
                 arr.reverse();
                 return arr;
+            case 'Chronological (asc.)':
+                return _.sortBy(input, dateCallback);
             default:
                 error = 'unknown sorting: ' + sorting;
                 $log.error(error);  // angular catches exceptions sometime

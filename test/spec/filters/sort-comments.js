@@ -63,6 +63,24 @@ describe('Filter: sortComments', function () {
         });
     });
 
+    describe('"Chronological ascending" version', function () {
+        var filterFactory;
+
+        beforeEach(inject(function ($filter) {
+            filterFactory = $filter('sortComments');
+        }));
+
+        it('sorts comments by creation date (descending)', function () {
+            var sorted = filterFactory(mock, 'Chronological (asc.)');
+
+            expect(sorted[0].created).toBe("2013-02-12T16:22:45+0000");
+            expect(sorted[1].created).toBe("2013-04-17T20:25:53+0000");
+            expect(sorted[2].created).toBe("2013-04-17T23:53:19+0000");
+            expect(sorted[3].created).toBe("2013-04-18T04:04:55+0000");
+            expect(sorted[4].created).toBe("2013-04-19T04:04:55+0000");
+        });
+    });
+
     describe('creating unknown filter version', function () {
         var filterFactory;
 
