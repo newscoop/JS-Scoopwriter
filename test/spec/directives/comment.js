@@ -3,7 +3,10 @@
 describe('Directive: comment', function () {
 
     // load the directive's module
-    beforeEach(module('authoringEnvironmentApp'));
+    beforeEach(module(
+        'authoringEnvironmentApp',
+        'app/views/comment.html'
+    ));
 
     var element,
     scope;
@@ -19,12 +22,20 @@ describe('Directive: comment', function () {
             image:'test.jpg',
             subject:'subject',
             comment:'comment',
-            status:'approved'
+            status:'approved',
+            selected: true
         };
     }));
 
-    it('compiles', inject(function ($compile) {
-        element = angular.element('<comment model="model"></comment>');
-        element = $compile(element)(scope);
-    }));
+    describe('compiled', function () {
+        beforeEach(inject(function($compile) {
+            element = angular.element('<comment model="model"></comment>');
+            element = $compile(element)(scope);
+            scope.$digest();
+        }));
+        it('has a checked checkbox', function() {
+            var checkbox = $(element).find('.selected-checkbox');
+            expect(checkbox.is(':checked')).toBe(true);
+        });
+    });
 });

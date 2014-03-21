@@ -246,6 +246,20 @@ angular.module('authoringEnvironmentApp')
         };
 
         /**
+        * Changes the selected status for the selected comments
+        *
+        * @method changeSelectedStatus
+        * @param status {String} the new status to be set
+        */
+        this.changeSelectedStatus = function(status) {
+            this.displayed.forEach(function(comment) {
+                if (comment.selected) {
+                    comment.changeStatus(status);
+                }
+            });
+        };
+
+        /**
         * Decorates an object containing raw comment data (as returned by
         * the API) with properties and methods, turning it into a
         * self-contained "comment entity", which knows how to manage itself
@@ -259,6 +273,14 @@ angular.module('authoringEnvironmentApp')
             /**
             * @class comment
             */
+
+            /**
+            * Reflects the checkbox on the left of every comment
+            * @property selected
+            * @type Boolean
+            * @default "false"
+            */
+            comment.selected = false;
 
             /**
             * How the comment is currently displayed (collapsed or expanded).

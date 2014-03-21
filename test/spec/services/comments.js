@@ -155,7 +155,7 @@ describe('Service: Comments', function () {
             $q = _$q_;
             $log = _$log_;
             response = {
-                items: items
+                items: angular.copy(items)
             };
             $httpBackend = _$httpBackend_;
             $httpBackend.expect(
@@ -595,6 +595,65 @@ describe('Service: Comments', function () {
                             $httpBackend.flush();
                             expect($log.debug)
                                 .toHaveBeenCalledWith('error changing the status for the comment');
+                        });
+                    });
+                });
+            });
+            describe('with selected comments', function() {
+                beforeEach(function() {
+                    expect(comments.displayed.length).toBe(3);
+                    comments.displayed[0].selected = true;
+                    comments.displayed[1].selected = true;
+                    comments.displayed[2].selected = false;
+                });
+                describe('changing status', function() {
+                    beforeEach(function() {
+                        comments.changeSelectedStatus('hidden');
+                    });
+                    describe('successful responses', function() {
+                        beforeEach(function() {
+                            $httpBackend.expect(
+                                'POST',
+                                rootURI + '/comments/article/64/de/24',
+                                'comment%5Bstatus%5D=hidden'
+                            ).respond(200, '');
+                            $httpBackend.expect(
+                                'POST',
+                                rootURI + '/comments/article/64/de/25',
+                                'comment%5Bstatus%5D=hidden'
+                            ).respond(200, '');
+                            $httpBackend.flush();
+                        });
+                        it('updates the statuses', function() {
+                            expect(comments.displayed[0].status)
+                                .toBe('hidden');
+                            expect(comments.displayed[1].status)
+                                .toBe('hidden');
+                            expect(comments.displayed[2].status)
+                                .toBe('approved');
+                        });
+                    });
+                    describe('some failures', function() {
+                        beforeEach(function() {
+                            $httpBackend.expect(
+                                'POST',
+                                rootURI + '/comments/article/64/de/24',
+                                'comment%5Bstatus%5D=hidden'
+                            ).respond(200, '');
+                            $httpBackend.expect(
+                                'POST',
+                                rootURI + '/comments/article/64/de/25',
+                                'comment%5Bstatus%5D=hidden'
+                            ).respond(500, '');
+                            $httpBackend.flush();
+                        });
+                        it('updates some statuses, rollbacks the others', function() {
+                            expect(comments.displayed[0].status)
+                                .toBe('hidden');
+                            expect(comments.displayed[1].status)
+                                .toBe('approved');
+                            expect(comments.displayed[2].status)
+                                .toBe('approved');
                         });
                     });
                 });

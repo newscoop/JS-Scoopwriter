@@ -41,6 +41,10 @@ html, body.article-edit {
 @new-comment-blue: #0088CC;
 @comment-gray: #b9b9b9;
 
+/* used in "post a comment", "add a snippet" in the panels, and in
+ * other parts of the panels */
+@add-element-gray: #ebebeb;
+
 .authoring-environment {
     /* there is also a not editable one, probably it will be removed */
     .article-editable-title {
@@ -224,7 +228,6 @@ html, body.article-edit {
         };
         input[type="checkbox"] {
             float: left;
-            height: 100%;
             width: 22px;
         }
         .status-dropdown {
@@ -1821,6 +1824,13 @@ html, body.article-edit {
         .list.low {
             top: @panel-height + 75px;
         }
+        .status-buttons {
+            background-color: @add-element-gray;
+            padding: 10px;
+            .delete-button {
+                margin-left: 20px;
+            }
+        }
     }
     .embed-panel {
         .add-element.expanded {
@@ -1887,7 +1897,7 @@ html, body.article-edit {
         }
         .add-element {
             overflow: auto;
-            background-color: #ebebeb;
+            background-color: @add-element-gray;
             margin: 10px 0;
             .heading {
                 button {
