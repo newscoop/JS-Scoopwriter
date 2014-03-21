@@ -69,7 +69,7 @@ angular.module('authoringEnvironmentApp')
                 },
                 toggleRecommended: {
                     method: 'PATCH',
-                    url: f + '/comments/article/:articleNumber/:languageCode/:commentId'
+                    url: f + '/comments/:commentId.json'
                 }
             });
 
@@ -443,18 +443,18 @@ angular.module('authoringEnvironmentApp')
             * @method toggleRecommended
             */
             comment.toggleRecommended = function () {
-                var comment = this;
+                var comment = this,
+                    newStatus = !comment.recommended;
+
                 article.promise.then(function(article) {
                     service.resource.toggleRecommended({
-                            articleNumber: article.number,
-                            languageCode: article.language,
                             commentId: comment.id
                         },
                         {comment: {
-                            recommended: !comment.recommended
+                            recommended: (newStatus ? 1 : 0)  // API needs int
                         }},
                         function () {
-                            comment.recommended = !comment.recommended;
+                            comment.recommended = newStatus;
                         }
                     );
                 });

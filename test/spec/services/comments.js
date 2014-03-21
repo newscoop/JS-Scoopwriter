@@ -106,14 +106,10 @@ describe('Service: Comments', function () {
         describe('toggleRecommended action', function () {
             it('invokes correct API method', function () {
                 $httpBackend.expectPATCH(
-                    rootURI + '/comments/article/42/pl/1234'
+                    rootURI + '/comments/1234.json'
                 ).respond(200, {});
 
-                comments.resource.toggleRecommended({
-                    articleNumber: 42,
-                    languageCode: 'pl',
-                    commentId: 1234
-                }, {});
+                comments.resource.toggleRecommended({commentId: 1234}, {});
             });
         });
     });
@@ -474,15 +470,9 @@ describe('Service: Comments', function () {
                             .mostRecentCall.args;
 
                         expect(callArgs.length).toBeGreaterThan(1);
-                        expect(callArgs[0]).toEqual({
-                            articleNumber: 64,
-                            languageCode: 'de',
-                            commentId: 24
-                        });
+                        expect(callArgs[0]).toEqual({commentId: 24});
                         expect(callArgs[1]).toEqual({
-                            comment: {
-                                recommended: false
-                            }
+                            comment: {recommended: 0}
                         });
                     });
 
