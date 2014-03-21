@@ -243,17 +243,16 @@ html, body.article-edit {
             }
         }
         .controls {
-            .glyphicon {
+            .glyphicon, .fa {
                 cursor: pointer;
             }
             .glyphicon-chevron-up {
                 float: left;
             }
             text-align: right;
-
-            .glyphicon-share-alt.rotate180 {
-                /* a trick until we get a "real" reply-to icon */
-                transform: rotate(180deg);
+            .disabled {
+                cursor: default;
+                color: #bbb;
             }
         }
         .left-border-wrapper {
