@@ -2,6 +2,14 @@
 
 angular.module('authoringEnvironmentApp')
   .service('nestedSort', ['$log', function NestedSort($log) {
+      var service = this;
+      // exposed just for testability
+      this.sortByCreated = function(arr) {
+          function getDate (element) {
+              return new Date(element.created);
+          }
+          return _.sortBy(arr, getDate);
+      };
       this.sort = function(arr) {
           var levels = [];
           var currentLevel = 0;
@@ -18,8 +26,9 @@ angular.module('authoringEnvironmentApp')
           /* support map for accessing the comments in the tree by id,
            * and for navigating child relations. a comment will appear
            * twice here, once on the top level of the map, and once
-           * within the `childs` array of the parent comment */
-          var map = {
+           * within the `childs` array of the parent comment. the
+           * object is exposed for testability */
+          service.map = {
               root: {
                   childs: []
               }
@@ -34,10 +43,10 @@ angular.module('authoringEnvironmentApp')
                   if (copy.thread_level == 0) {
                       copy.parent = "root";
                   }
-                  map[copy.id] = copy;
+                  service.map[copy.id] = copy;
                   if ('parent' in copy) {
-                      if (copy.parent in map) {
-                          map[copy.parent].childs.push(copy);
+                      if (copy.parent in service.map) {
+                          service.map[copy.parent].childs.push(copy);
                       } else {
                           $log.debug('error, comment', copy, 'has parent', copy.parent, 'which is not available to us');
                       }
@@ -51,24 +60,22 @@ angular.module('authoringEnvironmentApp')
            * childs, and assign positions */
           var position = 0;
           function assignPosition (copiedComment) {
-              function getDate (child) {
-                  return new Date(child.created);
-              }
-              var sortedChilds = _.sortBy(copiedComment.childs, getDate);
+              var sortedChilds = service.sortByCreated(copiedComment.childs);
               sortedChilds.forEach(function(child) {
                   child.nestedPosition = position;
                   position++;
                   assignPosition(child);
               });
           };
-          assignPosition(map.root);
+          assignPosition(service.map.root);
           
           /* navigate the original array, and copy the positions from the map */
           arr.forEach(function(comment) {
-              if (comment.id in map) {
-                  comment.nestedPosition = map[comment.id].nestedPosition;
+              if (comment.id in service.map) {
+                  comment.nestedPosition =
+                      service.map[comment.id].nestedPosition;
               } else {
-                  $log.error('comment', comment, 'is not in the nested sorting map', map);
+                  $log.error('comment', comment, 'is not in the nested sorting map', service.map);
               }
           });
       };
