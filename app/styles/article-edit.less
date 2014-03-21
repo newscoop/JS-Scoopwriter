@@ -37,8 +37,11 @@ html, body.article-edit {
 .aloha-ui-toolbar {display:none !important;}
 .aloha-sidebar-bar {display:none !important;}
 
-@approved-comment-green: #009933;
-@new-comment-blue: #0088CC;
+@approved-comment-green: rgb(111, 160, 13);
+@new-comment-blue: rgb(0, 127, 179);;
+@hidden-comment-gray: rgb(207, 208, 209);
+/* following variable was created by me when i had nothing more
+ * precise about comment colors. it will probably disappear with time */
 @comment-gray: #b9b9b9;
 
 /* used in "post a comment", "add a snippet" in the panels, and in
@@ -209,7 +212,13 @@ html, body.article-edit {
     comment {
         display: block;
         background: white;
-        border-bottom: solid 3px white;
+        border-bottom: solid 3px @tabpane-background;
+        font-size: 12px;
+        /* following colors are copied from a mock from Darko */
+        .subject {color: #808080;}
+        .date {color: rgb(128, 128, 128);}
+        .author-name {color: #333;}
+        /* end colors copied from the mock */
         &.comment-pending {
             .left-border-wrapper {
                 border-left-color: @new-comment-blue;
@@ -278,7 +287,7 @@ html, body.article-edit {
             }
         }
         .left-border-wrapper {
-            border-left: solid 3px gray;
+            border-left: solid 3px @hidden-comment-gray;
             height: 100%;
             .bottom-border-wrapper {
                 border-bottom: solid 1px gainsboro;
@@ -300,7 +309,19 @@ html, body.article-edit {
             }
         }
         &.collapsed {
+<<<<<<< HEAD
             .comment, .status-dropdown, .date, .controls, .author {
+=======
+            .right {
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            .date, .author-name {
+                display: inline;
+            }
+            .comment, .label, .controls, .author {
+>>>>>>> AENV-151 change comment date appearence
                 display: none;
             }
             .image-and-author-details, .subject {
@@ -1876,6 +1897,7 @@ html, body.article-edit {
                 font-size: 13px;
                 padding: 5px 0;
                 text-transform: capitalize;
+<<<<<<< HEAD
                 .filters-label { 
                     color: @comment-gray; 
                 }
@@ -1891,6 +1913,13 @@ html, body.article-edit {
                 * { 
                     margin: 2px; 
                 }
+=======
+                .filters-label { color: @comment-gray; }
+                .new-check { color: @new-comment-blue;}
+                .approved-check { color: @approved-comment-green;}
+                .hidden-check { color: @hidden-comment-gray;}
+                * { margin: 2px; }
+>>>>>>> AENV-151 change comment date appearence
             }
             overflow: auto;
             position: absolute;

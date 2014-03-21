@@ -8,8 +8,9 @@
       <div class="image-and-author-details">
         <!--img class="author" ng-src="model.image" /-->
         <div class="date-and-name">
-          <div class="date" ng-bind="model.created | date: 'dd.M.yyyy'"></div>
+          <div class="date" ng-bind="model.created | niceDate"></div>
           <div
+             class="author-name"
              ng-bind="model.author"
              ng-click="model.toggle()"
              ></div>
