@@ -28,7 +28,7 @@ angular.module('authoringEnvironmentApp')
 
             switch (sorting) {
             case 'Nested':
-                return _.sortBy(input, 'thread_order');
+                return _.sortBy(input, 'nestedPosition');
             case 'Chronological':
                 arr = _.sortBy(input, dateCallback);
                 arr.reverse();
