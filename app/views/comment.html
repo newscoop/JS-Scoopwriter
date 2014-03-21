@@ -108,13 +108,12 @@
          ng-show="model.isEdited"
          title="Cancel"
          ></span>
-         <!-- TODO - here change the logic of the icon -->
       <span
          class="fa fa-reply"
+         ng-class="{disabled: {{model.thread_level >= 2}} }"
          ng-hide="model.isEdited"
-         ng-if="model.thread_level < 2"
-         ng-click="model.replyTo()"
-         title="Reply"
+         ng-click="(model.thread_level < 2) &amp;&amp; model.replyTo()"
+         title="{{(model.thread_level < 2) ? 'Reply' : ''}}"
          ></span>
       <span
          class="glyphicon glyphicon-thumbs-up"
