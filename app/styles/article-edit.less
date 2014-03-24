@@ -1843,11 +1843,30 @@ html, body.article-edit {
             bottom: @pane-padding;
             left: @pane-padding;
         }
+        /* TODO: adjust for the new controls box for enabling/disabling
+        comments ... add some additional height (have it in a variable) */
         .list.high {
-            top: 100px;
+            top: 100px + 50px;
         }
         .list.low {
-            top: @panel-height + 75px;
+            top: @panel-height + 75px + 50px;
+        }
+
+        .commenting-options {
+            margin-top: 10px;
+            font-size: 13px;
+            .commenting-opts-label {
+                top: -2px;
+                position: relative;
+                color: @comment-gray;
+            }
+            label {
+                position: relative;
+                top: -2px;
+                font-weight: normal;
+                margin-right: 5px;
+                margin-bottom: 0px;
+            }
         }
         .status-buttons {
             background-color: @add-element-gray;
@@ -1857,6 +1876,7 @@ html, body.article-edit {
             }
         }
     }
+
     .embed-panel {
         .add-element.expanded {
             height: 250px;
