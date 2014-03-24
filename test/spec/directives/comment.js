@@ -17,7 +17,7 @@ describe('Directive: comment', function () {
         
         scope = $rootScope.$new();
         scope.model = {
-            date:'22.01.2013',
+            created:'2013-05-02T10:11:13+0200',
             author:'Vladimir',
             image:'test.jpg',
             subject:'subject',
