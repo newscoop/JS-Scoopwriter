@@ -450,7 +450,8 @@ angular.module('authoringEnvironmentApp')
                         commentId: comment.id
                     },
                     {comment: {
-                        recommended: (newStatus ? 1 : 0)  // API needs int
+                        // API expects numeric value, not a boolean
+                        recommended: (newStatus ? 1 : 0)
                     }},
                     function () {
                         comment.recommended = newStatus;
