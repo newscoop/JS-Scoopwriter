@@ -58,6 +58,14 @@ angular.module('authoringEnvironmentApp')
                     method: 'POST',
                     transformRequest: transform.formEncode
                 },
+                patch: {
+                    /* the patch verb is currently not supported by
+                     * the API. a post verb to an endpoint containing
+                     * an id will behave as patch */
+                    method: 'POST',
+                    url: f + '/comments/article/:articleNumber/:languageCode/:commentId',
+                    transformRequest: transform.formEncode
+                },
                 save: {
                     method: 'POST',
                     url: f + '/comments/article/:articleNumber/:languageCode/:commentId',
@@ -238,6 +246,20 @@ angular.module('authoringEnvironmentApp')
         };
 
         /**
+        * Changes the selected status for the selected comments
+        *
+        * @method changeSelectedStatus
+        * @param status {String} the new status to be set
+        */
+        this.changeSelectedStatus = function(status) {
+            this.displayed.forEach(function(comment) {
+                if (comment.selected) {
+                    comment.changeStatus(status);
+                }
+            });
+        };
+
+        /**
         * Decorates an object containing raw comment data (as returned by
         * the API) with properties and methods, turning it into a
         * self-contained "comment entity", which knows how to manage itself
@@ -251,6 +273,14 @@ angular.module('authoringEnvironmentApp')
             /**
             * @class comment
             */
+
+            /**
+            * Reflects the checkbox on the left of every comment
+            * @property selected
+            * @type Boolean
+            * @default "false"
+            */
+            comment.selected = false;
 
             /**
             * How the comment is currently displayed (collapsed or expanded).
@@ -275,6 +305,14 @@ angular.module('authoringEnvironmentApp')
             * @type Boolean
             */
             comment.recommended = !!comment.recommended;  // to Boolean
+
+            /**
+            * An object holding comment properties yet to be saved on the server
+            * @property editing
+            */
+            comment.editing = {
+                status: comment.status
+            };
 
             /**
             * Object holding a subject and a message of the new reply to
@@ -344,10 +382,8 @@ angular.module('authoringEnvironmentApp')
             * @method edit
             */
             comment.edit = function() {
-                this.editing = {
-                    subject: this.subject,
-                    message: this.message
-                };
+                this.editing.subject = this.subject;
+                this.editing.message = this.message;
                 this.isEdited = true;
                 this.isReplyMode = false;
             };
@@ -457,6 +493,27 @@ angular.module('authoringEnvironmentApp')
                         comment.recommended = newStatus;
                     }
                 );
+            };
+
+            /**
+            * Ask to the server to change the status, rollback if it fails
+            * @method changeStatus
+            */
+            comment.changeStatus = function (newStatus) {
+                var comment = this;
+                article.promise.then(function(article) {
+                    service.resource.patch({
+                        articleNumber: article.number,
+                        languageCode: article.language,
+                        commentId: comment.id
+                    }, {comment: {status: newStatus}}, function() {
+                        // success
+                        comment.status = newStatus;
+                    }, function() {
+                        // failure
+                        $log.debug('error changing the status for the comment');
+                    });
+                });
             };
 
             return comment;

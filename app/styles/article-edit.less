@@ -41,6 +41,10 @@ html, body.article-edit {
 @new-comment-blue: #0088CC;
 @comment-gray: #b9b9b9;
 
+/* used in "post a comment", "add a snippet" in the panels, and in
+ * other parts of the panels */
+@add-element-gray: #ebebeb;
+
 .authoring-environment {
     /* there is also a not editable one, probably it will be removed */
     .article-editable-title {
@@ -205,12 +209,12 @@ html, body.article-edit {
     comment {
         display: block;
         background: white;
-        border-bottom: solid 3px #f5f5f5;
-        &.comment-new {
+        border-bottom: solid 3px white;
+        &.comment-pending {
             .left-border-wrapper {
                 border-left-color: @new-comment-blue;
             }
-            .label {
+            .status-button {
                 background: @new-comment-blue;
             }
         };
@@ -218,14 +222,35 @@ html, body.article-edit {
             .left-border-wrapper {
                 border-left-color: @approved-comment-green;
             }
-            .label {
+            .status-button {
                 background: @approved-comment-green;
             }
         };
         input[type="checkbox"] {
             float: left;
-            height: 100%;
             width: 22px;
+        }
+        .status-dropdown {
+            .dropdown-menu {
+                min-width: 0;
+                li {
+                    padding: 0 0.5em;
+                }
+            }
+        }
+        .status-button {
+            text-transform: capitalize;
+            color: white;
+            border: none;
+            /* copied from bootstrap label in order to match the design */
+            padding: .2em .6em .3em;
+            font-size: 75%;
+            font-weight: bold;
+            line-height: 1;
+            text-align: center;
+            vertical-align: baseline;
+            border-radius: .25em;
+            /* end of rules copied from bootstrap label */
         }
         .right {
             position: relative;
@@ -237,9 +262,6 @@ html, body.article-edit {
             .date-and-name {
                 color: @comment-gray;
                 display: inline-block;
-            }
-            .label {
-                margin: 3px 0 0 5px;
             }
         }
         .controls {
@@ -278,7 +300,7 @@ html, body.article-edit {
             }
         }
         &.collapsed {
-            .comment, .label, .date, .controls, .author {
+            .comment, .status-dropdown, .date, .controls, .author {
                 display: none;
             }
             .image-and-author-details, .subject {
@@ -330,7 +352,8 @@ html, body.article-edit {
         .tabcontent {
             display:block;
             padding:@tabcontent-padding;
-            //padding-bottom: @tabcontent-padding + 30px; //because of scratchpad
+            //padding-bottom: @tabcontent-padding + 30px; 
+            //because of scratchpad
         }
         .pane {
             width: @tabpane-width;
@@ -739,9 +762,15 @@ html, body.article-edit {
     }
 
     &.zen-mode {
-        .tablist {display:none;}
-        .tabpane {display:none;}
-        .switch-article-view {display:none;}
+        .tablist {
+            display:none;
+        }
+        .tabpane {
+            display:none;
+        }
+        .switch-article-view {
+            display:none;
+        }
         background: #fff;
         .navbar-fixed-top {
             display:none;
@@ -928,7 +957,8 @@ html, body.article-edit {
         margin:0;
         list-style-type:none;
         position:absolute;
-        bottom:@tabcontent-padding + 30px; //because of scratchpad
+        bottom:@tabcontent-padding + 30px; 
+        //because of scratchpad
         left:@tabcontent-padding;
         right:0;
         top:87px;
@@ -1098,7 +1128,8 @@ html, body.article-edit {
         article {
             margin:0;
             position:absolute;
-            bottom:@tabcontent-padding + 30px; //because of scratchpad
+            bottom:@tabcontent-padding + 30px; 
+            //because of scratchpad
             left:@tabcontent-padding;
             right:0;
             top:@tabcontent-padding + 48px;
@@ -1226,7 +1257,9 @@ html, body.article-edit {
                     }
                 }
                 &:hover {
-                    .dropdown { display: block; }
+                    .dropdown { 
+                        display: block; 
+                    }
                 }
 
                 &.media-image, &.media-video {
@@ -1791,6 +1824,13 @@ html, body.article-edit {
         .list.low {
             top: @panel-height + 75px;
         }
+        .status-buttons {
+            background-color: @add-element-gray;
+            padding: 10px;
+            .delete-button {
+                margin-left: 20px;
+            }
+        }
     }
     .embed-panel {
         .add-element.expanded {
@@ -1809,6 +1849,7 @@ html, body.article-edit {
         }
     }
     /* end of the javascript scroll part */
+
 
     .embed-panel, .comments-panel {
         .panel-title-button-group .btn {
@@ -1835,18 +1876,28 @@ html, body.article-edit {
                 font-size: 13px;
                 padding: 5px 0;
                 text-transform: capitalize;
-                .filters-label { color: @comment-gray; }
-                .new-check { color: @new-comment-blue;}
-                .approved-check { color: @approved-comment-green;}
-                .hidden-check { color: gainsboro;}
-                * { margin: 2px; }
+                .filters-label { 
+                    color: @comment-gray; 
+                }
+                .pending-check { 
+                    color: @new-comment-blue;
+                }
+                .approved-check { 
+                    color: @approved-comment-green;
+                }
+                .hidden-check { 
+                    color: gainsboro;
+                }
+                * { 
+                    margin: 2px; 
+                }
             }
             overflow: auto;
             position: absolute;
         }
         .add-element {
             overflow: auto;
-            background-color: #ebebeb;
+            background-color: @add-element-gray;
             margin: 10px 0;
             .heading {
                 button {
@@ -1910,7 +1961,7 @@ html, body.article-edit {
                   different code for every panel, or the design should
                   be coherent. for the moment i picked a compromise
                   value that works in both cases
-                */
+                  */
                 width: 70%;
             }
         }
