@@ -105,7 +105,8 @@ describe('Service: Comments', function () {
 
         describe('toggleRecommended action', function () {
             it('invokes correct API method', function () {
-                $httpBackend.expectPOST(
+                $httpBackend.expect(
+                    'PATCH',
                     rootURI + '/comments/1234.json'
                 ).respond(200, {});
 
@@ -573,7 +574,7 @@ describe('Service: Comments', function () {
                     describe('request succeeded', function() {
                         beforeEach(function() {
                             $httpBackend.expect(
-                                'POST',
+                                'PATCH',
                                 rootURI + '/comments/article/64/de/24',
                                 'comment%5Bstatus%5D=pending'
                             ).respond(200, '');
@@ -587,7 +588,7 @@ describe('Service: Comments', function () {
                     describe('request failed', function() {
                         beforeEach(function() {
                             $httpBackend.expect(
-                                'POST',
+                                'PATCH',
                                 rootURI + '/comments/article/64/de/24'
                             ).respond(500, '');
                         });
@@ -613,12 +614,12 @@ describe('Service: Comments', function () {
                     describe('successful responses', function() {
                         beforeEach(function() {
                             $httpBackend.expect(
-                                'POST',
+                                'PATCH',
                                 rootURI + '/comments/article/64/de/24',
                                 'comment%5Bstatus%5D=hidden'
                             ).respond(200, '');
                             $httpBackend.expect(
-                                'POST',
+                                'PATCH',
                                 rootURI + '/comments/article/64/de/25',
                                 'comment%5Bstatus%5D=hidden'
                             ).respond(200, '');
@@ -636,12 +637,12 @@ describe('Service: Comments', function () {
                     describe('some failures', function() {
                         beforeEach(function() {
                             $httpBackend.expect(
-                                'POST',
+                                'PATCH',
                                 rootURI + '/comments/article/64/de/24',
                                 'comment%5Bstatus%5D=hidden'
                             ).respond(200, '');
                             $httpBackend.expect(
-                                'POST',
+                                'PATCH',
                                 rootURI + '/comments/article/64/de/25',
                                 'comment%5Bstatus%5D=hidden'
                             ).respond(500, '');
