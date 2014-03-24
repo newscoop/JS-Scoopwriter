@@ -59,7 +59,10 @@ angular.module('authoringEnvironmentApp')
                     transformRequest: transform.formEncode
                 },
                 patch: {
-                    method: 'PATCH',
+                    /* the patch verb is currently not supported by
+                     * the API. a post verb to an endpoint containing
+                     * an id will behave as patch */
+                    method: 'POST',
                     url: f + '/comments/article/:articleNumber/:languageCode/:commentId',
                     transformRequest: transform.formEncode
                 },

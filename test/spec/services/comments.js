@@ -573,7 +573,7 @@ describe('Service: Comments', function () {
                     describe('request succeeded', function() {
                         beforeEach(function() {
                             $httpBackend.expect(
-                                'PATCH',
+                                'POST',
                                 rootURI + '/comments/article/64/de/24',
                                 'comment%5Bstatus%5D=pending'
                             ).respond(200, '');
@@ -587,7 +587,7 @@ describe('Service: Comments', function () {
                     describe('request failed', function() {
                         beforeEach(function() {
                             $httpBackend.expect(
-                                'PATCH',
+                                'POST',
                                 rootURI + '/comments/article/64/de/24'
                             ).respond(500, '');
                         });
