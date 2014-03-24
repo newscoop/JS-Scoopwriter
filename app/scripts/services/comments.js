@@ -66,6 +66,10 @@ angular.module('authoringEnvironmentApp')
                 delete: {
                     method: 'DELETE',
                     url: f + '/comments/article/:articleNumber/:languageCode/:commentId'
+                },
+                toggleRecommended: {
+                    method: 'POST',
+                    url: f + '/comments/:commentId.json'
                 }
             });
 
@@ -265,6 +269,14 @@ angular.module('authoringEnvironmentApp')
             comment.isEdited = false;
 
             /**
+            * A flag indicating whether the comment is marked as
+            * recommended or not.
+            * @property recommended
+            * @type Boolean
+            */
+            comment.recommended = !!comment.recommended;  // to Boolean
+
+            /**
             * Object holding a subject and a message of the new reply to
             * the comment.
             *
@@ -423,6 +435,28 @@ angular.module('authoringEnvironmentApp')
                         message: ''
                     };
                 });
+            };
+
+            /**
+            * Asynchronously toggle the comment between being and not-being
+            * marked as recommended.
+            * @method toggleRecommended
+            */
+            comment.toggleRecommended = function () {
+                var comment = this,
+                    newStatus = !comment.recommended;
+
+                service.resource.toggleRecommended({
+                        commentId: comment.id
+                    },
+                    {comment: {
+                        // API expects numeric value, not a boolean
+                        recommended: (newStatus ? 1 : 0)
+                    }},
+                    function () {
+                        comment.recommended = newStatus;
+                    }
+                );
             };
 
             return comment;

@@ -102,6 +102,16 @@ describe('Service: Comments', function () {
             expect(spies.success).toHaveBeenCalled();
             expect(spies.data).toHaveBeenCalledWith('message=hey%2C+Joe%2C+let+us+go!');
         });
+
+        describe('toggleRecommended action', function () {
+            it('invokes correct API method', function () {
+                $httpBackend.expectPOST(
+                    rootURI + '/comments/1234.json'
+                ).respond(200, {});
+
+                comments.resource.toggleRecommended({commentId: 1234}, {});
+            });
+        });
     });
 
     describe('matchMaker() method', function () {
@@ -337,6 +347,10 @@ describe('Service: Comments', function () {
                     });
                 });
 
+                it('"recommended" flag is a Boolean', function () {
+                    expect(typeof comment.recommended).toBe('boolean');
+                });
+
                 describe('replyTo() method', function () {
                     it('enters into reply-to mode', function () {
                         comment.isReplyMode = false;
@@ -416,6 +430,66 @@ describe('Service: Comments', function () {
                                 'Re: I approve');
                             expect(comment.reply.message).toBe('');
                         });
+                    });
+                });
+
+                describe('toggleRecommended() method', function () {
+                    var $http,
+                        $httpBackend;
+
+                    beforeEach(inject(function (_$http_, _$httpBackend_) {
+                        var spy;
+
+                        $http = _$http_;
+                        $httpBackend = _$httpBackend_;
+                        $httpBackend.whenPATCH('/backend').respond(200, {});
+
+                        spy = spyOn(comments.resource, 'toggleRecommended');
+
+                        // Simulate `comments.resource` issuing an HTTP request
+                        // in the background and invoking provided success
+                        // handler (if any) on asynchronous response.
+                        spy.andCallFake(function () {
+                            var onSuccess = function () {
+                                if (spy.mostRecentCall.args.length >= 3) {
+                                    spy.mostRecentCall.args[2]();
+                                }
+                            };
+                            $http({method: 'PATCH', url: '/backend'})
+                                .success(onSuccess);
+                        });
+                    }));
+
+                    it('provides correct arguments to resource', function () {
+                        var callArgs;
+
+                        comment.recommended = true;
+                        comment.toggleRecommended();
+
+                        callArgs = comments.resource.toggleRecommended
+                            .mostRecentCall.args;
+
+                        expect(callArgs.length).toBeGreaterThan(1);
+                        expect(callArgs[0]).toEqual({commentId: 24});
+                        expect(callArgs[1]).toEqual({
+                            comment: {recommended: 0}
+                        });
+                    });
+
+                    it('toggles "recommended" flag from false to true',
+                        function () {
+                            comment.recommended = false;
+                            comment.toggleRecommended();
+                            $httpBackend.flush();
+                            expect(comment.recommended).toBe(true);
+                    });
+
+                    it('toggles "recommended" flag from true to false',
+                        function () {
+                            comment.recommended = true;
+                            comment.toggleRecommended();
+                            $httpBackend.flush();
+                            expect(comment.recommended).toBe(false);
                     });
                 });
 
