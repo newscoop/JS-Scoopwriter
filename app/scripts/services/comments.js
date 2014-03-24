@@ -446,18 +446,16 @@ angular.module('authoringEnvironmentApp')
                 var comment = this,
                     newStatus = !comment.recommended;
 
-                article.promise.then(function(article) {
-                    service.resource.toggleRecommended({
-                            commentId: comment.id
-                        },
-                        {comment: {
-                            recommended: (newStatus ? 1 : 0)  // API needs int
-                        }},
-                        function () {
-                            comment.recommended = newStatus;
-                        }
-                    );
-                });
+                service.resource.toggleRecommended({
+                        commentId: comment.id
+                    },
+                    {comment: {
+                        recommended: (newStatus ? 1 : 0)  // API needs int
+                    }},
+                    function () {
+                        comment.recommended = newStatus;
+                    }
+                );
             };
 
             return comment;
