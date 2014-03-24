@@ -68,7 +68,7 @@ angular.module('authoringEnvironmentApp')
                     url: f + '/comments/article/:articleNumber/:languageCode/:commentId'
                 },
                 toggleRecommended: {
-                    method: 'PATCH',
+                    method: 'POST',
                     url: f + '/comments/:commentId.json'
                 }
             });

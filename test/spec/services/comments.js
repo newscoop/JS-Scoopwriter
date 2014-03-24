@@ -105,7 +105,7 @@ describe('Service: Comments', function () {
 
         describe('toggleRecommended action', function () {
             it('invokes correct API method', function () {
-                $httpBackend.expectPATCH(
+                $httpBackend.expectPOST(
                     rootURI + '/comments/1234.json'
                 ).respond(200, {});
 
