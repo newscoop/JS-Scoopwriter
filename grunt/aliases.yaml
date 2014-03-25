@@ -35,3 +35,11 @@ build-newscoop:
  - 'devcode:newscoop'
  - 'rev'
  - 'usemin'
+
+server:
+ - 'clean:server'
+ - 'concurrent:server'
+ - 'autoprefixer'
+ - 'connect:livereload'
+ - 'open'
+ - 'watch'
