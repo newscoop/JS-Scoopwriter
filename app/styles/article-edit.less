@@ -37,9 +37,10 @@ html, body.article-edit {
 .aloha-ui-toolbar {display:none !important;}
 .aloha-sidebar-bar {display:none !important;}
 
-@approved-comment-green: rgb(111, 160, 13);
-@new-comment-blue: rgb(0, 127, 179);;
-@hidden-comment-gray: rgb(207, 208, 209);
+@approved-comment-color: rgb(111, 160, 13);
+@new-comment-color: rgb(0, 127, 179);;
+@hidden-comment-color: rgb(207, 208, 209);
+@deleted-comment-color: #D48585;
 /* following variable was created by me when i had nothing more
  * precise about comment colors. it will probably disappear with time */
 @comment-gray: #b9b9b9;
@@ -221,18 +222,34 @@ html, body.article-edit {
         /* end colors copied from the mock */
         &.comment-pending {
             .left-border-wrapper {
-                border-left-color: @new-comment-blue;
+                border-left-color: @new-comment-color;
             }
             .status-button {
-                background: @new-comment-blue;
+                background: @new-comment-color;
             }
         };
         &.comment-approved {
             .left-border-wrapper {
-                border-left-color: @approved-comment-green;
+                border-left-color: @approved-comment-color;
             }
             .status-button {
-                background: @approved-comment-green;
+                background: @approved-comment-color;
+            }
+        };
+        &.comment-hidden {
+            .left-border-wrapper {
+                border-left-color: @hidden-comment-color;
+            }
+            .status-button {
+                background: @hidden-comment-color;
+            }
+        };
+        &.comment-deleted {
+            .left-border-wrapper {
+                border-left-color: @deleted-comment-color;
+            }
+            .status-button {
+                background: @deleted-comment-color;
             }
         };
         input[type="checkbox"] {
@@ -274,7 +291,7 @@ html, body.article-edit {
             }
         }
         .left-border-wrapper {
-            border-left: solid 3px @hidden-comment-gray;
+            border-left: solid 3px @hidden-comment-color;
             height: 100%;
             .bottom-border-wrapper {
                 border-bottom: solid 1px gainsboro;
@@ -1885,9 +1902,9 @@ html, body.article-edit {
                 padding: 5px 0;
                 text-transform: capitalize;
                 .filters-label { color: @comment-gray; }
-                .pending-check { color: @new-comment-blue;}
-                .approved-check { color: @approved-comment-green;}
-                .hidden-check { color: @hidden-comment-gray;}
+                .pending-check { color: @new-comment-color;}
+                .approved-check { color: @approved-comment-color;}
+                .hidden-check { color: @hidden-comment-color;}
                 * { margin: 2px; }
             }
             overflow: auto;
