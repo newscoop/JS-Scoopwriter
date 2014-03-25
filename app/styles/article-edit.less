@@ -1861,16 +1861,20 @@ html, body.article-edit {
                 color: @comment-gray;
             }
             label {
-                position: relative;
-                top: -2px;
                 font-weight: normal;
                 margin-right: 5px;
                 margin-bottom: 0px;
-                width: 55px;  /* fix width to prevent flickering */
+                width: 75px;  /* fix width to prevent flickering */
+                text-transform: capitalize;
                 &.optionActive {
                     font-weight: bold;
                       /* prevents flickering of a non-fixed size font */
                     font-size: 90%;
+                }
+                /* XXX: using IDs, because this gets overriden */
+                #commenting-enabled, #commenting-disabled, #commenting-locked {
+                    position: relative;
+                    top: 2px;
                 }
             }
         }

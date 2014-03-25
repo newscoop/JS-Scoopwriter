@@ -51,8 +51,30 @@ angular.module('authoringEnvironmentApp').controller(
 
         // commenting options ... (TODO: perhaps explain better, what this is)
         // TODO: and add tests
-        $scope.commentsEnabled = !true;  // TODO: read from articles!
-        $scope.commentsLocked = !false;  // TODO: read from article!
+
+        // possible values
+        var commenting = Object.freeze({
+            ENABLED: 0,
+            DISABLED: 1,
+            LOCKED: 2
+        });
+        $scope.commenting = commenting.ENABLED;
+
+        // this used for iterating in the scope
+        $scope.commentingOpts = [
+            {
+                value: commenting.ENABLED,
+                label: 'enabled'
+            },
+            {
+                value: commenting.DISABLED,
+                label: 'disabled'
+            },
+            {
+                value: commenting.LOCKED,
+                label: 'locked'
+            }
+        ];
 
         // TODO: YUIDoc comments ...
         this.init = function () {
@@ -61,12 +83,14 @@ angular.module('authoringEnvironmentApp').controller(
             article.resource.get({
                  articleId: queryParams.article_number,
                  language: queryParams.language
-             })
-            .$promise.then(function (data) {
-                $scope.commentsEnabled =
-                    parseInt(data.comments_enabled, 10) > 0;
-                $scope.commentsLocked =
-                    parseInt(data.comments_locked, 10) > 0;
+             }).$promise.then(function (data) {
+                if (parseInt(data.comments_locked, 10) > 0) {
+                    $scope.commenting = commenting.LOCKED;
+                } else if (parseInt(data.comments_enabled, 10) > 0) {
+                    $scope.commenting = commenting.ENABLED;
+                } else {
+                    $scope.commenting = commenting.DISABLED;
+                }
             });
         }
 
@@ -118,9 +142,34 @@ angular.module('authoringEnvironmentApp').controller(
         });
 
         // TODO: comment and tests
-        $scope.toggleCommentsEnabled = function () {
-            // TODO: contact server
-            $scope.commentsEnabled = !$scope.commentsEnabled;
+        $scope.switchCommentingSetting = function (newValue, $event) {
+            // XXX: maybe set it up in init and let it be "global" in the
+            // comments service
+            var queryParams = $location.search();
+
+            $scope.commenting = newValue;
+            return;
+
+            $event.preventDefault();
+
+            // TODO: look at the comments under the ticket to see how
+            // PATCH should be invoked (parameters)
+            article.resource.save(
+                {
+                    articleId: queryParams.article_number,
+                    language: queryParams.language
+                },
+                {comments_enabled: !$scope.commentsEnabled}
+            ).$promise.then(function (data) {
+                // TODO: patch success, see what we got
+                debugger;
+                $scope.commentsEnabled = !$scope.commentsEnabled;
+            }, function () {
+                // failure ... TODO: this still makes checkbox checked
+                //debugger;
+                // or perhaps don't prevent the event and in case of an error,
+                // revert to original value - better responsiveness?
+            });
         };
 
         // TODO: comment and tests
