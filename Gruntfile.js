@@ -399,8 +399,4 @@ module.exports = function (grunt) {
     'test',
     'build'
   ]);
-
-  grunt.loadNpmTasks('grunt-open');
-  grunt.loadNpmTasks('grunt-devcode');
-  grunt.loadNpmTasks('grunt-contrib-less');
 };
