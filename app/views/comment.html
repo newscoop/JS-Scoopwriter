@@ -7,14 +7,6 @@
     <div class="right">
       <div class="image-and-author-details">
         <!--img class="author" ng-src="model.image" /-->
-        <div class="date-and-name">
-          <div class="date" ng-bind="model.created | niceDate"></div>
-          <div
-             class="author-name"
-             ng-bind="model.author"
-             ng-click="model.toggle()"
-             ></div>
-        </div>
         <div class="dropdown status-dropdown pull-right">
           <button
              class="btn dropdown-toggle status-button"
@@ -39,6 +31,14 @@
            class="pull-right"
            ng-src="/images/icon-nested-comment-level-{{model.thread_level}}.png"
            />
+        <div class="date-and-name">
+          <div class="date" ng-bind="model.created | niceDate"></div>
+          <div
+             class="author-name"
+             ng-bind="model.author"
+             ng-click="model.toggle()"
+             ></div>
+        </div>
       </div>
       <div
          class="subject"
