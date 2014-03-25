@@ -45,6 +45,13 @@ angular.module('authoringEnvironmentApp')
                 }
             }
         };
+
+        // commenting options ... (TODO: perhaps explain better, what this is)
+        // TODO: add onclick for checkboxes - change status
+        // TODO: and add tests
+        $scope.commentsEnabled = true;  // TODO: read from articles!
+        $scope.commentsLocked = false;  // TODO: read from article!
+
         $scope.statuses = {
             all: true,
             pending: false,
@@ -89,6 +96,16 @@ angular.module('authoringEnvironmentApp')
                 comment.showStatus = $scope.globalShowStatus;
             });
         });
+
+        // TODO: comment and tests
+        $scope.toggleCommentsEnabled = function () {
+            $scope.commentsEnabled = !$scope.commentsEnabled;
+        };
+
+        // TODO: comment and tests
+        $scope.toggleCommentsLocked = function () {
+            $scope.commentsLocked = !$scope.commentsLocked;
+        };
 
         /**
         * Changes global comments display status from expanded to collapsed or

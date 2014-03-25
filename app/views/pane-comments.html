@@ -18,12 +18,28 @@
 
   <div class="commenting-options">
     <span class="commenting-opts-label">Settings:</span>
-    <input type="checkbox" id="commenting-enabled">
-    <label for="commenting-enabled">Enabled</label>
-    <input type="checkbox" id="commenting-disabled">
-    <label for="commenting-disabled">Disabled</label>
-    <input type="checkbox" id="commenting-locked">
-    <label for="commenting-locked">Locked</label>
+    <input type="checkbox"
+           id="commenting-enabled"
+           ng-checked="commentsEnabled"
+           ng-click="toggleCommentsEnabled()"
+           >
+    <label for="commenting-enabled"
+           ng-class="{optionActive: commentsEnabled}">Enabled</label>
+
+    <input type="checkbox"
+           id="commenting-disabled"
+           ng-checked="!commentsEnabled"
+           ng-click="toggleCommentsEnabled()"
+           >
+    <label for="commenting-disabled"
+           ng-class="{optionActive: !commentsEnabled}">Disabled</label>
+
+    <input type="checkbox" id="commenting-locked"
+            ng-checked="commentsLocked"
+            ng-click="toggleCommentsLocked()"
+            >
+    <label for="commenting-locked"
+           ng-class="{optionActive: commentsLocked}">Locked</label>
   </div>
 
   <div class="add-element" ng-class="{expanded: adding}">

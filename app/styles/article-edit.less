@@ -1866,6 +1866,12 @@ html, body.article-edit {
                 font-weight: normal;
                 margin-right: 5px;
                 margin-bottom: 0px;
+                width: 55px;  /* fix width to prevent flickering */
+                &.optionActive {
+                    font-weight: bold;
+                      /* prevents flickering of a non-fixed size font */
+                    font-size: 90%;
+                }
             }
         }
         .status-buttons {
