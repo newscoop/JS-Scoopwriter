@@ -6,9 +6,12 @@
 *
 * @class CommentsCtrl
 */
-angular.module('authoringEnvironmentApp')
-    .controller('CommentsCtrl', ['$scope', 'comments', '$log', function ($scope, comments, $log) {
+angular.module('authoringEnvironmentApp').controller(
+    'CommentsCtrl', ['$scope', 'comments', 'article', '$location', '$log',
+    function ($scope, comments, article, $location, $log) {
+
         var others = ['pending', 'approved', 'hidden'];
+
         $scope.sortings = [{
             text: 'Nested'
         }, {
@@ -47,10 +50,27 @@ angular.module('authoringEnvironmentApp')
         };
 
         // commenting options ... (TODO: perhaps explain better, what this is)
-        // TODO: add onclick for checkboxes - change status
         // TODO: and add tests
-        $scope.commentsEnabled = true;  // TODO: read from articles!
-        $scope.commentsLocked = false;  // TODO: read from article!
+        $scope.commentsEnabled = !true;  // TODO: read from articles!
+        $scope.commentsLocked = !false;  // TODO: read from article!
+
+        // TODO: YUIDoc comments ...
+        this.init = function () {
+             var queryParams = $location.search();
+
+            article.resource.get({
+                 articleId: queryParams.article_number,
+                 language: queryParams.language
+             })
+            .$promise.then(function (data) {
+                $scope.commentsEnabled =
+                    parseInt(data.comments_enabled, 10) > 0;
+                $scope.commentsLocked =
+                    parseInt(data.comments_locked, 10) > 0;
+            });
+        }
+
+        this.init();
 
         $scope.statuses = {
             all: true,
@@ -99,11 +119,13 @@ angular.module('authoringEnvironmentApp')
 
         // TODO: comment and tests
         $scope.toggleCommentsEnabled = function () {
+            // TODO: contact server
             $scope.commentsEnabled = !$scope.commentsEnabled;
         };
 
         // TODO: comment and tests
         $scope.toggleCommentsLocked = function () {
+            // TODO: contact server
             $scope.commentsLocked = !$scope.commentsLocked;
         };
 
