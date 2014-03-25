@@ -273,19 +273,6 @@ html, body.article-edit {
                 display: inline-block;
             }
         }
-        .controls {
-            .glyphicon, .fa {
-                cursor: pointer;
-            }
-            .glyphicon-chevron-up {
-                float: left;
-            }
-            text-align: right;
-            .disabled {
-                cursor: default;
-                color: #bbb;
-            }
-        }
         .left-border-wrapper {
             border-left: solid 3px @hidden-comment-gray;
             height: 100%;
@@ -305,6 +292,10 @@ html, body.article-edit {
                     .fa-thumbs-up.recommended {
                         color: #6FA00D;
                     }
+                    .disabled {
+                        cursor: default;
+                        color: #bbb;
+                     }
                 }
             }
         }
