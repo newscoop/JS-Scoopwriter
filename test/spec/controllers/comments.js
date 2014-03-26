@@ -41,9 +41,47 @@ describe('Controller: CommentsCtrl', function () {
             status: 'whatever'
         }
     },
+    // TODO: and add tests (default value) ... and that commentingOpts
+    // have correct values
+    article = {
+        commenting: {
+            ENABLED: 0,
+            DISABLED: 1,
+            LOCKED: 2
+        },
+        resource: {
+            get: function () {
+                // TODO async!! not like this
+                //TODO: should return a $promise
+                return {
+                    $promise: {
+                        then: function () {}
+                    }
+                };
+            },
+            save: function () {
+                // TODO async!! not like this
+                //TODO: should return a $promise
+                return {
+                    $promise: {
+                        then: function () {}
+                    }
+                };
+            }
+        }
+    },
+    location = {
+        search: function () {
+            return {
+                article_number: 123456,
+                language: 'de'
+            };
+        }
+    },
     log = {
         debug: jasmine.createSpy('debug mock')
     };
+
 
     // Initialize the controller and a mock scope
     beforeEach(inject(function ($controller, $rootScope) {
@@ -51,6 +89,8 @@ describe('Controller: CommentsCtrl', function () {
         CommentsCtrl = $controller('CommentsCtrl', {
             $scope: scope,
             comments: commentsService,
+            article: article,
+            $location: location,
             $log: log
         });
     }));

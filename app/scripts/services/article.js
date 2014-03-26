@@ -37,7 +37,7 @@ angular.module('authoringEnvironmentApp')
             37: ['German Austria', 'de_AT']
         };
 
-        // all possible options the commenting setting
+        // all possible values for the commenting setting
         var commenting = Object.freeze({
             ENABLED: 0,
             DISABLED: 1,
@@ -62,7 +62,7 @@ angular.module('authoringEnvironmentApp')
         var deferred = $q.defer();
         
         return {
-            commenting: commenting,  // TODO: add test for this! (correct vals)
+            commenting: commenting,
             modified: false,
             resource: resource,
             promise: deferred.promise,

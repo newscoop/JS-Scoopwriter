@@ -17,6 +17,7 @@ describe('Service: article', function () {
         $httpBackend.verifyNoOutstandingExpectation();
     });
 
+    // TODO: add test for this! (correct vals) commenting.commenting
     it('should do something', function () {
         expect(!!article).toBe(true);
     });

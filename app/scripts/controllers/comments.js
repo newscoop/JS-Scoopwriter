@@ -50,9 +50,8 @@ angular.module('authoringEnvironmentApp').controller(
             }
         };
 
-        // commenting options on the *article*
-        // TODO: and add tests (default value)
-        $scope.commenting = article.commenting.ENABLED;
+        // setting of the commenting on the article
+        $scope.commentingSetting = article.commenting.ENABLED;
         $scope.commentingOpts = [
             {
                 value: article.commenting.ENABLED,
@@ -68,23 +67,27 @@ angular.module('authoringEnvironmentApp').controller(
             }
         ];
 
-        // TODO: YUIDoc comments ...
-        this.init = function () {
+        /**
+        * Retrieves the article object to which the comments belong and
+        * stores the current value of the article's `commenting` setting.
+        * @method initCommenting
+        */
+        this.initCommenting = function () {
             article.resource.get({
                  articleId: queryParams.article_number,
                  language: queryParams.language
              }).$promise.then(function (data) {
                 if (parseInt(data.comments_locked, 10) > 0) {
-                    $scope.commenting = article.commenting.LOCKED;
+                    $scope.commentingSetting = article.commenting.LOCKED;
                 } else if (parseInt(data.comments_enabled, 10) > 0) {
-                    $scope.commenting = article.commenting.ENABLED;
+                    $scope.commentingSetting = article.commenting.ENABLED;
                 } else {
-                    $scope.commenting = article.commenting.DISABLED;
+                    $scope.commentingSetting = article.commenting.DISABLED;
                 }
             });
         }
 
-        this.init();
+        this.initCommenting();
 
         $scope.statuses = {
             all: true,
@@ -131,19 +134,29 @@ angular.module('authoringEnvironmentApp').controller(
             });
         });
 
-        // TODO: comment and tests
-        $scope.switchCommentingSetting = function (newValue, $event) {
+        /**
+        * Changes the value of the article's commenting setting and updates
+        * it on the server. In case of an erroneous server response it
+        * restores the setting back to the original value (i.e. the value
+        * before the change attempt).
+        *
+        * @method changeCommentingSetting
+        * @param newValue {Number} New value of the article commenting setting.
+        *       Should be one of the values from article.commenting object.
+        * @param $event {Object} event object that triggered the method
+        */
+        $scope.changeCommentingSetting = function (newValue, $event) {
             var apiParams,
                 origValue;
 
             $event.preventDefault();
 
-            if (newValue === $scope.commenting) {
+            if (newValue === $scope.commentingSetting) {
                 return;  // no changes, nothing to do
             }
 
-            origValue = $scope.commenting;
-            $scope.commenting = newValue;
+            origValue = $scope.commentingSetting;
+            $scope.commentingSetting = newValue;
 
             apiParams = {
                 comments_enabled:
@@ -164,7 +177,7 @@ angular.module('authoringEnvironmentApp').controller(
                 // XXX: when consistent reporting mechanism is developed,
                 // inform user about the error (API failure) - the reason
                 // why the value has been switched back to origValue
-                $scope.commenting = origValue;
+                $scope.commentingSetting = origValue;
             });
         };
 
