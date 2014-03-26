@@ -17,10 +17,22 @@ describe('Service: article', function () {
         $httpBackend.verifyNoOutstandingExpectation();
     });
 
-    // TODO: add test for this! (correct vals) commenting.commenting
     it('should do something', function () {
         expect(!!article).toBe(true);
     });
+
+    it('should define correct options for "commenting"', function () {
+        var options = article.commenting;
+        expect(options).not.toBeUndefined();
+        expect(_.size(options)).toBe(3);
+        expect('ENABLED' in options).toBe(true);
+        expect(options.ENABLED).toBe(0);
+        expect('DISABLED' in options).toBe(true);
+        expect(options.DISABLED).toBe(1);
+        expect('LOCKED' in options).toBe(true);
+        expect(options.LOCKED).toBe(2);
+    });
+
     it('is not modified', function() {
         expect(article.modified).toBe(false);
     });
