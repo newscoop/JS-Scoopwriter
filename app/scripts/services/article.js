@@ -37,6 +37,13 @@ angular.module('authoringEnvironmentApp')
             37: ['German Austria', 'de_AT']
         };
 
+        // all possible options the commenting setting
+        var commenting = Object.freeze({
+            ENABLED: 0,
+            DISABLED: 1,
+            LOCKED: 2
+        });
+
         var resource = $resource(
             configuration.API.full + '/articles/:articleId?language=:language', {
                 articleId: '',
@@ -55,6 +62,7 @@ angular.module('authoringEnvironmentApp')
         var deferred = $q.defer();
         
         return {
+            commenting: commenting,  // TODO: add test for this! (correct vals)
             modified: false,
             resource: resource,
             promise: deferred.promise,
