@@ -50,12 +50,9 @@ angular.module('authoringEnvironmentApp').controller(
             }
         };
 
-        // commenting options ... (TODO: perhaps explain better, what this is)
-        // TODO: and add tests
-
+        // commenting options on the *article*
+        // TODO: and add tests (default value)
         $scope.commenting = article.commenting.ENABLED;
-
-        // this used for iterating in the scope
         $scope.commentingOpts = [
             {
                 value: article.commenting.ENABLED,
@@ -136,7 +133,8 @@ angular.module('authoringEnvironmentApp').controller(
 
         // TODO: comment and tests
         $scope.switchCommentingSetting = function (newValue, $event) {
-            var origValue;
+            var apiParams,
+                origValue;
 
             $event.preventDefault();
 
@@ -147,27 +145,27 @@ angular.module('authoringEnvironmentApp').controller(
             origValue = $scope.commenting;
             $scope.commenting = newValue;
 
-            // TODO: look at the comments under the ticket to see how
-            // PATCH should be invoked (parameters)
+            apiParams = {
+                comments_enabled:
+                    (newValue === article.commenting.ENABLED) ? 1 : 0,
+                comments_locked:
+                    (newValue === article.commenting.LOCKED) ? 1 : 0
+            }
+
             article.resource.save(
                 {
                     articleId: queryParams.article_number,
                     language: queryParams.language
                 },
-                {comments_enabled: !$scope.commentsEnabled}
+                apiParams
             ).$promise.then(function (data) {
                 // success, don't need to do anything
             }, function () {
-                // XXX: when implemented, inform user why the change has been
-                // reverted (API failure)
+                // XXX: when consistent reporting mechanism is developed,
+                // inform user about the error (API failure) - the reason
+                // why the value has been switched back to origValue
                 $scope.commenting = origValue;
             });
-        };
-
-        // TODO: comment and tests
-        $scope.toggleCommentsLocked = function () {
-            // TODO: contact server
-            $scope.commentsLocked = !$scope.commentsLocked;
         };
 
         /**
