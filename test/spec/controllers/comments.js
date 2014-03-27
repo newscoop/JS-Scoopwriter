@@ -181,6 +181,142 @@ describe('Controller: CommentsCtrl', function () {
 
     });
 
+    describe('scope\'s changeCommentingSetting() method', function () {
+        var deferred,
+            $eventMock,
+            $q;
+
+        beforeEach(inject(function (_$q_) {
+            $q = _$q_;
+            deferred = $q.defer();
+
+            spyOn(article.resource, 'save').andCallFake(function () {
+                return {
+                    $promise: deferred.promise
+                };
+            });
+            $eventMock = {
+                preventDefault: jasmine.createSpy('$event.preventDefault()')
+            };
+        }));
+
+        it('does not invoke article resource if new value and old value ' +
+            'are the same', function () {
+                var callArgs;
+                scope.commentingSetting = article.commenting.DISABLED;
+
+                scope.changeCommentingSetting(
+                    article.commenting.DISABLED,
+                    $eventMock
+                );
+
+                expect(article.resource.save.callCount).toBe(0);
+        });
+
+        it('invokes article resource with correct article parameters',
+            function () {
+                var callArgs;
+
+                scope.changeCommentingSetting(
+                    article.commenting.DISABLED,
+                    $eventMock
+                );
+
+                expect(article.resource.save.callCount).toBe(1);
+                callArgs = article.resource.save.mostRecentCall.args;
+                expect(callArgs.length).toBeGreaterThan(0);
+                expect(callArgs[0]).toEqual({
+                    articleId: 123456,
+                    language: 'pl'
+                });
+        });
+
+        it('provides correct parameters to resource when setting to ENABLED',
+            function () {
+                var callArgs;
+                scope.commentingSetting = article.commenting.DISABLED;
+
+                scope.changeCommentingSetting(
+                    article.commenting.ENABLED,
+                    $eventMock
+                );
+
+                expect(article.resource.save.callCount).toBe(1);
+                callArgs = article.resource.save.mostRecentCall.args;
+                expect(callArgs.length).toBe(2);
+                expect(callArgs[1]).toEqual({
+                    comments_enabled: 1,
+                    comments_locked: 0
+                });
+        });
+
+        it('provides correct parameters to resource when setting to DISABLED',
+            function () {
+                var callArgs;
+                scope.commentingSetting = article.commenting.ENABLED;
+
+                scope.changeCommentingSetting(
+                    article.commenting.DISABLED,
+                    $eventMock
+                );
+
+                expect(article.resource.save.callCount).toBe(1);
+                callArgs = article.resource.save.mostRecentCall.args;
+                expect(callArgs.length).toBe(2);
+                expect(callArgs[1]).toEqual({
+                    comments_enabled: 0,
+                    comments_locked: 0
+                });
+        });
+
+        it('provides correct parameters to resource when setting to LOCKED',
+            function () {
+                var callArgs;
+                scope.commentingSetting = article.commenting.ENABLED;
+
+                scope.changeCommentingSetting(
+                    article.commenting.LOCKED,
+                    $eventMock
+                );
+
+                expect(article.resource.save.callCount).toBe(1);
+                callArgs = article.resource.save.mostRecentCall.args;
+                expect(callArgs.length).toBe(2);
+                expect(callArgs[1]).toEqual({
+                    comments_enabled: 0,
+                    comments_locked: 1
+                });
+        });
+
+        it('correctly sets the new article commenting value', function () {
+            scope.commentingSetting = article.commenting.DISABLED;
+
+            scope.changeCommentingSetting(
+                article.commenting.LOCKED,
+                $eventMock
+            );
+
+            deferred.resolve();
+            scope.$apply();
+            expect(scope.commentingSetting).toBe(article.commenting.LOCKED);
+        });
+
+        it('reverts to original value on server error', function () {
+            scope.commentingSetting = article.commenting.LOCKED;
+
+            scope.changeCommentingSetting(
+                article.commenting.DISABLED,
+                $eventMock
+            );
+            expect(scope.commentingSetting).toBe(article.commenting.DISABLED);
+
+            deferred.reject('server error');
+            scope.$apply();
+            expect(scope.commentingSetting).toBe(article.commenting.LOCKED);
+        });
+
+    });
+
     describe('scope\'s toggleShowStatus() method', function () {
         it('sets global show status from "expanded" to "collapsed"',
             function () {
