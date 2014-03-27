@@ -28,6 +28,7 @@ describe('Controller: CommentsCtrl', function () {
             };
         }
     },
+
     /* samples of comments with different statuses in order to test
      * filtering */
     comments = {
@@ -41,8 +42,7 @@ describe('Controller: CommentsCtrl', function () {
             status: 'whatever'
         }
     },
-    // TODO: and add tests (default value) ... and that commentingOpts
-    // have correct values
+
     article = {
         commenting: {
             ENABLED: 0,
@@ -51,8 +51,6 @@ describe('Controller: CommentsCtrl', function () {
         },
         resource: {
             get: function () {
-                // TODO async!! not like this
-                //TODO: should return a $promise
                 return {
                     $promise: {
                         then: function () {}
@@ -60,8 +58,6 @@ describe('Controller: CommentsCtrl', function () {
                 };
             },
             save: function () {
-                // TODO async!! not like this
-                //TODO: should return a $promise
                 return {
                     $promise: {
                         then: function () {}
@@ -70,11 +66,12 @@ describe('Controller: CommentsCtrl', function () {
             }
         }
     },
+
     location = {
         search: function () {
             return {
                 article_number: 123456,
-                language: 'de'
+                language: 'pl'
             };
         }
     },
@@ -94,7 +91,6 @@ describe('Controller: CommentsCtrl', function () {
             $log: log
         });
     }));
-
     it('proxies comments', function () {
         expect(scope.comments).toBeDefined();
     });
@@ -106,6 +102,83 @@ describe('Controller: CommentsCtrl', function () {
     });
     it('has a nested sorting', function() {
         expect(scope.sorting.text).toBe('Nested');
+    });
+
+    it('has article commenting enabled by default', function () {
+        // initCommenting() reads the actual article data, thus we have to
+        // disable it for the purpose of the test
+        spyOn(CommentsCtrl, 'initCommenting');
+        expect(scope.commentingSetting).toBe(article.commenting.ENABLED);
+    });
+
+    describe('initCommenting() method', function () {
+        var deferred,
+            $q;
+
+        beforeEach(inject(function (_$q_) {
+            $q = _$q_;
+            deferred = $q.defer();
+
+            spyOn(article.resource, 'get').andCallFake(function () {
+                return {
+                    $promise: deferred.promise
+                };
+            });
+        }));
+
+        it('invokes article resource with correct parameters', function () {
+            var callArgs;
+
+            CommentsCtrl.initCommenting();
+
+            expect(article.resource.get.callCount).toBe(1);
+            callArgs = article.resource.get.mostRecentCall.args;
+            expect(callArgs.length).toBe(1);
+            expect(callArgs[0]).toEqual({
+                articleId: 123456,
+                language: 'pl'
+            });
+        });
+
+        it('correctly sets commenting to "enabled"', function () {
+            scope.commentingSetting = article.commenting.DISABLED;
+
+            CommentsCtrl.initCommenting();
+            deferred.resolve({
+                comments_enabled: 1,
+                comments_locked: 0
+            });
+            scope.$apply();
+
+            expect(scope.commentingSetting).toBe(article.commenting.ENABLED);
+        });
+
+        it('correctly sets commenting to "disabled"', function () {
+            scope.commentingSetting = article.commenting.ENABLED;
+
+            CommentsCtrl.initCommenting();
+            deferred.resolve({
+                comments_enabled: 0,
+                comments_locked: 0
+            });
+            scope.$apply();
+
+            expect(scope.commentingSetting).toBe(article.commenting.DISABLED);
+        });
+
+        it('correctly sets commenting to "locked"', function () {
+            scope.commentingSetting = article.commenting.ENABLED;
+
+            CommentsCtrl.initCommenting();
+            deferred.resolve({
+                comments_enabled: 0,
+                comments_locked: 1
+            });
+            scope.$apply();
+
+            expect(scope.commentingSetting).toBe(article.commenting.LOCKED);
+        });
+
     });
 
     describe('scope\'s toggleShowStatus() method', function () {
