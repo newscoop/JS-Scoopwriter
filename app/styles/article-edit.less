@@ -210,6 +210,28 @@ html, body.article-edit {
             margin-left: @indent-step * 3;
         }
     }
+    .modal-body {
+        @placeholder-margin: 5px;
+        @placeholder-border-color: rgb(155, 155, 155);
+        .image-uploading {
+            background-color: #E9E9E9;
+            padding-right: @placeholder-margin;
+            padding-top: @placeholder-margin;
+            .placeholder {
+                background-color: white;
+                display: inline-block;
+                height: 300px;
+                width: 300px;
+                margin-left: @placeholder-margin;
+                margin-bottom: @placeholder-margin;
+                border: 1px solid @placeholder-border-color;
+                border-bottom: 2px solid @placeholder-border-color;
+                border-radius: 4px;
+                padding: 2%;
+            }
+        }
+    }
+
     comment {
         display: block;
         background: white;

@@ -9,7 +9,8 @@ angular.module('authoringEnvironmentApp', [
   'mgcrea.ngStrap.button',
   'mgcrea.ngStrap.helpers.dimensions',
   'mgcrea.ngStrap.tooltip',
-  'mgcrea.ngStrap.popover'
+  'mgcrea.ngStrap.popover',
+  'angularFileUpload'
 ])
   .config(['$routeProvider', '$httpProvider', '$buttonProvider', function ($routeProvider, $httpProvider, $buttonProvider) {
     $routeProvider

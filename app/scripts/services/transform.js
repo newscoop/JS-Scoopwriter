@@ -8,6 +8,9 @@
 */
 angular.module('authoringEnvironmentApp')
     .service('transform', function Transform() {
+        function formEncodeData(data) {
+            return $.param(data);
+        };
         // AngularJS will instantiate a singleton by calling "new" on this function
 
         /**
@@ -24,9 +27,9 @@ angular.module('authoringEnvironmentApp')
         * @return {String} Encoded form data (using jQuery's param() function).
         */
         this.formEncode = function(data, headersGetter) {
-            var encoded = $.param(data);
             var headers = headersGetter();
             headers['Content-Type'] = 'application/x-www-form-urlencoded';
-            return encoded;
+            return formEncodeData(data);
         };
+        this.formEncodeData = formEncodeData;
     });
