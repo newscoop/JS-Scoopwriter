@@ -1,4 +1,4 @@
 module.exports = {
-	app: '<%= source %>',
-	dist: '<%= dist %>'
-}
+    app: '<%= source %>',
+    dist: '<%= dist %>'
+};
