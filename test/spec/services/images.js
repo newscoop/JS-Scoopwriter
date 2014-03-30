@@ -76,10 +76,6 @@ describe('Service: Images', function () {
         images.article = { number: 64, language: 'de'};
         $httpBackend = _$httpBackend_;
     }));
-    afterEach(function() {
-        $httpBackend.verifyNoOutstandingExpectation();
-        $httpBackend.verifyNoOutstandingRequest();
-    });
 
     describe('after initialization', function() {
         beforeEach(function() {
@@ -102,88 +98,147 @@ describe('Service: Images', function () {
             expect(images.loaded.length).toBe(10);
             expect(images.displayed.length).toBe(10);
         });
-        describe('image attached to the article', function() {
+        describe('image collected', function() {
             beforeEach(function() {
-                $httpBackend
-                    .expect('LINK', e+'/articles/64/de')
-                    .respond({});
-                $httpBackend
-                    .expect('GET', e+'/images/3')
-                    .respond(mockSingle);
-                expect(images.attached.length).toBe(0);
-                images.toggleAttach(3);
                 $httpBackend.flush();
+                images.toggleCollect(3);
             });
-            it('updates the attached', function() {
-                expect(images.attached.length).toBe(1);
-                expect(images.attached[0].width).toBe('150');
+            it('updates the basket', function() {
+                expect(images.collected.length).toBe(1);
+                expect(images.collected[0].basename).toBe('cms-image-000000003.jpg');
             });
-            it('does not attach duplicates', function() {
-                images.attach(3);
-                expect(images.attached.length).toBe(1);
+            it('does not collect duplicates', function() {
+                images.collect(3);
+                expect(images.collected.length).toBe(1);
             });
-            it('attaches others', function() {
-                $httpBackend
-                    .expect('LINK', e+'/articles/64/de')
-                    .respond({});
-                $httpBackend
-                    .expect('GET', e+'/images/4')
-                    .respond(mockSingle);
-                images.toggleAttach(4);
-                $httpBackend.flush();
-                expect(images.attached.length).toBe(2);
-            });
-            it('gets an image by id', function() {
-                var image = images.byId(3);
-                expect(image).toEqual({ id : 3, basename : 'cms-image-000000003.jpg', incomplete : false, location : 'local', thumbnailPath : 'cms-thumb-000000001.jpg', url : '', description : '', width : '150', height : '210', photographer : '', photographerUrl : '', place : '' });
+            it('collects others', function() {
+                images.toggleCollect(4);
+                expect(images.collected.length).toBe(2);
             });
             it('provides the correct toggler class', function() {
                 expect(images.togglerClass(3)).toBe('glyphicon-minus');
                 expect(images.togglerClass(4)).toBe('glyphicon-plus');
             });
-            describe('same image detached', function() {
+            it('can discard all', function() {
+                expect(images.collected.length).toBe(1);
+                images.discardAll();
+                expect(images.collected.length).toBe(0);
+            });
+            describe('same image discarded', function() {
                 beforeEach(function() {
-                    $httpBackend
-                        .expect('UNLINK', e+'/articles/64/de')
-                        .respond({});
-                    images.toggleAttach(3);
-                    $httpBackend.flush();
+                    images.toggleCollect(3);
                 });
                 it('detaches the image', function() {
-                    expect(images.isAttached(3)).toBe(false);
+                    expect(images.isCollected(3)).toBe(false);
                 });
             });
-            describe('image included', function() {
+            describe('collected images attached', function() {
+                var headerHandlers;
                 beforeEach(function() {
-                    images.include(3);
+                    headerHandlers = {
+                        '3': function() { return true; },
+                        '7': function() { return true; }
+                    };
+                    spyOn(headerHandlers, '3').andCallThrough();
+                    spyOn(headerHandlers, '7').andCallThrough();
+                    images.toggleCollect(7);
+                    $httpBackend
+                        .expect(
+                            'LINK',
+                            rootURI + '/articles/64/de',
+                            undefined,
+                            headerHandlers['3']
+                        )
+                        .respond({});
+                    $httpBackend
+                        .expect(
+                            'LINK',
+                            rootURI + '/articles/64/de',
+                            undefined,
+                            headerHandlers['7']
+                        )
+                        .respond({});
+                    images.attachAll();
+                    $httpBackend
+                        .expectGET(rootURI + '/images/3')
+                        .respond({});
+                    $httpBackend
+                        .expectGET(rootURI + '/images/7')
+                        .respond({
+                            property: 'bla',
+                            otherProperty: 'bla bla bla'
+                        });
+                    $httpBackend.flush();
                 });
-                it('sets the image as included', function() {
-                    var i = images.byId(3);
-                    expect(i.included).toBe(true);
+                it('sent the headers correctly', function() {
+                    expect(headerHandlers['3']).toHaveBeenCalled();
+                    expect(headerHandlers['3'].mostRecentCall.args[0].Link)
+                        .toBe('<http://newscoop.aes.sourcefabric.net/content-api/images/3>');
+                    expect(headerHandlers['7'].mostRecentCall.args[0].Link)
+                        .toBe('<http://newscoop.aes.sourcefabric.net/content-api/images/7>');
                 });
-                it('puts the image in a map', function() {
-                    expect(images.included[1]).toBeDefined();
+                it('gets an image by id', function() {
+                    var image = images.byId(3);
+                    expect(image).toEqual({ id : 3, basename : 'cms-image-000000003.jpg'});
                 });
-                it('gives the image default style', function() {
-                    expect(images.included[1].style.container.width)
-                        .toBe('100%');
+                it('attaches all the collected images', function() {
+                    expect(images.attached.length).toBe(2);
+                    expect(images.collected.length).toBe(0);
                 });
-                describe('image excluded', function() {
+                describe('image detached', function() {
                     beforeEach(function() {
-                        images.exclude(3);
+                        $httpBackend
+                            .expect(
+                                'UNLINK',
+                                rootURI + '/articles/64/de',
+                                undefined,
+                                headerHandlers['3']
+                            )
+                            .respond({});
+                        images.detach(3);
                     });
-                    it('sets the image as not included', function() {
-                        var i = images.byId(3);
-                        expect(i.included).toBe(false);
+                    it('sent the right header', function() {
+                        expect(headerHandlers['3'].mostRecentCall.args[0].Link)
+                            .toBe('<http://newscoop.aes.sourcefabric.net/content-api/images/3>');
+                    });
+                    it('detaches the image', function() {
+                        $httpBackend.flush();
+                        expect(images.attached.length).toBe(1);
+                        expect(images.attached[0].id).toBe(7);
                     });
                 });
-                describe('image excluded with a string id', function() {
+                describe('image included', function() {
                     beforeEach(function() {
-                        images.exclude('3');
+                        images.include(3);
                     });
-                    it('sets the image as not included', function() {
+                    it('sets the image as included', function() {
                         var i = images.byId(3);
-                        expect(i.included).toBe(false);
+                        expect(i.included).toBe(true);
+                    });
+                    it('puts the image in a map', function() {
+                        expect(images.included[1]).toBeDefined();
+                    });
+                    it('gives the image default style', function() {
+                        expect(images.included[1].style.container.width)
+                            .toBe('100%');
+                    });
+                    describe('image excluded', function() {
+                        beforeEach(function() {
+                            images.exclude(3);
+                        });
+                        it('sets the image as not included', function() {
+                            var i = images.byId(3);
+                            expect(i.included).toBe(false);
+                        });
+                    });
+                    describe('image excluded with a string id', function() {
+                        beforeEach(function() {
+                            images.exclude('3');
+                        });
+                        it('sets the image as not included', function() {
+                            var i = images.byId(3);
+                            expect(i.included).toBe(false);
+                        });
                     });
                 });
             });
