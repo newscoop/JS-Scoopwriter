@@ -7,10 +7,9 @@
 * @class CommentsCtrl
 */
 angular.module('authoringEnvironmentApp').controller(
-    'CommentsCtrl', ['$scope', 'comments', 'article', '$location', '$log',
-    function ($scope, comments, article, $location, $log) {
+    'CommentsCtrl', ['$scope', 'comments', 'article', '$log',
+    function ($scope, comments, article, $log) {
 
-        var queryParams = $location.search();
         var others = ['pending', 'approved', 'hidden'];
 
         $scope.sortings = [{
@@ -68,15 +67,12 @@ angular.module('authoringEnvironmentApp').controller(
         ];
 
         /**
-        * Retrieves the article object to which the comments belong and
-        * stores the current value of the article's `commenting` setting.
+        * Stores the current value of the `commenting` setting of the article
+        * to which the comments belong.
         * @method initCommenting
         */
         this.initCommenting = function () {
-            article.resource.get({
-                 articleId: queryParams.article_number,
-                 language: queryParams.language
-             }).$promise.then(function (data) {
+            article.promise.then(function (data) {
                 if (parseInt(data.comments_locked, 10) > 0) {
                     $scope.commentingSetting = article.commenting.LOCKED;
                 } else if (parseInt(data.comments_enabled, 10) > 0) {
@@ -85,7 +81,7 @@ angular.module('authoringEnvironmentApp').controller(
                     $scope.commentingSetting = article.commenting.DISABLED;
                 }
             });
-        }
+        };
 
         this.initCommenting();
 
@@ -158,20 +154,7 @@ angular.module('authoringEnvironmentApp').controller(
             origValue = $scope.commentingSetting;
             $scope.commentingSetting = newValue;
 
-            apiParams = {
-                comments_enabled:
-                    (newValue === article.commenting.ENABLED) ? 1 : 0,
-                comments_locked:
-                    (newValue === article.commenting.LOCKED) ? 1 : 0
-            }
-
-            article.resource.save(
-                {
-                    articleId: queryParams.article_number,
-                    language: queryParams.language
-                },
-                apiParams
-            ).$promise.then(function (data) {
+            article.changeCommentingSetting(newValue).then(function (data) {
                 // success, don't need to do anything
             }, function () {
                 // XXX: when consistent reporting mechanism is developed,

@@ -49,21 +49,13 @@ describe('Controller: CommentsCtrl', function () {
             DISABLED: 1,
             LOCKED: 2
         },
-        resource: {
-            get: function () {
-                return {
-                    $promise: {
-                        then: function () {}
-                    }
-                };
-            },
-            save: function () {
-                return {
-                    $promise: {
-                        then: function () {}
-                    }
-                };
-            }
+        changeCommentingSetting: function () {
+            return {
+                then: function () {}
+            };
+        },
+        promise: {
+            then: jasmine.createSpy('promise mock')
         }
     },
 
@@ -118,27 +110,8 @@ describe('Controller: CommentsCtrl', function () {
         beforeEach(inject(function (_$q_) {
             $q = _$q_;
             deferred = $q.defer();
-
-            spyOn(article.resource, 'get').andCallFake(function () {
-                return {
-                    $promise: deferred.promise
-                };
-            });
+            article.promise = deferred.promise;
         }));
-
-        it('invokes article resource with correct parameters', function () {
-            var callArgs;
-
-            CommentsCtrl.initCommenting();
-
-            expect(article.resource.get.callCount).toBe(1);
-            callArgs = article.resource.get.mostRecentCall.args;
-            expect(callArgs.length).toBe(1);
-            expect(callArgs[0]).toEqual({
-                articleId: 123456,
-                language: 'pl'
-            });
-        });
 
         it('correctly sets commenting to "enabled"', function () {
             scope.commentingSetting = article.commenting.DISABLED;
@@ -178,7 +151,6 @@ describe('Controller: CommentsCtrl', function () {
 
             expect(scope.commentingSetting).toBe(article.commenting.LOCKED);
         });
-
     });
 
     describe('scope\'s changeCommentingSetting() method', function () {
@@ -190,17 +162,16 @@ describe('Controller: CommentsCtrl', function () {
             $q = _$q_;
             deferred = $q.defer();
 
-            spyOn(article.resource, 'save').andCallFake(function () {
-                return {
-                    $promise: deferred.promise
-                };
+            spyOn(article, 'changeCommentingSetting').andCallFake(function () {
+                return deferred.promise;
             });
+
             $eventMock = {
                 preventDefault: jasmine.createSpy('$event.preventDefault()')
             };
         }));
 
-        it('does not invoke article resource if new value and old value ' +
+        it('does not invoke article service if new value and old value ' +
             'are the same', function () {
                 var callArgs;
                 scope.commentingSetting = article.commenting.DISABLED;
@@ -210,82 +181,7 @@ describe('Controller: CommentsCtrl', function () {
                     $eventMock
                 );
 
-                expect(article.resource.save.callCount).toBe(0);
-        });
-
-        it('invokes article resource with correct article parameters',
-            function () {
-                var callArgs;
-
-                scope.changeCommentingSetting(
-                    article.commenting.DISABLED,
-                    $eventMock
-                );
-
-                expect(article.resource.save.callCount).toBe(1);
-                callArgs = article.resource.save.mostRecentCall.args;
-                expect(callArgs.length).toBeGreaterThan(0);
-                expect(callArgs[0]).toEqual({
-                    articleId: 123456,
-                    language: 'pl'
-                });
-        });
-
-        it('provides correct parameters to resource when setting to ENABLED',
-            function () {
-                var callArgs;
-                scope.commentingSetting = article.commenting.DISABLED;
-
-                scope.changeCommentingSetting(
-                    article.commenting.ENABLED,
-                    $eventMock
-                );
-
-                expect(article.resource.save.callCount).toBe(1);
-                callArgs = article.resource.save.mostRecentCall.args;
-                expect(callArgs.length).toBe(2);
-                expect(callArgs[1]).toEqual({
-                    comments_enabled: 1,
-                    comments_locked: 0
-                });
-        });
-
-        it('provides correct parameters to resource when setting to DISABLED',
-            function () {
-                var callArgs;
-                scope.commentingSetting = article.commenting.ENABLED;
-
-                scope.changeCommentingSetting(
-                    article.commenting.DISABLED,
-                    $eventMock
-                );
-
-                expect(article.resource.save.callCount).toBe(1);
-                callArgs = article.resource.save.mostRecentCall.args;
-                expect(callArgs.length).toBe(2);
-                expect(callArgs[1]).toEqual({
-                    comments_enabled: 0,
-                    comments_locked: 0
-                });
-        });
-
-        it('provides correct parameters to resource when setting to LOCKED',
-            function () {
-                var callArgs;
-                scope.commentingSetting = article.commenting.ENABLED;
-
-                scope.changeCommentingSetting(
-                    article.commenting.LOCKED,
-                    $eventMock
-                );
-
-                expect(article.resource.save.callCount).toBe(1);
-                callArgs = article.resource.save.mostRecentCall.args;
-                expect(callArgs.length).toBe(2);
-                expect(callArgs[1]).toEqual({
-                    comments_enabled: 0,
-                    comments_locked: 1
-                });
+                expect(article.changeCommentingSetting.callCount).toBe(0);
         });
 
         it('correctly sets the new article commenting value', function () {
