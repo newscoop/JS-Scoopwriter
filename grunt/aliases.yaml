@@ -10,7 +10,7 @@ test:
  - 'connect:test'
  - 'karma'
 
-build:
+pre-build:
  - 'clean:dist'
  - 'useminPrepare'
  - 'concurrent:dist'
@@ -19,22 +19,20 @@ build:
  - 'ngmin'
  - 'copy:dist'
  - 'uglify'
+
+build:
+ - 'pre-build'
  - 'devcode:dist'
  - 'rev'
  - 'usemin'
 
 build-newscoop:
- - 'clean:dist'
- - 'useminPrepare'
- - 'concurrent:dist'
- - 'autoprefixer'
- - 'concat'
- - 'ngmin'
- - 'copy:dist'
- - 'uglify'
+ - 'pre-build'
  - 'devcode:newscoop'
  - 'rev'
  - 'usemin'
+ - 'copy:newscoop'
+ - 'rename:newscoop'
 
 server:
  - 'clean:server'

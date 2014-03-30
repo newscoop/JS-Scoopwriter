@@ -5,7 +5,8 @@ module.exports = function (grunt) {
   require('load-grunt-config')(grunt, {
     data: {
       source: require('./bower.json').appPath || 'app',
-      dist: 'dist'
+      dist: 'dist',
+      plugin: 'plugin'
     }
   });
 };
