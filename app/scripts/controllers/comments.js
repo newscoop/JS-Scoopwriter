@@ -6,9 +6,12 @@
 *
 * @class CommentsCtrl
 */
-angular.module('authoringEnvironmentApp')
-    .controller('CommentsCtrl', ['$scope', 'comments', '$log', function ($scope, comments, $log) {
+angular.module('authoringEnvironmentApp').controller(
+    'CommentsCtrl', ['$scope', 'comments', 'article', '$log',
+    function ($scope, comments, article, $log) {
+
         var others = ['pending', 'approved', 'hidden'];
+
         $scope.sortings = [{
             text: 'Nested'
         }, {
@@ -45,6 +48,43 @@ angular.module('authoringEnvironmentApp')
                 }
             }
         };
+
+        // setting of the commenting on the article
+        $scope.commentingSetting = article.commenting.ENABLED;
+        $scope.commentingOpts = [
+            {
+                value: article.commenting.ENABLED,
+                label: 'enabled'
+            },
+            {
+                value: article.commenting.DISABLED,
+                label: 'disabled'
+            },
+            {
+                value: article.commenting.LOCKED,
+                label: 'locked'
+            }
+        ];
+
+        /**
+        * Stores the current value of the `commenting` setting of the article
+        * to which the comments belong.
+        * @method initCommenting
+        */
+        this.initCommenting = function () {
+            article.promise.then(function (data) {
+                if (parseInt(data.comments_locked, 10) > 0) {
+                    $scope.commentingSetting = article.commenting.LOCKED;
+                } else if (parseInt(data.comments_enabled, 10) > 0) {
+                    $scope.commentingSetting = article.commenting.ENABLED;
+                } else {
+                    $scope.commentingSetting = article.commenting.DISABLED;
+                }
+            });
+        };
+
+        this.initCommenting();
+
         $scope.statuses = {
             all: true,
             pending: false,
@@ -89,6 +129,40 @@ angular.module('authoringEnvironmentApp')
                 comment.showStatus = $scope.globalShowStatus;
             });
         });
+
+        /**
+        * Changes the value of the article's commenting setting and updates
+        * it on the server. In case of an erroneous server response it
+        * restores the setting back to the original value (i.e. the value
+        * before the change attempt).
+        *
+        * @method changeCommentingSetting
+        * @param newValue {Number} New value of the article commenting setting.
+        *       Should be one of the values from article.commenting object.
+        * @param $event {Object} event object that triggered the method
+        */
+        $scope.changeCommentingSetting = function (newValue, $event) {
+            var apiParams,
+                origValue;
+
+            $event.preventDefault();
+
+            if (newValue === $scope.commentingSetting) {
+                return;  // no changes, nothing to do
+            }
+
+            origValue = $scope.commentingSetting;
+            $scope.commentingSetting = newValue;
+
+            article.changeCommentingSetting(newValue).then(function (data) {
+                // success, don't need to do anything
+            }, function () {
+                // XXX: when consistent reporting mechanism is developed,
+                // inform user about the error (API failure) - the reason
+                // why the value has been switched back to origValue
+                $scope.commentingSetting = origValue;
+            });
+        };
 
         /**
         * Changes global comments display status from expanded to collapsed or

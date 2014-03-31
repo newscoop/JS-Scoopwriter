@@ -28,6 +28,7 @@ describe('Controller: CommentsCtrl', function () {
             };
         }
     },
+
     /* samples of comments with different statuses in order to test
      * filtering */
     comments = {
@@ -41,9 +42,35 @@ describe('Controller: CommentsCtrl', function () {
             status: 'whatever'
         }
     },
+
+    article = {
+        commenting: {
+            ENABLED: 0,
+            DISABLED: 1,
+            LOCKED: 2
+        },
+        changeCommentingSetting: function () {
+            return {
+                then: function () {}
+            };
+        },
+        promise: {
+            then: jasmine.createSpy('promise mock')
+        }
+    },
+
+    location = {
+        search: function () {
+            return {
+                article_number: 123456,
+                language: 'pl'
+            };
+        }
+    },
     log = {
         debug: jasmine.createSpy('debug mock')
     };
+
 
     // Initialize the controller and a mock scope
     beforeEach(inject(function ($controller, $rootScope) {
@@ -51,10 +78,11 @@ describe('Controller: CommentsCtrl', function () {
         CommentsCtrl = $controller('CommentsCtrl', {
             $scope: scope,
             comments: commentsService,
+            article: article,
+            $location: location,
             $log: log
         });
     }));
-
     it('proxies comments', function () {
         expect(scope.comments).toBeDefined();
     });
@@ -66,6 +94,123 @@ describe('Controller: CommentsCtrl', function () {
     });
     it('has a nested sorting', function() {
         expect(scope.sorting.text).toBe('Nested');
+    });
+
+    it('has article commenting enabled by default', function () {
+        // initCommenting() reads the actual article data, thus we have to
+        // disable it for the purpose of the test
+        spyOn(CommentsCtrl, 'initCommenting');
+        expect(scope.commentingSetting).toBe(article.commenting.ENABLED);
+    });
+
+    describe('initCommenting() method', function () {
+        var deferred,
+            $q;
+
+        beforeEach(inject(function (_$q_) {
+            $q = _$q_;
+            deferred = $q.defer();
+            article.promise = deferred.promise;
+        }));
+
+        it('correctly sets commenting to "enabled"', function () {
+            scope.commentingSetting = article.commenting.DISABLED;
+
+            CommentsCtrl.initCommenting();
+            deferred.resolve({
+                comments_enabled: 1,
+                comments_locked: 0
+            });
+            scope.$apply();
+
+            expect(scope.commentingSetting).toBe(article.commenting.ENABLED);
+        });
+
+        it('correctly sets commenting to "disabled"', function () {
+            scope.commentingSetting = article.commenting.ENABLED;
+
+            CommentsCtrl.initCommenting();
+            deferred.resolve({
+                comments_enabled: 0,
+                comments_locked: 0
+            });
+            scope.$apply();
+
+            expect(scope.commentingSetting).toBe(article.commenting.DISABLED);
+        });
+
+        it('correctly sets commenting to "locked"', function () {
+            scope.commentingSetting = article.commenting.ENABLED;
+
+            CommentsCtrl.initCommenting();
+            deferred.resolve({
+                comments_enabled: 0,
+                comments_locked: 1
+            });
+            scope.$apply();
+
+            expect(scope.commentingSetting).toBe(article.commenting.LOCKED);
+        });
+    });
+
+    describe('scope\'s changeCommentingSetting() method', function () {
+        var deferred,
+            $eventMock,
+            $q;
+
+        beforeEach(inject(function (_$q_) {
+            $q = _$q_;
+            deferred = $q.defer();
+
+            spyOn(article, 'changeCommentingSetting').andCallFake(function () {
+                return deferred.promise;
+            });
+
+            $eventMock = {
+                preventDefault: jasmine.createSpy('$event.preventDefault()')
+            };
+        }));
+
+        it('does not invoke article service if new value and old value ' +
+            'are the same', function () {
+                var callArgs;
+                scope.commentingSetting = article.commenting.DISABLED;
+
+                scope.changeCommentingSetting(
+                    article.commenting.DISABLED,
+                    $eventMock
+                );
+
+                expect(article.changeCommentingSetting.callCount).toBe(0);
+        });
+
+        it('correctly sets the new article commenting value', function () {
+            scope.commentingSetting = article.commenting.DISABLED;
+
+            scope.changeCommentingSetting(
+                article.commenting.LOCKED,
+                $eventMock
+            );
+
+            deferred.resolve();
+            scope.$apply();
+            expect(scope.commentingSetting).toBe(article.commenting.LOCKED);
+        });
+
+        it('reverts to original value on server error', function () {
+            scope.commentingSetting = article.commenting.LOCKED;
+
+            scope.changeCommentingSetting(
+                article.commenting.DISABLED,
+                $eventMock
+            );
+            expect(scope.commentingSetting).toBe(article.commenting.DISABLED);
+
+            deferred.reject('server error');
+            scope.$apply();
+            expect(scope.commentingSetting).toBe(article.commenting.LOCKED);
+        });
+
     });
 
     describe('scope\'s toggleShowStatus() method', function () {

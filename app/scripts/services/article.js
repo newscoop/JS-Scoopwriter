@@ -2,8 +2,12 @@
 
 angular.module('authoringEnvironmentApp')
     .service('article', ['$resource', 'configuration', '$q', function article($resource, configuration, $q) {
+        var commenting,
+            deferred = $q.defer(),
+            langMap,
+            resource;
 
-        var langMap = {
+        langMap = {
             1: ['English', 'en'],
             2: ['Romanian', 'ro'],
             5: ['German', 'de'],
@@ -37,7 +41,14 @@ angular.module('authoringEnvironmentApp')
             37: ['German Austria', 'de_AT']
         };
 
-        var resource = $resource(
+        // all possible values for the commenting setting
+        commenting = Object.freeze({
+            ENABLED: 0,
+            DISABLED: 1,
+            LOCKED: 2
+        });
+
+        resource = $resource(
             configuration.API.full + '/articles/:articleId?language=:language', {
                 articleId: '',
                 language: 'en'
@@ -52,18 +63,47 @@ angular.module('authoringEnvironmentApp')
                 }
             });
 
-        var deferred = $q.defer();
-        
+        /**
+        * Changes the value of the article's commenting setting and updates
+        * it on the server.
+        *
+        * @method changeCommentingSetting
+        * @param newValue {Number} New value of the article commenting setting.
+        *       Should be one of the values from article.commenting object.
+        * @return {Object} promise object.
+        */
+        function changeCommentingSetting(newValue) {
+            var apiParams,
+                service = this;
+
+            apiParams = {
+                comments_enabled:
+                    (newValue === commenting.ENABLED) ? 1 : 0,
+                comments_locked:
+                    (newValue === commenting.LOCKED) ? 1 : 0
+            };
+
+            return resource.save({
+                    articleId: service.articleId,
+                    language: service.language
+                }, apiParams).$promise;
+        }
+
         return {
+            commenting: commenting,
             modified: false,
             resource: resource,
             promise: deferred.promise,
             init: function(par) {
                 var service = this;
                 resource.get(par).$promise.then(function(data) {
-                    deferred.resolve(data);
+                    service.articleId = data.number;
+                    service.language = data.language;
                     service.init = function() {}; // ignore successive calls
+                    deferred.resolve(data);
                 });
-            }
+            },
+            changeCommentingSetting: changeCommentingSetting
         };
+
     }]);

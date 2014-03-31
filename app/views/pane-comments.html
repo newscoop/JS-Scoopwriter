@@ -15,6 +15,22 @@
   <div class="panel-title">
     Comments
   </div>
+
+  <div class="commenting-options">
+    <span class="commenting-opts-label">Settings:</span>
+
+    <label ng-repeat="option in commentingOpts"
+           for="commenting-{{option.label}}"
+           ng-class="{optionActive: (commentingSetting === option.value)}"
+           ng-click="changeCommentingSetting(option.value, $event)"
+       ><input
+           type="radio"
+           name="commenting"
+           id="commenting-{{option.value}}"
+           ng-checked="commentingSetting === {{option.value}}"
+           > {{option.label}}</label>
+  </div>
+
   <div class="add-element" ng-class="{expanded: adding}">
     <div class="heading">
       <button
