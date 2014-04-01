@@ -1872,30 +1872,47 @@ html, body.article-edit {
 
         .commenting-options {
             margin-top: 10px;
-            font-size: 13px;
-            .commenting-opts-label {
-                top: -2px;
-                position: relative;
-                color: @comment-gray;
-            }
+            /*font-size: 13px;*/
             label {
                 font-weight: normal;
-                margin-right: 5px;
-                margin-bottom: 0px;
-                width: 75px;  /* fix width to prevent flickering */
-                text-transform: capitalize;
-                &.optionActive {
-                    font-weight: bold;
-                      /* prevents flickering of a non-fixed size font */
-                    font-size: 90%;
+                color: gray;  /* TODO: variable!*/
+            }
+            span {
+                display: inline-block;
+                width: 34px;
+                text-align: center;
+                color: white;
+                font-weight: bold;
+                text-transform: uppercase;
+            }
+
+            /* TODO: use variables for colors? */
+            &.changing {
+                background-color: lightgray;
+                span {
+                    background-color: gray;
                 }
-                /* XXX: using IDs, because this gets overriden */
-                #commenting-enabled, #commenting-disabled, #commenting-locked {
-                    position: relative;
-                    top: 2px;
+            }
+            &.enabled {
+                background-color: lightgreen;
+                span {
+                    background-color: green;
+                }
+            }
+            &.disabled {
+                background-color: pink;
+                span {
+                    background-color: red;
+                }
+            }
+            &.locked {
+                background-color: yellow;
+                span {
+                    background-color: orange;
                 }
             }
         }
+
         .status-buttons {
             background-color: @add-element-gray;
             padding: 10px;

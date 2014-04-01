@@ -11,7 +11,9 @@ angular.module('authoringEnvironmentApp').controller('CommentsCtrl', [
     'article',
     '$log',
     function ($scope, comments, article, $log) {
-        var others = [
+
+        var commentingServer = article.commenting.ENABLED,  // just a default
+            others = [
                 'pending',
                 'approved',
                 'hidden'
@@ -19,8 +21,9 @@ angular.module('authoringEnvironmentApp').controller('CommentsCtrl', [
         $scope.sortings = [
             { text: 'Nested' },
             { text: 'Chronological' },
-            { text: 'Chronological (asc.)' }
+            { text: 'Chronological (asc.)' }  // oldest first
         ];
+
         $scope.sorting = $scope.sortings[0];
         $scope.toggle = function (name) {
             var previouslyChecked = $scope.statuses[name];
@@ -50,20 +53,27 @@ angular.module('authoringEnvironmentApp').controller('CommentsCtrl', [
                 }
             }
         };
-        // setting of the commenting on the article
-        $scope.commentingSetting = article.commenting.ENABLED;
+
+        // commentingServer is the current value of the setting on the server,
+        // while $scope.commentingSetting is a value selected in the UI
+        $scope.commentingSetting = commentingServer;
+        $scope.commentingOptDirty = false;
+        $scope.isChangingCommenting = false;  // currently submitting change?
+
+        $scope.commenting = article.commenting;
+
         $scope.commentingOpts = [
             {
                 value: article.commenting.ENABLED,
-                label: 'enabled'
+                text: 'Enabled'
             },
             {
                 value: article.commenting.DISABLED,
-                label: 'disabled'
+                text: 'Disabled'
             },
             {
                 value: article.commenting.LOCKED,
-                label: 'locked'
+                text: 'Locked'
             }
         ];
         /**
@@ -74,12 +84,13 @@ angular.module('authoringEnvironmentApp').controller('CommentsCtrl', [
         this.initCommenting = function () {
             article.promise.then(function (data) {
                 if (parseInt(data.comments_locked, 10) > 0) {
-                    $scope.commentingSetting = article.commenting.LOCKED;
+                    commentingServer = article.commenting.LOCKED;
                 } else if (parseInt(data.comments_enabled, 10) > 0) {
-                    $scope.commentingSetting = article.commenting.ENABLED;
+                    commentingServer = article.commenting.ENABLED;
                 } else {
-                    $scope.commentingSetting = article.commenting.DISABLED;
+                    commentingServer = article.commenting.DISABLED;
                 }
+                $scope.commentingSetting = commentingServer;
             });
         };
         this.initCommenting();
@@ -127,30 +138,42 @@ angular.module('authoringEnvironmentApp').controller('CommentsCtrl', [
             });
         });
         /**
+        * Sets or clears the commenting option's dirty flag, depending on
+        * whether or not the current value of the option in the model
+        * differs from the value of the same option on the server.
+        *
+        * @method updateCommentingDirtyFlag
+        */
+        $scope.updateCommentingDirtyFlag = function () {
+            $scope.commentingOptDirty =
+                ($scope.commentingSetting !== commentingServer);
+        }
+
+        /**
         * Changes the value of the article's commenting setting and updates
         * it on the server. In case of an erroneous server response it
         * restores the setting back to the original value (i.e. the value
         * before the change attempt).
         *
         * @method changeCommentingSetting
-        * @param newValue {Number} New value of the article commenting setting.
-        *       Should be one of the values from article.commenting object.
-        * @param $event {Object} event object that triggered the method
         */
-        $scope.changeCommentingSetting = function (newValue, $event) {
-            var origValue;
-            $event.preventDefault();
-            if (newValue === $scope.commentingSetting) {
-                return;    // no changes, nothing to do
-            }
-            origValue = $scope.commentingSetting;
-            $scope.commentingSetting = newValue;
+        $scope.changeCommentingSetting = function () {
+            var newValue = $scope.commentingSetting,
+                origValue = commentingServer;
+
+            $scope.isChangingCommenting = true;
+
             article.changeCommentingSetting(newValue).then(function (data) {
+                // value on the server successfully changed
+                commentingServer = newValue;
             }, function () {
                 // XXX: when consistent reporting mechanism is developed,
                 // inform user about the error (API failure) - the reason
                 // why the value has been switched back to origValue
                 $scope.commentingSetting = origValue;
+            }).finally(function () {
+                $scope.updateCommentingDirtyFlag();
+                $scope.isChangingCommenting = false;
             });
         };
         /**
