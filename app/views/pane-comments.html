@@ -21,11 +21,11 @@
       ng-class="{
         changing: isChangingCommenting,
         enabled: (!isChangingCommenting &amp;&amp;
-                  commentingSetting === commenting.ENABLED),
+                  commentingSettingSrv === commenting.ENABLED),
         disabled: (!isChangingCommenting &amp;&amp;
-                   commentingSetting === commenting.DISABLED),
+                   commentingSettingSrv === commenting.DISABLED),
         locked: (!isChangingCommenting &amp;&amp;
-                 commentingSetting === commenting.LOCKED)
+                 commentingSettingSrv === commenting.LOCKED)
       }">
 
     <select
@@ -43,16 +43,16 @@
         >Apply</button>
 
     <label>Visible on Frontend:</label>
-    <span>{{commentingSetting !== commenting.DISABLED ? 'yes' : 'no'}}</span>
+    <span>{{commentingSettingSrv !== commenting.DISABLED ? 'yes' : 'no'}}</span>
 
     <label>Commenting:</label>
-    <span>{{commentingSetting === commenting.ENABLED ? 'yes' : 'no'}}</span>
+    <span>{{commentingSettingSrv === commenting.ENABLED ? 'yes' : 'no'}}</span>
   </div>
 
   <div
     class="add-element ng-hide"
     ng-class="{expanded: adding}"
-    ng-show="commentingSetting === commenting.ENABLED"
+    ng-show="commentingSettingSrv === commenting.ENABLED"
     >
     <div class="heading">
       <button
@@ -159,7 +159,7 @@
           model="comment"
           ng-repeat="comment in filtered = (comments.displayed | filter:selected | sortComments:sorting.text)"
           class="{{comment.showStatus}} comment-{{comment.status}} level-{{comment.thread_level}}"
-          allowreplying="(commentingSetting === commenting.ENABLED)
+          allowreplying="(commentingSettingSrv === commenting.ENABLED)
               &amp;&amp; (comment.thread_level < 2)"
          >
       </comment>

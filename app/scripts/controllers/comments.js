@@ -12,8 +12,7 @@ angular.module('authoringEnvironmentApp').controller('CommentsCtrl', [
     '$log',
     function ($scope, comments, article, $log) {
 
-        var commentingServer = article.commenting.ENABLED,  // just a default
-            others = [
+        var others = [
                 'pending',
                 'approved',
                 'hidden'
@@ -54,10 +53,9 @@ angular.module('authoringEnvironmentApp').controller('CommentsCtrl', [
             }
         };
 
-        // commentingServer is the current value of the setting on the server,
-        // while $scope.commentingSetting is a value selected in the UI
-        $scope.commentingSetting = commentingServer;
-        $scope.commentingOptDirty = false;
+        $scope.commentingSettingSrv = article.commenting.ENABLED,  // default
+        $scope.commentingSetting = $scope.commentingSettingSrv;
+        $scope.commentingOptDirty = false;  // commentingSetting changed?
         $scope.isChangingCommenting = false;  // currently submitting change?
 
         $scope.commenting = article.commenting;
@@ -84,13 +82,13 @@ angular.module('authoringEnvironmentApp').controller('CommentsCtrl', [
         this.initCommenting = function () {
             article.promise.then(function (data) {
                 if (parseInt(data.comments_locked, 10) > 0) {
-                    commentingServer = article.commenting.LOCKED;
+                    $scope.commentingSettingSrv = article.commenting.LOCKED;
                 } else if (parseInt(data.comments_enabled, 10) > 0) {
-                    commentingServer = article.commenting.ENABLED;
+                    $scope.commentingSettingSrv = article.commenting.ENABLED;
                 } else {
-                    commentingServer = article.commenting.DISABLED;
+                    $scope.commentingSettingSrv = article.commenting.DISABLED;
                 }
-                $scope.commentingSetting = commentingServer;
+                $scope.commentingSetting = $scope.commentingSettingSrv;
             });
         };
         this.initCommenting();
@@ -146,7 +144,7 @@ angular.module('authoringEnvironmentApp').controller('CommentsCtrl', [
         */
         $scope.updateCommentingDirtyFlag = function () {
             $scope.commentingOptDirty =
-                ($scope.commentingSetting !== commentingServer);
+                ($scope.commentingSetting !== $scope.commentingSettingSrv);
         }
 
         /**
@@ -159,13 +157,13 @@ angular.module('authoringEnvironmentApp').controller('CommentsCtrl', [
         */
         $scope.changeCommentingSetting = function () {
             var newValue = $scope.commentingSetting,
-                origValue = commentingServer;
+                origValue = $scope.commentingSettingSrv;
 
             $scope.isChangingCommenting = true;
 
             article.changeCommentingSetting(newValue).then(function (data) {
                 // value on the server successfully changed
-                commentingServer = newValue;
+                $scope.commentingSettingSrv = newValue;
             }, function () {
                 // XXX: when consistent reporting mechanism is developed,
                 // inform user about the error (API failure) - the reason

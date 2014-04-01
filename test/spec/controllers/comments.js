@@ -91,7 +91,7 @@ describe('Controller: CommentsCtrl', function () {
         // initCommenting() reads the actual article data, thus we have to
         // disable it for the purpose of the test
         spyOn(CommentsCtrl, 'initCommenting');
-        expect(scope.commentingSetting).toBe(article.commenting.ENABLED);
+        expect(scope.commentingSettingSrv).toBe(article.commenting.ENABLED);
     });
 
     it('has commenting option dirty flag *not* set by default', function () {
@@ -118,6 +118,7 @@ describe('Controller: CommentsCtrl', function () {
 
         it('correctly sets commenting to "enabled"', function () {
             scope.commentingSetting = article.commenting.DISABLED;
+            scope.commentingSettingSrv = article.commenting.DISABLED;
 
             CommentsCtrl.initCommenting();
             deferred.resolve({
@@ -127,10 +128,13 @@ describe('Controller: CommentsCtrl', function () {
             scope.$apply();
 
             expect(scope.commentingSetting).toBe(article.commenting.ENABLED);
+            expect(scope.commentingSettingSrv).toBe(
+                article.commenting.ENABLED);
         });
 
         it('correctly sets commenting to "disabled"', function () {
             scope.commentingSetting = article.commenting.ENABLED;
+            scope.commentingSettingSrv = article.commenting.ENABLED;
 
             CommentsCtrl.initCommenting();
             deferred.resolve({
@@ -140,10 +144,13 @@ describe('Controller: CommentsCtrl', function () {
             scope.$apply();
 
             expect(scope.commentingSetting).toBe(article.commenting.DISABLED);
+            expect(scope.commentingSettingSrv).toBe(
+                article.commenting.DISABLED);
         });
 
         it('correctly sets commenting to "locked"', function () {
             scope.commentingSetting = article.commenting.ENABLED;
+            scope.commentingSettingSrv = article.commenting.ENABLED;
 
             CommentsCtrl.initCommenting();
             deferred.resolve({
@@ -153,21 +160,25 @@ describe('Controller: CommentsCtrl', function () {
             scope.$apply();
 
             expect(scope.commentingSetting).toBe(article.commenting.LOCKED);
+            expect(scope.commentingSettingSrv).toBe(
+                article.commenting.LOCKED);
         });
     });
 
     describe('scope\'s updateCommentingDirtyFlag() method', function () {
 
-        it('sets dirty flag when there is a change in commenting ' +
+        it('sets dirty flag when there IS a change in commenting ' +
            'option value"', function () {
                 scope.commentingSetting = article.commenting.DISABLED;
+                scope.commentingSettingSrv = article.commenting.LOCKED;
                 scope.updateCommentingDirtyFlag();
                 expect(scope.commentingOptDirty).toBe(true);
         });
 
-        it('clears dirty flag when there is no change in commenting ' +
+        it('clears dirty flag when there IS NO no change in commenting ' +
            'option value', function () {
-                scope.commentingSetting = article.commenting.ENABLED;
+                scope.commentingSetting = article.commenting.LOCKED;
+                scope.commentingSettingSrv = article.commenting.LOCKED;
                 scope.updateCommentingDirtyFlag();
                 expect(scope.commentingOptDirty).toBe(false);
         });
@@ -193,6 +204,21 @@ describe('Controller: CommentsCtrl', function () {
         });
 
         describe('on server success response', function () {
+            it('sets scope\'s commenting setting (server) to new value',
+                function () {
+                    scope.commentingSetting = article.commenting.LOCKED;
+                    scope.commentingSettingSrv = article.commenting.DISABLED;
+
+                    scope.changeCommentingSetting();
+                    expect(scope.commentingSettingSrv).toBe(
+                        article.commenting.DISABLED);
+
+                    deferred.resolve();
+                    scope.$apply();
+                    expect(scope.commentingSettingSrv).toBe(
+                        article.commenting.LOCKED);
+            });
+
             it('clears commenting option dirty flag', function () {
                 scope.commentingOptDirty = true;
 
@@ -205,8 +231,6 @@ describe('Controller: CommentsCtrl', function () {
 
             it('clears changing commenting flag', function () {
                 scope.changeCommentingSetting();
-                expect(scope.isChangingCommenting).toBe(true);
-
                 deferred.resolve();
                 scope.$apply();
 
