@@ -49,7 +49,11 @@
     <span>{{commentingSetting === commenting.ENABLED ? 'yes' : 'no'}}</span>
   </div>
 
-  <div class="add-element" ng-class="{expanded: adding}">
+  <div
+    class="add-element ng-hide"
+    ng-class="{expanded: adding}"
+    ng-show="commentingSetting === commenting.ENABLED"
+    >
     <div class="heading">
       <button
          class="btn btn-sf-invisible"
