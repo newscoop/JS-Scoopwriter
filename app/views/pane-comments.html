@@ -20,11 +20,11 @@
       class="commenting-options"
       ng-class="{
         changing: isChangingCommenting,
-        enabled: (!isChangingCommenting &amp;&amp;
+        enabled: (!isChangingCommenting &&
                   commentingSettingSrv === commenting.ENABLED),
-        disabled: (!isChangingCommenting &amp;&amp;
+        disabled: (!isChangingCommenting &&
                    commentingSettingSrv === commenting.DISABLED),
-        locked: (!isChangingCommenting &amp;&amp;
+        locked: (!isChangingCommenting &&
                  commentingSettingSrv === commenting.LOCKED)
       }">
 
@@ -166,7 +166,7 @@
           ng-repeat="comment in filtered = (comments.displayed | filter:selected | sortComments:sorting.text)"
           class="{{comment.showStatus}} comment-{{comment.status}} level-{{comment.thread_level}}"
           allowreplying="(commentingSettingSrv === commenting.ENABLED)
-              &amp;&amp; (comment.thread_level < 2)"
+              && (comment.thread_level < 2)"
          >
       </comment>
     </div>
