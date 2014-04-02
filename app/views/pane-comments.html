@@ -37,16 +37,18 @@
         ></select>
 
     <button
-        class="btn"
+        class="btn btn-default btn-sm"
         ng-disabled="!commentingOptDirty || isChangingCommenting"
         ng-click="changeCommentingSetting()"
         >Apply</button>
 
     <label>Visible on Frontend:</label>
-    <span>{{commentingSettingSrv !== commenting.DISABLED ? 'yes' : 'no'}}</span>
+    <span class="{{commentingSettingSrv !== commenting.DISABLED ? 'yes' : 'no'}}"
+        >{{commentingSettingSrv !== commenting.DISABLED ? 'yes' : 'no'}}</span>
 
     <label>Commenting:</label>
-    <span>{{commentingSettingSrv === commenting.ENABLED ? 'yes' : 'no'}}</span>
+    <span class="{{commentingSettingSrv === commenting.ENABLED ? 'yes' : 'no'}}"
+        >{{commentingSettingSrv === commenting.ENABLED ? 'yes' : 'no'}}</span>
   </div>
 
   <div

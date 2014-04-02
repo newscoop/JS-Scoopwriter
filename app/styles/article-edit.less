@@ -1872,44 +1872,54 @@ html, body.article-edit {
 
         .commenting-options {
             margin-top: 10px;
-            /*font-size: 13px;*/
+            padding: 5px 10px 5px 50px;
+            font-size: 13px;
+            border-bottom: 3px solid black;
+
+            select {
+                height: 21px;
+            }
+            button {
+                margin-top: -1px;
+            }
             label {
                 font-weight: normal;
-                color: gray;  /* TODO: variable!*/
+                color: #808080;
             }
             span {
                 display: inline-block;
-                width: 34px;
+                width: 35px;
                 text-align: center;
+                border-radius: 3px;
                 color: white;
                 font-weight: bold;
                 text-transform: uppercase;
+                &.yes {
+                    background-color: #6FA00D;
+                }
+                &.no {
+                    background-color: #D9534F;
+                }
             }
 
-            /* TODO: use variables for colors? */
             &.changing {
                 background-color: lightgray;
+                border-bottom-color: gray;
                 span {
-                    background-color: gray;
-                }
+                    background-color: gray
+                };
             }
             &.enabled {
-                background-color: lightgreen;
-                span {
-                    background-color: green;
-                }
+                border-bottom-color: #CADABB;
+                background: #E4F0D8 url('../images/comment-bg-icon-enabled.png') no-repeat 0 -3px;
             }
             &.disabled {
-                background-color: pink;
-                span {
-                    background-color: red;
-                }
+                border-bottom-color: #E0C0C4;
+                background: #F2DEDE url('../images/comment-bg-icon-disabled.png') no-repeat 0 -3px;
             }
             &.locked {
-                background-color: yellow;
-                span {
-                    background-color: orange;
-                }
+                border-bottom-color: #DFD3AB;
+                background: #F4EECE url('../images/comment-bg-icon-locked.png') no-repeat 0 -3px;
             }
         }
 
