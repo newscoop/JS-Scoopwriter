@@ -34,8 +34,12 @@ angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
                     $scope.setModified(true);
                 } else {
                     // used also for testing
-                    oldValue || $log.debug('the old article value is', oldValue);
-                    newValue || $log.debug('the new article value is', newValue);
+                    if (!oldValue) {
+                        $log.debug('the old article value is', oldValue);
+                    }
+                    if (!newValue) {
+                        $log.debug('the new article value is', newValue);
+                    }
                 }
             }
         };

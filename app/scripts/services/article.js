@@ -4,7 +4,9 @@ angular.module('authoringEnvironmentApp').service('article', [
     'configuration',
     '$q',
     function article($resource, configuration, $q) {
+
         var commenting, deferred = $q.defer(), langMap, resource;
+
         langMap = {
             1: [
                 'English',
@@ -150,26 +152,7 @@ angular.module('authoringEnvironmentApp').service('article', [
                 method: 'PATCH'
             }
         });
-        /**
-        * Changes the value of the article's commenting setting and updates
-        * it on the server.
-        *
-        * @method changeCommentingSetting
-        * @param newValue {Number} New value of the article commenting setting.
-        *       Should be one of the values from article.commenting object.
-        * @return {Object} promise object.
-        */
-        function changeCommentingSetting(newValue) {
-            var apiParams, service = this;
-            apiParams = {
-                comments_enabled: newValue === commenting.ENABLED ? 1 : 0,
-                comments_locked: newValue === commenting.LOCKED ? 1 : 0
-            };
-            return resource.save({
-                articleId: service.articleId,
-                language: service.language
-            }, apiParams).$promise;
-        }
+
         return {
             commenting: commenting,
             modified: false,
@@ -186,7 +169,27 @@ angular.module('authoringEnvironmentApp').service('article', [
                     deferred.resolve(data);
                 });
             },
-            changeCommentingSetting: changeCommentingSetting
+
+            /**
+            * Changes the value of the article's commenting setting and updates
+            * it on the server.
+            *
+            * @method changeCommentingSetting
+            * @param newValue {Number} New value of the article commenting setting.
+            *       Should be one of the values from article.commenting object.
+            * @return {Object} promise object.
+            */
+            changeCommentingSetting: function (newValue) {
+                var apiParams, service = this;
+                apiParams = {
+                    comments_enabled: newValue === commenting.ENABLED ? 1 : 0,
+                    comments_locked: newValue === commenting.LOCKED ? 1 : 0
+                };
+                return resource.save({
+                    articleId: service.articleId,
+                    language: service.language
+                }, apiParams).$promise;
+            }
         };
     }
 ]);
