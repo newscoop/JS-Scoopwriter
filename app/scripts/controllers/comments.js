@@ -53,7 +53,7 @@ angular.module('authoringEnvironmentApp').controller('CommentsCtrl', [
             }
         };
 
-        $scope.commentingSettingSrv = article.commenting.ENABLED,  // default
+        $scope.commentingSettingSrv = article.commenting.ENABLED;  // default
         $scope.commentingSetting = $scope.commentingSettingSrv;
         $scope.commentingOptDirty = false;  // commentingSetting changed?
         $scope.isChangingCommenting = false;  // currently submitting change?
@@ -145,7 +145,7 @@ angular.module('authoringEnvironmentApp').controller('CommentsCtrl', [
         $scope.updateCommentingDirtyFlag = function () {
             $scope.commentingOptDirty =
                 ($scope.commentingSetting !== $scope.commentingSettingSrv);
-        }
+        };
 
         /**
         * Changes the value of the article's commenting setting and updates
@@ -180,7 +180,9 @@ angular.module('authoringEnvironmentApp').controller('CommentsCtrl', [
         * @method toggleShowStatus
         */
         $scope.toggleShowStatus = function () {
-            $scope.globalShowStatus = $scope.globalShowStatus === 'expanded' ? 'collapsed' : 'expanded';
+            $scope.globalShowStatus =
+                ($scope.globalShowStatus === 'expanded') ?
+                'collapsed' : 'expanded';
         };
         $scope.$watch('sorting', function () {
             /* this log here is a way to test that the handler has
