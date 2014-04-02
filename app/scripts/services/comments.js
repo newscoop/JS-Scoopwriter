@@ -1,20 +1,29 @@
 'use strict';
-
 /**
 * AngularJS Service for managing article comments.
 *
 * @class comments
 */
-angular.module('authoringEnvironmentApp')
-    .service('comments', ['configuration', 'article', '$http', '$q', '$resource', 'transform', 'pageTracker', '$log', 'nestedSort', function comments(configuration, article, $http, $q, $resource, transform, pageTracker, $log, nestedSort) {
-        var service = this;     // alias for the comments service itself
-        var f = configuration.API.full;  // base API URL
+angular.module('authoringEnvironmentApp').service('comments', [
+    'configuration',
+    'article',
+    '$http',
+    '$q',
+    '$resource',
+    'transform',
+    'pageTracker',
+    '$log',
+    'nestedSort',
+    function comments(configuration, article, $http, $q, $resource, transform, pageTracker, $log, nestedSort) {
+        var service = this;
+        // alias for the comments service itself
+        var f = configuration.API.full;
+        // base API URL
         /* max number of comments per page, decrease it in order to
          * test pagination, and sorting change with paginated
          * comments */
         var itemsPerPage = 50;
         var sorting = 'nested';
-
         /**
         * A flag indicating whether there are more comments to be loaded.
         * @property canLoadMore
@@ -22,7 +31,6 @@ angular.module('authoringEnvironmentApp')
         * @default true
         */
         this.canLoadMore = true;
-
         /**
         * A list of all comments loaded so far.
         * @property loaded
@@ -30,7 +38,6 @@ angular.module('authoringEnvironmentApp')
         * @default []
         */
         this.loaded = [];
-
         /**
         * A list of currently displayed comments.
         * @property displayed
@@ -38,46 +45,41 @@ angular.module('authoringEnvironmentApp')
         * @default []
         */
         this.displayed = [];
-
         /**
         * Helper service for tracking which comments pages have been loaded.
         * @property tracker
         * @type Object (instance of pageTracker)
         */
         this.tracker = pageTracker.getTracker();
-
         /**
         * Helper object for communication with the backend API.
         * @property tracker
         * @type Object (as created by Angular's $resource factory)
         */
-        this.resource = $resource(
-            f + '/comments/article/:articleNumber/:languageCode', {
-            }, {
-                create: {
-                    method: 'POST',
-                    transformRequest: transform.formEncode
-                },
-                patch: {
-                    method: 'PATCH',
-                    url: f + '/comments/article/:articleNumber/:languageCode/:commentId',
-                    transformRequest: transform.formEncode
-                },
-                save: {
-                    method: 'POST',
-                    url: f + '/comments/article/:articleNumber/:languageCode/:commentId',
-                    transformRequest: transform.formEncode
-                },
-                delete: {
-                    method: 'DELETE',
-                    url: f + '/comments/article/:articleNumber/:languageCode/:commentId'
-                },
-                toggleRecommended: {
-                    method: 'PATCH',
-                    url: f + '/comments/:commentId.json'
-                }
-            });
-
+        this.resource = $resource(f + '/comments/article/:articleNumber/:languageCode', {}, {
+            create: {
+                method: 'POST',
+                transformRequest: transform.formEncode
+            },
+            patch: {
+                method: 'PATCH',
+                url: f + '/comments/article/:articleNumber/:languageCode/:commentId',
+                transformRequest: transform.formEncode
+            },
+            save: {
+                method: 'POST',
+                url: f + '/comments/article/:articleNumber/:languageCode/:commentId',
+                transformRequest: transform.formEncode
+            },
+            delete: {
+                method: 'DELETE',
+                url: f + '/comments/article/:articleNumber/:languageCode/:commentId'
+            },
+            toggleRecommended: {
+                method: 'PATCH',
+                url: f + '/comments/:commentId.json'
+            }
+        });
         /**
         * Asynchronously adds a new comment and displays it after it has been
         * successfully stored on the server.
@@ -92,13 +94,13 @@ angular.module('authoringEnvironmentApp')
         *     @param [par.comment.parent] {Number} ID of the parent comment
         * @return {Object} A promise object
         */
-        this.add = function(par) {
+        this.add = function (par) {
             var deferred = $q.defer();
-            article.promise.then(function(article) {
+            article.promise.then(function (article) {
                 service.resource.create({
                     articleNumber: article.number,
                     languageCode: article.language
-                }, par, function(data, headers) {
+                }, par, function (data, headers) {
                     var url = headers('X-Location');
                     if (url) {
                         $http.get(url).success(function (data) {
@@ -120,14 +122,13 @@ angular.module('authoringEnvironmentApp')
             });
             return deferred.promise;
         };
-
         /**
         * Initializes all internal variables to their default values, then
         * loads and displays the first batch of article comments.
         *
         * @method init
         */
-        this.init = function(opt) {
+        this.init = function (opt) {
             // XXX: from user experience perspective current behavior might
             // not be ideal (to reload everything, e.g. after adding a new
             // comment), but for now we stick with it as a reasonable
@@ -136,24 +137,22 @@ angular.module('authoringEnvironmentApp')
             service.canLoadMore = true;
             service.loaded = [];
             service.displayed = [];
-            if(opt && opt.sorting) {
+            if (opt && opt.sorting) {
                 sorting = opt.sorting;
             } else {
                 sorting = 'nested';
             }
-
-            this.load(this.tracker.next()).then(function(data){
+            this.load(this.tracker.next()).then(function (data) {
                 service.displayed = data.items.map(decorate);
                 nestedSort.sort(service.displayed);
                 if (service.canLoadMore) {
                     // prepare the next batch
-                    service.load(service.tracker.next()).then(function(data) {
+                    service.load(service.tracker.next()).then(function (data) {
                         service.loaded = service.loaded.concat(data.items);
                     });
                 }
             });
         };
-
         /**
         * If there are more comments to be loaded from the server, the method
         * first takes one page of comments from the pre-loaded comments list
@@ -163,20 +162,19 @@ angular.module('authoringEnvironmentApp')
         *
         * @method more
         */
-        this.more = function() {
+        this.more = function () {
             if (this.canLoadMore) {
                 var additional = this.loaded.splice(0, itemsPerPage);
                 additional = additional.map(decorate);
                 this.displayed = this.displayed.concat(additional);
                 var next = this.tracker.next();
-                this.load(next).then(function(data) {
+                this.load(next).then(function (data) {
                     service.loaded = service.loaded.concat(data.items);
                 });
             } else {
                 $log.error('More comments required, but the service cannot load more of them. In this case the user should not be able to trigger this request');
             }
         };
-
         /**
         * Asynchronously loads a single page of article comments.
         *
@@ -185,27 +183,28 @@ angular.module('authoringEnvironmentApp')
         *     (NOTE: page indices start with 1)
         * @return {Object} A promise object
         */
-        this.load = function(page) {
+        this.load = function (page) {
             var deferred = $q.defer();
             article.promise.then(function (article) {
-                if (sorting == 'nested') {
-                    var sortingPart = '/nested';
+                var sortingPart;
+                if (sorting === 'nested') {
+                    sortingPart = '/nested';
                 } else {
-                    var sortingPart = '';
+                    sortingPart = '';
                 }
                 var url = [
-                    configuration.API.full,
-                    '/comments/article/',
-                    article.number,
-                    '/',
-                    article.language,
-                    sortingPart,
-                    '?items_per_page=',
-                    itemsPerPage,
-                    '&page=',
-                    page
-                ].join('');
-                $http.get(url).success(function(data) {
+                        configuration.API.full,
+                        '/comments/article/',
+                        article.number,
+                        '/',
+                        article.language,
+                        sortingPart,
+                        '?items_per_page=',
+                        itemsPerPage,
+                        '&page=',
+                        page
+                    ].join('');
+                $http.get(url).success(function (data) {
                     deferred.resolve(data);
                     if (pageTracker.isLastPage(data.pagination)) {
                         service.canLoadMore = false;
@@ -217,7 +216,6 @@ angular.module('authoringEnvironmentApp')
             });
             return deferred.promise;
         };
-
         /**
         * Creates and returns a comparison function. This functions accepts an
         * object with the "id" attribute as a parameter and returns true if
@@ -236,26 +234,24 @@ angular.module('authoringEnvironmentApp')
         *
         * @return {Function} Generated comparison function.
         */
-        this.matchMaker = function(id) {
-            return function(needle) {
-                return parseInt(needle.id) == parseInt(id);
+        this.matchMaker = function (id) {
+            return function (needle) {
+                return parseInt(needle.id) === parseInt(id);
             };
         };
-
         /**
         * Changes the selected status for the selected comments
         *
         * @method changeSelectedStatus
         * @param status {String} the new status to be set
         */
-        this.changeSelectedStatus = function(status) {
-            this.displayed.forEach(function(comment) {
+        this.changeSelectedStatus = function (status) {
+            this.displayed.forEach(function (comment) {
                 if (comment.selected) {
                     comment.changeStatus(status);
                 }
             });
         };
-
         /**
         * Decorates an object containing raw comment data (as returned by
         * the API) with properties and methods, turning it into a
@@ -270,7 +266,6 @@ angular.module('authoringEnvironmentApp')
             /**
             * @class comment
             */
-
             /**
             * Reflects the checkbox on the left of every comment
             * @property selected
@@ -278,7 +273,6 @@ angular.module('authoringEnvironmentApp')
             * @default "false"
             */
             comment.selected = false;
-
             /**
             * How the comment is currently displayed (collapsed or expanded).
             * @property showStatus
@@ -286,7 +280,6 @@ angular.module('authoringEnvironmentApp')
             * @default "collapsed"
             */
             comment.showStatus = 'collapsed';
-
             /**
             * A flag indicating whether the comment is currently being edited.
             * @property isEdited
@@ -294,23 +287,19 @@ angular.module('authoringEnvironmentApp')
             * @default false
             */
             comment.isEdited = false;
-
             /**
             * A flag indicating whether the comment is marked as
             * recommended or not.
             * @property recommended
             * @type Boolean
             */
-            comment.recommended = !!comment.recommended;  // to Boolean
-
+            comment.recommended = !!comment.recommended;
+            // to Boolean
             /**
             * An object holding comment properties yet to be saved on the server
             * @property editing
             */
-            comment.editing = {
-                status: comment.status
-            };
-
+            comment.editing = { status: comment.status };
             /**
             * Object holding a subject and a message of the new reply to
             * the comment.
@@ -323,7 +312,6 @@ angular.module('authoringEnvironmentApp')
                 subject: 'Re: ' + comment.subject,
                 message: ''
             };
-
             /**
             * A flag indicating whether or not a reply-to-comment mode is
             * currently active.
@@ -333,7 +321,6 @@ angular.module('authoringEnvironmentApp')
             * @default false
             */
             comment.isReplyMode = false;
-
             /**
             * A flag indicating whether or not a reply is currently being
             * sent to the server.
@@ -343,95 +330,84 @@ angular.module('authoringEnvironmentApp')
             * @default false
             */
             comment.sendingReply = false;
-
             /**
             * Sets comment's display status to collapsed.
             * @method collapse
             */
-            comment.collapse = function() {
+            comment.collapse = function () {
                 this.showStatus = 'collapsed';
                 this.isReplyMode = false;
             };
-
             /**
             * Sets comment's display status to expanded.
             * @method expand
             */
-            comment.expand = function() {
+            comment.expand = function () {
                 this.showStatus = 'expanded';
             };
-
             /**
             * Changes comment's display status from expanded to collapsed or
             * vice versa.
             * @method toggle
             */
-            comment.toggle = function() {
-                if ('expanded' == this.showStatus) {
+            comment.toggle = function () {
+                if ('expanded' === this.showStatus) {
                     this.collapse();
                 } else {
                     this.expand();
                 }
             };
-
             /**
             * Puts comment into edit mode.
             * @method edit
             */
-            comment.edit = function() {
+            comment.edit = function () {
                 this.editing.subject = this.subject;
                 this.editing.message = this.message;
                 this.isEdited = true;
                 this.isReplyMode = false;
             };
-
             /**
             * End comment's edit mode.
             * @method cancel
             */
-            comment.cancel = function() {
+            comment.cancel = function () {
                 this.isEdited = false;
             };
-
             /**
             * Asynchronously saves/updates the comment and ends the edit mode.
             * @method save
             */
-            comment.save = function() {
+            comment.save = function () {
                 var comment = this;
-                article.promise.then(function(article) {
+                article.promise.then(function (article) {
                     service.resource.save({
                         articleNumber: article.number,
                         languageCode: article.language,
                         commentId: comment.id
-                    }, {comment: comment.editing}, function() {
+                    }, { comment: comment.editing }, function () {
                         comment.subject = comment.editing.subject;
                         comment.message = comment.editing.message;
                         comment.isEdited = false;
                     });
                 });
             };
-
             /**
             * Asynchronously deletes the comment.
             * @method remove
             */
-            comment.remove = function() {
+            comment.remove = function () {
                 var comment = this;
-                article.promise.then(function(article) {
+                article.promise.then(function (article) {
                     service.resource.delete({
                         articleNumber: article.number,
                         languageCode: article.language,
                         commentId: comment.id
-                    }).$promise.then(function() {
-                        _.remove(
-                            service.displayed,
-                            service.matchMaker(comment.id)
-                        );
+                    }).$promise.then(function () {
+                        _.remove(service.displayed, service.matchMaker(comment.id));
                     });
                 });
             };
-
             /**
             * Enters into reply-to-comment mode.
             * @method replyTo
@@ -439,7 +415,6 @@ angular.module('authoringEnvironmentApp')
             comment.replyTo = function () {
                 comment.isReplyMode = true;
             };
-
             /**
             * Exits from reply-to-comment mode.
             * @method cancelReply
@@ -447,20 +422,18 @@ angular.module('authoringEnvironmentApp')
             comment.cancelReply = function () {
                 comment.isReplyMode = false;
             };
-
             /**
             * Asynchronously adds a new reply to the comment and displays it
             * after successfully storing it on the server.
             * @method sendReply
             */
             comment.sendReply = function () {
-                var comment = this,  // alias for the comment object itself
+                var comment = this,
+                    // alias for the comment object itself
                     replyData = angular.copy(comment.reply);
-
                 replyData.parent = comment.id;
                 comment.sendingReply = true;
-
-                service.add({'comment': replyData}).then(function () {
+                service.add({ 'comment': replyData }).then(function () {
                     comment.sendingReply = false;
                     comment.isReplyMode = false;
                     comment.reply = {
@@ -469,50 +442,38 @@ angular.module('authoringEnvironmentApp')
                     };
                 });
             };
-
             /**
             * Asynchronously toggle the comment between being and not-being
             * marked as recommended.
             * @method toggleRecommended
             */
             comment.toggleRecommended = function () {
-                var comment = this,
-                    newStatus = !comment.recommended;
-
-                service.resource.toggleRecommended({
-                        commentId: comment.id
-                    },
-                    {comment: {
-                        // API expects numeric value, not a boolean
-                        recommended: (newStatus ? 1 : 0)
-                    }},
-                    function () {
-                        comment.recommended = newStatus;
-                    }
-                );
+                var comment = this, newStatus = !comment.recommended;
+                service.resource.toggleRecommended({ commentId: comment.id }, { comment: { recommended: newStatus ? 1 : 0 } }, function () {
+                    comment.recommended = newStatus;
+                });
             };
-
             /**
             * Ask to the server to change the status, rollback if it fails
             * @method changeStatus
             */
             comment.changeStatus = function (newStatus) {
                 var comment = this;
-                article.promise.then(function(article) {
+                article.promise.then(function (article) {
                     service.resource.patch({
                         articleNumber: article.number,
                         languageCode: article.language,
                         commentId: comment.id
-                    }, {comment: {status: newStatus}}, function() {
+                    }, { comment: { status: newStatus } }, function () {
                         // success
                         comment.status = newStatus;
-                    }, function() {
+                    }, function () {
                         // failure
                         $log.debug('error changing the status for the comment');
                     });
                 });
             };
-
             return comment;
         }
-    }]);
+    }
+]);

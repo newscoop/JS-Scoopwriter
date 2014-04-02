@@ -3,7 +3,7 @@
   "node": true,         // Tells JSHint to write for Node, this is for encapsulation
   "esnext": true,       // This option tells JSHint that your code uses ECMAScript 6 specific syntax.
   "bitwise": true,      // Prohibit bitwise operators (&, |, ^, etc.).
-  "camelcase": true,    // Require variable names to use either camelCase style or UPPER_CASE with underscores.
+  "camelcase": false,    // Require variable names to use either camelCase style or UPPER_CASE with underscores.
   "curly": true,        // Require {} for every new block or scope.
   "eqeqeq": true,       // Require triple equals i.e. `===`.
   "forin": true,        // Prohibits `for in` loops without `hasOwnPrototype`.
