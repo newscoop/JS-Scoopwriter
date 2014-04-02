@@ -1,16 +1,13 @@
 'use strict';
-
 /**
 * AngularJS Service for encoding HTML form data, making the latter suitable
 * for use in a URL query string or Ajax request.
 *
 * @class transform
 */
-angular.module('authoringEnvironmentApp')
-    .service('transform', function Transform() {
-        // AngularJS will instantiate a singleton by calling "new" on this function
-
-        /**
+angular.module('authoringEnvironmentApp').service('transform', function Transform() {
+    // AngularJS will instantiate a singleton by calling "new" on this function
+    /**
         * Encodes HTML form data (making it ready to use in an Ajax
         * request) and sets the Content-Type header to
         * 'application/x-www-form-urlencoded'.
@@ -23,10 +20,10 @@ angular.module('authoringEnvironmentApp')
         *
         * @return {String} Encoded form data (using jQuery's param() function).
         */
-        this.formEncode = function(data, headersGetter) {
-            var encoded = $.param(data);
-            var headers = headersGetter();
-            headers['Content-Type'] = 'application/x-www-form-urlencoded';
-            return encoded;
-        };
-    });
+    this.formEncode = function (data, headersGetter) {
+        var encoded = $.param(data);
+        var headers = headersGetter();
+        headers['Content-Type'] = 'application/x-www-form-urlencoded';
+        return encoded;
+    };
+});

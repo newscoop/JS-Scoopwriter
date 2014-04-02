@@ -1,35 +1,37 @@
 'use strict';
-
 /**
 * AngularJS controller for managing article comments (as a group,
 * not individual comments).
 *
 * @class CommentsCtrl
 */
-angular.module('authoringEnvironmentApp').controller(
-    'CommentsCtrl', ['$scope', 'comments', 'article', '$log',
+angular.module('authoringEnvironmentApp').controller('CommentsCtrl', [
+    '$scope',
+    'comments',
+    'article',
+    '$log',
     function ($scope, comments, article, $log) {
-
-        var others = ['pending', 'approved', 'hidden'];
-
-        $scope.sortings = [{
-            text: 'Nested'
-        }, {
-            text: 'Chronological'
-        }, {
-            text: 'Chronological (asc.)'  // oldest first
-        }];
+        var others = [
+                'pending',
+                'approved',
+                'hidden'
+            ];
+        $scope.sortings = [
+            { text: 'Nested' },
+            { text: 'Chronological' },
+            { text: 'Chronological (asc.)' }
+        ];
         $scope.sorting = $scope.sortings[0];
-        $scope.toggle = function(name) {
+        $scope.toggle = function (name) {
             var previouslyChecked = $scope.statuses[name];
             $scope.statuses[name] = !previouslyChecked;
-            if ('all' == name) {
+            if ('all' === name) {
                 if (previouslyChecked) {
-                    others.map(function(name) {
+                    others.map(function (name) {
                         $scope.statuses[name] = true;
                     });
                 } else {
-                    others.map(function(name) {
+                    others.map(function (name) {
                         $scope.statuses[name] = false;
                     });
                 }
@@ -38,9 +40,9 @@ angular.module('authoringEnvironmentApp').controller(
                  * before) and all the others are unchecked, check the
                  * `all` status again */
                 if (previouslyChecked) {
-                    if (others.every(function(name) {
-                        return false == $scope.statuses[name];
-                    })) {
+                    if (others.every(function (name) {
+                            return false === $scope.statuses[name];
+                        })) {
                         $scope.statuses.all = true;
                     }
                 } else {
@@ -48,7 +50,6 @@ angular.module('authoringEnvironmentApp').controller(
                 }
             }
         };
-
         // setting of the commenting on the article
         $scope.commentingSetting = article.commenting.ENABLED;
         $scope.commentingOpts = [
@@ -65,7 +66,6 @@ angular.module('authoringEnvironmentApp').controller(
                 label: 'locked'
             }
         ];
-
         /**
         * Stores the current value of the `commenting` setting of the article
         * to which the comments belong.
@@ -82,16 +82,14 @@ angular.module('authoringEnvironmentApp').controller(
                 }
             });
         };
-
         this.initCommenting();
-
         $scope.statuses = {
             all: true,
             pending: false,
             approved: false,
             hidden: false
         };
-        $scope.selected = function(comment) {
+        $scope.selected = function (comment) {
             if ($scope.statuses.all) {
                 return true;
             }
@@ -100,17 +98,16 @@ angular.module('authoringEnvironmentApp').controller(
             }
             return false;
         };
-
-         // whether or not a new comment is being sent at this very moment
+        // whether or not a new comment is being sent at this very moment
         $scope.isSending = false;
-
         $scope.comments = comments;
         $scope.create = {};
         comments.init();
-        $scope.add = function(par) {
+        $scope.add = function (par) {
             $scope.isSending = true;
-            comments.add(par).then(function() {
-                $scope.adding = false; // collapse the form
+            comments.add(par).then(function () {
+                $scope.adding = false;
+                // collapse the form
                 $scope.isSending = false;
                 $scope.create = {};
             }, function () {
@@ -119,17 +116,16 @@ angular.module('authoringEnvironmentApp').controller(
                 $scope.isSending = false;
             });
         };
-        $scope.cancel = function() {
+        $scope.cancel = function () {
             $scope.adding = false;
             $scope.create = {};
         };
         $scope.globalShowStatus = 'collapsed';
-        $scope.$watch('globalShowStatus', function() {
-            comments.displayed.map(function(comment) {
+        $scope.$watch('globalShowStatus', function () {
+            comments.displayed.map(function (comment) {
                 comment.showStatus = $scope.globalShowStatus;
             });
         });
-
         /**
         * Changes the value of the article's commenting setting and updates
         * it on the server. In case of an erroneous server response it
@@ -142,20 +138,14 @@ angular.module('authoringEnvironmentApp').controller(
         * @param $event {Object} event object that triggered the method
         */
         $scope.changeCommentingSetting = function (newValue, $event) {
-            var apiParams,
-                origValue;
-
+            var origValue;
             $event.preventDefault();
-
             if (newValue === $scope.commentingSetting) {
-                return;  // no changes, nothing to do
+                return;    // no changes, nothing to do
             }
-
             origValue = $scope.commentingSetting;
             $scope.commentingSetting = newValue;
-
             article.changeCommentingSetting(newValue).then(function (data) {
-                // success, don't need to do anything
             }, function () {
                 // XXX: when consistent reporting mechanism is developed,
                 // inform user about the error (API failure) - the reason
@@ -163,31 +153,25 @@ angular.module('authoringEnvironmentApp').controller(
                 $scope.commentingSetting = origValue;
             });
         };
-
         /**
         * Changes global comments display status from expanded to collapsed or
         * vice versa.
         * @method toggleShowStatus
         */
         $scope.toggleShowStatus = function () {
-            $scope.globalShowStatus = ($scope.globalShowStatus === 'expanded')
-                ? 'collapsed' : 'expanded';
+            $scope.globalShowStatus = $scope.globalShowStatus === 'expanded' ? 'collapsed' : 'expanded';
         };
-
-        $scope.$watch('sorting', function() {
+        $scope.$watch('sorting', function () {
             /* this log here is a way to test that the handler has
              * been called, it is mocked in tests */
             $log.debug('sorting changed');
-            if(comments.canLoadMore) {
-                if ($scope.sorting.text == 'Nested') {
-                    comments.init({
-                        sorting: 'nested'
-                    });
+            if (comments.canLoadMore) {
+                if ($scope.sorting.text === 'Nested') {
+                    comments.init({ sorting: 'nested' });
                 } else {
-                    comments.init({
-                        sorting: 'chronological'
-                    });
+                    comments.init({ sorting: 'chronological' });
                 }
             }
         });
-    }]);
+    }
+]);
