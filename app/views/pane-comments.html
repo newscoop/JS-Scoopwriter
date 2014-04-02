@@ -137,21 +137,25 @@
     <div class="status-buttons">
       <a
          class="btn btn-default btn-sm"
+         ng-disabled="commentingSettingSrv === commenting.DISABLED"
          ng-click="comments.changeSelectedStatus('approved')">
         Approve
       </a>
       <a
          class="btn btn-default btn-sm"
+         ng-disabled="commentingSettingSrv === commenting.DISABLED"
          ng-click="comments.changeSelectedStatus('pending')">
         Mark as New
       </a>
       <a
          class="btn btn-default btn-sm"
+         ng-disabled="commentingSettingSrv === commenting.DISABLED"
          ng-click="comments.changeSelectedStatus('hidden')">
         Hide
       </a>
       <a
          class="btn btn-default btn-sm delete-button"
+         ng-disabled="commentingSettingSrv === commenting.DISABLED"
          ng-click="comments.changeSelectedStatus('deleted')">
         Delete
       </a>
