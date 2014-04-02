@@ -1872,30 +1872,57 @@ html, body.article-edit {
 
         .commenting-options {
             margin-top: 10px;
+            padding: 5px 10px 5px 50px;
             font-size: 13px;
-            .commenting-opts-label {
-                top: -2px;
-                position: relative;
-                color: @comment-gray;
+            border-bottom: 3px solid black;
+
+            select {
+                height: 21px;
+            }
+            button {
+                margin-top: -1px;
             }
             label {
                 font-weight: normal;
-                margin-right: 5px;
-                margin-bottom: 0px;
-                width: 75px;  /* fix width to prevent flickering */
-                text-transform: capitalize;
-                &.optionActive {
-                    font-weight: bold;
-                      /* prevents flickering of a non-fixed size font */
-                    font-size: 90%;
+                color: #808080;
+            }
+            span {
+                display: inline-block;
+                width: 35px;
+                text-align: center;
+                border-radius: 3px;
+                color: white;
+                font-weight: bold;
+                text-transform: uppercase;
+                &.yes {
+                    background-color: #6FA00D;
                 }
-                /* XXX: using IDs, because this gets overriden */
-                #commenting-enabled, #commenting-disabled, #commenting-locked {
-                    position: relative;
-                    top: 2px;
+                &.no {
+                    background-color: #D9534F;
                 }
             }
+
+            &.changing {
+                background-color: lightgray;
+                border-bottom-color: gray;
+                span {
+                    background-color: gray
+                };
+            }
+            &.enabled {
+                border-bottom-color: #CADABB;
+                background: #E4F0D8 url('../images/comment-bg-icon-enabled.png') no-repeat 0 -3px;
+            }
+            &.disabled {
+                border-bottom-color: #E0C0C4;
+                background: #F2DEDE url('../images/comment-bg-icon-disabled.png') no-repeat 0 -3px;
+            }
+            &.locked {
+                border-bottom-color: #DFD3AB;
+                background: #F4EECE url('../images/comment-bg-icon-locked.png') no-repeat 0 -3px;
+            }
         }
+
         .status-buttons {
             background-color: @add-element-gray;
             padding: 10px;

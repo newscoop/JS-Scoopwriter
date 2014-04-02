@@ -130,10 +130,10 @@
          ></span>
       <span
          class="fa fa-reply"
-         ng-class="{disabled: {{model.thread_level >= 2}} }"
+         ng-class="{disabled: !allowreplying }"
          ng-hide="model.isEdited"
-         ng-click="(model.thread_level < 2) &amp;&amp; model.replyTo()"
-         title="{{(model.thread_level < 2) ? 'Reply' : ''}}"
+         title="{{allowreplying ? 'Reply' : ''}}"
+         ng-click="allowreplying &amp;&amp; model.replyTo()"
          ></span>
       <span
          class="fa fa-thumbs-up"

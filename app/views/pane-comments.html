@@ -16,22 +16,46 @@
     Comments
   </div>
 
-  <div class="commenting-options">
-    <span class="commenting-opts-label">Settings:</span>
+  <div
+      class="commenting-options"
+      ng-class="{
+        changing: isChangingCommenting,
+        enabled: (!isChangingCommenting &&
+                  commentingSettingSrv === commenting.ENABLED),
+        disabled: (!isChangingCommenting &&
+                   commentingSettingSrv === commenting.DISABLED),
+        locked: (!isChangingCommenting &&
+                 commentingSettingSrv === commenting.LOCKED)
+      }">
 
-    <label ng-repeat="option in commentingOpts"
-           for="commenting-{{option.label}}"
-           ng-class="{optionActive: (commentingSetting === option.value)}"
-           ng-click="changeCommentingSetting(option.value, $event)"
-       ><input
-           type="radio"
-           name="commenting"
-           id="commenting-{{option.value}}"
-           ng-checked="commentingSetting === {{option.value}}"
-           > {{option.label}}</label>
+    <select
+        class="disabled"
+        ng-model="commentingSetting"
+        ng-options="opt.value as opt.text for opt in commentingOpts"
+        ng-disabled="isChangingCommenting"
+        ng-change="updateCommentingDirtyFlag()"
+        ></select>
+
+    <button
+        class="btn btn-default btn-sm"
+        ng-disabled="!commentingOptDirty || isChangingCommenting"
+        ng-click="changeCommentingSetting()"
+        >Apply</button>
+
+    <label>Visible on Frontend:</label>
+    <span class="{{commentingSettingSrv !== commenting.DISABLED ? 'yes' : 'no'}}"
+        >{{commentingSettingSrv !== commenting.DISABLED ? 'yes' : 'no'}}</span>
+
+    <label>Commenting:</label>
+    <span class="{{commentingSettingSrv === commenting.ENABLED ? 'yes' : 'no'}}"
+        >{{commentingSettingSrv === commenting.ENABLED ? 'yes' : 'no'}}</span>
   </div>
 
-  <div class="add-element" ng-class="{expanded: adding}">
+  <div
+    class="add-element ng-hide"
+    ng-class="{expanded: adding}"
+    ng-show="commentingSettingSrv === commenting.ENABLED"
+    >
     <div class="heading">
       <button
          class="btn btn-sf-invisible"
@@ -113,30 +137,36 @@
     <div class="status-buttons">
       <a
          class="btn btn-default btn-sm"
+         ng-disabled="commentingSettingSrv === commenting.DISABLED"
          ng-click="comments.changeSelectedStatus('approved')">
         Approve
       </a>
       <a
          class="btn btn-default btn-sm"
+         ng-disabled="commentingSettingSrv === commenting.DISABLED"
          ng-click="comments.changeSelectedStatus('pending')">
         Mark as New
       </a>
       <a
          class="btn btn-default btn-sm"
+         ng-disabled="commentingSettingSrv === commenting.DISABLED"
          ng-click="comments.changeSelectedStatus('hidden')">
         Hide
       </a>
       <a
          class="btn btn-default btn-sm delete-button"
+         ng-disabled="commentingSettingSrv === commenting.DISABLED"
          ng-click="comments.changeSelectedStatus('deleted')">
         Delete
       </a>
     </div>
     <div class="liner"> <!-- does the style trick for the vertical lines -->
       <comment
-         model="comment"
-         ng-repeat="comment in filtered = (comments.displayed | filter:selected | sortComments:sorting.text)"
-         class="{{comment.showStatus}} comment-{{comment.status}} level-{{comment.thread_level}}"
+          model="comment"
+          ng-repeat="comment in filtered = (comments.displayed | filter:selected | sortComments:sorting.text)"
+          class="{{comment.showStatus}} comment-{{comment.status}} level-{{comment.thread_level}}"
+          allowreplying="(commentingSettingSrv === commenting.ENABLED)
+              && (comment.thread_level < 2)"
          >
       </comment>
     </div>
