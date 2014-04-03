@@ -291,6 +291,39 @@ describe('Controller: CommentsCtrl', function () {
         });
     });
 
+    describe('scope\'s confirmDeleteSelected() method', function () {
+        var deferred,
+            modalFactory,
+            resultPromise;
+
+        beforeEach(inject(function ($q, _modalFactory_) {
+            modalFactory = _modalFactory_;
+            deferred = $q.defer();
+            resultPromise = deferred.promise;
+
+            spyOn(modalFactory, 'confirmHeavy').andCallFake(function () {
+                return {
+                    result: resultPromise
+                }
+            });
+        }));
+
+        it('opens a "heavy" confirmation dialog', function () {
+            scope.confirmDeleteSelected();
+            expect(modalFactory.confirmHeavy).toHaveBeenCalled();
+        });
+
+        it('TODO: does something on action confirmation"', function () {
+            scope.confirmDeleteSelected();
+            deferred.resolve(true);
+        });
+
+        it('TODO: does something on action rejection"', function () {
+            scope.confirmDeleteSelected();
+            deferred.reject(false);
+        });
+    });
+
     describe('when it can load more comments', function() {
         beforeEach(function() {
             spyOn(commentsService, 'init');

@@ -1,4 +1,5 @@
 'use strict';
+
 /**
 * AngularJS controller for managing article comments (as a group,
 * not individual comments).
@@ -9,8 +10,9 @@ angular.module('authoringEnvironmentApp').controller('CommentsCtrl', [
     '$scope',
     'comments',
     'article',
+    'modalFactory',
     '$log',
-    function ($scope, comments, article, $log) {
+    function ($scope, comments, article, modalFactory, $log) {
 
         var others = [
                 'pending',
@@ -184,6 +186,7 @@ angular.module('authoringEnvironmentApp').controller('CommentsCtrl', [
                 ($scope.globalShowStatus === 'expanded') ?
                 'collapsed' : 'expanded';
         };
+
         $scope.$watch('sorting', function () {
             /* this log here is a way to test that the handler has
              * been called, it is mocked in tests */
@@ -196,5 +199,29 @@ angular.module('authoringEnvironmentApp').controller('CommentsCtrl', [
                 }
             }
         });
+
+        /**
+        * Asks user for confirmation of the DELETE action (by displaying a
+        * modal) and then, if the action is confirmed, deletes selected
+        * comments as well as all of their subcomments.
+        *
+        * @method confirmDeleteSelected
+        */
+        $scope.confirmDeleteSelected = function () {
+            var modal,
+                title = 'Are you SURE you want to delete selected comments?',
+                text = 'modal body text ... changes are IRREVERSIBLE!';
+
+            modal = modalFactory.confirmHeavy(title, text);
+
+            modal.result.then(function (data) {
+                console.log('modal result OK');  // TODO: delete
+                // TODO: comments.changeSelectedStatus('deleted')
+                // ... or invoke DELETE on comments service (changing status
+                // is not enough)
+            }, function (reason) {
+                console.log('modal result CANCEL');  // TODO: delete
+            });
+        };
     }
 ]);
