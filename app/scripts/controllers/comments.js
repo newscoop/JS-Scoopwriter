@@ -223,5 +223,28 @@ angular.module('authoringEnvironmentApp').controller('CommentsCtrl', [
                 console.log('modal result CANCEL');  // TODO: delete
             });
         };
+
+        /**
+        * Asks user for confirmation of the HIDE action (by displaying a
+        * modal) and then, if the action is confirmed, hides selected
+        * comments.
+        *
+        * @method confirmHideSelected
+        */
+        $scope.confirmHideSelected = function () {
+            var modal,
+                title = 'Do you really want to hide selected comments?',
+                text = 'Comments\' content will not be visible to users.';
+
+            modal = modalFactory.confirmLight(title, text);
+
+            modal.result.then(function (data) {
+                console.log('modal light result OK');  // TODO: mark as hidden
+                // comments.changeSelectedStatus('hidden')
+            }, function (reason) {
+                console.log('modal light result CANCEL');  // TODO: delete
+            });
+        };
+
     }
 ]);

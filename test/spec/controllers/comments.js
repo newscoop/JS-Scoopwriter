@@ -291,6 +291,39 @@ describe('Controller: CommentsCtrl', function () {
         });
     });
 
+    describe('scope\'s confirmHideSelected() method', function () {
+        var deferred,
+            modalFactory,
+            resultPromise;
+
+        beforeEach(inject(function ($q, _modalFactory_) {
+            modalFactory = _modalFactory_;
+            deferred = $q.defer();
+            resultPromise = deferred.promise;
+
+            spyOn(modalFactory, 'confirmLight').andCallFake(function () {
+                return {
+                    result: resultPromise
+                }
+            });
+        }));
+
+        it('opens a "light" confirmation dialog', function () {
+            scope.confirmHideSelected();
+            expect(modalFactory.confirmLight).toHaveBeenCalled();
+        });
+
+        it('TODO: does something on action confirmation"', function () {
+            scope.confirmHideSelected();
+            deferred.resolve(true);
+        });
+
+        it('TODO: does something on action rejection"', function () {
+            scope.confirmHideSelected();
+            deferred.reject(false);
+        });
+    });
+
     describe('scope\'s confirmDeleteSelected() method', function () {
         var deferred,
             modalFactory,
