@@ -201,6 +201,22 @@ angular.module('authoringEnvironmentApp').controller('CommentsCtrl', [
         });
 
         /**
+        * Returns the number of currently selected comments (among those
+        * displayed).
+        *
+        * @method countSelected
+        */
+        $scope.countSelected = function () {
+            var count = 0;
+            comments.displayed.forEach(function (comment) {
+                if (comment.selected) {
+                    count++;
+                }
+            });
+            return count;
+        };
+
+        /**
         * Asks user for confirmation of the HIDE action (by displaying a
         * modal) and then, if the action is confirmed, hides selected
         * comments.
@@ -215,10 +231,9 @@ angular.module('authoringEnvironmentApp').controller('CommentsCtrl', [
             modal = modalFactory.confirmLight(title, text);
 
             modal.result.then(function (data) {
-                console.log('modal light result OK');  // TODO: mark as hidden
-                // comments.changeSelectedStatus('hidden')
+                comments.changeSelectedStatus('hidden');
             }, function (reason) {
-                console.log('modal light result CANCEL');  // TODO: delete
+                // nothing to do
             });
         };
 
@@ -242,7 +257,7 @@ angular.module('authoringEnvironmentApp').controller('CommentsCtrl', [
                 // ... or invoke DELETE on comments service (changing status
                 // is not enough)
             }, function (reason) {
-                console.log('modal result CANCEL');  // TODO: delete
+                // nothing to do
             });
         };
 

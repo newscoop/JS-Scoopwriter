@@ -137,25 +137,29 @@
     <div class="status-buttons">
       <a
          class="btn btn-default btn-sm"
-         ng-disabled="commentingSettingSrv === commenting.DISABLED"
+         ng-disabled="commentingSettingSrv === commenting.DISABLED
+                      || countSelected() === 0"
          ng-click="comments.changeSelectedStatus('approved')">
         Approve
       </a>
       <a
          class="btn btn-default btn-sm"
-         ng-disabled="commentingSettingSrv === commenting.DISABLED"
+         ng-disabled="commentingSettingSrv === commenting.DISABLED
+                      || countSelected() === 0"
          ng-click="comments.changeSelectedStatus('pending')">
         Mark as New
       </a>
       <a
          class="btn btn-default btn-sm"
-         ng-disabled="commentingSettingSrv === commenting.DISABLED"
+         ng-disabled="commentingSettingSrv === commenting.DISABLED
+                      || countSelected() === 0"
          ng-click="confirmHideSelected()">
         Hide
       </a>
       <a
          class="btn btn-default btn-sm delete-button"
-         ng-disabled="commentingSettingSrv === commenting.DISABLED"
+         ng-disabled="commentingSettingSrv === commenting.DISABLED
+                      || countSelected() === 0"
          ng-click="confirmDeleteSelected()">
         Delete
       </a>

@@ -26,7 +26,8 @@ describe('Controller: CommentsCtrl', function () {
             return {
                 then: commentsThenMethod
             };
-        }
+        },
+        changeSelectedStatus: function(newStatus) {}
     },
 
     /* samples of comments with different statuses in order to test
@@ -291,6 +292,36 @@ describe('Controller: CommentsCtrl', function () {
         });
     });
 
+    describe('scope\'s countSelected() method', function () {
+        it('returns zero (0) when no comments are displayed', function () {
+            commentsService.displayed = [];
+            expect(scope.countSelected()).toEqual(0);
+        });
+
+        it('returns zero (0) when no displayed comments are selected',
+            function () {
+                commentsService.displayed = [
+                    {selected: false},
+                    {selected: false},
+                    {selected: false},
+                    {selected: false},
+                    {selected: false}
+                ];
+                expect(scope.countSelected()).toEqual(0);
+        });
+
+        it('returns the number selected displayed comments', function () {
+            commentsService.displayed = [
+                {selected: false},
+                {selected: true},
+                {selected: true},
+                {selected: false},
+                {selected: false}
+            ];
+            expect(scope.countSelected()).toEqual(2);
+        });
+    });
+
     describe('scope\'s confirmHideSelected() method', function () {
         var deferred,
             modalFactory,
@@ -313,16 +344,26 @@ describe('Controller: CommentsCtrl', function () {
             expect(modalFactory.confirmLight).toHaveBeenCalled();
         });
 
-        it('TODO: does something on action confirmation"', function () {
-            scope.confirmHideSelected();
-            deferred.resolve(true);
-            scope.$apply();
+        it('hides selected comments on action confirmation"',
+            function () {
+                spyOn(commentsService, 'changeSelectedStatus');
+                scope.confirmHideSelected();
+
+                deferred.resolve(true);
+                scope.$apply();
+
+                expect(commentsService.changeSelectedStatus)
+                    .toHaveBeenCalledWith('hidden');
         });
 
-        it('TODO: does something on action rejection"', function () {
+        it('does *not* hide anything on action rejection"', function () {
+            spyOn(commentsService, 'changeSelectedStatus');
             scope.confirmHideSelected();
+
             deferred.reject(false);
             scope.$apply();
+
+            expect(commentsService.changeSelectedStatus).not.toHaveBeenCalled;
         });
     });
 
@@ -348,17 +389,23 @@ describe('Controller: CommentsCtrl', function () {
             expect(modalFactory.confirmHeavy).toHaveBeenCalled();
         });
 
-        it('TODO: does something on action confirmation"', function () {
-            scope.confirmDeleteSelected();
-            deferred.resolve(true);
-            scope.$apply();
-        });
+        // it('TODO: does something on action confirmation"', function () {
+        //     scope.confirmDeleteSelected();
+        //     deferred.resolve(true);
+        //     scope.$apply();
+        // });
 
-        it('TODO: does something on action rejection"', function () {
-            scope.confirmDeleteSelected();
-            deferred.reject(false);
-            scope.$apply();
-        });
+        // // TODO: change spyOn once we know which method will be called for
+        // // deletion
+        // it('does *not* delete anything on action rejection"', function () {
+        //     spyOn(commentsService, 'changeSelectedStatus');
+        //     scope.confirmDeleteSelected();
+
+        //     deferred.reject(false);
+        //     scope.$apply();
+
+        //     expect(commentsService.changeSelectedStatus).not.toHaveBeenCalled;
+        // });
     });
 
     describe('when it can load more comments', function() {
