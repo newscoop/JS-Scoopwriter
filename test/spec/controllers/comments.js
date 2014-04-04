@@ -316,11 +316,13 @@ describe('Controller: CommentsCtrl', function () {
         it('TODO: does something on action confirmation"', function () {
             scope.confirmHideSelected();
             deferred.resolve(true);
+            scope.$apply();
         });
 
         it('TODO: does something on action rejection"', function () {
             scope.confirmHideSelected();
             deferred.reject(false);
+            scope.$apply();
         });
     });
 
@@ -349,11 +351,13 @@ describe('Controller: CommentsCtrl', function () {
         it('TODO: does something on action confirmation"', function () {
             scope.confirmDeleteSelected();
             deferred.resolve(true);
+            scope.$apply();
         });
 
         it('TODO: does something on action rejection"', function () {
             scope.confirmDeleteSelected();
             deferred.reject(false);
+            scope.$apply();
         });
     });
 
