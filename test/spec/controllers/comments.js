@@ -354,7 +354,7 @@ describe('Controller: CommentsCtrl', function () {
                     scope.$apply();
 
                     expect(commentsService.changeSelectedStatus)
-                        .toHaveBeenCalledWith('hidden');
+                        .toHaveBeenCalledWith('hidden', false);
             });
         });
 
@@ -368,7 +368,7 @@ describe('Controller: CommentsCtrl', function () {
                     scope.$apply();
 
                     expect(commentsService.changeSelectedStatus)
-                        .toHaveBeenCalledWith('hidden', 42);
+                        .toHaveBeenCalledWith('hidden', false, 42);
             });
         });
 
@@ -405,23 +405,45 @@ describe('Controller: CommentsCtrl', function () {
             expect(modalFactory.confirmHeavy).toHaveBeenCalled();
         });
 
-        // it('TODO: does something on action confirmation"', function () {
-        //     scope.confirmDeleteSelected();
-        //     deferred.resolve(true);
-        //     scope.$apply();
-        // });
+        describe('commentId not given', function () {
+            it('deletes selected comments and their subcomments ' +
+                'on action confirmation"',
+                function () {
+                    spyOn(commentsService, 'changeSelectedStatus');
+                    scope.confirmDeleteComments();
 
-        // // TODO: change spyOn once we know which method will be called for
-        // // deletion
-        // it('does *not* delete anything on action rejection"', function () {
-        //     spyOn(commentsService, 'changeSelectedStatus');
-        //     scope.confirmDeleteSelected();
+                    deferred.resolve(true);
+                    scope.$apply();
 
-        //     deferred.reject(false);
-        //     scope.$apply();
+                    expect(commentsService.changeSelectedStatus)
+                        .toHaveBeenCalledWith('deleted', true);
+            });
+        });
 
-        //     expect(commentsService.changeSelectedStatus).not.toHaveBeenCalled;
-        // });
+        describe('commentId given', function () {
+            it('deletes a specific comment and its subcomments ' +
+                'on action confirmation"',
+                function () {
+                    spyOn(commentsService, 'changeSelectedStatus');
+                    scope.confirmDeleteComments(42);
+
+                    deferred.resolve(true);
+                    scope.$apply();
+
+                    expect(commentsService.changeSelectedStatus)
+                        .toHaveBeenCalledWith('deleted', true, 42);
+            });
+        });
+
+        it('does *not* delete anything on action rejection"', function () {
+            spyOn(commentsService, 'changeSelectedStatus');
+            scope.confirmDeleteComments();
+
+            deferred.reject(false);
+            scope.$apply();
+
+            expect(commentsService.changeSelectedStatus).not.toHaveBeenCalled;
+        });
     });
 
     describe('when it can load more comments', function() {

@@ -243,9 +243,9 @@ angular.module('authoringEnvironmentApp').controller('CommentsCtrl', [
 
             modal.result.then(function (data) {
                 if (commentIdGiven) {
-                    comments.changeSelectedStatus('hidden', commentId);
+                    comments.changeSelectedStatus('hidden', false, commentId);
                 } else {
-                    comments.changeSelectedStatus('hidden');
+                    comments.changeSelectedStatus('hidden', false);
                 }
             }, function (reason) {
                 // nothing to do
@@ -263,25 +263,29 @@ angular.module('authoringEnvironmentApp').controller('CommentsCtrl', [
         * @param [commentId] {Number} ID of a specific comment to delete
         */
         $scope.confirmDeleteComments = function (commentId) {
-            var modal,
+            var commentIdGiven = (typeof commentId !== 'undefined'),
+                modal,
                 title,
                 text;
 
-            if (typeof commentId !== 'undefined') {
-                title = 'Are you SURE you want to delete this comment?';
-                text = 'modal body text ... changes are IRREVERSIBLE!';
+            if (commentIdGiven) {
+                title = 'Are you sure you want to mark this ' +
+                    'comment as deleted?';
+                text = 'Deleted comments are not visible to users.';
             } else {
-                title = 'Are you SURE you want to delete selected comments?';
-                text = 'modal body text ... changes are IRREVERSIBLE!';
+                title = 'Are you sure you want to mark selected ' +
+                    'comments as deleted?';
+                text = 'Deleted comments are not visible to users.';
             }
 
             modal = modalFactory.confirmHeavy(title, text);
 
             modal.result.then(function (data) {
-                console.log('modal result OK');  // TODO: delete
-                // TODO: comments.changeSelectedStatus('deleted')
-                // ... or invoke DELETE on comments service (changing status
-                // is not enough)
+                if (commentIdGiven) {
+                    comments.changeSelectedStatus('deleted', true, commentId);
+                } else {
+                    comments.changeSelectedStatus('deleted', true);
+                }
             }, function (reason) {
                 // nothing to do
             });

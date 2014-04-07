@@ -150,6 +150,110 @@ describe('Service: Comments', function () {
         });
     });
 
+
+    describe('changeSelectedStatus() method', function () {
+        var displayed,
+            service;
+
+        beforeEach(inject(function (comments) {
+            service = comments;
+
+            displayed = [
+                { id: 10, parent: undefined, thread_level: 0},
+                { id: 20, parent: undefined, thread_level: 0},
+                { id: 30, parent: 20, thread_level: 1},
+                { id: 40, parent: 30, thread_level: 2},
+                { id: 50, parent: 20, thread_level: 1},
+                { id: 60, parent: undefined, thread_level: 0},
+                { id: 70, parent: 60, thread_level: 1},
+                { id: 80, parent: 70, thread_level: 2}
+            ];
+
+            displayed.forEach(function (comment) {
+                comment.selected = false;
+                comment.status = 'approved';
+                comment.changeStatus = function (newStatus) {
+                    this.status = newStatus;
+                };
+            });
+
+            service.displayed = displayed;
+        }));
+
+        it('changes status of a single comment when commentId is given ' +
+           'and deep === false',
+            function () {
+                displayed[6].selected = true;  // should have no effect
+
+                service.changeSelectedStatus('pending', false, 30);
+
+                service.displayed.forEach(function (comment) {
+                    if (comment.id === 30) {
+                        expect(comment.status).toEqual('pending');
+                    } else {
+                        expect(comment.status).toEqual('approved');
+                    }
+                });
+            }
+        );
+
+        it('changes statuses of selected comments when commentId is *not* ' +
+           'given and deep === false',
+            function () {
+                displayed[1].selected = true;
+                displayed[6].selected = true;
+
+                service.changeSelectedStatus('pending', false);
+
+                service.displayed.forEach(function (comment) {
+                    if (comment.id === 20 || comment.id === 70) {
+                        expect(comment.status).toEqual('pending');
+                    } else {
+                        expect(comment.status).toEqual('approved');
+                    }
+                });
+            }
+        );
+
+        it('changes statuses of a comment and its subcomments when ' +
+           'commentId is given and deep === true',
+            function () {
+                displayed[6].selected = true;  // should have no effect
+
+                service.changeSelectedStatus('pending', true, 20);
+
+                service.displayed.forEach(function (comment) {
+                    if (_.indexOf([20, 30, 40, 50], comment.id) > -1) {
+                        expect(comment.status).toEqual('pending');
+                    } else {
+                        expect(comment.status).toEqual('approved');
+                    }
+                });
+            }
+        );
+
+        it('changes statuses of selected comments and their subcomments ' +
+           'when commentId is *not* given and deep === true',
+            function () {
+                displayed[1].selected = true;
+                displayed[3].selected = true;
+                displayed[6].selected = true;
+
+                service.changeSelectedStatus('pending', true);
+
+                service.displayed.forEach(function (comment) {
+                    if (_.indexOf([20, 30, 40, 50, 70, 80], comment.id) > -1) {
+                        expect(comment.status).toEqual('pending');
+                    } else {
+                        expect(comment.status).toEqual('approved');
+                    }
+                });
+            }
+        );
+
+    });
+
+
     describe('not paginated', function() {
         var comments, $httpBackend, response, $q, $log;
         beforeEach(inject(function (_comments_, _$httpBackend_, _article_, _$q_, _$log_) {
@@ -564,64 +668,6 @@ describe('Service: Comments', function () {
                             });
                         });
                     });
-                });
-
-                describe('the selected status changed', function() {
-                    beforeEach(function() {
-                        spyOn($log, 'debug');
-                        comment.changeStatus('pending');
-                    });
-                    describe('request succeeded', function() {
-                        beforeEach(function() {
-                            $httpBackend.expect(
-                                'PATCH',
-                                rootURI + '/comments/article/64/de/24',
-                                'comment%5Bstatus%5D=pending'
-                            ).respond(200, '');
-                        });
-                        it('updates the actual status to the selected one', function() {
-                            $httpBackend.flush();
-                            expect(comment.status)
-                                .toBe('pending');
-                        });
-                    });
-                    describe('request failed', function() {
-                        beforeEach(function() {
-                            $httpBackend.expect(
-                                'PATCH',
-                                rootURI + '/comments/article/64/de/24'
-                            ).respond(500, '');
-                        });
-                        it('updates the selected status to the actual one', function() {
-                            $httpBackend.flush();
-                            expect($log.debug)
-                                .toHaveBeenCalledWith('error changing the status for the comment');
-                        });
-                    });
-                });
-            });
-
-            describe('changing status of a specific comment', function() {
-
-                beforeEach(function() {
-                    comments.changeSelectedStatus('approved');
-                });
-
-                beforeEach(function() {
-                    $httpBackend.expect(
-                        'PATCH',
-                        rootURI + '/comments/article/64/de/24',
-                        'comment%5Bstatus%5D=hidden'
-                    ).respond(200, '');
-                });
-
-                it('changes status of a specific comment only', function () {
-                    comments.changeSelectedStatus('hidden', 24);
-                    $httpBackend.flush();
-
-                    expect(comments.displayed[0].status).toBe('hidden');
-                    expect(comments.displayed[1].status).toBe('approved');
-                    expect(comments.displayed[2].status).toBe('approved');
                 });
             });
 
