@@ -219,19 +219,34 @@ angular.module('authoringEnvironmentApp').controller('CommentsCtrl', [
         /**
         * Asks user for confirmation of the HIDE action (by displaying a
         * modal) and then, if the action is confirmed, hides selected
-        * comments.
+        * comments (if commentId is not given) or hide a specific comment
+        * (if commentId is given).
         *
         * @method confirmHideSelected
+        * @param [commentId] {Number} ID of a specific comment to hide
         */
-        $scope.confirmHideSelected = function () {
-            var modal,
-                title = 'Do you really want to hide selected comments?',
-                text = 'Comments\' content will not be visible to users.';
+        $scope.confirmHideComments = function (commentId) {
+            var commentIdGiven = (typeof commentId !== 'undefined'),
+                modal,
+                title,
+                text;
+
+            if (commentIdGiven) {
+                title = 'Do you really want to hide this comment?';
+                text = 'Comment\'s content will not be visible to users.';
+            } else {
+                title = 'Do you really want to hide selected comments?';
+                text = 'Comments\' contents will not be visible to users.';
+            }
 
             modal = modalFactory.confirmLight(title, text);
 
             modal.result.then(function (data) {
-                comments.changeSelectedStatus('hidden');
+                if (commentIdGiven) {
+                    comments.changeSelectedStatus('hidden', commentId);
+                } else {
+                    comments.changeSelectedStatus('hidden');
+                }
             }, function (reason) {
                 // nothing to do
             });
@@ -240,14 +255,25 @@ angular.module('authoringEnvironmentApp').controller('CommentsCtrl', [
         /**
         * Asks user for confirmation of the DELETE action (by displaying a
         * modal) and then, if the action is confirmed, deletes selected
-        * comments as well as all of their subcomments.
+        * comments (if commentId is not given) or delete a specific comment
+        * (if commentId is given).
+        * All the subcomments below the deleted comment(s) are deleted as well.
         *
         * @method confirmDeleteSelected
+        * @param [commentId] {Number} ID of a specific comment to delete
         */
-        $scope.confirmDeleteSelected = function () {
+        $scope.confirmDeleteComments = function (commentId) {
             var modal,
-                title = 'Are you SURE you want to delete selected comments?',
+                title,
+                text;
+
+            if (typeof commentId !== 'undefined') {
+                title = 'Are you SURE you want to delete this comment?';
                 text = 'modal body text ... changes are IRREVERSIBLE!';
+            } else {
+                title = 'Are you SURE you want to delete selected comments?';
+                text = 'modal body text ... changes are IRREVERSIBLE!';
+            }
 
             modal = modalFactory.confirmHeavy(title, text);
 

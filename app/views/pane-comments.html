@@ -153,14 +153,14 @@
          class="btn btn-default btn-sm"
          ng-disabled="commentingSettingSrv === commenting.DISABLED
                       || countSelected() === 0"
-         ng-click="confirmHideSelected()">
+         ng-click="confirmHideComments()">
         Hide
       </a>
       <a
          class="btn btn-default btn-sm delete-button"
          ng-disabled="commentingSettingSrv === commenting.DISABLED
                       || countSelected() === 0"
-         ng-click="confirmDeleteSelected()">
+         ng-click="confirmDeleteComments()">
         Delete
       </a>
     </div>
@@ -171,6 +171,8 @@
           class="{{comment.showStatus}} comment-{{comment.status}} level-{{comment.thread_level}}"
           allowreplying="(commentingSettingSrv === commenting.ENABLED)
               && (comment.thread_level < 2)"
+          confirm-hide-comments="confirmHideComments(commentId)"
+          confirm-delete-comments="confirmDeleteComments(commentId)"
          >
       </comment>
     </div>

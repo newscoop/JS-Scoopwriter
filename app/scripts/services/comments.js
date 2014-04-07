@@ -239,19 +239,32 @@ angular.module('authoringEnvironmentApp').service('comments', [
                 return parseInt(needle.id) === parseInt(id);
             };
         };
+
         /**
-        * Changes the selected status for the selected comments
+        * Changes the selected status for the selected comments (if commentID
+        * is not given) or for a specific comment (if commentId is given).
         *
         * @method changeSelectedStatus
         * @param status {String} the new status to be set
+        * @param [commentId] {Number} ID of a specific comment to change
+        *     status for
         */
-        this.changeSelectedStatus = function (status) {
-            this.displayed.forEach(function (comment) {
-                if (comment.selected) {
-                    comment.changeStatus(status);
-                }
-            });
+        this.changeSelectedStatus = function (status, commentId) {
+            if (typeof commentId !== 'undefined') {
+                this.displayed.forEach(function (comment) {
+                    if (comment.id === commentId) {
+                        comment.changeStatus(status);
+                    }
+                });
+            } else {
+                this.displayed.forEach(function (comment) {
+                    if (comment.selected) {
+                        comment.changeStatus(status);
+                    }
+                });
+            }
         };
+
         /**
         * Decorates an object containing raw comment data (as returned by
         * the API) with properties and methods, turning it into a

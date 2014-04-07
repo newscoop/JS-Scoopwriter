@@ -322,7 +322,7 @@ describe('Controller: CommentsCtrl', function () {
         });
     });
 
-    describe('scope\'s confirmHideSelected() method', function () {
+    describe('scope\'s confirmHideComments() method', function () {
         var deferred,
             modalFactory,
             resultPromise;
@@ -340,25 +340,41 @@ describe('Controller: CommentsCtrl', function () {
         }));
 
         it('opens a "light" confirmation dialog', function () {
-            scope.confirmHideSelected();
+            scope.confirmHideComments();
             expect(modalFactory.confirmLight).toHaveBeenCalled();
         });
 
-        it('hides selected comments on action confirmation"',
-            function () {
-                spyOn(commentsService, 'changeSelectedStatus');
-                scope.confirmHideSelected();
+        describe('commentId not given', function () {
+            it('hides selected comments on action confirmation"',
+                function () {
+                    spyOn(commentsService, 'changeSelectedStatus');
+                    scope.confirmHideComments();
 
-                deferred.resolve(true);
-                scope.$apply();
+                    deferred.resolve(true);
+                    scope.$apply();
 
-                expect(commentsService.changeSelectedStatus)
-                    .toHaveBeenCalledWith('hidden');
+                    expect(commentsService.changeSelectedStatus)
+                        .toHaveBeenCalledWith('hidden');
+            });
+        });
+
+        describe('commentId given', function () {
+            it('hides a specific comment on action confirmation"',
+                function () {
+                    spyOn(commentsService, 'changeSelectedStatus');
+                    scope.confirmHideComments(42);
+
+                    deferred.resolve(true);
+                    scope.$apply();
+
+                    expect(commentsService.changeSelectedStatus)
+                        .toHaveBeenCalledWith('hidden', 42);
+            });
         });
 
         it('does *not* hide anything on action rejection"', function () {
             spyOn(commentsService, 'changeSelectedStatus');
-            scope.confirmHideSelected();
+            scope.confirmHideComments();
 
             deferred.reject(false);
             scope.$apply();
@@ -367,7 +383,7 @@ describe('Controller: CommentsCtrl', function () {
         });
     });
 
-    describe('scope\'s confirmDeleteSelected() method', function () {
+    describe('scope\'s confirmDeleteComments() method', function () {
         var deferred,
             modalFactory,
             resultPromise;
@@ -385,7 +401,7 @@ describe('Controller: CommentsCtrl', function () {
         }));
 
         it('opens a "heavy" confirmation dialog', function () {
-            scope.confirmDeleteSelected();
+            scope.confirmDeleteComments();
             expect(modalFactory.confirmHeavy).toHaveBeenCalled();
         });
 

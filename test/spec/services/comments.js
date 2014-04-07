@@ -600,6 +600,31 @@ describe('Service: Comments', function () {
                     });
                 });
             });
+
+            describe('changing status of a specific comment', function() {
+
+                beforeEach(function() {
+                    comments.changeSelectedStatus('approved');
+                });
+
+                beforeEach(function() {
+                    $httpBackend.expect(
+                        'PATCH',
+                        rootURI + '/comments/article/64/de/24',
+                        'comment%5Bstatus%5D=hidden'
+                    ).respond(200, '');
+                });
+
+                it('changes status of a specific comment only', function () {
+                    comments.changeSelectedStatus('hidden', 24);
+                    $httpBackend.flush();
+
+                    expect(comments.displayed[0].status).toBe('hidden');
+                    expect(comments.displayed[1].status).toBe('approved');
+                    expect(comments.displayed[2].status).toBe('approved');
+                });
+            });
+
             describe('with selected comments', function() {
                 beforeEach(function() {
                     expect(comments.displayed.length).toBe(3);
@@ -607,6 +632,7 @@ describe('Service: Comments', function () {
                     comments.displayed[1].selected = true;
                     comments.displayed[2].selected = false;
                 });
+
                 describe('changing status', function() {
                     beforeEach(function() {
                         comments.changeSelectedStatus('hidden');

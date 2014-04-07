@@ -22,7 +22,7 @@
             <li ng-click="model.changeStatus('approved')">
               Approved
             </li>
-            <li ng-click="model.changeStatus('hidden')">
+            <li ng-click="onHide({commentId: model.id})">
               Hidden
             </li>
           </ul>
@@ -145,7 +145,7 @@
       <span
          class="glyphicon glyphicon-trash"
          ng-hide="model.isEdited"
-         ng-click="model.remove()"
+         ng-click="onDelete({commentId: model.id})"
          title="Delete"
          ></span>
     </div>
