@@ -51,10 +51,11 @@
         >{{commentingSettingSrv === commenting.ENABLED ? 'yes' : 'no'}}</span>
   </div>
 
+
   <div
-    class="add-element ng-hide"
-    ng-class="{expanded: adding}"
-    ng-show="commentingSettingSrv === commenting.ENABLED"
+    class="add-element"
+    ng-class="{expanded: adding,
+               invisible: commentingSettingSrv !== commenting.ENABLED}"
     >
     <div class="heading">
       <button
@@ -115,9 +116,8 @@
       </div>
     </div>
   </div>
-  <div class="list"
-       ng-class="{low: adding, high: !adding, nested: sorting.text=='Nested'}"
-       >
+
+  <div class="comment-controls">
     <div class="filters">
       <span class="filters-label">View:</span>
       <span
@@ -134,6 +134,7 @@
          >
       </select>
     </div>
+
     <div class="status-buttons">
       <a
          class="btn btn-default btn-sm"
@@ -164,6 +165,12 @@
         Delete
       </a>
     </div>
+  </div>
+
+  <div class="list"
+       ng-class="{low: adding, high: !adding, nested: sorting.text=='Nested'}"
+       >
+
     <div class="liner"> <!-- does the style trick for the vertical lines -->
       <comment
           model="comment"
