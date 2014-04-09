@@ -44,7 +44,7 @@ angular.module('authoringEnvironmentApp').service('images', [
             });
         };
         this.load = function (page) {
-            var url = root + '/images?items_per_page=20&page=' + page;
+            var url = root + '/images?items_per_page=50&page=' + page;
             var promise = $http.get(url);
             promise.error(function () {
                 service.tracker.remove(page);
@@ -60,7 +60,6 @@ angular.module('authoringEnvironmentApp').service('images', [
         * @param article {Object} article object for which to load the
         *     attached images.
         */
-        // TODO: add tests
         this.loadAttached = function (article) {
             var url = [
                     root, 'articles',
@@ -142,7 +141,7 @@ angular.module('authoringEnvironmentApp').service('images', [
             $http({
                 url: url,
                 method: 'LINK',
-                headers: { link: link }
+                headers: { Link: link }
             }).success(function () {
                 var image = _.find(service.displayed, match);
                 service.attached.push(image);

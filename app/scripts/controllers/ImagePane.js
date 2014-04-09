@@ -21,14 +21,21 @@ angular.module('authoringEnvironmentApp').controller('ImagePaneCtrl', [
     ) {
 
         $scope.images = images;
+        $scope.defaultWidth = '100%';
+        $scope.root = conf.API.rootURI;
+
+        /**
+        * Opens a modal containing an interface for attaching
+        * images to article.
+        *
+        * @method attachModal
+        */
         $scope.attachModal = function () {
             modal.show({
                 title: 'Attach Image',
                 templateUrl: 'views/attach-image.html'
             });
         };
-        $scope.defaultWidth = '100%';
-        $scope.root = conf.API.rootURI;
 
         /**
         * Asks user to confirm detaching an image from the article (by
@@ -38,7 +45,6 @@ angular.module('authoringEnvironmentApp').controller('ImagePaneCtrl', [
         * @method detachImage
         * @param imageId {Number} ID of the image to detach
         */
-        // TODO: tests
         $scope.detachImage = function (imageId) {
             var modal,
                 title,
