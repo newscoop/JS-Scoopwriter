@@ -11,9 +11,12 @@ angular.module('authoringEnvironmentApp').service('images', [
         // AngularJS will instantiate a singleton by calling "new" on this function
         var service = this;
         var root = configuration.API.full;
+
         article.promise.then(function (article) {
             service.article = article;
+            service.loadAttached(article);
         });
+
         this.tracker = pageTracker.getTracker({ max: 100 });
         this.loaded = [];
         this.displayed = [];
@@ -22,6 +25,7 @@ angular.module('authoringEnvironmentApp').service('images', [
         this.includedIndex = 0;
         this.included = {};
         this.itemsPerPage = 10;
+
         /* at the beginning we want do display the results immediately */
         this.init = function () {
             this.load(this.tracker.next()).success(function (data) {
@@ -40,13 +44,35 @@ angular.module('authoringEnvironmentApp').service('images', [
             });
         };
         this.load = function (page) {
-            var url = root + '/images?items_per_page=500&page=' + page;
+            var url = root + '/images?items_per_page=20&page=' + page;
             var promise = $http.get(url);
             promise.error(function () {
                 service.tracker.remove(page);
             });
             return promise;
         };
+
+        /**
+        * Loads image objects attached to the article and initializes
+        *  the `attached` array (NOTE: any existing items are discarded).
+        *¸
+        * @method loadAttached
+        * @param article {Object} article object for which to load the
+        *     attached images.
+        */
+        // TODO: add tests
+        this.loadAttached = function (article) {
+            var url = [
+                    root, 'articles',
+                    article.number, article.language,
+                    'images'
+                ].join('/');
+
+            $http.get(url).then(function (result) {
+                service.attached = result.data.items;
+            });
+        };
+
         // produce a matching function suitable for finding. find it
         // confusing? hey that's functional programming dude!
         this.matchMaker = function (id) {
