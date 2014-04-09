@@ -1,5 +1,11 @@
 'use strict';
 
+/**
+* Module with tests for the images service.
+*
+* @module Images service tests
+*/
+
 describe('Service: Images', function () {
     var e = rootURI;
     var mock = {
@@ -46,10 +52,10 @@ describe('Service: Images', function () {
             }
         ],
         "pagination":{
-            "itemsPerPage":500,
+            "itemsPerPage":50,
             "currentPage":1,
             "itemsCount":149735,
-            "nextPageLink":"https:\/\/tw-merge.lab.sourcefabric.org\/content-api\/images?page=2&items_per_page=10"
+            "nextPageLink":"https:\/\/newscoop.aes.sourcefabric.net\/content-api\/images?page=2&items_per_page=10"
         }
     };
     var mockSingle = {
@@ -71,19 +77,41 @@ describe('Service: Images', function () {
 
     // instantiate service
     var images, $httpBackend;
+
     beforeEach(inject(function (_images_, _$httpBackend_) {
         images = _images_;
         images.article = { number: 64, language: 'de'};
         $httpBackend = _$httpBackend_;
     }));
 
+    describe('loadAttached() method', function () {
+        beforeEach(function () {
+            $httpBackend
+                .expect('GET', e + '/articles/64/de/images')
+                .respond(mock);
+        });
+
+        afterEach(function () {
+            $httpBackend.verifyNoOutstandingExpectation();
+        });
+
+        it('initializes the list of article\'s attached images', function () {
+            images.attached = [];
+
+            images.loadAttached({number: 64, language: 'de'});
+            $httpBackend.flush(1);
+
+            expect(images.attached).toEqual(mock.items);
+        });
+    });
+
     describe('after initialization', function() {
         beforeEach(function() {
             $httpBackend
-                .expect('GET', e+'/images?items_per_page=500&page=1')
+                .expect('GET', e+'/images?items_per_page=50&page=1')
                 .respond(mock);
             $httpBackend
-                .expect('GET', e+'/images?items_per_page=500&page=2')
+                .expect('GET', e+'/images?items_per_page=50&page=2')
                 .respond(mock);
             images.init();
             $httpBackend.flush(1);
@@ -246,7 +274,7 @@ describe('Service: Images', function () {
         it('handles the loaded buffer properly', function() {
             $httpBackend.flush();
             $httpBackend
-                .expect('GET', e+'/images?items_per_page=500&page=3')
+                .expect('GET', e+'/images?items_per_page=50&page=3')
                 .respond(mock);
             expect(images.loaded.length).toBe(10);
             expect(images.displayed.length).toBe(10);
@@ -256,7 +284,7 @@ describe('Service: Images', function () {
             $httpBackend.flush();
             expect(images.loaded.length).toBe(10);
             expect(images.displayed.length).toBe(20);
-            $httpBackend.expectGET(e+'/images?items_per_page=500&page=4').respond({});
+            $httpBackend.expectGET(e+'/images?items_per_page=50&page=4').respond({});
             images.more();
             expect(images.loaded.length).toBe(0);
             expect(images.displayed.length).toBe(30);
@@ -266,16 +294,16 @@ describe('Service: Images', function () {
     describe('after loading pages successively', function() {
         beforeEach(function() {
             $httpBackend
-                .expect('GET', e+'/images?items_per_page=500&page=1')
+                .expect('GET', e+'/images?items_per_page=50&page=1')
                 .respond(mock);
             $httpBackend
-                .expect('GET', e+'/images?items_per_page=500&page=2')
+                .expect('GET', e+'/images?items_per_page=50&page=2')
                 .respond(mock);
             $httpBackend
-                .expect('GET', e+'/images?items_per_page=500&page=3')
+                .expect('GET', e+'/images?items_per_page=50&page=3')
                 .respond(mock);
             $httpBackend
-                .expect('GET', e+'/images?items_per_page=500&page=4')
+                .expect('GET', e+'/images?items_per_page=50&page=4')
                 .respond(mock);
             images.init();
             images.more();
