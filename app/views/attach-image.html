@@ -46,8 +46,9 @@
     </button>
     <button
        type="button"
-       ng-click="images.attachAll()"
-       class="btn btn-primary">
+       class="btn btn-primary"
+       ng-disabled="images.collected.length < 1"
+       ng-click="images.attachAll()">
       Attach Images
     </button>
   </div>

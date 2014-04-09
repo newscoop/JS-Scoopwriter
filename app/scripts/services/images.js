@@ -17,7 +17,7 @@ angular.module('authoringEnvironmentApp').service('images', [
         this.tracker = pageTracker.getTracker({ max: 100 });
         this.loaded = [];
         this.displayed = [];
-        this.collected = [];
+        this.collected = [];  // list of collected images (those in basket)
         this.attached = [];
         this.includedIndex = 0;
         this.included = {};
