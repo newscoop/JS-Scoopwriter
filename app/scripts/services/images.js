@@ -68,6 +68,13 @@ angular.module('authoringEnvironmentApp').service('images', [
             service.collected = [];
             modal.hide();
         };
+
+        /**
+        * Attaches all images in the basket to the article and closes
+        * the modal at the end.
+        *¸
+        * @method attachAll
+        */
         this.attachAll = function () {
             service.collected.forEach(function (image) {
                 service.attach(image.id);
@@ -75,37 +82,55 @@ angular.module('authoringEnvironmentApp').service('images', [
             service.collected = [];
             modal.hide();
         };
+
+        /**
+        * Attaches an image to the article (using HTTP LINK). If image is
+        * already attached, it does not do anything.
+        *
+        * @method attach
+        * @param id {Number} ID of an image to attach
+        */
         this.attach = function (id) {
-            var match = this.matchMaker(id);
+            var link,
+                match = this.matchMaker(id),
+                url;
+
             if (_.find(this.attached, match)) {
                 $log.debug('image already attached, ignoring attach request');
-            } else {
-                var url = root + '/articles/' + service.article.number + '/' + service.article.language;
-                var link = '<' + root + '/images/' + id + '>';
-                /* this could cause some troubles depending on the
-                 * setting of the server (OPTIONS request), thus debug
-                 * log may be useful to reproduce the original
-                 * request */
-                $log.debug('sending link request');
-                $log.debug(url);
-                $log.debug(link);
-                $http({
-                    url: url,
-                    method: 'LINK',
-                    headers: { Link: link }
-                }).success(function () {
-                    var image = _.find(service.displayed, match);
-                    service.attached.push(image);
-                    $http.get(root + '/images/' + image.id).success(function (data) {
+                return;
+            }
+
+            url = root + '/articles/' + service.article.number +
+                '/' + service.article.language;
+
+            link = '<' + root + '/images/' + id + '>';
+
+            /* this could cause some trouble depending on the
+             * setting of the server (OPTIONS request), thus debug
+             * log may be useful to reproduce the original
+             * request */
+            $log.debug('sending link request');
+            $log.debug(url);
+            $log.debug(link);
+
+            $http({
+                url: url,
+                method: 'LINK',
+                headers: { link: link }
+            }).success(function () {
+                var image = _.find(service.displayed, match);
+                service.attached.push(image);
+                $http.get(root + '/images/' + image.id).success(
+                    function (data) {
                         _.forOwn(data, function (value, key) {
                             if (!(key in image)) {
                                 image[key] = value;
                             }
                         });
                     });
-                });
-            }
+            });
         };
+
         this.detach = function (id) {
             var match = this.matchMaker(id);
             if (_.find(this.attached, match)) {
