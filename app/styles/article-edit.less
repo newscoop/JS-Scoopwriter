@@ -217,12 +217,17 @@ html, body.article-edit {
     comment {
         display: block;
         background: white;
-        border-bottom: solid 3px @tabpane-background;
+        border-bottom: solid 5px @tabpane-background;
         font-size: 12px;
         /* following colors are copied from a mock from Darko */
         .subject {color: #808080;}
         .date {color: rgb(128, 128, 128);}
-        .author-name {color: #333;}
+        .author-name {
+            color: #333;
+            &:hover {
+                cursor: pointer;
+            }
+        }
         /* end colors copied from the mock */
         &.comment-pending {
             .left-border-wrapper {
@@ -274,13 +279,15 @@ html, body.article-edit {
             color: white;
             border: none;
             /* copied from bootstrap label in order to match the design */
-            padding: .2em .6em .3em;
+            padding: .4em .6em .4em .6em;
             font-size: 80%;
             font-weight: 500;
             line-height: 1;
             text-align: center;
             vertical-align: baseline;
             border-radius: .25em;
+            text-shadow:none;
+            margin: 0 2px;
             /* end of rules copied from bootstrap label */
         }
         .right {
@@ -300,7 +307,7 @@ html, body.article-edit {
             height: 100%;
             .bottom-border-wrapper {
                 border-bottom: solid 1px #cbcbcb;
-                padding: 10px 5px;
+                padding: 10px 5px 6px 5px;
                 height: 100%;
                 .controls {
                     .glyphicon, .fa {
@@ -308,6 +315,7 @@ html, body.article-edit {
                     }
                     .glyphicon-chevron-up {
                         float: left;
+                        padding:4px;
                     }
                     text-align: right;
 
@@ -318,6 +326,9 @@ html, body.article-edit {
                         cursor: default;
                         color: #bbb;
                      }
+                }
+                .image-and-author-details {
+                    .dropdown { margin-top: -2px; }
                 }
             }
         }
@@ -333,8 +344,12 @@ html, body.article-edit {
             .comment, .status-dropdown, .controls, .author {
                 display: none;
             }
-            .image-and-author-details, .subject {
+            .image-and-author-details {
                 display: inline;
+            }
+            .subject { 
+                display:inline;
+                &:hover { cursor: pointer; }
             }
             .image-and-author-details {
                 img { margin-top: -2px; }
@@ -346,6 +361,9 @@ html, body.article-edit {
             }
             .comment {
                 font-size: small;
+            }
+            .date, .author-name {
+                display:inline;
             }
         }
     }
@@ -1876,9 +1894,9 @@ html, body.article-edit {
 
         .commenting-options {
             margin-top: 0px;
-            margin-bottom: 10px;
-            padding: 5px 10px 5px 50px;
-            font-size: 13px;
+            margin-bottom: 20px;
+            padding: 7px 10px 7px 50px;
+            font-size: 12px;
             border-bottom: 3px solid black;
 
             select {
@@ -1935,6 +1953,8 @@ html, body.article-edit {
         .status-buttons {
             background-color: @add-element-gray;
             padding: 10px;
+            border-bottom: 2px solid #d7d7d7;
+            margin:6px 0 10px 0;
             .delete-button {
                 margin-left: 20px;
             }
@@ -1990,7 +2010,9 @@ html, body.article-edit {
                 .approved-check { color: @approved-comment-color;}
                 .hidden-check { color: @hidden-comment-color;}
                 * { margin: 2px; }
+                span { margin: 0 4px; }
                 select { margin: 0px 10px 2px 0; }
+                input { margin: -2px 1px 0 0; vertical-align: middle; }
             }
             overflow: auto;
             position: absolute;
@@ -2003,13 +2025,20 @@ html, body.article-edit {
             background-color: @add-element-gray;
             margin: 10px 0;
             .heading {
-                padding: 5px 5px;
+                padding: 0px;
                 button {
                     line-height: 1em;
-                    
+                    box-shadow: none;
+                    padding: 8px 8px 10px 8px;
+                    margin: 0;
+                    width: 100%;
+                    text-align: left;
                     .add-text {
                         font-size: 12px;
                         padding: 0 5px;
+                    }
+                    &:hover {
+                        background:#e6e6e6;
                     }
                 }
             }

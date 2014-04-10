@@ -40,7 +40,7 @@ angular.module('authoringEnvironmentApp').service('images', [
             });
         };
         this.load = function (page) {
-            var url = root + '/images?items_per_page=500&page=' + page;
+            var url = root + '/images?items_per_page=30&page=' + page;
             var promise = $http.get(url);
             promise.error(function () {
                 service.tracker.remove(page);
