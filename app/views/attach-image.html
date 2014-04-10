@@ -20,7 +20,7 @@
   <div class="row basket-head">
     <span class="description">SELECTED IMAGES</span>
     <span class="badge" ng-bind="images.collected.length"></span>
-    images
+    image{{(images.collected.length !== 1) ? 's' : ''}}
   </div>
 
   <div class="row basket">
