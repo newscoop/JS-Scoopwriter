@@ -55,7 +55,7 @@ angular.module('authoringEnvironmentApp').service('images', [
         /**
         * Loads image objects attached to the article and initializes
         *  the `attached` array (NOTE: any existing items are discarded).
-        *¸
+        *
         * @method loadAttached
         * @param article {Object} article object for which to load the
         *     attached images.
