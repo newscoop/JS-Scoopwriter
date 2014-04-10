@@ -1,4 +1,5 @@
 'use strict';
+
 /**
 * AngularJS controller for managing article comments (as a group,
 * not individual comments).
@@ -9,8 +10,9 @@ angular.module('authoringEnvironmentApp').controller('CommentsCtrl', [
     '$scope',
     'comments',
     'article',
+    'modalFactory',
     '$log',
-    function ($scope, comments, article, $log) {
+    function ($scope, comments, article, modalFactory, $log) {
 
         var others = [
                 'pending',
@@ -184,6 +186,7 @@ angular.module('authoringEnvironmentApp').controller('CommentsCtrl', [
                 ($scope.globalShowStatus === 'expanded') ?
                 'collapsed' : 'expanded';
         };
+
         $scope.$watch('sorting', function () {
             /* this log here is a way to test that the handler has
              * been called, it is mocked in tests */
@@ -196,5 +199,97 @@ angular.module('authoringEnvironmentApp').controller('CommentsCtrl', [
                 }
             }
         });
+
+        /**
+        * Returns the number of currently selected comments (among those
+        * displayed).
+        *
+        * @method countSelected
+        */
+        $scope.countSelected = function () {
+            var count = 0;
+            comments.displayed.forEach(function (comment) {
+                if (comment.selected) {
+                    count++;
+                }
+            });
+            return count;
+        };
+
+        /**
+        * Asks user for confirmation of the HIDE action (by displaying a
+        * modal) and then, if the action is confirmed, hides selected
+        * comments (if commentId is not given) or hide a specific comment
+        * (if commentId is given).
+        *
+        * @method confirmHideSelected
+        * @param [commentId] {Number} ID of a specific comment to hide
+        */
+        $scope.confirmHideComments = function (commentId) {
+            var commentIdGiven = (typeof commentId !== 'undefined'),
+                modal,
+                title,
+                text;
+
+            if (commentIdGiven) {
+                title = 'Do you really want to hide this comment?';
+                text = 'Comment\'s content will not be visible to users.';
+            } else {
+                title = 'Do you really want to hide selected comments?';
+                text = 'Comments\' contents will not be visible to users.';
+            }
+
+            modal = modalFactory.confirmLight(title, text);
+
+            modal.result.then(function (data) {
+                if (commentIdGiven) {
+                    comments.changeSelectedStatus('hidden', false, commentId);
+                } else {
+                    comments.changeSelectedStatus('hidden', false);
+                }
+            }, function (reason) {
+                // nothing to do
+            });
+        };
+
+        /**
+        * Asks user for confirmation of the DELETE action (by displaying a
+        * modal) and then, if the action is confirmed, deletes selected
+        * comments (if commentId is not given) or delete a specific comment
+        * (if commentId is given).
+        * All the subcomments below the deleted comment(s) are deleted as well.
+        *
+        * @method confirmDeleteSelected
+        * @param [commentId] {Number} ID of a specific comment to delete
+        */
+        $scope.confirmDeleteComments = function (commentId) {
+            var commentIdGiven = (typeof commentId !== 'undefined'),
+                modal,
+                title,
+                text;
+
+            if (commentIdGiven) {
+                title = 'Are you sure you want to mark this ' +
+                    'comment as deleted?';
+                text = 'Deleted comments are not visible to users.';
+            } else {
+                title = 'Are you sure you want to mark selected ' +
+                    'comments as deleted?';
+                text = 'Deleted comments are not visible to users.';
+            }
+
+            modal = modalFactory.confirmHeavy(title, text);
+
+            modal.result.then(function (data) {
+                if (commentIdGiven) {
+                    comments.changeSelectedStatus('deleted', true, commentId);
+                } else {
+                    comments.changeSelectedStatus('deleted', true);
+                }
+            }, function (reason) {
+                // nothing to do
+            });
+        };
+
     }
 ]);

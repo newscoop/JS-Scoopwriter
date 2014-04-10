@@ -8,7 +8,10 @@ angular.module('authoringEnvironmentApp', [
     'mgcrea.ngStrap.button',
     'mgcrea.ngStrap.helpers.dimensions',
     'mgcrea.ngStrap.tooltip',
-    'mgcrea.ngStrap.popover'
+    'mgcrea.ngStrap.popover',
+    'template/modal/backdrop.html',
+    'template/modal/window.html',
+    'ui.bootstrap.modal'
 ]).config([
     '$routeProvider',
     '$httpProvider',

@@ -7,8 +7,14 @@ angular.module('authoringEnvironmentApp').factory('authInterceptor', [
     function ($q, $window, addToUrl) {
         return {
             request: function (config) {
+                if (config.url.indexOf('template/') > -1) {
+                    // don't attach auth token to io.bootstrap template
+                    //requests
+                    return config;
+                }
+
                 config.headers = config.headers || {};
-                //debugger;
+
                 if ($window.sessionStorage.token) {
                     config.url = addToUrl.add({ access_token: $window.sessionStorage.token }, config.url);
                 }

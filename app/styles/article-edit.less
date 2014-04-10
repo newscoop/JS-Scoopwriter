@@ -1864,15 +1864,19 @@ html, body.article-edit {
         /* TODO: adjust for the new controls box for enabling/disabling
         comments ... add some additional height (have it in a variable) */
         .list.high {
-            top: 100px + 50px;
+            top: 100px + 150px;
         }
         .list.low {
-            top: @panel-height + 75px + 50px;
+            top: @panel-height + 75px + 150px;
+        }
+
+        .invisible {
+            visibility: hidden;
         }
 
         .commenting-options {
             margin-top: 10px;
-            padding: 5px 10px 5px 50px;
+            padding: 5px 10px 5px 45px;
             font-size: 13px;
             border-bottom: 3px solid black;
 
@@ -1923,13 +1927,26 @@ html, body.article-edit {
             }
         }
 
-        .status-buttons {
+        .comment-controls {
             background-color: @add-element-gray;
-            padding: 10px;
-            .delete-button {
-                margin-left: 20px;
+            .filters {
+                font-size: 13px;
+                padding: 5px 0;
+                text-transform: capitalize;
+                .filters-label { color: @comment-gray; }
+                .pending-check { color: @new-comment-color;}
+                .approved-check { color: @approved-comment-color;}
+                .hidden-check { color: @hidden-comment-color;}
+                * { margin: 2px; }
+            }
+            .status-buttons {
+                padding: 10px;
+                .delete-button {
+                    margin-left: 20px;
+                }
             }
         }
+
     }
 
     .embed-panel {
@@ -1972,16 +1989,6 @@ html, body.article-edit {
             font-size: 90%;
         }
         .list {
-            .filters {
-                font-size: 13px;
-                padding: 5px 0;
-                text-transform: capitalize;
-                .filters-label { color: @comment-gray; }
-                .pending-check { color: @new-comment-color;}
-                .approved-check { color: @approved-comment-color;}
-                .hidden-check { color: @hidden-comment-color;}
-                * { margin: 2px; }
-            }
             overflow: auto;
             position: absolute;
         }

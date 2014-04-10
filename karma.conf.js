@@ -27,6 +27,7 @@ module.exports = function(config) {
       'app/bower_components/angular-strap/dist/modules/tooltip.min.js',
       'app/bower_components/angular-strap/dist/modules/popover.min.js',
       'app/bower_components/angular-strap/dist/modules/button.min.js',
+      'app/bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js',
       'app/scripts/*.js',
       'app/scripts/services/*.js',
       'app/scripts/controllers/*.js',
@@ -84,7 +85,7 @@ module.exports = function(config) {
         // http://karma-runner.github.io/0.8/config/coverage.html
         'app/scripts/*/*.js': 'coverage'
     }
-    /* uncomment the following to get coverage reports *
+    /* uncomment the following to get coverage reports */
     ,
     reporters: ['coverage']
     /**/
