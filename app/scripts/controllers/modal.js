@@ -2,7 +2,7 @@
 angular.module('authoringEnvironmentApp').controller('ModalCtrl', [
     '$scope',
     'modal',
-    function ($scope, modal, images) {
+    function ($scope, modal) {
         $scope.modal = modal;
     }
 ]);
