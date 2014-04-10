@@ -1728,9 +1728,9 @@ html, body.article-edit {
         }
         .basket {
             background: #666666;
-            max-height: @thumbnail-max-height + 50;
-            white-space: nowrap; /* to scroll horizontally */
-            overflow: auto;
+            height: @thumbnail-max-height + 40;
+            overflow-x: hidden;
+            overflow-y: scroll;
         }
         .thumbnail-wrapper {
             position: relative;
@@ -1795,8 +1795,9 @@ html, body.article-edit {
             }
         }
         .archive {
+            height: 400px;
             max-height: 400px;
-            overflow: scroll;
+            overflow-y: scroll;
         }
     }
 
@@ -1861,8 +1862,6 @@ html, body.article-edit {
             bottom: @pane-padding;
             left: @pane-padding;
         }
-        /* TODO: adjust for the new controls box for enabling/disabling
-        comments ... add some additional height (have it in a variable) */
         .list.high {
             top: 100px + 150px;
         }
