@@ -1728,31 +1728,35 @@ html, body.article-edit {
         }
         .basket {
             background: #666666;
-            height: @thumbnail-max-height + 40;
+            height: @thumbnail-max-height + 90;
             overflow-x: hidden;
             overflow-y: scroll;
         }
         .thumbnail-wrapper {
             position: relative;
+            display: inline-block;
+            margin: 10px;
+            padding: 5px;
+
+            background-color: white;
             border-width: 1px;
             border-style: solid;
             border-color: #d0d0d0;
             border-radius: 2px;
-            display: inline-block;
-            margin: 10px;
+
             .toggler {
                 display: none;
                 position: absolute;
                 color: white;
-                background: #0079cc;
+                background: black;
                 padding: 7px;
                 line-height: 0;
+                border-right: 2px solid white;
+                border-bottom: 2px solid white;
             }
             .thumbnail {
                 display: inline-block;
                 max-height: @thumbnail-max-height;
-                border-color: white;
-                border-width: 6px;
                 margin: 0;
                 padding: 0;
             }
@@ -1760,16 +1764,10 @@ html, body.article-edit {
 
         .archive .thumbnail-wrapper:hover, .basket .thumbnail-wrapper:hover {
             cursor: pointer;
-            .thumbnail {
-                border-radius: 0;
-                border-color: #0079CC;
-            }
+            border-color: black;
             .toggler {
                 display: inline;
             }
-        }
-        .archive .thumbnail-wrapper:hover {
-            border-color: white;
         }
 
         .archive .thumbnail-wrapper.attached, .archive .thumbnail-wrapper.collected {
@@ -1777,10 +1775,6 @@ html, body.article-edit {
             &:hover {
                 border-color: #d0d0d0;
                 cursor: default;
-                .thumbnail {
-                    border-radius: 2px;
-                    border-color: white;
-                }
                 .toggler {
                     display: none;
                 }
