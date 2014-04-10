@@ -16,7 +16,12 @@
        class="thumbnail" 
        ng-src="{{root}}/images/{{image.basename}}"
        >
+      <div>
+        {{image.description || "No description"}}<br/>
+        <span class="size-info">{{image.width}} x {{image.height}}</span>
+      </div>
   </div>
+
   <div
      class="more-button-wrapper"
      >
