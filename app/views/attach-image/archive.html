@@ -5,8 +5,9 @@
   <div
      ng-repeat="image in images.displayed"
      class="thumbnail-wrapper"
-     ng-class="{attached: images.isCollected(image.id)}"
-     ng-click="images.toggleCollect(image.id)"
+     ng-class="{attached: images.isAttached(image.id),
+                collected: images.isCollected(image.id)}"
+     ng-click="thumbnailClicked(image.id)"
      >
     <div class="toggler">
       <span class="glyphicon" ng-class="images.togglerClass(image.id)"></span>

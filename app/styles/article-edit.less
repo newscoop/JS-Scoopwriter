@@ -1757,18 +1757,36 @@ html, body.article-edit {
                 padding: 0;
             }
         }
-        .archive .thumbnail-wrapper:hover {
-            .toggler {
-                display: inline;
-            }
-        }
-        .thumbnail-wrapper.attached, .thumbnail-wrapper:hover {
-            border-color: white;
+
+        .archive .thumbnail-wrapper:hover, .basket .thumbnail-wrapper:hover {
+            cursor: pointer;
             .thumbnail {
                 border-radius: 0;
                 border-color: #0079CC;
             }
+            .toggler {
+                display: inline;
+            }
         }
+        .archive .thumbnail-wrapper:hover {
+            border-color: white;
+        }
+
+        .archive .thumbnail-wrapper.attached, .archive .thumbnail-wrapper.collected {
+            opacity: 0.25;
+            &:hover {
+                border-color: #d0d0d0;
+                cursor: default;
+                .thumbnail {
+                    border-radius: 2px;
+                    border-color: white;
+                }
+                .toggler {
+                    display: none;
+                }
+            }
+        }
+
         .web {
             input {
                 width: 100%;
