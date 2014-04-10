@@ -36,6 +36,9 @@ var ModalCtrlConstructor = function ($scope, $modalInstance, title, text) {
     };
 };
 
+// needed so that it works even when the code gets minified
+ModalCtrlConstructor.$inject = ['$scope', '$modalInstance', 'title', 'text'];
+
 
 /**
 * AngularJS Service for creating modal dialog instances.
