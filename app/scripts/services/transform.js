@@ -19,7 +19,7 @@ angular.module('authoringEnvironmentApp').service('transform', function () {
     */
     function formEncodeData(data) {
         return $.param(data);
-    };
+    }
 
     /**
     * Encodes HTML form data (making it ready to use in an Ajax

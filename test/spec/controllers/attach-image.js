@@ -1,12 +1,18 @@
 'use strict';
 
+/**
+* Module with tests for the attach image controller.
+*
+* @module AttachImageCtrl controller tests
+*/
+
 describe('Controller: AttachImageCtrl', function () {
 
     // load the controller's module
     beforeEach(module('authoringEnvironmentApp'));
 
     var AttachImageCtrl,
-    scope;
+        scope;
 
     // Initialize the controller and a mock scope
     beforeEach(inject(function ($controller, $rootScope) {
@@ -23,6 +29,7 @@ describe('Controller: AttachImageCtrl', function () {
             description : 'From Media Archive'
         });
     });
+
     it('proxies images', function() {
         expect(scope.images).toBeDefined();
     });

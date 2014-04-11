@@ -1,30 +1,21 @@
 'use strict';
 
-// angular.module('authoringEnvironmentApp').controller('AttachImageCtrl', [
-//     '$scope',
-//     'images',
-//     'configuration',
-//     function ($scope, images, configuration) {
-//         $scope.root = configuration.API.rootURI;
-//         $scope.images = images;
-//         $scope.sources = [
-//             {
-//                 value: 'computer',
-//                 url: 'views/attach-image/computer.html',
-//                 description: 'From Computer'
-//             },
-//             {
-//                 value: 'archive',
-//                 url: 'views/attach-image/archive.html',
-//                 description: 'From Media Archive'
-//             }
-//         ];
-
+/**
+* AngularJS controller for a modal in which user can attach images
+* to an article.
+*
+* @class AttachImageCtrl
+*/
 angular.module('authoringEnvironmentApp').controller('AttachImageCtrl', [
     '$scope',
+    'images',
     'imageUploading',
     'modal',
-    function ($scope, imageUploading, modal) {
+    'configuration',
+    function ($scope, images, imageUploading, modal, configuration) {
+
+        $scope.root = configuration.API.rootURI;
+        $scope.images = images;
 
         $scope.sources = [
             {
