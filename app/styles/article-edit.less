@@ -28,6 +28,7 @@
 @tablist-width : 48px;
 
 @duration: 0.7s; // for panel activation and deactivation
+@pane-padding: 5%;
 
 html, body.article-edit {
     height:100%;
@@ -411,6 +412,17 @@ html, body.article-edit {
             &.comments {
                 width: @tabpane-width + @small-big-pane-delta;
             }
+        }
+        > section {
+            padding: @pane-padding @pane-padding 0;
+        }
+        /*button {
+            margin: 2px;
+            line-height: 10px;
+            border: 1px outset buttonface;
+        }*/
+        section ul li {
+            display: block;
         }
     }
 
