@@ -217,12 +217,17 @@ html, body.article-edit {
     comment {
         display: block;
         background: white;
-        border-bottom: solid 3px @tabpane-background;
+        border-bottom: solid 5px @tabpane-background;
         font-size: 12px;
         /* following colors are copied from a mock from Darko */
         .subject {color: #808080;}
         .date {color: rgb(128, 128, 128);}
-        .author-name {color: #333;}
+        .author-name {
+            color: #333;
+            &:hover {
+                cursor: pointer;
+            }
+        }
         /* end colors copied from the mock */
         &.comment-pending {
             .left-border-wrapper {
@@ -259,6 +264,7 @@ html, body.article-edit {
         input[type="checkbox"] {
             float: left;
             width: 22px;
+            margin: 2px 0 0;
         }
         .status-dropdown {
             .dropdown-menu {
@@ -273,13 +279,15 @@ html, body.article-edit {
             color: white;
             border: none;
             /* copied from bootstrap label in order to match the design */
-            padding: .2em .6em .3em;
-            font-size: 75%;
-            font-weight: bold;
+            padding: .4em .6em .4em .6em;
+            font-size: 80%;
+            font-weight: 500;
             line-height: 1;
             text-align: center;
             vertical-align: baseline;
             border-radius: .25em;
+            text-shadow:none;
+            margin: 0 2px;
             /* end of rules copied from bootstrap label */
         }
         .right {
@@ -298,8 +306,8 @@ html, body.article-edit {
             border-left: solid 3px @hidden-comment-color;
             height: 100%;
             .bottom-border-wrapper {
-                border-bottom: solid 1px gainsboro;
-                padding: 10px;
+                border-bottom: solid 1px #cbcbcb;
+                padding: 10px 5px 8px 5px;
                 height: 100%;
                 .controls {
                     .glyphicon, .fa {
@@ -307,6 +315,7 @@ html, body.article-edit {
                     }
                     .glyphicon-chevron-up {
                         float: left;
+                        padding:4px;
                     }
                     text-align: right;
 
@@ -318,12 +327,15 @@ html, body.article-edit {
                         color: #bbb;
                      }
                 }
+                .image-and-author-details {
+                    .dropdown { margin-top: -2px; }
+                }
             }
         }
         &.collapsed {
             .right {
                 white-space: nowrap;
-                overflow: hidden;
+                /*overflow: hidden;*/
                 text-overflow: ellipsis;
             }
             .date, .author-name {
@@ -332,8 +344,15 @@ html, body.article-edit {
             .comment, .status-dropdown, .controls, .author {
                 display: none;
             }
-            .image-and-author-details, .subject {
+            .image-and-author-details {
                 display: inline;
+            }
+            .subject { 
+                display:inline;
+                &:hover { cursor: pointer; }
+            }
+            .image-and-author-details {
+                img { margin-top: -2px; }
             }
         }
         &.expanded {
@@ -342,6 +361,9 @@ html, body.article-edit {
             }
             .comment {
                 font-size: small;
+            }
+            .date, .author-name {
+                display:inline;
             }
         }
     }
@@ -1871,7 +1893,7 @@ html, body.article-edit {
     .comments-panel {
         @panel-height: 200px;
         .add-element.expanded {
-            height: @panel-height;
+            /*height: @panel-height;*/
         }
         .list {
             right: @pane-padding;
@@ -1879,7 +1901,7 @@ html, body.article-edit {
             left: @pane-padding;
         }
         .list.high {
-            top: 100px + 150px;
+            top: 100px + 160px;
         }
         .list.low {
             top: @panel-height + 75px + 150px;
@@ -1888,11 +1910,11 @@ html, body.article-edit {
         .invisible {
             visibility: hidden;
         }
-
         .commenting-options {
-            margin-top: 10px;
-            padding: 5px 10px 5px 45px;
-            font-size: 13px;
+            margin-top: 0px;
+            margin-bottom: 20px;
+            padding: 7px 10px 7px 50px;
+            font-size: 12px;
             border-bottom: 3px solid black;
 
             select {
@@ -1904,14 +1926,18 @@ html, body.article-edit {
             label {
                 font-weight: normal;
                 color: #808080;
+                margin: 0 3px 0 10px;
             }
             span {
                 display: inline-block;
-                width: 35px;
+                /*width: 32px;*/
+                padding: 2px 4px 2px 4px;
                 text-align: center;
-                border-radius: 3px;
+                border-radius: 2px;
                 color: white;
-                font-weight: bold;
+                font-weight: 700;
+                font-size: 10px;
+                line-height: normal;
                 text-transform: uppercase;
                 &.yes {
                     background-color: #6FA00D;
@@ -1944,15 +1970,20 @@ html, body.article-edit {
 
         .comment-controls {
             background-color: @add-element-gray;
+            border-bottom: 2px solid #d7d7d7;
+             margin:6px 0 10px 0;
             .filters {
                 font-size: 13px;
-                padding: 5px 0;
+                padding: 5px 0 10px 0;
                 text-transform: capitalize;
                 .filters-label { color: @comment-gray; }
                 .pending-check { color: @new-comment-color;}
                 .approved-check { color: @approved-comment-color;}
                 .hidden-check { color: @hidden-comment-color;}
                 * { margin: 2px; }
+                span { margin: 0 4px; }
+                select { margin: 0px 10px 2px 0; }
+                input { margin: -2px 1px 0 0; vertical-align: middle; }
             }
             .status-buttons {
                 padding: 10px;
@@ -1966,7 +1997,7 @@ html, body.article-edit {
 
     .embed-panel {
         .add-element.expanded {
-            height: 250px;
+            /*height: 250px;*/
         }
         .list {
             right: @pane-padding;
@@ -2006,23 +2037,34 @@ html, body.article-edit {
         .list {
             overflow: auto;
             position: absolute;
+            &::-webkit-scrollbar { width: 8px; height: 8px; margin: -1px 0; }
+            &::-webkit-scrollbar-thumb { background: #949494; }
+            &::-webkit-scrollbar-thumb:hover { background: #6e6e6e; }
         }
         .add-element {
             overflow: auto;
             background-color: @add-element-gray;
             margin: 10px 0;
             .heading {
+                padding: 0px;
                 button {
                     line-height: 1em;
-                    
+                    box-shadow: none;
+                    padding: 8px 8px 10px 8px;
+                    margin: 0;
+                    width: 100%;
+                    text-align: left;
                     .add-text {
                         font-size: 12px;
                         padding: 0 5px;
                     }
+                    &:hover {
+                        background:#e6e6e6;
+                    }
                 }
             }
             .body {
-                padding: 5px;
+                padding: 15px;
                 .controls {
                     overflow: hidden;
                 }
