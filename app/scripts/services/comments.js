@@ -239,19 +239,88 @@ angular.module('authoringEnvironmentApp').service('comments', [
                 return parseInt(needle.id) === parseInt(id);
             };
         };
+
         /**
-        * Changes the selected status for the selected comments
+        * Changes the 'selected' status of the selected comments (if commentId
+        * is not given) or of a specific comment (if commentId is given).
+        * If `deep` is set to true, affected comments' subcomments' statuses
+        * are changed, too.
         *
         * @method changeSelectedStatus
         * @param status {String} the new status to be set
+        * @param deep {Boolean} whether or not to change the statuses of
+        *     affected comments' subcomments as well
+        * @param [commentId] {Number} ID of a specific comment to change
+        *     status for
         */
-        this.changeSelectedStatus = function (status) {
-            this.displayed.forEach(function (comment) {
-                if (comment.selected) {
-                    comment.changeStatus(status);
+        this.changeSelectedStatus = function (status, deep, commentId) {
+            var comment = null,
+                displayed = this.displayed, // just an alias
+                i = 0,
+                len = displayed.length,
+                toChange = [];  // list of comments for which to change status
+
+            if (!deep && typeof commentId !== 'undefined') {
+                // a specific comment
+                displayed.forEach(function (item) {
+                    if (item.id === commentId) {
+                        item.changeStatus(status);
+                    }
+                });
+                return;
+            }
+
+            if (!deep && typeof commentId === 'undefined') {
+                // all selected comments
+                displayed.forEach(function (item) {
+                    if (item.selected) {
+                        item.changeStatus(status);
+                    }
+                });
+                return;
+            }
+
+            if (deep && typeof commentId !== 'undefined') {
+                // a specific comment and all of its subcomments
+                while (i < len) {
+                    if (comment) {
+                        // comment with a commentId has already been found
+                        if (displayed[i].thread_level > comment.thread_level) {
+                            toChange.push(displayed[i]);
+                        } else {
+                            break;  // no more subcomments
+                        }
+                    } else if (displayed[i].id === commentId) {
+                        comment = displayed[i];
+                        toChange.push(comment);
+                    }
+                    i++;
                 }
+            } else {  // deep && typeof commentId === 'undefined'
+                // selected comments and all of their subcomments
+                while (i < len) {
+                    if (comment) {
+                        // a selected comment has been found
+                        if (displayed[i].thread_level > comment.thread_level) {
+                            toChange.push(displayed[i]);
+                        } else {
+                            // end of comment's sublevels
+                            comment = null;
+                            continue;  // NOTE: i is not incremented here!
+                        }
+                    } else if (displayed[i].selected) {
+                        comment = displayed[i];
+                        toChange.push(comment);
+                    }
+                    i++;
+                }
+            }
+
+            toChange.forEach(function (comment) {
+                comment.changeStatus(status);
             });
         };
+
         /**
         * Decorates an object containing raw comment data (as returned by
         * the API) with properties and methods, turning it into a
@@ -453,6 +522,7 @@ angular.module('authoringEnvironmentApp').service('comments', [
                     comment.recommended = newStatus;
                 });
             };
+
             /**
             * Ask to the server to change the status, rollback if it fails
             * @method changeStatus
@@ -473,6 +543,7 @@ angular.module('authoringEnvironmentApp').service('comments', [
                     });
                 });
             };
+
             return comment;
         }
     }

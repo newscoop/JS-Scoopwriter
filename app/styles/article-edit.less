@@ -1892,6 +1892,9 @@ html, body.article-edit {
             top: @panel-height + 115px + 50px;
         }
 
+        .invisible {
+            visibility: hidden;
+        }
         .commenting-options {
             margin-top: 0px;
             margin-bottom: 20px;
@@ -1950,15 +1953,31 @@ html, body.article-edit {
             }
         }
 
-        .status-buttons {
+        .comment-controls {
             background-color: @add-element-gray;
-            padding: 10px;
             border-bottom: 2px solid #d7d7d7;
-            margin:6px 0 10px 0;
-            .delete-button {
-                margin-left: 20px;
+             margin:6px 0 10px 0;
+            .filters {
+                font-size: 13px;
+                padding: 5px 0 10px 0;
+                text-transform: capitalize;
+                .filters-label { color: @comment-gray; }
+                .pending-check { color: @new-comment-color;}
+                .approved-check { color: @approved-comment-color;}
+                .hidden-check { color: @hidden-comment-color;}
+                * { margin: 2px; }
+                span { margin: 0 4px; }
+                select { margin: 0px 10px 2px 0; }
+                input { margin: -2px 1px 0 0; vertical-align: middle; }
+            }
+            .status-buttons {
+                padding: 10px;
+                .delete-button {
+                    margin-left: 20px;
+                }
             }
         }
+
     }
 
     .embed-panel {
@@ -2001,19 +2020,6 @@ html, body.article-edit {
             font-size: 90%;
         }
         .list {
-            .filters {
-                font-size: 13px;
-                padding: 5px 0 10px 0;
-                text-transform: capitalize;
-                .filters-label { color: @comment-gray; }
-                .pending-check { color: @new-comment-color;}
-                .approved-check { color: @approved-comment-color;}
-                .hidden-check { color: @hidden-comment-color;}
-                * { margin: 2px; }
-                span { margin: 0 4px; }
-                select { margin: 0px 10px 2px 0; }
-                input { margin: -2px 1px 0 0; vertical-align: middle; }
-            }
             overflow: auto;
             position: absolute;
             &::-webkit-scrollbar { width: 8px; height: 8px; margin: -1px 0; }

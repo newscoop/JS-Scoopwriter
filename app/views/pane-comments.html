@@ -51,10 +51,11 @@
         >{{commentingSettingSrv === commenting.ENABLED ? 'yes' : 'no'}}</span>
   </div>
 
+
   <div
-    class="add-element ng-hide"
-    ng-class="{expanded: adding}"
-    ng-show="commentingSettingSrv === commenting.ENABLED"
+    class="add-element"
+    ng-class="{expanded: adding,
+               invisible: commentingSettingSrv !== commenting.ENABLED}"
     >
     <div class="heading">
       <button
@@ -115,9 +116,8 @@
       </div>
     </div>
   </div>
-  <div class="list"
-       ng-class="{low: adding, high: !adding, nested: sorting.text=='Nested'}"
-       >
+
+  <div class="comment-controls">
     <div class="filters">
       <span class="filters-label">View:</span>
       <span
@@ -134,32 +134,43 @@
          >
       </select>
     </div>
+
     <div class="status-buttons">
       <a
          class="btn btn-default btn-sm"
-         ng-disabled="commentingSettingSrv === commenting.DISABLED"
+         ng-disabled="commentingSettingSrv === commenting.DISABLED
+                      || countSelected() === 0"
          ng-click="comments.changeSelectedStatus('approved')">
         Approve
       </a>
       <a
          class="btn btn-default btn-sm"
-         ng-disabled="commentingSettingSrv === commenting.DISABLED"
+         ng-disabled="commentingSettingSrv === commenting.DISABLED
+                      || countSelected() === 0"
          ng-click="comments.changeSelectedStatus('pending')">
         Mark as New
       </a>
       <a
          class="btn btn-default btn-sm"
-         ng-disabled="commentingSettingSrv === commenting.DISABLED"
-         ng-click="confirmHideSelected()">
+         ng-disabled="commentingSettingSrv === commenting.DISABLED
+                      || countSelected() === 0"
+         ng-click="confirmHideComments()">
         Hide
       </a>
       <a
          class="btn btn-default btn-sm delete-button"
-         ng-disabled="commentingSettingSrv === commenting.DISABLED"
-         ng-click="confirmDeleteSelected()">
+         ng-disabled="commentingSettingSrv === commenting.DISABLED
+                      || countSelected() === 0"
+         ng-click="confirmDeleteComments()">
         Delete
       </a>
     </div>
+  </div>
+
+  <div class="list"
+       ng-class="{low: adding, high: !adding, nested: sorting.text=='Nested'}"
+       >
+
     <div class="liner"> <!-- does the style trick for the vertical lines -->
       <comment
           model="comment"
@@ -167,6 +178,8 @@
           class="{{comment.showStatus}} comment-{{comment.status}} level-{{comment.thread_level}}"
           allowreplying="(commentingSettingSrv === commenting.ENABLED)
               && (comment.thread_level < 2)"
+          confirm-hide-comments="confirmHideComments(commentId)"
+          confirm-delete-comments="confirmDeleteComments(commentId)"
          >
       </comment>
     </div>

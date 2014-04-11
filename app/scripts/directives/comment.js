@@ -6,7 +6,9 @@ angular.module('authoringEnvironmentApp').directive('comment', function () {
         restrict: 'E',
         scope: {
             model: '=',
-            allowreplying: '='
+            allowreplying: '=',
+            onHide: '&confirmHideComments',
+            onDelete: '&confirmDeleteComments'
         },
         link: function postLink(scope, element, attrs) {
         }
