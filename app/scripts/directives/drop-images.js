@@ -17,6 +17,8 @@ angular.module('authoringEnvironmentApp')
 
                 element.on('dragover', function (e) {
                     e.preventDefault();  // allows drop
+                    e.stopPropagation();
+                    e.originalEvent.dataTransfer.dropEffect = 'copy';
                 });
             }
         };
