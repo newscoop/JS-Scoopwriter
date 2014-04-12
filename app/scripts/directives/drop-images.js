@@ -14,6 +14,10 @@ angular.module('authoringEnvironmentApp')
                     var files = e.originalEvent.dataTransfer.files;
                     scope.handler({files:files});
                 });
+
+                element.on('dragover', function (e) {
+                    e.preventDefault();  // allows drop
+                });
             }
         };
     });
