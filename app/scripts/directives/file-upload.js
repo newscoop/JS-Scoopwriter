@@ -10,6 +10,7 @@ angular.module('authoringEnvironmentApp')
             link: function postLink(scope, element, attrs) {
                 var input = $('<input>').attr({
                     'class': 'hidden-input',
+                    multiple: 'multiple',
                     type: 'file',
                     style: 'display:none'
                 });
