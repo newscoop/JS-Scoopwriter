@@ -9,10 +9,9 @@
 angular.module('authoringEnvironmentApp').controller('AttachImageCtrl', [
     '$scope',
     'images',
-    'imageUploading',
     'modal',
     'configuration',
-    function ($scope, images, imageUploading, modal, configuration) {
+    function ($scope, images, modal, configuration) {
 
         $scope.root = configuration.API.rootURI;
         $scope.images = images;
@@ -39,14 +38,6 @@ angular.module('authoringEnvironmentApp').controller('AttachImageCtrl', [
 
         $scope.select = function (source) {
             $scope.selected = source;
-        };
-
-        $scope.attached = function (files) {
-            imageUploading.init(files);
-            modal.show({
-                title: 'Image Upload',
-                templateUrl: 'views/image-uploading.html'
-            });
         };
 
     }

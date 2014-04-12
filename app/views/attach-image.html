@@ -17,13 +17,16 @@
        >
     </div>
   </div>
-  <div class="row basket-head">
+
+  <div class="row basket-head"
+       ng-hide="selected.value === 'computer'">
     <span class="description">SELECTED IMAGES</span>
     <span class="badge" ng-bind="images.collected.length"></span>
     image{{(images.collected.length !== 1) ? 's' : ''}}
   </div>
 
-  <div class="row basket">
+  <div class="row basket"
+       ng-hide="selected.value === 'computer'">
     <div
        ng-repeat="image in images.collected"
        class="thumbnail-wrapper"

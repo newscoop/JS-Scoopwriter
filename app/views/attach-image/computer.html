@@ -1,14 +1,29 @@
-<div
-   class="computer"
-   >
-  <div class="drag-area" drop-images handler="attached(files)">
+<div class="computer" ng-controller="UploadFromCompCtrl">
+
+  <div class="drag-area" drop-images handler="uploadImages(files)">
     <div class="drag-area-title">
       Drag Your Images Here
     </div>
     <div class="drag-area-button">
-      <button class="btn btn-default" file-upload handler="attached(files)">
-        <span class="glyphicon glyphicon-upload"
-              ></span> or Select them from folder</button>
+      <button class="btn btn-default" file-upload handler="uploadImages(files)">
+        <span class="glyphicon glyphicon-upload"></span> or Select them from folder
+      </button>
     </div>
   </div>
+
+  <div class="image-uploading"
+       style="border: 1px solid black; background-color: yellow">
+    <div class="placeholder" ng-repeat="file in images2upload">
+      <div class="name" ng-bind="file.name"></div>
+      <div class="progress">
+        <div
+           class="progress-bar"
+           role="progressbar"
+           ng-style="{width: file.percent}"
+           >
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
