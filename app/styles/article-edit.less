@@ -227,6 +227,7 @@ html, body.article-edit {
             .placeholder {
                 background-color: white;
                 display: inline-block;
+                float: left;
                 height: 300px;
                 width: 300px;
                 margin-left: @placeholder-margin;
@@ -235,6 +236,26 @@ html, body.article-edit {
                 border-bottom: 2px solid @placeholder-border-color;
                 border-radius: 4px;
                 padding: 2%;
+                .img-preview {
+                    width: 260px;
+                    height: 200px;
+                    margin-bottom: 10px;
+                    display: table-cell;
+                    vertical-align: middle;
+                    text-align: center;
+                    border: 1px dashed black;
+                    &:before, &:after {
+                        content: '';
+                        display: table;
+                    }
+                    &:after {
+                        clear: both;
+                    }
+                    img {
+                        max-width: 100%;
+                        max-height: 100%;
+                    }
+                }
             }
         }
     }

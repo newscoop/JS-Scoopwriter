@@ -34,7 +34,6 @@ angular.module('authoringEnvironmentApp').controller('UploadFromCompCtrl', [
             }
         };
 
-
         // TODO: docstring and tests
         function decorate(file) {
 
@@ -45,46 +44,38 @@ angular.module('authoringEnvironmentApp').controller('UploadFromCompCtrl', [
                     Math.round((event.loaded / event.total) * 100) + '%';
             };
 
-            file.startUpload = function() {
-                var reader = getFileReader.get();
+            file.startUpload = function () {
+                var fd = new FormData(),
+                    fileHandle = this,
+                    reader = getFileReader.get();
 
-                reader.onload = function(evt) {
-                    var data = {
-                        image: {
-                            image: evt.target.result
-                        }
-                    };
+                fd.append('image[description]', 'this is image description');
+                fd.append('image[image]', fileHandle);
 
-                    // TODO: display image thumbnail data as a preview?
-                    // in image uploading box? nekako nastavi file.rawData,
-                    // pa to v template-u daj kot img ng-src="rawData"
-                    //  (z inline data)
+                $upload.http({
+                    method: 'POST',
+                    url: apiRoot + '/images',
+                    data: fd,
+                    headers: {'Content-Type': undefined},
+                    transformRequest: angular.identity
+                })
+                .progress(
+                    file.progressCallback
+                )
+                .success(
+                    function (data, status, headers, config) {
+                        file.progressCallback({
+                            loaded: 100,
+                            total:  100
+                        });
+                    }
+                );  // XXX: add onerror handler?
 
-                    // "When the load finishes, the reader's onload event is
-                    // fired and its result attribute can be used to access
-                    // the file data"
-
-                    $upload.http({
-                        url: apiRoot + '/images',
-                        method: 'POST',
-                        data: transform.formEncodeData(data)
-                    })
-                    .progress(
-                        file.progressCallback  // XXX: does not get called
-                    )
-                    .success(
-                        function (data, status, headers, config) {
-                            file.progressCallback({
-                                loaded: 100,
-                                total:  100
-                            });
-                        }
-                    );
-
-                    // XXX: add onerror handler?
+                // extract image data to show preview immediately
+                reader.onload = function (ev) {
+                    fileHandle.b64data = btoa(this.result);
                 };
-
-                reader.readAsBinaryString(this);
+                reader.readAsBinaryString(fileHandle);
             };
 
             return file;
