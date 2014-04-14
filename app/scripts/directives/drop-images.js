@@ -8,11 +8,27 @@ angular.module('authoringEnvironmentApp')
                 handler: '&',
             },
             link: function postLink(scope, element, attrs) {
-                element.on('drop', function(e){
+                element.on('drop', function (e) {
+                    var i,
+                        file,
+                        fileList,
+                        filesFiltered = [],
+                        pattern = new RegExp(/^image\/.*/i);
+
                     e.preventDefault();
                     e.stopPropagation();
-                    var files = e.originalEvent.dataTransfer.files;
-                    scope.handler({files:files});
+
+                    fileList = e.originalEvent.dataTransfer.files;
+
+                    // collect only image files (MIME type 'image/*')
+                    for (i = 0; i < fileList.length; i++) {
+                        file = fileList.item(i);
+                        if (pattern.test(file.type)) {
+                            filesFiltered.push(file);
+                        }
+                    }
+
+                    scope.handler({files:filesFiltered});
                 });
 
                 element.on('dragover', function (e) {

@@ -21,15 +21,16 @@ angular.module('authoringEnvironmentApp').controller('UploadFromCompCtrl', [
         $scope.images2upload = [];
 
         // add new files to the list of files to upload
+        // filtered list of images (only image files)
         // TODO: docstring and tests
         $scope.uploadImages = function (newImages) {
             var i,
-                newImage;
+                image;
 
             for(i = 0; i < newImages.length; i++) {
-                newImage = decorate(newImages.item(i));
-                $scope.images2upload.push(newImage);
-                newImage.startUpload();
+                image = decorate(newImages[i]);
+                $scope.images2upload.push(image);
+                image.startUpload();
             }
         };
 
@@ -54,6 +55,15 @@ angular.module('authoringEnvironmentApp').controller('UploadFromCompCtrl', [
                         }
                     };
 
+                    // TODO: display image thumbnail data as a preview?
+                    // in image uploading box? nekako nastavi file.rawData,
+                    // pa to v template-u daj kot img ng-src="rawData"
+                    //  (z inline data)
+
+                    // "When the load finishes, the reader's onload event is
+                    // fired and its result attribute can be used to access
+                    // the file data"
+
                     $upload.http({
                         url: apiRoot + '/images',
                         method: 'POST',
@@ -70,6 +80,8 @@ angular.module('authoringEnvironmentApp').controller('UploadFromCompCtrl', [
                             });
                         }
                     );
+
+                    // XXX: add onerror handler?
                 };
 
                 reader.readAsBinaryString(this);

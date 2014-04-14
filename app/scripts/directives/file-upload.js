@@ -9,9 +9,10 @@ angular.module('authoringEnvironmentApp')
             },
             link: function postLink(scope, element, attrs) {
                 var input = $('<input>').attr({
-                    'class': 'hidden-input',
-                    multiple: 'multiple',
                     type: 'file',
+                    accept: 'image/*',
+                    multiple: 'multiple',
+                    'class': 'hidden-input',
                     style: 'display:none'
                 });
                 input.on('click', function(e) {
