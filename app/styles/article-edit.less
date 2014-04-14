@@ -8,7 +8,7 @@
 // ARTICLE EDIT SCREEN
 
 @tablist-background:  #a1a1a1;
-@tabpane-background:  #f5f5f5;
+@tabpane-background:  #f8f8f8;
 @tabpane-border:      #7c7c7c;
 /* default width, but some panes may be wider */
 @tabpane-width:       330px;
@@ -24,11 +24,11 @@
 @main-article-margin-side-shrinked: @main-article-margin-side + @tabpane-width;
 
 //positioning
-@editor-toolbar : 40px;
+@editor-toolbar : 42px;
 @tablist-width : 48px;
 
 @duration: 0.7s; // for panel activation and deactivation
-@pane-padding: 5%;
+@pane-padding: 12px;
 
 html, body.article-edit {
     height:100%;
@@ -174,21 +174,18 @@ html, body.article-edit {
                         
                     }
                     i[class^="big-icon-"] {
-                        margin: 8px 0 0 5px;
+                        margin: 9px 0 0 5px;
                     }
                 }
                 &.active {
                     a {
-                        background: @tabpane-background;
-                    /*
-                      &:hover {
-                      background: @tabpane-background;
-                      border: 1px solid #7c7c7c;
-                      border-width: 1px 0 !important;
-                      }
-                      */
+                        background: @tabpane-background;                                        
                     }
                 }
+                &:hover {
+                    background: @tabpane-background;
+                    cursor:pointer;
+                    }                    
             }
         }
     }
@@ -414,7 +411,7 @@ html, body.article-edit {
             }
         }
         > section {
-            padding: @pane-padding @pane-padding 0;
+            padding: 10px @pane-padding @pane-padding;
         }
         button {
             margin: 2px;
@@ -1277,8 +1274,8 @@ html, body.article-edit {
             margin-bottom: 15px;
 
             &:before {
-                font-size: 12px;
-                color: #666;
+                font-size: 13px;
+                color: #333;
                 position: absolute;
                 top: -10px;
                 padding-right: 5px;
@@ -1301,11 +1298,11 @@ html, body.article-edit {
             li[class*="media-"] {
                 position: relative;
                 background: #fff;
-                border: 1px solid #c8c8c8;
-                padding: 7px;
+                border: 1px solid #e0e0e0;
+                padding: 10px;
                 min-height: 50px;
                 margin-bottom: 10px;
-                .box-shadow(0 3px 5px -3px #aaa);
+                .box-shadow(0 1px 0px #e0e0e0);
                 .border-radius(4px);
 
                 .dropdown {
@@ -1322,8 +1319,9 @@ html, body.article-edit {
                     .dropdown { 
                         display: block; 
                     }
-                }
-
+                    border: 1px solid #ccc;
+                    .box-shadow(0 1px 0px #ccc);
+                }                
                 &.media-image, &.media-video {
                     figure {
                         border: 1px solid #9d9d9d;
@@ -1341,9 +1339,10 @@ html, body.article-edit {
                         line-height: 15px;
                         font-size: 12px;
                         &:before {
-                            color: #666;
+                            color: #888;
                             text-transform: uppercase;
-                            font-size: 9px;
+                            font-size: 10px;
+                            font-weight: 500;
                             display: block;
                         }
                         &.approved:before {
@@ -1385,8 +1384,23 @@ html, body.article-edit {
                         font-size: 12px;
                     }
                 }
-
-
+                &:first-child {
+                    margin-top: 10px;
+                }
+                .drag-bar {
+                    position: absolute;
+                    left: -2px;
+                    top: 0px;
+                    bottom: 0px;
+                    width: 9px;
+                    border: 3px solid #ccc;
+                    border-width: 2px 0;
+                    background: #ccc url(../../images/drag_bg.png) repeat-y 3px 0;
+                    visibility:hidden;
+                }
+                &:hover .drag-bar {
+                    visibility:visible;
+                }
             }
 
         }
@@ -1641,7 +1655,6 @@ html, body.article-edit {
 
     }
 
-
     .temptabcont p {
         font-size: 14px;
         margin-right: 20px;
@@ -1668,6 +1681,7 @@ html, body.article-edit {
     /* more selectors to increase specificity */
     .navbar-fixed-top.navbar.navbar-default {
         top: @hostTop;
+        border-bottom: 1px solid #d5d5d5;
     }
     .popover {
         max-width: none;
@@ -1688,9 +1702,10 @@ html, body.article-edit {
         width: 100%; /* goes with `inline-block` */
         padding: 5px 10px;
         box-shadow: inset 0 1px 0 #fff,0 1px 5px rgba(0,0,0,0.1);
+        border-bottom: 1px solid #d5d5d5;
     }
     .sf-lower-toolbar {
-        padding: 5px;
+        padding: 6px 5px 8px 5px;
     }
     /* centered nav bar http://stackoverflow.com/a/18538412/393758 */
     .sf-navbar-center {
@@ -1703,11 +1718,12 @@ html, body.article-edit {
 
     .panel-title {
         line-height: 27px;
-        font-size: 18px;
-        font-weight: bold;
+        font-size: 16px;
+        font-weight: 500;
         text-rendering: optimizelegibility;
-        padding-bottom: 10px;
+        padding: 3px 0 4px 0;
         border-bottom: 1px solid #ddd;
+        margin-bottom: 20px;
     }
 
     .draggable-panel-heading {
@@ -1849,7 +1865,7 @@ html, body.article-edit {
     .image-panel {
         .attach-image-section {
             overflow: hidden;
-            padding: 3% 0;
+            padding: 0 0 10px 0;
         }
         .images-wrapper {
             position: relative;
@@ -1912,14 +1928,17 @@ html, body.article-edit {
             left: @pane-padding;
         }
         .list.high {
-            top: 100px + 160px;
+            top: 100px + 140px;
         }
         .list.low {
-            top: @panel-height + 75px + 175px;
+            top: @panel-height + 75px + 207px;
         }
 
         .invisible {
             visibility: hidden;
+        }
+        .panel-title {
+            margin-bottom: 0;
         }
         .commenting-options {
             margin-top: 0px;
@@ -2015,10 +2034,10 @@ html, body.article-edit {
             bottom: @pane-padding;
             left: @pane-padding;
             &.high {
-                top: 100px;
+                top: 120px;
             }
             &.low {
-                top: 325px;
+                top: 365px;
             }
         }
     }
@@ -2035,6 +2054,7 @@ html, body.article-edit {
         textarea {
             width: 100%;
             padding: 5px;
+            height:100px;
             resize: none;
         }
         .editor-input {
