@@ -1,0 +1,147 @@
+// Scaffolding
+// -------------------------
+
+// Grays
+// -------------------------
+@black:                 #000;
+@grayDarker:            #222;
+@grayDark:              #333;
+@gray:                  #555;
+@grayLight:             #999;
+@grayLighter:           #F5F5F5;
+@white:                 #fff;
+
+// Accent colors
+// -------------------------
+@blue:                  #0088CC; //#049cdb;
+@blueDark:              #0064cd;
+@green:                 #46a546;
+@red:                   #9d261d;
+@yellow:                #ffc40d;
+@orange:                #f89406;
+@pink:                  #c3325f;
+@purple:                #7a43b6;
+
+@bodyBackground:        @grayLighter; 
+@textColor:             @grayDark;
+
+// Typography
+// -------------------------
+@baseFontSize:          13px;
+@baseFontFamily:        'Roboto', Helvetica, Arial, sans-serif;
+@baseLineHeight:        18px;
+@altFontFamily:         Georgia, "Times New Roman", Times, serif;
+
+@headingsFontFamily:    inherit; // empty to use BS default, @baseFontFamily
+@headingsFontWeight:    bold;    // instead of browser default, bold
+@headingsColor:         inherit; // empty to use BS default, @textColor
+
+// Links
+// -------------------------
+@linkColor:             #007fb3;
+@linkColorHover:        darken(@linkColor, 15%);
+
+@topspace : 65px;
+@subnav-height: 53px;
+@subnav-mobile-height: 45px;
+@background-main:     #f8f8f8;
+
+// Buttons
+// --------------------------------------------------
+@btn-default-bg:                 #f6f5f6;
+
+
+// ARTICLE EDIT SCREEN
+
+@approved-comment-color: rgb(111, 160, 13);
+@new-comment-color: rgb(0, 127, 179);;
+@hidden-comment-color: rgb(207, 208, 209);
+@deleted-comment-color: #D48585;
+/* following variable was created by me when i had nothing more
+ * precise about comment colors. it will probably disappear with time */
+@comment-gray: #b9b9b9;
+
+/* used in "post a comment", "add a snippet" in the panels, and in
+ * other parts of the panels */
+@add-element-gray: #ebebeb;
+
+@thumbnail-max-height: 100px;
+
+@tablist-background:  #a1a1a1;
+@tabpane-background:  #f8f8f8;
+@tabpane-border:      #7c7c7c;
+/* default width, but some panes may be wider */
+@tabpane-width:       330px;
+/* we can have two types of panes, small ones (most of them) and big
+  ones (comments, for example) */
+@small-big-pane-delta: 200px;
+@tabcontent-padding: 0;
+
+@main-article-color:  #ffffff;
+@main-article-border: #cacaca;
+@main-article-padding-side: 60px;
+@main-article-margin-side: @tablist-width + 60px;
+@main-article-margin-side-shrinked: @main-article-margin-side + @tabpane-width;
+
+//positioning
+@editor-toolbar : 42px;
+@tablist-width : 48px;
+
+@duration: 0.7s; // for panel activation and deactivation
+@pane-padding: 12px;
+
+
+// Border Radius
+.border-radius(@radius: 5px) {
+  -webkit-border-radius: @radius;
+     -moz-border-radius: @radius;
+          border-radius: @radius;
+}
+
+
+.border-top-left-radius(@radius: 5px) {
+  -webkit-border-top-left-radius: @radius;
+     -moz-border-top-left-radius: @radius;
+          border-top-left-radius: @radius;
+}
+
+
+.border-top-right-radius(@radius: 5px) {
+  -webkit-border-top-right-radius: @radius;
+     -moz-border-top-right-radius: @radius;
+          border-top-right-radius: @radius;
+}
+
+
+.border-bottom-right-radius(@radius: 5px) {
+  -webkit-border-bottom-right-radius: @radius;
+     -moz-border-bottom-right-radius: @radius;
+          border-bottom-right-radius: @radius;
+}
+
+
+.border-bottom-left-radius(@radius: 5px) {
+  -webkit-border-bottom-left-radius: @radius;
+     -moz-border-bottom-left-radius: @radius;
+          border-bottom-left-radius: @radius;
+}
+
+// Drop shadows
+.box-shadow(@shadow: 0 1px 3px rgba(0,0,0,.25)) {
+  -webkit-box-shadow: @shadow;
+     -moz-box-shadow: @shadow;
+          box-shadow: @shadow;
+}
+.box-shadow-both(@shadow1 , @shadow2) {
+  -webkit-box-shadow: @shadow1, @shadow2;
+     -moz-box-shadow: @shadow1, @shadow2;
+          box-shadow: @shadow1, @shadow2;
+}
+// Transitions
+.transition(@transition) {
+  -webkit-transition: @transition;
+     -moz-transition: @transition;
+      -ms-transition: @transition;
+       -o-transition: @transition;
+          transition: @transition;
+}

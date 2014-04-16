@@ -1,56 +1,33 @@
-// copied from superdesk base template
+// Body reset
+// ----------
 
-@topspace : 65px;
-@subnav-height: 53px;
-@subnav-mobile-height: 45px;
-@background-main:     #f8f8f8;
-
-// ARTICLE EDIT SCREEN
-
-@tablist-background:  #a1a1a1;
-@tabpane-background:  #f5f5f5;
-@tabpane-border:      #7c7c7c;
-/* default width, but some panes may be wider */
-@tabpane-width:       330px;
-/* we can have two types of panes, small ones (most of them) and big
-  ones (comments, for example) */
-@small-big-pane-delta: 200px;
-@tabcontent-padding: 0;
-
-@main-article-color:  #ffffff;
-@main-article-border: #cacaca;
-@main-article-padding-side: 60px;
-@main-article-margin-side: @tablist-width + 60px;
-@main-article-margin-side-shrinked: @main-article-margin-side + @tabpane-width;
-
-//positioning
-@editor-toolbar : 40px;
-@tablist-width : 48px;
-
-@duration: 0.7s; // for panel activation and deactivation
+body {
+  margin: 0;
+  font-family: @baseFontFamily;
+  font-size: @baseFontSize;
+  color: @textColor;
+  background-color: @bodyBackground;
+}
 
 html, body.article-edit {
     height:100%;
     overflow: visible;
 }
 
+// Links
+// -----
+
+a {
+  color: @linkColor;
+  text-decoration: none;
+}
+a:hover {
+  color: @linkColorHover;
+  text-decoration: underline;
+}
+
 .aloha-ui-toolbar {display:none !important;}
 .aloha-sidebar-bar {display:none !important;}
-
-@approved-comment-color: rgb(111, 160, 13);
-@new-comment-color: rgb(0, 127, 179);;
-@hidden-comment-color: rgb(207, 208, 209);
-@deleted-comment-color: #D48585;
-/* following variable was created by me when i had nothing more
- * precise about comment colors. it will probably disappear with time */
-@comment-gray: #b9b9b9;
-
-
-/* used in "post a comment", "add a snippet" in the panels, and in
- * other parts of the panels */
-@add-element-gray: #ebebeb;
-
-@thumbnail-max-height: 100px;
 
 
 .authoring-environment {
@@ -174,21 +151,18 @@ html, body.article-edit {
                         
                     }
                     i[class^="big-icon-"] {
-                        margin: 8px 0 0 5px;
+                        margin: 9px 0 0 5px;
                     }
                 }
                 &.active {
                     a {
-                        background: @tabpane-background;
-                    /*
-                      &:hover {
-                      background: @tabpane-background;
-                      border: 1px solid #7c7c7c;
-                      border-width: 1px 0 !important;
-                      }
-                      */
+                        background: @tabpane-background;                                        
                     }
                 }
+                &:hover {
+                    background: @tabpane-background;
+                    cursor:pointer;
+                    }                    
             }
         }
     }
@@ -317,7 +291,13 @@ html, body.article-edit {
             .dropdown-menu {
                 min-width: 0;
                 li {
-                    padding: 0 0.5em;
+                    padding: 2px 12px;
+                    font-size: 12px;
+                    &:hover {
+                        color: #fff;
+                        background-color: #007fb3;
+                        cursor: default;
+                    }
                 }
             }
         }
@@ -327,7 +307,7 @@ html, body.article-edit {
             border: none;
             /* copied from bootstrap label in order to match the design */
             padding: .4em .6em .4em .6em;
-            font-size: 80%;
+            font-size: 10px;
             font-weight: 500;
             line-height: 1;
             text-align: center;
@@ -359,10 +339,12 @@ html, body.article-edit {
                 .controls {
                     .glyphicon, .fa {
                         cursor: pointer;
+                        margin: 0 2px;
                     }
                     .glyphicon-chevron-up {
                         float: left;
                         padding:4px;
+                        margin:0;
                     }
                     text-align: right;
 
@@ -437,6 +419,7 @@ html, body.article-edit {
             
             &.open-tabpane {
                 left:@tablist-width;
+                .transition( all @duration ease);
             }
         }
         &.right-tabpane {
@@ -458,6 +441,15 @@ html, body.article-edit {
             &.comments {
                 width: @tabpane-width + @small-big-pane-delta;
             }
+        }
+        > section {
+            padding: 10px @pane-padding @pane-padding;
+        }
+        section ul li {
+            display: block;
+        }
+        .btn + .btn {
+            margin: 0 6px 0 0;
         }
     }
 
@@ -1313,8 +1305,8 @@ html, body.article-edit {
             margin-bottom: 15px;
 
             &:before {
-                font-size: 12px;
-                color: #666;
+                font-size: 13px;
+                color: #333;
                 position: absolute;
                 top: -10px;
                 padding-right: 5px;
@@ -1337,11 +1329,11 @@ html, body.article-edit {
             li[class*="media-"] {
                 position: relative;
                 background: #fff;
-                border: 1px solid #c8c8c8;
-                padding: 7px;
+                border: 1px solid #e0e0e0;
+                padding: 10px;
                 min-height: 50px;
-                margin-bottom: 10px;
-                .box-shadow(0 3px 5px -3px #aaa);
+                margin-bottom: 8px;
+                .box-shadow(0 1px 0px #e0e0e0);
                 .border-radius(4px);
 
                 .dropdown {
@@ -1358,8 +1350,9 @@ html, body.article-edit {
                     .dropdown { 
                         display: block; 
                     }
-                }
-
+                    border: 1px solid #ccc;
+                    .box-shadow(0 1px 0px #ccc);
+                }                
                 &.media-image, &.media-video {
                     figure {
                         border: 1px solid #9d9d9d;
@@ -1377,9 +1370,10 @@ html, body.article-edit {
                         line-height: 15px;
                         font-size: 12px;
                         &:before {
-                            color: #666;
+                            color: #888;
                             text-transform: uppercase;
-                            font-size: 9px;
+                            font-size: 10px;
+                            font-weight: 500;
                             display: block;
                         }
                         &.approved:before {
@@ -1421,8 +1415,23 @@ html, body.article-edit {
                         font-size: 12px;
                     }
                 }
-
-
+                &:first-child {
+                    margin-top: 10px;
+                }
+                .drag-bar {
+                    position: absolute;
+                    left: -2px;
+                    top: 0px;
+                    bottom: 0px;
+                    width: 9px;
+                    border: 3px solid #ccc;
+                    border-width: 2px 0;
+                    background: #ccc url(../../images/drag_bg.png) repeat-y 3px 0;
+                    visibility:hidden;
+                }
+                &:hover .drag-bar {
+                    visibility:visible;
+                }
             }
 
         }
@@ -1677,7 +1686,6 @@ html, body.article-edit {
 
     }
 
-
     .temptabcont p {
         font-size: 14px;
         margin-right: 20px;
@@ -1704,6 +1712,7 @@ html, body.article-edit {
     /* more selectors to increase specificity */
     .navbar-fixed-top.navbar.navbar-default {
         top: @hostTop;
+        border-bottom: 1px solid #d5d5d5;
     }
     .popover {
         max-width: none;
@@ -1724,9 +1733,10 @@ html, body.article-edit {
         width: 100%; /* goes with `inline-block` */
         padding: 5px 10px;
         box-shadow: inset 0 1px 0 #fff,0 1px 5px rgba(0,0,0,0.1);
+        border-bottom: 1px solid #d5d5d5;
     }
     .sf-lower-toolbar {
-        padding: 5px;
+        padding: 6px 5px 8px 5px;
     }
     /* centered nav bar http://stackoverflow.com/a/18538412/393758 */
     .sf-navbar-center {
@@ -1739,11 +1749,12 @@ html, body.article-edit {
 
     .panel-title {
         line-height: 27px;
-        font-size: 18px;
-        font-weight: bold;
+        font-size: 16px;
+        font-weight: 500;
         text-rendering: optimizelegibility;
-        padding-bottom: 10px;
+        padding: 3px 0 4px 0;
         border-bottom: 1px solid #ddd;
+        margin-bottom: 20px;
     }
 
     .draggable-panel-heading {
@@ -1893,7 +1904,7 @@ html, body.article-edit {
     .image-panel {
         .attach-image-section {
             overflow: hidden;
-            padding: 3% 0;
+            padding: 0 0 10px 0;
         }
         .images-wrapper {
             position: relative;
@@ -1906,6 +1917,9 @@ html, body.article-edit {
                 left: 0;
                 overflow: auto;
                 padding-top: 12px;
+                &::-webkit-scrollbar { width: 8px; height: 8px; margin: -1px 0; }
+                &::-webkit-scrollbar-thumb { background: #949494; }
+                &::-webkit-scrollbar-thumb:hover { background: #6e6e6e; }
                 .draggable {
                     cursor: all-scroll;
                 }
@@ -1956,14 +1970,17 @@ html, body.article-edit {
             left: @pane-padding;
         }
         .list.high {
-            top: 100px + 160px;
+            top: 100px + 140px;
         }
         .list.low {
-            top: @panel-height + 75px + 150px;
+            top: @panel-height + 75px + 207px;
         }
 
         .invisible {
             visibility: hidden;
+        }
+        .panel-title {
+            margin-bottom: 0;
         }
         .commenting-options {
             margin-top: 0px;
@@ -1976,7 +1993,10 @@ html, body.article-edit {
                 height: 21px;
             }
             button {
-                margin-top: -1px;
+                margin-top: -2px;
+                margin-left: 4px;
+                padding: 4px 10px 5px 10px;   
+                line-height: 10px;
             }
             label {
                 font-weight: normal;
@@ -2029,7 +2049,7 @@ html, body.article-edit {
              margin:6px 0 10px 0;
             .filters {
                 font-size: 13px;
-                padding: 5px 0 10px 0;
+                padding: 12px 2px 6px 10px;
                 text-transform: capitalize;
                 .filters-label { color: @comment-gray; }
                 .pending-check { color: @new-comment-color;}
@@ -2047,7 +2067,6 @@ html, body.article-edit {
                 }
             }
         }
-
     }
 
     .embed-panel {
@@ -2059,10 +2078,10 @@ html, body.article-edit {
             bottom: @pane-padding;
             left: @pane-padding;
             &.high {
-                top: 100px;
+                top: 120px;
             }
             &.low {
-                top: 325px;
+                top: 365px;
             }
         }
     }
@@ -2071,7 +2090,7 @@ html, body.article-edit {
 
     .embed-panel, .comments-panel {
         .panel-title-button-group .btn {
-            padding: 6px 12px;
+            padding: 2px 10px;
             i {
                 font-size: 14px;
             }
@@ -2079,6 +2098,7 @@ html, body.article-edit {
         textarea {
             width: 100%;
             padding: 5px;
+            height:100px;
             resize: none;
         }
         .editor-input {

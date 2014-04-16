@@ -9,7 +9,7 @@
   </div>
   <div class="attach-image-section">
     <button
-       class="btn btn-default"
+       class="btn btn-default btn-sm"
        id="add-media"
        data-test-button="image-attach"
        role="button"
@@ -29,6 +29,7 @@
            data-width="{{defaultWidth}}"
            data-id="{{image.id}}"
            >
+           <div class="drag-bar"></div>
           <div class="detach"
                ng-click="detachImage(image.id)"
                >
