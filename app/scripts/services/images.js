@@ -11,17 +11,21 @@ angular.module('authoringEnvironmentApp').service('images', [
         // AngularJS will instantiate a singleton by calling "new" on this function
         var service = this;
         var root = configuration.API.full;
+
         article.promise.then(function (article) {
             service.article = article;
+            service.loadAttached(article);
         });
+
         this.tracker = pageTracker.getTracker({ max: 100 });
         this.loaded = [];
         this.displayed = [];
-        this.collected = [];
+        this.collected = [];  // list of collected images (those in basket)
         this.attached = [];
         this.includedIndex = 0;
         this.included = {};
         this.itemsPerPage = 10;
+
         /* at the beginning we want do display the results immediately */
         this.init = function () {
             this.load(this.tracker.next()).success(function (data) {
@@ -40,13 +44,34 @@ angular.module('authoringEnvironmentApp').service('images', [
             });
         };
         this.load = function (page) {
-            var url = root + '/images?items_per_page=500&page=' + page;
+            var url = root + '/images?items_per_page=50&page=' + page;
             var promise = $http.get(url);
             promise.error(function () {
                 service.tracker.remove(page);
             });
             return promise;
         };
+
+        /**
+        * Loads image objects attached to the article and initializes
+        *  the `attached` array (NOTE: any existing items are discarded).
+        *
+        * @method loadAttached
+        * @param article {Object} article object for which to load the
+        *     attached images.
+        */
+        this.loadAttached = function (article) {
+            var url = [
+                    root, 'articles',
+                    article.number, article.language,
+                    'images'
+                ].join('/');
+
+            $http.get(url).then(function (result) {
+                service.attached = result.data.items;
+            });
+        };
+
         // produce a matching function suitable for finding. find it
         // confusing? hey that's functional programming dude!
         this.matchMaker = function (id) {
@@ -68,6 +93,13 @@ angular.module('authoringEnvironmentApp').service('images', [
             service.collected = [];
             modal.hide();
         };
+
+        /**
+        * Attaches all images in the basket to the article and closes
+        * the modal at the end.
+        *¸
+        * @method attachAll
+        */
         this.attachAll = function () {
             service.collected.forEach(function (image) {
                 service.attach(image.id);
@@ -75,37 +107,55 @@ angular.module('authoringEnvironmentApp').service('images', [
             service.collected = [];
             modal.hide();
         };
+
+        /**
+        * Attaches an image to the article (using HTTP LINK). If image is
+        * already attached, it does not do anything.
+        *
+        * @method attach
+        * @param id {Number} ID of an image to attach
+        */
         this.attach = function (id) {
-            var match = this.matchMaker(id);
+            var link,
+                match = this.matchMaker(id),
+                url;
+
             if (_.find(this.attached, match)) {
                 $log.debug('image already attached, ignoring attach request');
-            } else {
-                var url = root + '/articles/' + service.article.number + '/' + service.article.language;
-                var link = '<' + root + '/images/' + id + '>';
-                /* this could cause some troubles depending on the
-                 * setting of the server (OPTIONS request), thus debug
-                 * log may be useful to reproduce the original
-                 * request */
-                $log.debug('sending link request');
-                $log.debug(url);
-                $log.debug(link);
-                $http({
-                    url: url,
-                    method: 'LINK',
-                    headers: { Link: link }
-                }).success(function () {
-                    var image = _.find(service.displayed, match);
-                    service.attached.push(image);
-                    $http.get(root + '/images/' + image.id).success(function (data) {
+                return;
+            }
+
+            url = root + '/articles/' + service.article.number +
+                '/' + service.article.language;
+
+            link = '<' + root + '/images/' + id + '>';
+
+            /* this could cause some trouble depending on the
+             * setting of the server (OPTIONS request), thus debug
+             * log may be useful to reproduce the original
+             * request */
+            $log.debug('sending link request');
+            $log.debug(url);
+            $log.debug(link);
+
+            $http({
+                url: url,
+                method: 'LINK',
+                headers: { Link: link }
+            }).success(function () {
+                var image = _.find(service.displayed, match);
+                service.attached.push(image);
+                $http.get(root + '/images/' + image.id).success(
+                    function (data) {
                         _.forOwn(data, function (value, key) {
                             if (!(key in image)) {
                                 image[key] = value;
                             }
                         });
                     });
-                });
-            }
+            });
         };
+
         this.detach = function (id) {
             var match = this.matchMaker(id);
             if (_.find(this.attached, match)) {

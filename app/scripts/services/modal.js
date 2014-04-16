@@ -12,8 +12,8 @@ angular.module('authoringEnvironmentApp').service('modal', [
         // AngularJS will instantiate a singleton by calling "new" on this function
         // jQuery selector for the modal's root DOM element
         var selector = '#myModal';
-        var service = this;
-        // alias for the modal service itself
+        var service = this;  // alias for the modal service itself
+
         /**
         * A flag indicating whether the modal is visible or not
         * @property visible
@@ -21,7 +21,7 @@ angular.module('authoringEnvironmentApp').service('modal', [
         * @default false
         */
         this.visible = false;
-        // Object {title: "Attach Image", templateUrl: "views/attach-image.html"}
+
         /**
         * Make modal visible.
         *
@@ -34,9 +34,15 @@ angular.module('authoringEnvironmentApp').service('modal', [
             this.title = opt.title;
             // could also be undefined
             this.url = opt.templateUrl;
-            $(selector).modal('show');
+
+            opt.backdrop = 'static';
+            opt.keyboard = false;
+            opt.show = true;
+
+            $(selector).modal(opt);
             service.visible = true;
         };
+
         /**
         * Make modal invisible.
         *

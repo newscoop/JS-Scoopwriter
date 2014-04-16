@@ -5,8 +5,9 @@
   <div
      ng-repeat="image in images.displayed"
      class="thumbnail-wrapper"
-     ng-class="{attached: images.isCollected(image.id)}"
-     ng-click="images.toggleCollect(image.id)"
+     ng-class="{attached: images.isAttached(image.id),
+                collected: images.isCollected(image.id)}"
+     ng-click="thumbnailClicked(image.id)"
      >
     <div class="toggler">
       <span class="glyphicon" ng-class="images.togglerClass(image.id)"></span>
@@ -15,16 +16,19 @@
        class="thumbnail" 
        ng-src="{{root}}/images/{{image.basename}}"
        >
+      <div>
+        {{image.description || "No description"}}<br/>
+        <span class="size-info">{{image.width}} x {{image.height}}</span>
+      </div>
   </div>
+
   <div
      class="more-button-wrapper"
      >
     <button
        type="button"
        class="btn btn-default"
-       ng-mouseover="images.more()"
-       >
-      Show more images
-    </button>
+       ng-click="images.more()"
+       >Load more</button>
   </div>
 </div>

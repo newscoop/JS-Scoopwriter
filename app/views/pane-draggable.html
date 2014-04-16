@@ -9,7 +9,7 @@
   </div>
   <div class="attach-image-section">
     <button
-       class="btn btn-default"
+       class="btn btn-default btn-sm"
        id="add-media"
        data-test-button="image-attach"
        role="button"
@@ -22,11 +22,16 @@
     <div class="media-tab">
       <ul class="media-items media-images" id="media-images">
         <li
-           class="media-image"
+           class="media-image draggable"
            ng-repeat="image in images.attached"
+           sf-draggable
+           data-draggable-type="image"
+           data-width="{{defaultWidth}}"
+           data-id="{{image.id}}"
            >
+           <div class="drag-bar"></div>
           <div class="detach"
-               ng-click="images.detach(image.id)"
+               ng-click="detachImage(image.id)"
                >
             <span class="glyphicon glyphicon-remove"></span>
           </div>
@@ -34,13 +39,7 @@
             <span class="glyphicon glyphicon-ok"></span>
           </div>
           <figure>
-            <img
-               ng-src="{{root}}/images/{{image.basename}}"
-               sf-draggable
-               data-draggable-type="image"
-               data-width="{{defaultWidth}}"
-               data-id="{{image.id}}"
-               >
+            <img ng-src="{{root}}/images/{{image.basename}}">
           </figure>
           <div class="media-description approved">
             {{image.description || "No description"}}

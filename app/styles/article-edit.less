@@ -1,56 +1,33 @@
-// copied from superdesk base template
+// Body reset
+// ----------
 
-@topspace : 65px;
-@subnav-height: 53px;
-@subnav-mobile-height: 45px;
-@background-main:     #f8f8f8;
-
-// ARTICLE EDIT SCREEN
-
-@tablist-background:  #a1a1a1;
-@tabpane-background:  #f5f5f5;
-@tabpane-border:      #7c7c7c;
-/* default width, but some panes may be wider */
-@tabpane-width:       330px;
-/* we can have two types of panes, small ones (most of them) and big
-  ones (comments, for example) */
-@small-big-pane-delta: 200px;
-@tabcontent-padding: 0;
-
-@main-article-color:  #ffffff;
-@main-article-border: #cacaca;
-@main-article-padding-side: 60px;
-@main-article-margin-side: @tablist-width + 60px;
-@main-article-margin-side-shrinked: @main-article-margin-side + @tabpane-width;
-
-//positioning
-@editor-toolbar : 40px;
-@tablist-width : 48px;
-
-@duration: 0.7s; // for panel activation and deactivation
+body {
+  margin: 0;
+  font-family: @baseFontFamily;
+  font-size: @baseFontSize;
+  color: @textColor;
+  background-color: @bodyBackground;
+}
 
 html, body.article-edit {
     height:100%;
     overflow: visible;
 }
 
+// Links
+// -----
+
+a {
+  color: @linkColor;
+  text-decoration: none;
+}
+a:hover {
+  color: @linkColorHover;
+  text-decoration: underline;
+}
+
 .aloha-ui-toolbar {display:none !important;}
 .aloha-sidebar-bar {display:none !important;}
-
-@approved-comment-color: rgb(111, 160, 13);
-@new-comment-color: rgb(0, 127, 179);;
-@hidden-comment-color: rgb(207, 208, 209);
-@deleted-comment-color: #D48585;
-/* following variable was created by me when i had nothing more
- * precise about comment colors. it will probably disappear with time */
-@comment-gray: #b9b9b9;
-
-
-/* used in "post a comment", "add a snippet" in the panels, and in
- * other parts of the panels */
-@add-element-gray: #ebebeb;
-
-@thumbnail-max-height: 100px;
 
 
 .authoring-environment {
@@ -173,21 +150,18 @@ html, body.article-edit {
                         
                     }
                     i[class^="big-icon-"] {
-                        margin: 8px 0 0 5px;
+                        margin: 9px 0 0 5px;
                     }
                 }
                 &.active {
                     a {
-                        background: @tabpane-background;
-                    /*
-                      &:hover {
-                      background: @tabpane-background;
-                      border: 1px solid #7c7c7c;
-                      border-width: 1px 0 !important;
-                      }
-                      */
+                        background: @tabpane-background;                                        
                     }
                 }
+                &:hover {
+                    background: @tabpane-background;
+                    cursor:pointer;
+                    }                    
             }
         }
     }
@@ -217,12 +191,17 @@ html, body.article-edit {
     comment {
         display: block;
         background: white;
-        border-bottom: solid 3px @tabpane-background;
+        border-bottom: solid 5px @tabpane-background;
         font-size: 12px;
         /* following colors are copied from a mock from Darko */
         .subject {color: #808080;}
         .date {color: rgb(128, 128, 128);}
-        .author-name {color: #333;}
+        .author-name {
+            color: #333;
+            &:hover {
+                cursor: pointer;
+            }
+        }
         /* end colors copied from the mock */
         &.comment-pending {
             .left-border-wrapper {
@@ -259,12 +238,19 @@ html, body.article-edit {
         input[type="checkbox"] {
             float: left;
             width: 22px;
+            margin: 2px 0 0;
         }
         .status-dropdown {
             .dropdown-menu {
                 min-width: 0;
                 li {
-                    padding: 0 0.5em;
+                    padding: 2px 12px;
+                    font-size: 12px;
+                    &:hover {
+                        color: #fff;
+                        background-color: #007fb3;
+                        cursor: default;
+                    }
                 }
             }
         }
@@ -273,13 +259,15 @@ html, body.article-edit {
             color: white;
             border: none;
             /* copied from bootstrap label in order to match the design */
-            padding: .2em .6em .3em;
-            font-size: 75%;
-            font-weight: bold;
+            padding: .4em .6em .4em .6em;
+            font-size: 10px;
+            font-weight: 500;
             line-height: 1;
             text-align: center;
             vertical-align: baseline;
             border-radius: .25em;
+            text-shadow:none;
+            margin: 0 2px;
             /* end of rules copied from bootstrap label */
         }
         .right {
@@ -298,15 +286,18 @@ html, body.article-edit {
             border-left: solid 3px @hidden-comment-color;
             height: 100%;
             .bottom-border-wrapper {
-                border-bottom: solid 1px gainsboro;
-                padding: 10px;
+                border-bottom: solid 1px #cbcbcb;
+                padding: 10px 5px 8px 5px;
                 height: 100%;
                 .controls {
                     .glyphicon, .fa {
                         cursor: pointer;
+                        margin: 0 2px;
                     }
                     .glyphicon-chevron-up {
                         float: left;
+                        padding:4px;
+                        margin:0;
                     }
                     text-align: right;
 
@@ -318,12 +309,15 @@ html, body.article-edit {
                         color: #bbb;
                      }
                 }
+                .image-and-author-details {
+                    .dropdown { margin-top: -2px; }
+                }
             }
         }
         &.collapsed {
             .right {
                 white-space: nowrap;
-                overflow: hidden;
+                /*overflow: hidden;*/
                 text-overflow: ellipsis;
             }
             .date, .author-name {
@@ -332,8 +326,15 @@ html, body.article-edit {
             .comment, .status-dropdown, .controls, .author {
                 display: none;
             }
-            .image-and-author-details, .subject {
+            .image-and-author-details {
                 display: inline;
+            }
+            .subject { 
+                display:inline;
+                &:hover { cursor: pointer; }
+            }
+            .image-and-author-details {
+                img { margin-top: -2px; }
             }
         }
         &.expanded {
@@ -342,6 +343,9 @@ html, body.article-edit {
             }
             .comment {
                 font-size: small;
+            }
+            .date, .author-name {
+                display:inline;
             }
         }
     }
@@ -368,6 +372,7 @@ html, body.article-edit {
             
             &.open-tabpane {
                 left:@tablist-width;
+                .transition( all @duration ease);
             }
         }
         &.right-tabpane {
@@ -389,6 +394,15 @@ html, body.article-edit {
             &.comments {
                 width: @tabpane-width + @small-big-pane-delta;
             }
+        }
+        > section {
+            padding: 10px @pane-padding @pane-padding;
+        }
+        section ul li {
+            display: block;
+        }
+        .btn + .btn {
+            margin: 0 6px 0 0;
         }
     }
 
@@ -1244,8 +1258,8 @@ html, body.article-edit {
             margin-bottom: 15px;
 
             &:before {
-                font-size: 12px;
-                color: #666;
+                font-size: 13px;
+                color: #333;
                 position: absolute;
                 top: -10px;
                 padding-right: 5px;
@@ -1268,11 +1282,11 @@ html, body.article-edit {
             li[class*="media-"] {
                 position: relative;
                 background: #fff;
-                border: 1px solid #c8c8c8;
-                padding: 7px;
+                border: 1px solid #e0e0e0;
+                padding: 10px;
                 min-height: 50px;
-                margin-bottom: 10px;
-                .box-shadow(0 3px 5px -3px #aaa);
+                margin-bottom: 8px;
+                .box-shadow(0 1px 0px #e0e0e0);
                 .border-radius(4px);
 
                 .dropdown {
@@ -1289,8 +1303,9 @@ html, body.article-edit {
                     .dropdown { 
                         display: block; 
                     }
-                }
-
+                    border: 1px solid #ccc;
+                    .box-shadow(0 1px 0px #ccc);
+                }                
                 &.media-image, &.media-video {
                     figure {
                         border: 1px solid #9d9d9d;
@@ -1308,9 +1323,10 @@ html, body.article-edit {
                         line-height: 15px;
                         font-size: 12px;
                         &:before {
-                            color: #666;
+                            color: #888;
                             text-transform: uppercase;
-                            font-size: 9px;
+                            font-size: 10px;
+                            font-weight: 500;
                             display: block;
                         }
                         &.approved:before {
@@ -1352,8 +1368,23 @@ html, body.article-edit {
                         font-size: 12px;
                     }
                 }
-
-
+                &:first-child {
+                    margin-top: 10px;
+                }
+                .drag-bar {
+                    position: absolute;
+                    left: -2px;
+                    top: 0px;
+                    bottom: 0px;
+                    width: 9px;
+                    border: 3px solid #ccc;
+                    border-width: 2px 0;
+                    background: #ccc url(../../images/drag_bg.png) repeat-y 3px 0;
+                    visibility:hidden;
+                }
+                &:hover .drag-bar {
+                    visibility:visible;
+                }
             }
 
         }
@@ -1608,7 +1639,6 @@ html, body.article-edit {
 
     }
 
-
     .temptabcont p {
         font-size: 14px;
         margin-right: 20px;
@@ -1635,6 +1665,7 @@ html, body.article-edit {
     /* more selectors to increase specificity */
     .navbar-fixed-top.navbar.navbar-default {
         top: @hostTop;
+        border-bottom: 1px solid #d5d5d5;
     }
     .popover {
         max-width: none;
@@ -1655,9 +1686,10 @@ html, body.article-edit {
         width: 100%; /* goes with `inline-block` */
         padding: 5px 10px;
         box-shadow: inset 0 1px 0 #fff,0 1px 5px rgba(0,0,0,0.1);
+        border-bottom: 1px solid #d5d5d5;
     }
     .sf-lower-toolbar {
-        padding: 5px;
+        padding: 6px 5px 8px 5px;
     }
     /* centered nav bar http://stackoverflow.com/a/18538412/393758 */
     .sf-navbar-center {
@@ -1670,11 +1702,12 @@ html, body.article-edit {
 
     .panel-title {
         line-height: 27px;
-        font-size: 18px;
-        font-weight: bold;
+        font-size: 16px;
+        font-weight: 500;
         text-rendering: optimizelegibility;
-        padding-bottom: 10px;
+        padding: 3px 0 4px 0;
         border-bottom: 1px solid #ddd;
+        margin-bottom: 20px;
     }
 
     .draggable-panel-heading {
@@ -1728,47 +1761,59 @@ html, body.article-edit {
         }
         .basket {
             background: #666666;
-            max-height: @thumbnail-max-height + 50;
-            white-space: nowrap; /* to scroll horizontally */
-            overflow: auto;
+            height: @thumbnail-max-height + 90;
+            overflow-x: hidden;
+            overflow-y: scroll;
         }
         .thumbnail-wrapper {
             position: relative;
+            display: inline-block;
+            margin: 10px;
+            padding: 5px;
+
+            background-color: white;
             border-width: 1px;
             border-style: solid;
             border-color: #d0d0d0;
             border-radius: 2px;
-            display: inline-block;
-            margin: 10px;
+
             .toggler {
                 display: none;
                 position: absolute;
                 color: white;
-                background: #0079cc;
+                background: black;
                 padding: 7px;
                 line-height: 0;
+                border-right: 2px solid white;
+                border-bottom: 2px solid white;
             }
             .thumbnail {
                 display: inline-block;
                 max-height: @thumbnail-max-height;
-                border-color: white;
-                border-width: 6px;
                 margin: 0;
                 padding: 0;
             }
         }
-        .archive .thumbnail-wrapper:hover {
+
+        .archive .thumbnail-wrapper:hover, .basket .thumbnail-wrapper:hover {
+            cursor: pointer;
+            border-color: black;
             .toggler {
                 display: inline;
             }
         }
-        .thumbnail-wrapper.attached, .thumbnail-wrapper:hover {
-            border-color: white;
-            .thumbnail {
-                border-radius: 0;
-                border-color: #0079CC;
+
+        .archive .thumbnail-wrapper.attached, .archive .thumbnail-wrapper.collected {
+            opacity: 0.25;
+            &:hover {
+                border-color: #d0d0d0;
+                cursor: default;
+                .toggler {
+                    display: none;
+                }
             }
         }
+
         .web {
             input {
                 width: 100%;
@@ -1795,15 +1840,16 @@ html, body.article-edit {
             }
         }
         .archive {
+            height: 400px;
             max-height: 400px;
-            overflow: scroll;
+            overflow-y: scroll;
         }
     }
 
     .image-panel {
         .attach-image-section {
             overflow: hidden;
-            padding: 3% 0;
+            padding: 0 0 10px 0;
         }
         .images-wrapper {
             position: relative;
@@ -1816,6 +1862,12 @@ html, body.article-edit {
                 left: 0;
                 overflow: auto;
                 padding-top: 12px;
+                &::-webkit-scrollbar { width: 8px; height: 8px; margin: -1px 0; }
+                &::-webkit-scrollbar-thumb { background: #949494; }
+                &::-webkit-scrollbar-thumb:hover { background: #6e6e6e; }
+                .draggable {
+                    cursor: all-scroll;
+                }
                 li {
                     overflow: hidden; /* for the green attached checkmark */
                 }
@@ -1828,6 +1880,7 @@ html, body.article-edit {
                     right: 3px;
                     top: 2px;
                     color: gainsboro;
+                    cursor: pointer;
                     &:hover {
                         color: gray;
                     }
@@ -1854,49 +1907,57 @@ html, body.article-edit {
     .comments-panel {
         @panel-height: 200px;
         .add-element.expanded {
-            height: @panel-height;
+            /*height: @panel-height;*/
         }
         .list {
             right: @pane-padding;
             bottom: @pane-padding;
             left: @pane-padding;
         }
-        /* TODO: adjust for the new controls box for enabling/disabling
-        comments ... add some additional height (have it in a variable) */
         .list.high {
-            top: 100px + 150px;
+            top: 100px + 140px;
         }
         .list.low {
-            top: @panel-height + 75px + 150px;
+            top: @panel-height + 75px + 207px;
         }
 
         .invisible {
             visibility: hidden;
         }
-
+        .panel-title {
+            margin-bottom: 0;
+        }
         .commenting-options {
-            margin-top: 10px;
-            padding: 5px 10px 5px 45px;
-            font-size: 13px;
+            margin-top: 0px;
+            margin-bottom: 20px;
+            padding: 7px 10px 7px 50px;
+            font-size: 12px;
             border-bottom: 3px solid black;
 
             select {
                 height: 21px;
             }
             button {
-                margin-top: -1px;
+                margin-top: -2px;
+                margin-left: 4px;
+                padding: 4px 10px 5px 10px;   
+                line-height: 10px;
             }
             label {
                 font-weight: normal;
                 color: #808080;
+                margin: 0 3px 0 10px;
             }
             span {
                 display: inline-block;
-                width: 35px;
+                /*width: 32px;*/
+                padding: 2px 4px 2px 4px;
                 text-align: center;
-                border-radius: 3px;
+                border-radius: 2px;
                 color: white;
-                font-weight: bold;
+                font-weight: 700;
+                font-size: 10px;
+                line-height: normal;
                 text-transform: uppercase;
                 &.yes {
                     background-color: #6FA00D;
@@ -1929,15 +1990,20 @@ html, body.article-edit {
 
         .comment-controls {
             background-color: @add-element-gray;
+            border-bottom: 2px solid #d7d7d7;
+             margin:6px 0 10px 0;
             .filters {
                 font-size: 13px;
-                padding: 5px 0;
+                padding: 12px 2px 6px 10px;
                 text-transform: capitalize;
                 .filters-label { color: @comment-gray; }
                 .pending-check { color: @new-comment-color;}
                 .approved-check { color: @approved-comment-color;}
                 .hidden-check { color: @hidden-comment-color;}
                 * { margin: 2px; }
+                span { margin: 0 4px; }
+                select { margin: 0px 10px 2px 0; }
+                input { margin: -2px 1px 0 0; vertical-align: middle; }
             }
             .status-buttons {
                 padding: 10px;
@@ -1946,22 +2012,21 @@ html, body.article-edit {
                 }
             }
         }
-
     }
 
     .embed-panel {
         .add-element.expanded {
-            height: 250px;
+            /*height: 250px;*/
         }
         .list {
             right: @pane-padding;
             bottom: @pane-padding;
             left: @pane-padding;
             &.high {
-                top: 100px;
+                top: 120px;
             }
             &.low {
-                top: 325px;
+                top: 365px;
             }
         }
     }
@@ -1970,7 +2035,7 @@ html, body.article-edit {
 
     .embed-panel, .comments-panel {
         .panel-title-button-group .btn {
-            padding: 6px 12px;
+            padding: 2px 10px;
             i {
                 font-size: 14px;
             }
@@ -1978,6 +2043,7 @@ html, body.article-edit {
         textarea {
             width: 100%;
             padding: 5px;
+            height:100px;
             resize: none;
         }
         .editor-input {
@@ -1991,23 +2057,34 @@ html, body.article-edit {
         .list {
             overflow: auto;
             position: absolute;
+            &::-webkit-scrollbar { width: 8px; height: 8px; margin: -1px 0; }
+            &::-webkit-scrollbar-thumb { background: #949494; }
+            &::-webkit-scrollbar-thumb:hover { background: #6e6e6e; }
         }
         .add-element {
             overflow: auto;
             background-color: @add-element-gray;
             margin: 10px 0;
             .heading {
+                padding: 0px;
                 button {
                     line-height: 1em;
-                    
+                    box-shadow: none;
+                    padding: 8px 8px 10px 8px;
+                    margin: 0;
+                    width: 100%;
+                    text-align: left;
                     .add-text {
                         font-size: 12px;
                         padding: 0 5px;
                     }
+                    &:hover {
+                        background:#e6e6e6;
+                    }
                 }
             }
             .body {
-                padding: 5px;
+                padding: 15px;
                 .controls {
                     overflow: hidden;
                 }

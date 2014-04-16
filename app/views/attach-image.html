@@ -18,23 +18,32 @@
     </div>
   </div>
   <div class="row basket-head">
-    <span class="description">ATTACHED IMAGES</span>
+    <span class="description">SELECTED IMAGES</span>
     <span class="badge" ng-bind="images.collected.length"></span>
-    images
+    image{{(images.collected.length !== 1) ? 's' : ''}}
   </div>
+
   <div class="row basket">
     <div
        ng-repeat="image in images.collected"
        class="thumbnail-wrapper"
        ng-class="{attached: images.isAttached(image.id)}"
-       ng-click="images.toggleAttach(image.id)"
+       ng-click="images.toggleCollect(image.id)"
        >
+      <div class="toggler">
+        <span class="glyphicon glyphicon-minus"></span>
+      </div>
       <img
          class="thumbnail" 
          ng-src="{{root}}/images/{{image.basename}}"
          >
+      <div>
+        {{image.description || "No description"}}<br/>
+        <span class="size-info">{{image.width}} x {{image.height}}</span>
+      </div>
     </div>
   </div>
+
   <div class="modal-footer">
     <button
        type="button"
@@ -46,8 +55,9 @@
     </button>
     <button
        type="button"
-       ng-click="images.attachAll()"
-       class="btn btn-primary">
+       class="btn btn-primary"
+       ng-disabled="images.collected.length < 1"
+       ng-click="images.attachAll()">
       Attach Images
     </button>
   </div>
