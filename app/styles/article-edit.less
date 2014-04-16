@@ -107,6 +107,7 @@ html, body.article-edit {
     }
 
     .more-button-wrapper {
+        clear: both;
         text-align: center;
     }
 
@@ -1803,6 +1804,7 @@ html, body.article-edit {
         .thumbnail-wrapper {
             position: relative;
             display: inline-block;
+            float: left;
             margin: 10px;
             padding: 5px;
             height: 145px;
@@ -1829,13 +1831,19 @@ html, body.article-edit {
                 margin: 0;
                 padding: 0;
             }
+            .img-metadata {
+                max-width: @thumbnail-max-height * 2;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
         }
 
         .archive .thumbnail-wrapper:hover, .basket .thumbnail-wrapper:hover {
             cursor: pointer;
             border-color: black;
             .toggler {
-                display: inline;
+                display: block;
             }
         }
 

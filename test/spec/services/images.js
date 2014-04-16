@@ -87,7 +87,7 @@ describe('Service: Images', function () {
     describe('loadAttached() method', function () {
         beforeEach(function () {
             $httpBackend
-                .expect('GET', e + '/articles/64/de/images')
+                .expect('GET', e + '/articles/64/de/images?expand=true')
                 .respond(mock);
         });
 
@@ -108,10 +108,10 @@ describe('Service: Images', function () {
     describe('after initialization', function() {
         beforeEach(function() {
             $httpBackend
-                .expect('GET', e+'/images?items_per_page=50&page=1')
+                .expect('GET', e+'/images?items_per_page=50&page=1&expand=true')
                 .respond(mock);
             $httpBackend
-                .expect('GET', e+'/images?items_per_page=50&page=2')
+                .expect('GET', e+'/images?items_per_page=50&page=2&expand=true')
                 .respond(mock);
             images.init();
             $httpBackend.flush(1);
@@ -187,15 +187,6 @@ describe('Service: Images', function () {
                         )
                         .respond({});
                     images.attachAll();
-                    $httpBackend
-                        .expectGET(rootURI + '/images/3')
-                        .respond({});
-                    $httpBackend
-                        .expectGET(rootURI + '/images/7')
-                        .respond({
-                            property: 'bla',
-                            otherProperty: 'bla bla bla'
-                        });
                     $httpBackend.flush();
                 });
                 it('sent the headers correctly', function() {
@@ -274,7 +265,7 @@ describe('Service: Images', function () {
         it('handles the loaded buffer properly', function() {
             $httpBackend.flush();
             $httpBackend
-                .expect('GET', e+'/images?items_per_page=50&page=3')
+                .expect('GET', e+'/images?items_per_page=50&page=3&expand=true')
                 .respond(mock);
             expect(images.loaded.length).toBe(10);
             expect(images.displayed.length).toBe(10);
@@ -284,7 +275,9 @@ describe('Service: Images', function () {
             $httpBackend.flush();
             expect(images.loaded.length).toBe(10);
             expect(images.displayed.length).toBe(20);
-            $httpBackend.expectGET(e+'/images?items_per_page=50&page=4').respond({});
+            $httpBackend
+                .expectGET(e+'/images?items_per_page=50&page=4&expand=true')
+                .respond({});
             images.more();
             expect(images.loaded.length).toBe(0);
             expect(images.displayed.length).toBe(30);
@@ -294,16 +287,16 @@ describe('Service: Images', function () {
     describe('after loading pages successively', function() {
         beforeEach(function() {
             $httpBackend
-                .expect('GET', e+'/images?items_per_page=50&page=1')
+                .expect('GET', e+'/images?items_per_page=50&page=1&expand=true')
                 .respond(mock);
             $httpBackend
-                .expect('GET', e+'/images?items_per_page=50&page=2')
+                .expect('GET', e+'/images?items_per_page=50&page=2&expand=true')
                 .respond(mock);
             $httpBackend
-                .expect('GET', e+'/images?items_per_page=50&page=3')
+                .expect('GET', e+'/images?items_per_page=50&page=3&expand=true')
                 .respond(mock);
             $httpBackend
-                .expect('GET', e+'/images?items_per_page=50&page=4')
+                .expect('GET', e+'/images?items_per_page=50&page=4&expand=true')
                 .respond(mock);
             images.init();
             images.more();

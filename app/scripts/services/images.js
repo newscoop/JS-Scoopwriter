@@ -45,7 +45,8 @@ angular.module('authoringEnvironmentApp').service('images', [
             });
         };
         this.load = function (page) {
-            var url = root + '/images?items_per_page=50&page=' + page;
+            var url = root + '/images?items_per_page=50&page=' + page +
+                '&expand=true';
             var promise = $http.get(url);
             promise.error(function () {
                 service.tracker.remove(page);
@@ -65,7 +66,7 @@ angular.module('authoringEnvironmentApp').service('images', [
             var url = [
                     root, 'articles',
                     article.number, article.language,
-                    'images'
+                    'images?expand=true'
                 ].join('/');
 
             $http.get(url).then(function (result) {
@@ -146,14 +147,6 @@ angular.module('authoringEnvironmentApp').service('images', [
             }).success(function () {
                 var image = _.find(service.displayed, match);
                 service.attached.push(image);
-                $http.get(root + '/images/' + image.id).success(
-                    function (data) {
-                        _.forOwn(data, function (value, key) {
-                            if (!(key in image)) {
-                                image[key] = value;
-                            }
-                        });
-                    });
             });
         };
 

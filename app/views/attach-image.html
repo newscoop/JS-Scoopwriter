@@ -32,6 +32,7 @@
        class="thumbnail-wrapper"
        ng-class="{attached: images.isAttached(image.id)}"
        ng-click="images.toggleCollect(image.id)"
+       title="{{image.description || 'No description'}}"
        >
       <div class="toggler">
         <span class="glyphicon glyphicon-minus"></span>
@@ -39,8 +40,9 @@
       <img
          class="thumbnail" 
          ng-src="{{root}}/images/{{image.basename}}"
+         alt="{{image.description || 'No description'}}"
          >
-      <div>
+      <div class="img-metadata">
         {{image.description || "No description"}}<br/>
         <span class="size-info">{{image.width}} x {{image.height}}</span>
       </div>
