@@ -22,6 +22,7 @@ angular.module('authoringEnvironmentApp').service('images', [
         this.displayed = [];
         this.collected = [];  // list of collected images (those in basket)
         this.attached = [];
+        this.uploaded = [];  // images uploaded in one "modal session"
         this.includedIndex = 0;
         this.included = {};
         this.itemsPerPage = 10;
@@ -240,5 +241,15 @@ angular.module('authoringEnvironmentApp').service('images', [
                 this.collect(id);
             }
         };
+
+        // retrieve uploded image's data and add it to collected
+        // TODO: dosctring and tests
+        this.collectUploaded = function (imgUrl) {
+            $http.get(imgUrl).success(function (data) {
+                service.displayed.push(data);
+                service.toggleCollect(data.id);
+            });
+        };
+
     }
 ]);

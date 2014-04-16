@@ -18,7 +18,10 @@ angular.module('authoringEnvironmentApp').controller('UploadFromCompCtrl', [
 
         var apiRoot = configuration.API.full;
 
-        $scope.images2upload = [];
+        $scope.images2upload = [];  // TODO: reset on modal open :)
+        // or move this to images - better, more controll, easier to synchronize
+        // stuff ... images is a utility object for manupulating images
+        // in a modal (dplayed, uplaoded etc.)
 
         // add new files to the list of files to upload
         // filtered list of images (only image files)
@@ -46,11 +49,12 @@ angular.module('authoringEnvironmentApp').controller('UploadFromCompCtrl', [
 
             file.startUpload = function () {
                 var fd = new FormData(),
-                    fileHandle = this,
+                    fileObj = this,
                     reader = getFileReader.get();
 
+                // TODO: remove image description, it will be edited elsewhere
                 fd.append('image[description]', 'this is image description');
-                fd.append('image[image]', fileHandle);
+                fd.append('image[image]', fileObj);
 
                 $upload.http({
                     method: 'POST',
@@ -62,20 +66,28 @@ angular.module('authoringEnvironmentApp').controller('UploadFromCompCtrl', [
                 .progress(
                     file.progressCallback
                 )
-                .success(
-                    function (data, status, headers, config) {
-                        file.progressCallback({
-                            loaded: 100,
-                            total:  100
-                        });
+                .success(function (data, status, headers, config) {
+                    var imgUrl;
+
+                    file.progressCallback({
+                        loaded: 100,
+                        total:  100
+                    });
+
+                    imgUrl = headers()['x-location'];
+                    if (imgUrl) {
+                        images.collectUploaded(imgUrl);
+                    } else {
+                        // XXX: bug in API? how should we handle this?
+                        console.warn('No x-location header in API response.');
                     }
-                );  // XXX: add onerror handler?
+                });  // XXX: add onerror handler?
 
                 // extract image data to show preview immediately
                 reader.onload = function (ev) {
-                    fileHandle.b64data = btoa(this.result);
+                    fileObj.b64data = btoa(this.result);
                 };
-                reader.readAsBinaryString(fileHandle);
+                reader.readAsBinaryString(fileObj);
             };
 
             return file;
