@@ -37,7 +37,7 @@
         ></select>
 
     <button
-        class="btn btn-default btn-sm"
+        class="btn btn-default btn-xs"
         ng-disabled="!commentingOptDirty || isChangingCommenting"
         ng-click="changeCommentingSetting()"
         >Apply</button>
@@ -50,7 +50,6 @@
     <span class="{{commentingSettingSrv === commenting.ENABLED ? 'yes' : 'no'}}"
         >{{commentingSettingSrv === commenting.ENABLED ? 'yes' : 'no'}}</span>
   </div>
-
 
   <div
     class="add-element"
@@ -137,28 +136,28 @@
 
     <div class="status-buttons">
       <a
-         class="btn btn-default btn-sm"
+         class="btn btn-default btn-xs"
          ng-disabled="commentingSettingSrv === commenting.DISABLED
                       || countSelected() === 0"
          ng-click="comments.changeSelectedStatus('approved')">
         Approve
       </a>
       <a
-         class="btn btn-default btn-sm"
+         class="btn btn-default btn-xs"
          ng-disabled="commentingSettingSrv === commenting.DISABLED
                       || countSelected() === 0"
          ng-click="comments.changeSelectedStatus('pending')">
         Mark as New
       </a>
       <a
-         class="btn btn-default btn-sm"
+         class="btn btn-default btn-xs"
          ng-disabled="commentingSettingSrv === commenting.DISABLED
                       || countSelected() === 0"
          ng-click="confirmHideComments()">
         Hide
       </a>
       <a
-         class="btn btn-default btn-sm delete-button"
+         class="btn btn-default btn-xs delete-button"
          ng-disabled="commentingSettingSrv === commenting.DISABLED
                       || countSelected() === 0"
          ng-click="confirmDeleteComments()">
