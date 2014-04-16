@@ -6,11 +6,16 @@ angular.module('authoringEnvironmentApp').service('images', [
     '$log',
     'article',
     'modal',
-    function images($http, pageTracker, configuration, $log, article, modal) {
+    'getFileReader',
+    '$upload',
+    function images(
+        $http, pageTracker, configuration, $log, article, modal,
+        getFileReader, $upload
+    ) {
         /* more info about the page tracker in its tests */
         // AngularJS will instantiate a singleton by calling "new" on this function
         var service = this;
-        var root = configuration.API.full;
+        var apiRoot = configuration.API.full;
 
         article.promise.then(function (article) {
             service.article = article;
@@ -22,6 +27,8 @@ angular.module('authoringEnvironmentApp').service('images', [
         this.displayed = [];
         this.collected = [];  // list of collected images (those in basket)
         this.attached = [];
+        this.images2upload = [];  // queue for images to upload
+        //XXX: this thing below needed? "uploaded"
         this.uploaded = [];  // images uploaded in one "modal session"
         this.includedIndex = 0;
         this.included = {};
@@ -45,7 +52,7 @@ angular.module('authoringEnvironmentApp').service('images', [
             });
         };
         this.load = function (page) {
-            var url = root + '/images?items_per_page=50&page=' + page +
+            var url = apiRoot + '/images?items_per_page=50&page=' + page +
                 '&expand=true';
             var promise = $http.get(url);
             promise.error(function () {
@@ -64,7 +71,7 @@ angular.module('authoringEnvironmentApp').service('images', [
         */
         this.loadAttached = function (article) {
             var url = [
-                    root, 'articles',
+                    apiRoot, 'articles',
                     article.number, article.language,
                     'images?expand=true'
                 ].join('/');
@@ -127,10 +134,10 @@ angular.module('authoringEnvironmentApp').service('images', [
                 return;
             }
 
-            url = root + '/articles/' + service.article.number +
+            url = apiRoot + '/articles/' + service.article.number +
                 '/' + service.article.language;
 
-            link = '<' + root + '/images/' + id + '>';
+            link = '<' + apiRoot + '/images/' + id + '>';
 
             /* this could cause some trouble depending on the
              * setting of the server (OPTIONS request), thus debug
@@ -153,8 +160,8 @@ angular.module('authoringEnvironmentApp').service('images', [
         this.detach = function (id) {
             var match = this.matchMaker(id);
             if (_.find(this.attached, match)) {
-                var url = root + '/articles/' + service.article.number + '/' + service.article.language;
-                var link = '<' + root + '/images/' + id + '>';
+                var url = apiRoot + '/articles/' + service.article.number + '/' + service.article.language;
+                var link = '<' + apiRoot + '/images/' + id + '>';
                 /* this could cause some troubles depending on the
                  * setting of the server (OPTIONS request), thus debug
                  * log may be useful to reproduce the original
@@ -243,6 +250,75 @@ angular.module('authoringEnvironmentApp').service('images', [
                 service.toggleCollect(data.id);
             });
         };
+
+        // add new images to the list of images to upload
+        // TODO: docstring and tests
+        this.addToUploadList = function (newImages) {
+            var i,
+                image;
+
+            for(i = 0; i < newImages.length; i++) {
+                image = this.decorate(newImages[i]);
+                this.images2upload.push(image);
+                image.startUpload();
+            }
+        };
+
+        // TODO: docstring and tests
+        this.decorate = function (image) {
+
+            image.progressCallback = function (event) {
+                image.progress = event.loaded;
+                image.max = event.total;
+                image.percent =
+                    Math.round((event.loaded / event.total) * 100) + '%';
+            };
+
+            image.startUpload = function () {
+                var fd = new FormData(),
+                    imageObj = this,
+                    reader = getFileReader.get();
+
+                // TODO: remove image description, it will be edited elsewhere
+                fd.append('image[description]', 'this is image description');
+                fd.append('image[image]', imageObj);
+
+                $upload.http({
+                    method: 'POST',
+                    url: apiRoot + '/images',
+                    data: fd,
+                    headers: {'Content-Type': undefined},
+                    transformRequest: angular.identity
+                })
+                .progress(
+                    image.progressCallback
+                )
+                .success(function (data, status, headers, config) {
+                    var imgUrl;
+
+                    image.progressCallback({
+                        loaded: 100,
+                        total:  100
+                    });
+
+                    imgUrl = headers()['x-location'];
+                    if (imgUrl) {
+                        service.collectUploaded(imgUrl);  // TODO: should change
+                    } else {
+                        // XXX: bug in API? how should we handle this?
+                        console.warn('No x-location header in API response.');
+                    }
+                });  // XXX: add onerror handler?
+
+                // extract image data to show preview immediately
+                reader.onload = function (ev) {
+                    imageObj.b64data = btoa(this.result);
+                };
+                reader.readAsBinaryString(imageObj);
+            };
+
+            return image;
+        }
 
     }
 ]);

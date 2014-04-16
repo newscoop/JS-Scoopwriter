@@ -65,5 +65,12 @@
        ng-click="images.attachAll()">
       Attach Images
     </button>
+    <button
+       type="button"
+       class="btn btn-primary"
+       ng-disabled="images.images2upload.length < 1"
+       ng-click="">
+      Upload Images
+    </button>
   </div>
 </div>
