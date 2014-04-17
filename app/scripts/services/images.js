@@ -312,8 +312,8 @@ angular.module('authoringEnvironmentApp').service('images', [
                     parts,
                     rejectMsg = 'No x-location header in API response.';
 
-                // TODO: remove image description, it will be edited elsewhere
-                fd.append('image[description]', 'this is image description');
+                fd.append('image[photographer]', imageObj.photographer);
+                fd.append('image[description]', imageObj.description);
                 fd.append('image[image]', imageObj);
 
                 $upload.http({

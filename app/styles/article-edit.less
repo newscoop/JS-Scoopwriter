@@ -31,6 +31,7 @@ a:hover {
 
 
 .authoring-environment {
+
     /* there is also a not editable one, probably it will be removed */
     .article-editable-title {
         font-size: 36px;
@@ -211,9 +212,13 @@ a:hover {
                 border-bottom: 2px solid @placeholder-border-color;
                 border-radius: 4px;
                 padding: 2%;
+                .progress {
+                    height: 10px;
+                    margin-bottom: 10px;
+                }
                 .img-preview {
                     width: 260px;
-                    height: 200px;
+                    height: 150px;
                     margin-bottom: 10px;
                     display: table-cell;
                     vertical-align: middle;
@@ -229,6 +234,11 @@ a:hover {
                     img {
                         max-width: 100%;
                         max-height: 100%;
+                    }
+                }
+                .img-metadata {
+                    input, textarea {
+                        width: 260px;
                     }
                 }
             }

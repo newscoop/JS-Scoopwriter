@@ -13,7 +13,6 @@
 
   <div class="image-uploading">
     <div class="placeholder" ng-repeat="image in images2upload">
-      <div class="name" ng-bind="image.name"></div>
 
       <div class="progress">
         <div
@@ -27,6 +26,18 @@
       <div class="img-preview">
          <img ng-show="image.b64data"
               ng-src="data:{{image.type}};base64,{{image.b64data}}"/>
+      </div>
+
+      <div class="img-metadata">
+        <input
+            ng-model="image.photographer"
+            placeholder="Photographer"
+            />
+        <textarea
+            ng-model="image.description"
+            placeholder="Description"
+            cols="40" rows="4"
+            ></textarea>
       </div>
 
     </div>
