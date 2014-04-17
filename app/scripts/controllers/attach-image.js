@@ -43,14 +43,12 @@ angular.module('authoringEnvironmentApp').controller('AttachImageCtrl', [
 
         // TODO: docstring ad tests
         $scope.uploadImages = function () {
-            var uploadPromises;
-
-            uploadPromises = images.uploadAll();
+            var uploadPromises = images.uploadAll();
 
             $q.all(uploadPromises).then(function (data) {
-                console.log('all images uploaded');
-                // then attach all
-                //modal.hide();
+                images.attachAllUploaded();
+                images.images2upload = [];
+                modal.hide();
             });
         };
 

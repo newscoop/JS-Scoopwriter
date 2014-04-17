@@ -117,13 +117,28 @@ angular.module('authoringEnvironmentApp').service('images', [
         };
 
         /**
+        * Attaches all images in the images2upload list that have been
+        * successfully uploaded.
+        *¸
+        * @method attachAllUploaded
+        */
+        this.attachAllUploaded = function () {
+            service.images2upload.forEach(function (image) {
+                if (image.isUploaded) {
+                    service.attach(image.id, true);
+                }
+            });
+        };
+
+        /**
         * Attaches an image to the article (using HTTP LINK). If image is
         * already attached, it does not do anything.
         *
         * @method attach
         * @param id {Number} ID of an image to attach
         */
-        this.attach = function (id) {
+        // TODO: dosctring update + tests
+        this.attach = function (id, loadFromServer) {
             var link,
                 match = this.matchMaker(id),
                 url;
@@ -151,8 +166,19 @@ angular.module('authoringEnvironmentApp').service('images', [
                 method: 'LINK',
                 headers: { Link: link }
             }).success(function () {
-                var image = _.find(service.displayed, match);
-                service.attached.push(image);
+                if (loadFromServer) {
+                    // uploaded images need to be retrieved from server
+                    // to get all image metadata
+                    $http.get(
+                        apiRoot + '/images/' + id
+                    )
+                    .success(function (data) {
+                        service.attached.push(data);
+                    });
+                } else {
+                    var image = _.find(service.displayed, match);
+                    service.attached.push(image);
+                }
             });
         };
 
@@ -270,6 +296,8 @@ angular.module('authoringEnvironmentApp').service('images', [
         // TODO: docstring and tests
         this.decorate = function (image) {
 
+            image.isUploaded = false;
+
             image.progressCallback = function (event) {
                 image.progress = event.loaded;
                 image.max = event.total;
@@ -281,6 +309,7 @@ angular.module('authoringEnvironmentApp').service('images', [
                 var deferred = $q.defer(),
                     fd = new FormData(),
                     imageObj = this,
+                    parts,
                     rejectMsg = 'No x-location header in API response.';
 
                 // TODO: remove image description, it will be edited elsewhere
@@ -305,11 +334,12 @@ angular.module('authoringEnvironmentApp').service('images', [
                         total:  100
                     });
 
-                    // TODO: delete
-                    console.log('image uploaded (' + imageObj.name + ')');
+                    image.isUploaded = true;
 
                     imgUrl = headers()['x-location'];
                     if (imgUrl) {
+                        parts = imgUrl.split('/');
+                        image.id = parseInt(parts[parts.length - 1], 10);
                         deferred.resolve(imgUrl);
                     } else {
                         //  most likely an API bug
