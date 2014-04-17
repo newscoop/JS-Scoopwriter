@@ -8,12 +8,13 @@ angular.module('authoringEnvironmentApp').service('images', [
     'modal',
     'getFileReader',
     '$upload',
+    '$rootScope',
+    '$q',
     function images(
         $http, pageTracker, configuration, $log, article, modal,
-        getFileReader, $upload
+        getFileReader, $upload, $rootScope, $q
     ) {
         /* more info about the page tracker in its tests */
-        // AngularJS will instantiate a singleton by calling "new" on this function
         var service = this;
         var apiRoot = configuration.API.full;
 
@@ -28,8 +29,6 @@ angular.module('authoringEnvironmentApp').service('images', [
         this.collected = [];  // list of collected images (those in basket)
         this.attached = [];
         this.images2upload = [];  // queue for images to upload
-        //XXX: this thing below needed? "uploaded"
-        this.uploaded = [];  // images uploaded in one "modal session"
         this.includedIndex = 0;
         this.included = {};
         this.itemsPerPage = 10;
@@ -100,7 +99,7 @@ angular.module('authoringEnvironmentApp').service('images', [
         };
         this.discardAll = function () {
             service.collected = [];
-            modal.hide();
+            service.images2upload = [];
         };
 
         /**
@@ -242,26 +241,30 @@ angular.module('authoringEnvironmentApp').service('images', [
             }
         };
 
-        // retrieve uploded image's data and add it to collected
-        // TODO: dosctring and tests
-        this.collectUploaded = function (imgUrl) {
-            $http.get(imgUrl).success(function (data) {
-                service.displayed.push(data);
-                service.toggleCollect(data.id);
-            });
-        };
-
         // add new images to the list of images to upload
         // TODO: docstring and tests
         this.addToUploadList = function (newImages) {
             var i,
                 image;
 
-            for(i = 0; i < newImages.length; i++) {
+            for (i = 0; i < newImages.length; i++) {
                 image = this.decorate(newImages[i]);
                 this.images2upload.push(image);
-                image.startUpload();
+                image.readRawData();
             }
+        };
+
+        // TODO: docstring and tests
+        this.uploadAll = function () {
+            var uploadPromise,
+                promiseList = [];
+
+            service.images2upload.forEach(function (image) {
+                uploadPromise = image.startUpload();
+                promiseList.push(uploadPromise);
+            });
+
+            return promiseList;
         };
 
         // TODO: docstring and tests
@@ -275,9 +278,10 @@ angular.module('authoringEnvironmentApp').service('images', [
             };
 
             image.startUpload = function () {
-                var fd = new FormData(),
+                var deferred = $q.defer(),
+                    fd = new FormData(),
                     imageObj = this,
-                    reader = getFileReader.get();
+                    rejectMsg = 'No x-location header in API response.';
 
                 // TODO: remove image description, it will be edited elsewhere
                 fd.append('image[description]', 'this is image description');
@@ -301,24 +305,39 @@ angular.module('authoringEnvironmentApp').service('images', [
                         total:  100
                     });
 
+                    // TODO: delete
+                    console.log('image uploaded (' + imageObj.name + ')');
+
                     imgUrl = headers()['x-location'];
                     if (imgUrl) {
-                        service.collectUploaded(imgUrl);  // TODO: should change
+                        deferred.resolve(imgUrl);
                     } else {
-                        // XXX: bug in API? how should we handle this?
-                        console.warn('No x-location header in API response.');
+                        //  most likely an API bug
+                        console.warn(rejectMsg);
+                        deferred.reject(rejectMsg);
                     }
-                });  // XXX: add onerror handler?
+                })
+                .error(function () {
+                    deferred.reject('error uploading');
+                });
 
-                // extract image data to show preview immediately
+                return deferred.promise;
+            };
+
+            image.readRawData = function () {
+                var reader = getFileReader.get();
                 reader.onload = function (ev) {
-                    imageObj.b64data = btoa(this.result);
+                    image.b64data = btoa(this.result);
+                    // XXX: this might not be ideal, but there were problems
+                    // listening to the "file read" change, thus I added
+                    // $rootScope.$apply() here in the service itself
+                    $rootScope.$apply();
                 };
-                reader.readAsBinaryString(imageObj);
+                reader.readAsBinaryString(image);
             };
 
             return image;
-        }
+        };
 
     }
 ]);

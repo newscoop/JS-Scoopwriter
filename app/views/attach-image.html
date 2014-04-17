@@ -53,7 +53,7 @@
     <button
        type="button"
        class="btn btn-default"
-       ng-click="images.discardAll();"
+       ng-click="discardChanges($event)"
        data-test-button="modal-close"
        data-dismiss="modal">
       Discard
@@ -69,7 +69,7 @@
        type="button"
        class="btn btn-primary"
        ng-disabled="images.images2upload.length < 1"
-       ng-click="">
+       ng-click="uploadImages()">
       Upload Images
     </button>
   </div>

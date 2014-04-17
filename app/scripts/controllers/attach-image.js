@@ -8,10 +8,11 @@
 */
 angular.module('authoringEnvironmentApp').controller('AttachImageCtrl', [
     '$scope',
+    '$q',
     'images',
     'modal',
     'configuration',
-    function ($scope, images, modal, configuration) {
+    function ($scope, $q, images, modal, configuration) {
 
         $scope.root = configuration.API.rootURI;
         $scope.images = images;
@@ -38,6 +39,27 @@ angular.module('authoringEnvironmentApp').controller('AttachImageCtrl', [
 
         $scope.select = function (source) {
             $scope.selected = source;
+        };
+
+        // TODO: docstring ad tests
+        $scope.uploadImages = function () {
+            var uploadPromises;
+
+            uploadPromises = images.uploadAll();
+
+            $q.all(uploadPromises).then(function (data) {
+                console.log('all images uploaded');
+                // then attach all
+                //modal.hide();
+            });
+        };
+
+        // TODO: docstring ad tests
+        $scope.discardChanges = function ($event) {
+            $event.preventDefault();
+            $event.stopPropagation();
+            images.discardAll();
+            modal.hide();
         };
 
     }

@@ -12,21 +12,21 @@
   </div>
 
   <div class="image-uploading">
-    <div class="placeholder" ng-repeat="file in images2upload">
-      <div class="name" ng-bind="file.name"></div>
+    <div class="placeholder" ng-repeat="image in images2upload">
+      <div class="name" ng-bind="image.name"></div>
 
       <div class="progress">
         <div
            class="progress-bar"
            role="progressbar"
-           ng-style="{width: file.percent}"
+           ng-style="{width: image.percent}"
            >
         </div>
       </div>
 
       <div class="img-preview">
-         <img ng-show="file.b64data"
-              ng-src="data:{{file.type}};base64,{{file.b64data}}"/>
+         <img ng-show="image.b64data"
+              ng-src="data:{{image.type}};base64,{{image.b64data}}"/>
       </div>
 
     </div>
