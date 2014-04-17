@@ -108,10 +108,18 @@ angular.module('authoringEnvironmentApp').service('images', [
         *¸
         * @method attachAll
         */
+        // TODO: tests and docstring update
         this.attachAll = function () {
+            var toAttach = [];
+
             service.collected.forEach(function (image) {
-                service.attach(image.id);
+                toAttach.push(image.id);
             });
+
+            if (toAttach) {
+                service.attachBulk(toAttach);
+            }
+
             service.collected = [];
             modal.hide();
         };
@@ -123,10 +131,74 @@ angular.module('authoringEnvironmentApp').service('images', [
         * @method attachAllUploaded
         */
         this.attachAllUploaded = function () {
+            var toAttach = [];
+
             service.images2upload.forEach(function (image) {
                 if (image.isUploaded) {
-                    service.attach(image.id, true);
+                    toAttach.push(image.id);
                 }
+            });
+
+            if (toAttach) {
+                service.attachBulk(toAttach, true);
+            }
+        };
+
+        /**
+        * Attaches an image to the article (using HTTP LINK). If image is
+        * already attached, it does not do anything.
+        *
+        * @method attachBulk
+        * @param id {Number} ID of an image to attach
+        */
+        // TODO: dosctring update + tests
+        this.attachBulk = function (idList, loadFromServer) {
+            var image,
+                match,
+                notYetAttached = [],
+                resourceLinks = [],
+                url;
+
+            idList.forEach(function (imgId) {
+                match = service.matchMaker(imgId);
+                if (!_.find(service.attached, match)) {
+                    notYetAttached.push(imgId);
+                }
+            });
+
+            if (notYetAttached.length < 1) {
+                return;  // nothing to do
+            }
+
+            url = apiRoot + '/articles/' + service.article.number +
+                '/' + service.article.language;
+
+            notYetAttached.forEach(function (imgId) {
+                resourceLinks.push('<' + apiRoot + '/images/' + imgId + '>');
+            });
+            resourceLinks = resourceLinks.join();
+
+            $http({
+                url: url,
+                method: 'LINK',
+                headers: { Link: resourceLinks }
+            }).success(function () {
+                notYetAttached.forEach(function (imgId) {
+                    if (loadFromServer) {
+                        // uploaded images need to be retrieved from server
+                        // to get all image metadata
+                        $http.get(
+                            apiRoot + '/images/' + imgId
+                        )
+                        .success(function (data) {
+                            service.attached.push(data);
+                        });
+                    } else {
+                        match = service.matchMaker(imgId);
+                        image = _.find(service.displayed, match);
+                        service.attached.push(image);
+                    }
+                });
             });
         };
 
