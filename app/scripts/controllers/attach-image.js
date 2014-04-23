@@ -53,11 +53,10 @@ angular.module('authoringEnvironmentApp').controller('AttachImageCtrl', [
 
         /**
         * Triggers uploading of all the images in the image upload list and
-        * when done, resets the upload list and closes the modal window.
+        * when done, resets the upload list and closes the modal.
         *
         * @method uploadImages
         */
-        // TODO: tests
         $scope.uploadImages = function () {
             var uploadPromises = images.uploadAll();
 
@@ -70,13 +69,12 @@ angular.module('authoringEnvironmentApp').controller('AttachImageCtrl', [
 
         /**
         * Triggers discarding all the changes in image basket and image upload
-        * list and closes the modal window.
+        * list and closes the modal.
         *
         * @method discardChanges
         * @param $event {Object} AngularJS event object of the event that
         *     triggered the method.
         */
-        // TODO: tests
         $scope.discardChanges = function ($event) {
             $event.preventDefault();
             $event.stopPropagation();
