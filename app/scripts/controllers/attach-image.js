@@ -37,11 +37,27 @@ angular.module('authoringEnvironmentApp').controller('AttachImageCtrl', [
 
         $scope.selected = $scope.sources[1];
 
+        /**
+        * Makes the given source to be the new selected image source.
+        *
+        * @method select
+        * @param source {Object} object containing image source information
+        *   @param source.value {String} unique identifier of the source
+        *   @param source.url {String} template URL for the source
+        *   @param source.description {String} description of the source as
+        *       shown to users
+        */
         $scope.select = function (source) {
             $scope.selected = source;
         };
 
-        // TODO: docstring ad tests
+        /**
+        * Triggers uploading of all the images in the image upload list and
+        * when done, resets the upload list and closes the modal window.
+        *
+        * @method uploadImages
+        */
+        // TODO: tests
         $scope.uploadImages = function () {
             var uploadPromises = images.uploadAll();
 
@@ -52,7 +68,15 @@ angular.module('authoringEnvironmentApp').controller('AttachImageCtrl', [
             });
         };
 
-        // TODO: docstring ad tests
+        /**
+        * Triggers discarding all the changes in image basket and image upload
+        * list and closes the modal window.
+        *
+        * @method discardChanges
+        * @param $event {Object} AngularJS event object of the event that
+        *     triggered the method.
+        */
+        // TODO: tests
         $scope.discardChanges = function ($event) {
             $event.preventDefault();
             $event.stopPropagation();
