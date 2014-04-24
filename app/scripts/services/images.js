@@ -166,7 +166,7 @@ angular.module('authoringEnvironmentApp').service('images', [
                 toAttach.push(image.id);
             });
 
-            if (toAttach) {
+            if (toAttach.length > 0) {
                 service.attachBulk(toAttach);
             }
 
@@ -189,7 +189,7 @@ angular.module('authoringEnvironmentApp').service('images', [
                 }
             });
 
-            if (toAttach) {
+            if (toAttach.length > 0) {
                 service.attachBulk(toAttach, true);
             }
         };
@@ -206,7 +206,6 @@ angular.module('authoringEnvironmentApp').service('images', [
         *     images' info from the server after attaching (useful for images
         *     uploaded from a computer)
         */
-        // TODO: tests
         this.attachBulk = function (idList, loadFromServer) {
             var image,
                 match,
@@ -269,7 +268,9 @@ angular.module('authoringEnvironmentApp').service('images', [
         *     image info from the server after attaching (useful if the image
         *     is uploaded from a computer)
         */
-        // TODO: tests
+        // XXX: remove? The same can be done w/ attachBulk, it's basically
+        // the same code. Though we should probably wait until we have a much
+        // better test coverage.
         this.attach = function (id, loadFromServer) {
             var link,
                 match = this.matchMaker(id),
@@ -479,7 +480,6 @@ angular.module('authoringEnvironmentApp').service('images', [
         * @param newImages {Object} array with objects cointaining image
         *     metadata to attach
         */
-        // TODO: tests
         this.addToUploadList = function (newImages) {
             var i,
                 image;
@@ -498,7 +498,6 @@ angular.module('authoringEnvironmentApp').service('images', [
         * @method uploadAll
         * @return {Object} array of upload promises objects
         */
-        // TODO: tests
         this.uploadAll = function () {
             var uploadPromise,
                 promiseList = [];
