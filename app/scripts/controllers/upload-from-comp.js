@@ -25,7 +25,6 @@ angular.module('authoringEnvironmentApp').controller('UploadFromCompCtrl', [
         * @method addToUploadList
         * @param newImages {Object} array of images to add to the upload list
         */
-        // TODO: tests
         $scope.addToUploadList = function (newImages) {
             images.addToUploadList(newImages);
             $scope.$apply();
