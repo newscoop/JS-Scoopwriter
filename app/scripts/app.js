@@ -11,7 +11,8 @@ angular.module('authoringEnvironmentApp', [
     'mgcrea.ngStrap.popover',
     'template/modal/backdrop.html',
     'template/modal/window.html',
-    'ui.bootstrap.modal'
+    'ui.bootstrap.modal',
+    'angularFileUpload'
 ]).config([
     '$routeProvider',
     '$httpProvider',
@@ -27,4 +28,10 @@ angular.module('authoringEnvironmentApp', [
         $httpProvider.interceptors.push('authInterceptor');
         $buttonProvider.defaults.toggleEvent = 'change';
     }
-]);
+])
+.run(['$document', function ($document) {
+    // default browser's handling of drops is annoying and thus unwanted
+    $document.on('dragover drop', function (e) {
+        e.preventDefault();
+    });
+}]);

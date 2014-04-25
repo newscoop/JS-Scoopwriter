@@ -81,26 +81,20 @@ describe('Service: Comments', function () {
         });
 
         it('saves a comment', function() {
-            var spies = {
-                data: function() { return true; },
-                success: function() {}
-            };
-            spyOn(spies, 'data').andCallThrough();
-            spyOn(spies, 'success');
+            var success = jasmine.createSpy('success');
             $httpBackend.expect(
                 'POST',
                 rootURI + '/comments/article/64/de',
-                spies.data
+                'message=hey%2C+Joe%2C+let+us+go!'
             ).respond(200, '');
             comments.resource.save({
                 articleNumber: 64,
                 languageCode: 'de'
             }, {
                 message: 'hey, Joe, let us go!'
-            }, spies.success);
+            }, success);
             $httpBackend.flush();
-            expect(spies.success).toHaveBeenCalled();
-            expect(spies.data).toHaveBeenCalledWith('message=hey%2C+Joe%2C+let+us+go!');
+            expect(success).toHaveBeenCalled();
         });
 
         describe('toggleRecommended action', function () {

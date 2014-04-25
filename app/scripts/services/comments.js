@@ -339,7 +339,7 @@ angular.module('authoringEnvironmentApp').service('comments', [
             * Reflects the checkbox on the left of every comment
             * @property selected
             * @type Boolean
-            * @default "false"
+            * @default false
             */
             comment.selected = false;
             /**

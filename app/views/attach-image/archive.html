@@ -8,6 +8,7 @@
      ng-class="{attached: images.isAttached(image.id),
                 collected: images.isCollected(image.id)}"
      ng-click="thumbnailClicked(image.id)"
+     title="{{image.description || 'No description'}}"
      >
     <div class="toggler">
       <span class="glyphicon" ng-class="images.togglerClass(image.id)"></span>
@@ -15,11 +16,12 @@
     <img
        class="thumbnail" 
        ng-src="{{root}}/images/{{image.basename}}"
+       alt="{{image.description || 'No description'}}"
        >
-      <div>
-        {{image.description || "No description"}}<br/>
-        <span class="size-info">{{image.width}} x {{image.height}}</span>
-      </div>
+    <div class="img-metadata">
+      {{image.description || "No description"}}<br/>
+      <span class="size-info">{{image.width}} x {{image.height}}</span>
+    </div>
   </div>
 
   <div

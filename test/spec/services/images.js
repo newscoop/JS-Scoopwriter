@@ -87,7 +87,7 @@ describe('Service: Images', function () {
     describe('loadAttached() method', function () {
         beforeEach(function () {
             $httpBackend
-                .expect('GET', e + '/articles/64/de/images')
+                .expect('GET', e + '/articles/64/de/images?expand=true')
                 .respond(mock);
         });
 
@@ -105,13 +105,526 @@ describe('Service: Images', function () {
         });
     });
 
+    describe('attachAll() method', function () {
+        var modal;
+
+        beforeEach(inject(function (_modal_) {
+            modal = _modal_;
+            spyOn(images, 'attachBulk');
+            spyOn(modal, 'hide');
+        }));
+
+        it('attaches all images currently in basket', function () {
+            images.collected = [mock.items[4], mock.items[6]];
+            images.attachAll();
+            expect(images.attachBulk).toHaveBeenCalledWith(
+                [mock.items[4].id, mock.items[6].id]
+            );
+        });
+
+        it('does not attach anything if basket is empty', function () {
+            images.collected = [];
+            images.attachAll();
+            expect(images.attachBulk).not.toHaveBeenCalled();
+        });
+
+        it('empties the basket', function () {
+            images.collected = [mock.items[4], mock.items[6]];
+            images.attachAll();
+            expect(images.collected.length).toEqual(0);
+        });
+
+        it('hides the modal', function () {
+            images.attachAll();
+            expect(modal.hide).toHaveBeenCalled();
+        });
+    });
+
+    describe('attachAllUploaded() method', function () {
+        beforeEach(function () {
+            spyOn(images, 'attachBulk');
+        });
+
+        it('only attaches uploaded images to the article', function () {
+            images.images2upload = [
+                {id: 12, isUploaded: true},
+                {id: 27, isUploaded: false}
+            ];
+            images.attachAllUploaded();
+            expect(images.attachBulk).toHaveBeenCalledWith([12], true);
+        });
+
+        it('does not do anything if there are no uploaded images',
+            function () {
+                images.images2upload = [
+                    {id: 12, isUploaded: false},
+                    {id: 27, isUploaded: false}
+                ];
+                images.attachAllUploaded();
+                expect(images.attachBulk).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('attachBulk() method', function () {
+        var headerCheckers,
+            linkHeaderSpy;
+
+        headerCheckers = {
+            Link: function (headers) {
+                return 'Link' in headers;
+            }
+        };
+
+        beforeEach(function () {
+            linkHeaderSpy = spyOn(headerCheckers, 'Link').andCallThrough();
+            $httpBackend.expect(
+                'LINK',
+                rootURI + '/articles/64/de',
+                undefined,
+                headerCheckers.Link
+            ).respond(201, '');
+        });
+
+        afterEach(function () {
+            // the following also raises an error in cases when unexpected
+            // requests have been made (even if all other expectations
+            // have been fulfilled)
+            $httpBackend.verifyNoOutstandingExpectation();
+        });
+
+        it('correctly invokes backend API', function () {
+            images.attached = [];
+
+            images.attachBulk([2, 5, 6]);
+            $httpBackend.flush();
+
+            expect(linkHeaderSpy.mostRecentCall.args[0].Link).toEqual(
+                ['<', rootURI, '/images/2>,',
+                 '<', rootURI, '/images/5>,',
+                 '<', rootURI, '/images/6>'].join('')
+            );
+        });
+
+        it('does not try to attach already attached images', function () {
+            images.attached = [mock.items[4]];  // id === 5
+
+            images.attachBulk([2, 5, 6]);
+            $httpBackend.flush();
+
+            expect(linkHeaderSpy.mostRecentCall.args[0].Link).toEqual(
+                ['<', rootURI, '/images/2>,',
+                 '<', rootURI, '/images/6>'].join('')
+            );
+        });
+
+        it('does not invoke API if there is nothing to attach', function () {
+            images.attached = [mock.items[0], mock.items[3], mock.items[7]];
+            $httpBackend.resetExpectations();
+            images.attachBulk([4, 8]);
+        });
+
+        it('updates attached images list on positive server response',
+            function () {
+                images.displayed = [
+                    mock.items[0], mock.items[4], mock.items[6], mock.items[8]
+                ];
+                images.attached = [mock.items[0]];
+
+                images.attachBulk([5, 9]);
+                $httpBackend.flush();
+
+                expect(images.attached.length).toEqual(3);
+
+                // existing images are not overriden
+                expect(
+                    _.contains(images.attached, mock.items[0])).toEqual(true);
+
+                // all new images are added to the list
+                expect(
+                    _.contains(images.attached, mock.items[4])).toEqual(true);
+                expect(
+                    _.contains(images.attached, mock.items[8])).toEqual(true);
+        });
+
+        it('retrieves uploaded images\' info if necessary', function () {
+            images.attached = [];
+
+            $httpBackend.expectGET(rootURI + '/images/2').respond(200, {});
+            $httpBackend.expectGET(rootURI + '/images/6').respond(200, {});
+
+            images.attachBulk([2, 6], true);
+            $httpBackend.flush();
+        });
+    });
+
+
+    describe('attach() method', function () {
+        var headerCheckers,
+            linkHeaderSpy;
+
+        headerCheckers = {
+            Link: function (headers) {
+                return 'Link' in headers;
+            }
+        };
+
+        beforeEach(function () {
+            linkHeaderSpy = spyOn(headerCheckers, 'Link').andCallThrough();
+            $httpBackend.expect(
+                'LINK',
+                rootURI + '/articles/64/de',
+                undefined,
+                headerCheckers.Link
+            ).respond(201, '');
+        });
+
+        afterEach(function () {
+            // the following also raises an error in cases when unexpected
+            // requests have been made (even if all other expectations
+            // have been fulfilled)
+            $httpBackend.verifyNoOutstandingExpectation();
+        });
+
+        it('correctly invokes backend API', function () {
+            images.attached = [];
+
+            images.attach(5);
+            $httpBackend.flush();
+
+            expect(linkHeaderSpy.mostRecentCall.args[0].Link).toEqual(
+                '<' + rootURI + '/images/5>'
+            );
+        });
+
+        it('does not try to attach an already attached image', function () {
+            images.attached = [mock.items[4]];  // id === 5
+            $httpBackend.resetExpectations();
+            images.attach(5);
+        });
+
+        it('updates attached images list on positive server response',
+            function () {
+                images.displayed = [
+                    mock.items[0], mock.items[4], mock.items[6]
+                ];
+                images.attached = [mock.items[0]];
+
+                images.attach(5);
+                $httpBackend.flush();
+
+                expect(images.attached.length).toEqual(2);
+
+                // existing images are not overriden
+                expect(
+                    _.contains(images.attached, mock.items[0])).toEqual(true);
+
+                // new image is added to the list
+                expect(
+                    _.contains(images.attached, mock.items[4])).toEqual(true);
+        });
+
+        it('retrieves uploaded image\'s info if necessary', function () {
+            images.attached = [];
+
+            $httpBackend.expectGET(rootURI + '/images/6').respond(200, {});
+
+            images.attach(6, true);
+            $httpBackend.flush();
+        });
+    });
+
+    describe('detach() method', function () {
+        var headerCheckers,
+            linkHeaderSpy;
+
+        headerCheckers = {
+            Link: function (headers) {
+                return 'Link' in headers;
+            }
+        };
+
+        beforeEach(function () {
+            linkHeaderSpy = spyOn(headerCheckers, 'Link').andCallThrough();
+        });
+
+        afterEach(function () {
+            // the following also raises an error in cases when unexpected
+            // requests have been made (even if all other expectations
+            // have been fulfilled)
+            $httpBackend.verifyNoOutstandingExpectation();
+        });
+
+        it('correctly invokes backend API', function () {
+            images.attached = [mock.items[4], mock.items[7]];
+
+            $httpBackend.expect(
+                'UNLINK',
+                rootURI + '/articles/64/de',
+                undefined,
+                headerCheckers.Link
+            ).respond(204, '');
+
+            images.detach(5);
+            $httpBackend.flush();
+
+            expect(linkHeaderSpy.mostRecentCall.args[0].Link).toEqual(
+                '<' + rootURI + '/images/5>'
+            );
+        });
+
+        it('updates attached images list on positive server response',
+            function () {
+                images.attached = [mock.items[4], mock.items[7]];
+
+                $httpBackend.expect(
+                    'UNLINK',
+                    rootURI + '/articles/64/de',
+                    undefined,
+                    headerCheckers.Link
+                ).respond(204, '');
+
+                images.detach(5);
+                $httpBackend.flush();
+
+                // check that correct image was removed
+                expect(images.attached.length).toEqual(1);
+                expect(images.attached[0]).toEqual(mock.items[7]);
+        });
+
+        it('does not try to detach an already detached image', function () {
+            images.attached = [];
+            images.detach(5);
+            // there should be no "unexpected request" error
+        });
+    });
+
+    describe('findAttached() method', function () {
+        it('returns correct image from the attached images list',
+            function () {
+                var returned = null;
+
+                images.attached = [
+                    mock.items[4],
+                    mock.items[7],
+                    mock.items[2],  // id === 3
+                    mock.items[1]
+                ];
+
+                returned = images.findAttached(3);
+                expect(returned).toEqual(mock.items[2]);
+        });
+
+        it('returns undefined if image is not in the attached images list',
+            function () {
+                var returned = null;
+
+                images.attached = [
+                    mock.items[4],
+                    mock.items[7],
+                    mock.items[2],  // id === 3
+                    mock.items[1]
+                ];
+
+                returned = images.findAttached(42);
+                expect(typeof returned).toEqual('undefined');
+        });
+    });
+
+    describe('findCollected() method', function () {
+        it('returns correct image from the images in basket',
+            function () {
+                var returned = null;
+
+                images.collected = [
+                    mock.items[4],
+                    mock.items[7],
+                    mock.items[2],  // id === 3
+                    mock.items[1]
+                ];
+
+                returned = images.findCollected(3);
+                expect(returned).toEqual(mock.items[2]);
+        });
+
+        it('returns undefined if image is not in the basket', function () {
+                var returned = null;
+
+                images.collected = [
+                    mock.items[4],
+                    mock.items[7],
+                    mock.items[2],
+                    mock.items[1]
+                ];
+
+                returned = images.findCollected(42);
+                expect(typeof returned).toEqual('undefined');
+        });
+    });
+
+    describe('byId() method', function () {
+        it('returns correct image from the the attached images list',
+            function () {
+                var returned = null;
+
+                images.attached = [
+                    mock.items[4],
+                    mock.items[7],
+                    mock.items[2],  // id === 3
+                    mock.items[1]
+                ];
+
+                returned = images.byId(3);
+                expect(returned).toEqual(mock.items[2]);
+        });
+
+        it('raises an error if image is not in the attached images list',
+            function () {
+                images.attached = [
+                    mock.items[4],
+                    mock.items[7],
+                    mock.items[2],
+                    mock.items[1]
+                ];
+                expect(function () { images.byId(42); }).toThrow();
+        });
+    });
+
+    describe('isAttached() method', function () {
+        it('returns true for attached image', function () {
+            images.attached = [
+                mock.items[4],
+                mock.items[7],
+                mock.items[2],  // id === 3
+                mock.items[1]
+            ];
+            expect(images.isAttached(3)).toBe(true);
+        });
+
+        it('returns false for image that is not attached', function () {
+            images.attached = [
+                mock.items[4],
+                mock.items[7],
+                mock.items[2],
+                mock.items[1]
+            ];
+            expect(images.isAttached(42)).toBe(false);
+        });
+    });
+
+    describe('isCollected() method', function () {
+        it('returns true for image in basket', function () {
+            images.collected = [
+                mock.items[4],
+                mock.items[7],
+                mock.items[2],  // id === 3
+                mock.items[1]
+            ];
+            expect(images.isCollected(3)).toBe(true);
+        });
+
+        it('returns false for image that is not in basket', function () {
+            images.collected = [
+                mock.items[4],
+                mock.items[7],
+                mock.items[2],
+                mock.items[1]
+            ];
+            expect(images.isCollected(42)).toBe(false);
+        });
+    });
+
+    describe('addToUploadList() method', function () {
+        beforeEach(function () {
+            spyOn(images, 'decorate').andCallFake(function (image) {
+                image.readRawData = function () {
+                    image.b64data = btoa('xyz');
+                };
+                return image;
+            });
+        });
+
+        it('adds images to upload list', function () {
+            images.images2upload = [
+                mock.items[4],
+            ];
+
+            images.addToUploadList([mock.items[1], mock.items[8]]);
+
+            expect(images.images2upload.length).toEqual(3);
+
+            // existing images are not overriden
+            expect(_.contains(images.images2upload, mock.items[4]))
+                .toEqual(true);
+
+            // new images are added to the list
+            expect(_.contains(images.images2upload, mock.items[1]))
+                .toEqual(true);
+            expect(_.contains(images.images2upload, mock.items[8]))
+                .toEqual(true);
+        });
+
+        it('decorates images', function () {
+            images.images2upload = [
+                mock.items[4],
+            ];
+
+            images.addToUploadList([mock.items[1], mock.items[8]]);
+
+            expect(images.decorate.callCount).toEqual(2);
+            expect(images.decorate).toHaveBeenCalledWith(mock.items[1]);
+            expect(images.decorate).toHaveBeenCalledWith(mock.items[8]);
+        });
+    });
+
+    describe('uploadAll() method', function () {
+        var img_1,
+            img_2,
+            img_3;
+
+        beforeEach(function () {
+            img_1 = angular.copy(mock.items[4]);
+            img_2 = angular.copy(mock.items[6]);
+            img_3 = angular.copy(mock.items[7]);
+
+            images.images2upload = [img_1, img_2, img_3];
+            images.images2upload.forEach(function (img) {
+                img.startUpload = jasmine.createSpy().andCallFake(function () {
+                    return {promiseOf: img.id};  // fake promise object
+                });
+            });
+        });
+
+        it('starts uploads for all images in images2upload list', function () {
+            images.uploadAll();
+            expect(img_1.startUpload).toHaveBeenCalled();
+            expect(img_2.startUpload).toHaveBeenCalled();
+            expect(img_3.startUpload).toHaveBeenCalled();
+        });
+
+        it('returns a list of all upload promises', function () {
+            var promises = images.uploadAll();
+
+            expect(
+                _.findIndex(promises, {promiseOf: 5})
+            ).toBeGreaterThan(-1);
+
+            expect(
+                _.findIndex(promises, {promiseOf: 7})
+            ).toBeGreaterThan(-1);
+
+            expect(
+                _.findIndex(promises, {promiseOf: 8})
+            ).toBeGreaterThan(-1);
+        });
+    });
+
     describe('after initialization', function() {
         beforeEach(function() {
             $httpBackend
-                .expect('GET', e+'/images?items_per_page=50&page=1')
+                .expect('GET', e+'/images?items_per_page=50&page=1&expand=true')
                 .respond(mock);
             $httpBackend
-                .expect('GET', e+'/images?items_per_page=50&page=2')
+                .expect('GET', e+'/images?items_per_page=50&page=2&expand=true')
                 .respond(mock);
             images.init();
             $httpBackend.flush(1);
@@ -160,121 +673,11 @@ describe('Service: Images', function () {
                     expect(images.isCollected(3)).toBe(false);
                 });
             });
-            describe('collected images attached', function() {
-                var headerHandlers;
-                beforeEach(function() {
-                    headerHandlers = {
-                        '3': function() { return true; },
-                        '7': function() { return true; }
-                    };
-                    spyOn(headerHandlers, '3').andCallThrough();
-                    spyOn(headerHandlers, '7').andCallThrough();
-                    images.toggleCollect(7);
-                    $httpBackend
-                        .expect(
-                            'LINK',
-                            rootURI + '/articles/64/de',
-                            undefined,
-                            headerHandlers['3']
-                        )
-                        .respond({});
-                    $httpBackend
-                        .expect(
-                            'LINK',
-                            rootURI + '/articles/64/de',
-                            undefined,
-                            headerHandlers['7']
-                        )
-                        .respond({});
-                    images.attachAll();
-                    $httpBackend
-                        .expectGET(rootURI + '/images/3')
-                        .respond({});
-                    $httpBackend
-                        .expectGET(rootURI + '/images/7')
-                        .respond({
-                            property: 'bla',
-                            otherProperty: 'bla bla bla'
-                        });
-                    $httpBackend.flush();
-                });
-                it('sent the headers correctly', function() {
-                    expect(headerHandlers['3']).toHaveBeenCalled();
-                    expect(headerHandlers['3'].mostRecentCall.args[0].Link)
-                        .toBe('<http://newscoop.aes.sourcefabric.net/content-api/images/3>');
-                    expect(headerHandlers['7'].mostRecentCall.args[0].Link)
-                        .toBe('<http://newscoop.aes.sourcefabric.net/content-api/images/7>');
-                });
-                it('gets an image by id', function() {
-                    var image = images.byId(3);
-                    expect(image).toEqual({ id : 3, basename : 'cms-image-000000003.jpg'});
-                });
-                it('attaches all the collected images', function() {
-                    expect(images.attached.length).toBe(2);
-                    expect(images.collected.length).toBe(0);
-                });
-                describe('image detached', function() {
-                    beforeEach(function() {
-                        $httpBackend
-                            .expect(
-                                'UNLINK',
-                                rootURI + '/articles/64/de',
-                                undefined,
-                                headerHandlers['3']
-                            )
-                            .respond({});
-                        images.detach(3);
-                    });
-                    it('sent the right header', function() {
-                        expect(headerHandlers['3'].mostRecentCall.args[0].Link)
-                            .toBe('<http://newscoop.aes.sourcefabric.net/content-api/images/3>');
-                    });
-                    it('detaches the image', function() {
-                        $httpBackend.flush();
-                        expect(images.attached.length).toBe(1);
-                        expect(images.attached[0].id).toBe(7);
-                    });
-                });
-                describe('image included', function() {
-                    beforeEach(function() {
-                        images.include(3);
-                    });
-                    it('sets the image as included', function() {
-                        var i = images.byId(3);
-                        expect(i.included).toBe(true);
-                    });
-                    it('puts the image in a map', function() {
-                        expect(images.included[1]).toBeDefined();
-                    });
-                    it('gives the image default style', function() {
-                        expect(images.included[1].style.container.width)
-                            .toBe('100%');
-                    });
-                    describe('image excluded', function() {
-                        beforeEach(function() {
-                            images.exclude(3);
-                        });
-                        it('sets the image as not included', function() {
-                            var i = images.byId(3);
-                            expect(i.included).toBe(false);
-                        });
-                    });
-                    describe('image excluded with a string id', function() {
-                        beforeEach(function() {
-                            images.exclude('3');
-                        });
-                        it('sets the image as not included', function() {
-                            var i = images.byId(3);
-                            expect(i.included).toBe(false);
-                        });
-                    });
-                });
-            });
         });
         it('handles the loaded buffer properly', function() {
             $httpBackend.flush();
             $httpBackend
-                .expect('GET', e+'/images?items_per_page=50&page=3')
+                .expect('GET', e+'/images?items_per_page=50&page=3&expand=true')
                 .respond(mock);
             expect(images.loaded.length).toBe(10);
             expect(images.displayed.length).toBe(10);
@@ -284,7 +687,9 @@ describe('Service: Images', function () {
             $httpBackend.flush();
             expect(images.loaded.length).toBe(10);
             expect(images.displayed.length).toBe(20);
-            $httpBackend.expectGET(e+'/images?items_per_page=50&page=4').respond({});
+            $httpBackend
+                .expectGET(e+'/images?items_per_page=50&page=4&expand=true')
+                .respond({});
             images.more();
             expect(images.loaded.length).toBe(0);
             expect(images.displayed.length).toBe(30);
@@ -294,16 +699,16 @@ describe('Service: Images', function () {
     describe('after loading pages successively', function() {
         beforeEach(function() {
             $httpBackend
-                .expect('GET', e+'/images?items_per_page=50&page=1')
+                .expect('GET', e+'/images?items_per_page=50&page=1&expand=true')
                 .respond(mock);
             $httpBackend
-                .expect('GET', e+'/images?items_per_page=50&page=2')
+                .expect('GET', e+'/images?items_per_page=50&page=2&expand=true')
                 .respond(mock);
             $httpBackend
-                .expect('GET', e+'/images?items_per_page=50&page=3')
+                .expect('GET', e+'/images?items_per_page=50&page=3&expand=true')
                 .respond(mock);
             $httpBackend
-                .expect('GET', e+'/images?items_per_page=50&page=4')
+                .expect('GET', e+'/images?items_per_page=50&page=4&expand=true')
                 .respond(mock);
             images.init();
             images.more();

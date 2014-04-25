@@ -17,18 +17,22 @@
        >
     </div>
   </div>
-  <div class="row basket-head">
+
+  <div class="row basket-head"
+       ng-hide="selected.value === 'computer'">
     <span class="description">SELECTED IMAGES</span>
     <span class="badge" ng-bind="images.collected.length"></span>
     image{{(images.collected.length !== 1) ? 's' : ''}}
   </div>
 
-  <div class="row basket">
+  <div class="row basket"
+       ng-hide="selected.value === 'computer'">
     <div
        ng-repeat="image in images.collected"
        class="thumbnail-wrapper"
        ng-class="{attached: images.isAttached(image.id)}"
        ng-click="images.toggleCollect(image.id)"
+       title="{{image.description || 'No description'}}"
        >
       <div class="toggler">
         <span class="glyphicon glyphicon-minus"></span>
@@ -36,8 +40,9 @@
       <img
          class="thumbnail" 
          ng-src="{{root}}/images/{{image.basename}}"
+         alt="{{image.description || 'No description'}}"
          >
-      <div>
+      <div class="img-metadata">
         {{image.description || "No description"}}<br/>
         <span class="size-info">{{image.width}} x {{image.height}}</span>
       </div>
@@ -48,7 +53,7 @@
     <button
        type="button"
        class="btn btn-default"
-       ng-click="images.discardAll();"
+       ng-click="discardChanges($event)"
        data-test-button="modal-close"
        data-dismiss="modal">
       Discard
@@ -56,9 +61,18 @@
     <button
        type="button"
        class="btn btn-primary"
+       ng-show="selected.value === 'archive'"
        ng-disabled="images.collected.length < 1"
        ng-click="images.attachAll()">
       Attach Images
+    </button>
+    <button
+       type="button"
+       class="btn btn-primary"
+       ng-show="selected.value === 'computer'"
+       ng-disabled="images.images2upload.length < 1"
+       ng-click="uploadImages()">
+      Upload &amp; Attach
     </button>
   </div>
 </div>

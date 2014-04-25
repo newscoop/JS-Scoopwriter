@@ -76,3 +76,18 @@ the index files, for example with Mac OSX:
 
 In order to change the way coverage is generated, act on the karma
 conf file
+
+# Compatibility table
+
+The following features restrict the application usage to the related
+browsers
+
+Feature       | Explorer | Android Browser | iOS Safari |
+---           | ---      | ---             | ---        |
+File API      | 10       | 4.4             | 6.1        |
+Drag and Drop | 10       | no              | no         |
+
+Final support restrictions:
+- Explorer 10
+- no Android Browser
+- no iOS Safari
