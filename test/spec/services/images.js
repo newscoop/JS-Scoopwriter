@@ -618,6 +618,193 @@ describe('Service: Images', function () {
         });
     });
 
+    describe('image decorated with decorate() method:', function () {
+        var decoratedImg;
+
+        beforeEach(function () {
+            var imgContents = ['\x46\x4F\x4F\x42\x41\x52'];  // 'FOOBAR'
+            decoratedImg = new Blob(imgContents, {type : 'image/png'});
+            decoratedImg = images.decorate(decoratedImg);
+        });
+
+        it('has isUploaded flag cleared by default', function () {
+            expect(decoratedImg.isUploaded).toEqual(false);
+        });
+
+        it('does not have its raw data initialized', function () {
+            expect(decoratedImg.b64data).toBe(null);
+        });
+
+        it('has uploaded bytes counter initialized to zero', function () {
+            expect(decoratedImg.progress).toEqual(0);
+        });
+
+        it('has max bytes to upload value initialized to zero', function () {
+            expect(decoratedImg.max).toEqual(0);
+        });
+
+        it('has progress meter initialized to 0%', function () {
+            expect(decoratedImg.percent).toEqual('0%');
+        });
+
+        describe('progressCallback() method', function () {
+            var eventObj;
+
+            beforeEach(function () {
+                eventObj = {loaded: 30, total: 90};
+            });
+
+            it('updates the uploaded bytes counter', function () {
+                decoratedImg.progressCallback(eventObj);
+                expect(decoratedImg.progress).toEqual(30);
+            });
+
+            it('sets the max bytes to upload property', function () {
+                decoratedImg.progressCallback(eventObj);
+                expect(decoratedImg.max).toEqual(90);
+            });
+
+            it('updates progress meter (to a rounded value)', function () {
+                decoratedImg.progressCallback(eventObj);
+                expect(decoratedImg.percent).toEqual('33%');
+            });
+        });
+
+        describe('startUpload() method', function () {
+
+            beforeEach(inject(function (formDataFactory) {
+                var headersCheck,
+                    postData;
+
+                spyOn(formDataFactory, 'makeInstance').andCallFake(
+                    // factory should return a fake FormData object that we
+                    // can actually inspect in tests (built-in FormData is not
+                    // inspectable - browser security constraint)
+                    function () {
+                        var dict = {};
+                        return {
+                            append: function (key, value) {
+                                dict[key] = value;
+                            },
+                            dict: dict
+                        };
+                    }
+                );
+
+                postData = formDataFactory.makeInstance();
+                postData.dict = {
+                    'image[image]': decoratedImg,
+                    'image[photographer]': 'John Doe',
+                    'image[description]': 'image description'
+                };
+
+                headersCheck = function (headers) {
+                    // when uploading files we need to set Content-Type header
+                    // to undefined (overriding Angular's default of
+                    // application/json).
+                    return typeof headers['Content-Type'] === 'undefined';
+                };
+
+                $httpBackend.expectPOST(
+                    rootURI + '/images',
+                    postData,
+                    headersCheck
+                )
+                .respond(
+                    201, null,
+                    {'X-Location' : 'http://foo.com/images/4321'},
+                    'Created'
+                );
+
+                decoratedImg.isUploaded = false;
+                decoratedImg.photographer = 'John Doe';
+                decoratedImg.description = 'image description';
+            }));  // end beforeEach
+
+            afterEach(function () {
+                $httpBackend.verifyNoOutstandingExpectation();
+            });
+
+            it('sends correct API request', function () {
+                decoratedImg.startUpload();
+                // test will fail if http expectation is not fulfilled
+                // (= misformed POST request sent)
+            });
+
+            // XXX: how to test progress callbacks?
+
+            it('sets isUploaded flag on success', function () {
+                decoratedImg.startUpload();
+                $httpBackend.flush(1);
+                expect(decoratedImg.isUploaded).toEqual(true);
+            });
+
+            it('sets image\'s server ID on success', function () {
+                decoratedImg.startUpload();
+                $httpBackend.flush(1);
+                expect(decoratedImg.id).toEqual(4321);
+            });
+
+            it('rejects given upload promise if API' +
+               'returns no x-location header in response',
+                function () {
+                    $httpBackend.resetExpectations();
+                    $httpBackend.expectPOST(rootURI + '/images')
+                        .respond(201, null, {}, 'Created');
+
+                    decoratedImg.startUpload().then(function () {
+                        // success should not happen, fail the test
+                        expect(true).toEqual(false);
+                    }, function (reason) {
+                        expect(reason.indexOf('x-location header'))
+                            .toBeGreaterThan(-1);
+                    });
+
+                    $httpBackend.flush(1);
+            });
+
+            it('rejects given upload promise on API error', function () {
+                $httpBackend.resetExpectations();
+                $httpBackend.expectPOST(rootURI + '/images')
+                    .respond(500);
+
+                decoratedImg.startUpload().then(function () {
+                    // success should not happen, fail the test
+                    expect(true).toEqual(false);
+                }, function (reason) {
+                    expect(reason).toEqual('error uploading');
+                });
+
+                $httpBackend.flush(1);
+            });
+
+        });
+
+        describe('readRawData() method', function () {
+            it('asynchronously reads raw image data', function () {
+                var readPromise,
+                    promiseResolved = false;
+
+                runs(function () {
+                    readPromise = decoratedImg.readRawData();
+                    readPromise.then(function () {
+                        promiseResolved = true;
+                    });
+                    // check that read is indeed asynchronous
+                    expect(decoratedImg.b64data).toBe(null);
+                });
+
+                waitsFor(function () {
+                    return promiseResolved;
+                }, 'the image data has been read');
+
+                runs(function () {
+                    expect(decoratedImg.b64data).toEqual('Rk9PQkFS');
+                });
+            });
+        });
+    });
+
     describe('after initialization', function() {
         beforeEach(function() {
             $httpBackend

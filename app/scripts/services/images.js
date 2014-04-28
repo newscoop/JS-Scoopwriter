@@ -7,12 +7,13 @@ angular.module('authoringEnvironmentApp').service('images', [
     'article',
     'modal',
     'getFileReader',
+    'formDataFactory',
     '$upload',
     '$rootScope',
     '$q',
     function images(
         $http, pageTracker, configuration, $log, article, modal,
-        getFileReader, $upload, $rootScope, $q
+        getFileReader, formDataFactory, $upload, $rootScope, $q
     ) {
         /* more info about the page tracker in its tests */
         var service = this;
@@ -519,7 +520,6 @@ angular.module('authoringEnvironmentApp').service('images', [
         * @param image {Object} Object containing image's (meta)data
         * @return {Object} Decorated image object
         */
-        // TODO: tests
         this.decorate = function (image) {
             /**
             * @class image
@@ -590,11 +590,11 @@ angular.module('authoringEnvironmentApp').service('images', [
             * completed.
             *
             * @method startUpload
-            * @return {Object} promise object
+            * @return {Object} file upload promise
             */
             image.startUpload = function () {
                 var deferred = $q.defer(),
-                    fd = new FormData(),
+                    fd = formDataFactory.makeInstance(),
                     imageObj = this,
                     parts,
                     rejectMsg = 'No x-location header in API response.';
@@ -642,22 +642,29 @@ angular.module('authoringEnvironmentApp').service('images', [
             };
 
             /**
-            * Reads raw data of the image that will be uploaded and stores it
-            * as a base64-encoded string once the image file has been
-            * successfully read from the computer's hard drive into memory.
+            * Asynchronously reads raw data of the image that will be uploaded
+            * and stores it as a base64-encoded string once the image file
+            * has been successfully read from the computer's hard drive
+            * into memory.
             *
             * @method readRawData
+            * @return {Object} file read promise
             */
             image.readRawData = function () {
-                var reader = getFileReader.get();
+                var deferred = $q.defer(),
+                    reader = getFileReader.get();
+
                 reader.onload = function (ev) {
                     image.b64data = btoa(this.result);
+                    deferred.resolve(this.result);
                     // XXX: this might not be ideal, but there were problems
                     // listening to the "file read" change, thus I added
                     // $rootScope.$apply() here in the service itself
                     $rootScope.$apply();
                 };
+
                 reader.readAsBinaryString(image);
+                return deferred.promise;
             };
 
             return image;
