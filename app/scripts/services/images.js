@@ -30,7 +30,7 @@ angular.module('authoringEnvironmentApp').service('images', [
         this.collected = [];  // list of collected images (those in basket)
         this.attached = [];  // list of images attached to the article
         this.images2upload = [];  // list of images to upload
-        this.includedIndex = 0;
+        this.includedIndex = -1;
         this.included = {};
         this.itemsPerPage = 10;
 
@@ -347,6 +347,15 @@ angular.module('authoringEnvironmentApp').service('images', [
             }
         };
 
+        /**
+        * Adds an image to the list of images included in article content and
+        * returns image's index in that list. If the image is not found,
+        * an error is raised.
+        *
+        * @method include
+        * @param id {Number} ID of the image
+        * @return {Number} image's index in the list of included images
+        */
         this.include = function (id) {
             var match = this.matchMaker(id);
             var index = _.findIndex(this.attached, match);
@@ -368,6 +377,13 @@ angular.module('authoringEnvironmentApp').service('images', [
             }
         };
 
+        /**
+        * Removes an image from the list of images included in article
+        * content. If the image is not found, an error is raised.
+        *
+        * @method exclude
+        * @param id {Number} ID of the image
+        */
         this.exclude = function (id) {
             var match = this.matchMaker(id);
             var index = _.findIndex(this.attached, match);

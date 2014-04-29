@@ -76,13 +76,43 @@ describe('Service: Images', function () {
     beforeEach(module('authoringEnvironmentApp'));
 
     // instantiate service
-    var images, $httpBackend;
+    var images,
+        $httpBackend;
 
-    beforeEach(inject(function (_images_, _$httpBackend_) {
+    beforeEach(inject(function (_article_, _images_, _$httpBackend_) {
         images = _images_;
-        images.article = { number: 64, language: 'de'};
         $httpBackend = _$httpBackend_;
+
+        images.article = {
+            number: 64,
+            language: 'de'
+        };
     }));
+
+    describe('load() method', function () {
+        it('issues a correct API call', function () {
+            $httpBackend.expectGET(
+                e + '/images?items_per_page=50&page=4&expand=true'
+            ).respond(mock);
+
+            images.load(4);
+            $httpBackend.flush(1);
+            $httpBackend.verifyNoOutstandingExpectation();
+        });
+
+        it('removes a page of images on API error', function () {
+            spyOn(images.tracker, 'remove');
+
+            $httpBackend.expectGET(
+                e + '/images?items_per_page=50&page=4&expand=true'
+            ).respond(500, 'Internal Server Error');
+
+            images.load(4);
+            $httpBackend.flush(1);
+
+            expect(images.tracker.remove).toHaveBeenCalledWith(4);
+        });
+    });
 
     describe('loadAttached() method', function () {
         beforeEach(function () {
@@ -395,6 +425,77 @@ describe('Service: Images', function () {
             images.attached = [];
             images.detach(5);
             // there should be no "unexpected request" error
+        });
+    });
+
+    describe('include() method', function () {
+        beforeEach(function () {
+            images.attached = [
+                angular.copy(mock.items[4]),
+                angular.copy(mock.items[7]),  // id === 8
+                angular.copy(mock.items[1])
+            ];
+            images.attached.forEach(function (item) {
+                item.included = false;
+            });
+        });
+
+        it('sets included flag for the given image ID', function () {
+            images.include(8);
+            expect(images.attached[0].included).toEqual(false);
+            expect(images.attached[1].included).toEqual(true);
+            expect(images.attached[2].included).toEqual(false);
+        });
+
+        it('retuns image\'s index in the included list', function () {
+            var index;
+            images.included = [mock.items[4], mock.items[1]];
+            images.included[0].included = true;
+            images.included[1].included = true;
+            images.includedIndex = 1;
+
+            index = images.include(8);
+            expect(index).toEqual(2);
+        });
+
+        it('updates included images list', function () {
+            var index;
+            images.included = [mock.items[4], mock.items[1]];
+            images.included[0].included = true;
+            images.included[1].included = true;
+            images.includedIndex = 1;
+
+            index = images.include(8);
+            expect(images.included.length).toEqual(3);
+            expect(images.included[index].id).toEqual(8);
+        });
+
+        it('raises an error if given image ID is not found', function () {
+            expect(function () { images.include(42); }).toThrow();
+        });
+    });
+
+    describe('exclude() method', function () {
+        beforeEach(function () {
+            images.attached = [
+                angular.copy(mock.items[4]),
+                angular.copy(mock.items[7]),  // id === 8
+                angular.copy(mock.items[1])
+            ];
+            images.attached.forEach(function (item) {
+                item.included = true;
+            });
+        });
+
+        it('clears included flag for the given image ID', function () {
+            images.exclude(8);
+            expect(images.attached[0].included).toEqual(true);
+            expect(images.attached[1].included).toEqual(false);
+            expect(images.attached[2].included).toEqual(true);
+        });
+
+        it('raises an error if given image ID is not found', function () {
+            expect(function () { images.exclude(42); }).toThrow();
         });
     });
 
