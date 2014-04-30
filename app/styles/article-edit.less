@@ -1714,11 +1714,7 @@ a:hover {
     section {
         height: 100%; /* for scrolling in child panes */
     }
-
-    .modal-dialog.large {
-        width: 80%;
-    }
-    
+ 
     /* more selectors to increase specificity */
     .navbar-fixed-top.navbar.navbar-default {
         top: @hostTop;
@@ -2376,5 +2372,52 @@ a:hover {
                         border-bottom-left-radius: 3px;
                     }
             }        
+        }
+        /*large modal */
+        &.large { 
+            position: fixed;
+            width: auto;
+            height: auto;
+            margin: 20px;
+            left: 0!important;
+            top: 0!important;
+            right: 0!important;
+            bottom: 0!important;
+            padding: 0!important;
+            overflow: hidden!important;
+            .modal-dialog {
+                width: auto;
+                height: 100%;
+                margin: 0;
+                .modal-content {
+                    height:100%;
+                }
+            }
+            /* image modal */
+            &.image {
+                .modal-dialog {
+                    .modal-content {
+                        position:relative;
+                        .modal-body {
+                            -webkit-box-sizing: border-box;
+                            -moz-box-sizing: border-box;
+                            -ms-box-sizing: border-box;
+                            box-sizing: border-box;
+                            position: absolute;
+                            top: 42px;
+                            left: 0;
+                            bottom: 0;
+                            right: 0;
+                            .commands-bar {
+                                position:absolute;
+                                bottom:0;
+                                left:0;
+                                right:0;
+                                text-align: right;
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
