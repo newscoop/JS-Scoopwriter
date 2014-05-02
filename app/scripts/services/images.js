@@ -7,12 +7,13 @@ angular.module('authoringEnvironmentApp').service('images', [
     'article',
     'modal',
     'getFileReader',
+    'formDataFactory',
     '$upload',
     '$rootScope',
     '$q',
     function images(
         $http, pageTracker, configuration, $log, article, modal,
-        getFileReader, $upload, $rootScope, $q
+        getFileReader, formDataFactory, $upload, $rootScope, $q
     ) {
         /* more info about the page tracker in its tests */
         var service = this;
@@ -29,7 +30,7 @@ angular.module('authoringEnvironmentApp').service('images', [
         this.collected = [];  // list of collected images (those in basket)
         this.attached = [];  // list of images attached to the article
         this.images2upload = [];  // list of images to upload
-        this.includedIndex = 0;
+        this.includedIndex = -1;
         this.included = {};
         this.itemsPerPage = 10;
 
@@ -346,6 +347,15 @@ angular.module('authoringEnvironmentApp').service('images', [
             }
         };
 
+        /**
+        * Adds an image to the list of images included in article content and
+        * returns image's index in that list. If the image is not found,
+        * an error is raised.
+        *
+        * @method include
+        * @param id {Number} ID of the image
+        * @return {Number} image's index in the list of included images
+        */
         this.include = function (id) {
             var match = this.matchMaker(id);
             var index = _.findIndex(this.attached, match);
@@ -367,6 +377,13 @@ angular.module('authoringEnvironmentApp').service('images', [
             }
         };
 
+        /**
+        * Removes an image from the list of images included in article
+        * content. If the image is not found, an error is raised.
+        *
+        * @method exclude
+        * @param id {Number} ID of the image
+        */
         this.exclude = function (id) {
             var match = this.matchMaker(id);
             var index = _.findIndex(this.attached, match);
@@ -519,7 +536,6 @@ angular.module('authoringEnvironmentApp').service('images', [
         * @param image {Object} Object containing image's (meta)data
         * @return {Object} Decorated image object
         */
-        // TODO: tests
         this.decorate = function (image) {
             /**
             * @class image
@@ -590,11 +606,11 @@ angular.module('authoringEnvironmentApp').service('images', [
             * completed.
             *
             * @method startUpload
-            * @return {Object} promise object
+            * @return {Object} file upload promise
             */
             image.startUpload = function () {
                 var deferred = $q.defer(),
-                    fd = new FormData(),
+                    fd = formDataFactory.makeInstance(),
                     imageObj = this,
                     parts,
                     rejectMsg = 'No x-location header in API response.';
@@ -642,22 +658,29 @@ angular.module('authoringEnvironmentApp').service('images', [
             };
 
             /**
-            * Reads raw data of the image that will be uploaded and stores it
-            * as a base64-encoded string once the image file has been
-            * successfully read from the computer's hard drive into memory.
+            * Asynchronously reads raw data of the image that will be uploaded
+            * and stores it as a base64-encoded string once the image file
+            * has been successfully read from the computer's hard drive
+            * into memory.
             *
             * @method readRawData
+            * @return {Object} file read promise
             */
             image.readRawData = function () {
-                var reader = getFileReader.get();
+                var deferred = $q.defer(),
+                    reader = getFileReader.get();
+
                 reader.onload = function (ev) {
                     image.b64data = btoa(this.result);
+                    deferred.resolve(this.result);
                     // XXX: this might not be ideal, but there were problems
                     // listening to the "file read" change, thus I added
                     // $rootScope.$apply() here in the service itself
                     $rootScope.$apply();
                 };
+
                 reader.readAsBinaryString(image);
+                return deferred.promise;
             };
 
             return image;
