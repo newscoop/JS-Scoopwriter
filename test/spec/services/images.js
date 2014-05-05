@@ -250,67 +250,7 @@ describe('Service: Images', function () {
         });
     });
 
-    describe('attachAll() method', function () {
-        var modal;
-
-        beforeEach(inject(function (_modal_) {
-            modal = _modal_;
-            spyOn(images, 'attachBulk');
-            spyOn(modal, 'hide');
-        }));
-
-        it('attaches all images currently in basket', function () {
-            images.collected = [mock.items[4], mock.items[6]];
-            images.attachAll();
-            expect(images.attachBulk).toHaveBeenCalledWith(
-                [mock.items[4].id, mock.items[6].id]
-            );
-        });
-
-        it('does not attach anything if basket is empty', function () {
-            images.collected = [];
-            images.attachAll();
-            expect(images.attachBulk).not.toHaveBeenCalled();
-        });
-
-        it('empties the basket', function () {
-            images.collected = [mock.items[4], mock.items[6]];
-            images.attachAll();
-            expect(images.collected.length).toEqual(0);
-        });
-
-        it('hides the modal', function () {
-            images.attachAll();
-            expect(modal.hide).toHaveBeenCalled();
-        });
-    });
-
-    describe('attachAllUploaded() method', function () {
-        beforeEach(function () {
-            spyOn(images, 'attachBulk');
-        });
-
-        it('only attaches uploaded images to the article', function () {
-            images.images2upload = [
-                {id: 12, isUploaded: true},
-                {id: 27, isUploaded: false}
-            ];
-            images.attachAllUploaded();
-            expect(images.attachBulk).toHaveBeenCalledWith([12], true);
-        });
-
-        it('does not do anything if there are no uploaded images',
-            function () {
-                images.images2upload = [
-                    {id: 12, isUploaded: false},
-                    {id: 27, isUploaded: false}
-                ];
-                images.attachAllUploaded();
-                expect(images.attachBulk).not.toHaveBeenCalled();
-        });
-    });
-
-    describe('attachBulk() method', function () {
+    describe('attachAllCollected() method', function () {
         var headerCheckers,
             linkHeaderSpy;
 
@@ -338,9 +278,12 @@ describe('Service: Images', function () {
         });
 
         it('correctly invokes backend API', function () {
+            images.collected = [
+                mock.items[1], mock.items[4], mock.items[5]
+            ];
             images.attached = [];
 
-            images.attachBulk([2, 5, 6]);
+            images.attachAllCollected();
             $httpBackend.flush();
 
             expect(linkHeaderSpy.mostRecentCall.args[0].Link).toEqual(
@@ -351,9 +294,12 @@ describe('Service: Images', function () {
         });
 
         it('does not try to attach already attached images', function () {
-            images.attached = [mock.items[4]];  // id === 5
+            images.collected = [
+                mock.items[1], mock.items[4], mock.items[5]
+            ];
+            images.attached = [mock.items[4]];
 
-            images.attachBulk([2, 5, 6]);
+            images.attachAllCollected();
             $httpBackend.flush();
 
             expect(linkHeaderSpy.mostRecentCall.args[0].Link).toEqual(
@@ -364,18 +310,19 @@ describe('Service: Images', function () {
 
         it('does not invoke API if there is nothing to attach', function () {
             images.attached = [mock.items[0], mock.items[3], mock.items[7]];
+            images.collected = [mock.items[0], mock.items[3]];
             $httpBackend.resetExpectations();
-            images.attachBulk([4, 8]);
+            images.attachAllCollected();
         });
 
         it('updates attached images list on positive server response',
             function () {
-                images.displayed = [
-                    mock.items[0], mock.items[4], mock.items[6], mock.items[8]
+                images.collected = [
+                    mock.items[0], mock.items[4], mock.items[6]
                 ];
                 images.attached = [mock.items[0]];
 
-                images.attachBulk([5, 9]);
+                images.attachAllCollected();
                 $httpBackend.flush();
 
                 expect(images.attached.length).toEqual(3);
@@ -388,17 +335,7 @@ describe('Service: Images', function () {
                 expect(
                     _.contains(images.attached, mock.items[4])).toEqual(true);
                 expect(
-                    _.contains(images.attached, mock.items[8])).toEqual(true);
-        });
-
-        it('retrieves uploaded images\' info if necessary', function () {
-            images.attached = [];
-
-            $httpBackend.expectGET(rootURI + '/images/2').respond(200, {});
-            $httpBackend.expectGET(rootURI + '/images/6').respond(200, {});
-
-            images.attachBulk([2, 6], true);
-            $httpBackend.flush();
+                    _.contains(images.attached, mock.items[6])).toEqual(true);
         });
     });
 

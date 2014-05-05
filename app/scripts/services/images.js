@@ -5,14 +5,13 @@ angular.module('authoringEnvironmentApp').service('images', [
     'configuration',
     '$log',
     'article',
-    'modal',
     'getFileReader',
     'formDataFactory',
     '$upload',
     '$rootScope',
     '$q',
     function images(
-        $http, pageTracker, configuration, $log, article, modal,
+        $http, pageTracker, configuration, $log, article,
         getFileReader, formDataFactory, $upload, $rootScope, $q
     ) {
         /* more info about the page tracker in its tests */
@@ -182,69 +181,20 @@ angular.module('authoringEnvironmentApp').service('images', [
         };
 
         /**
-        * Attaches all images in the basket to the article and closes
-        * the modal at the end.
+        * Attaches all images in the basket to the article.
         *¸
-        * @method attachAll
+        * @method attachAllCollected
         */
-        this.attachAll = function () {
-            var toAttach = [];
-
-            service.collected.forEach(function (image) {
-                toAttach.push(image.id);
-            });
-
-            if (toAttach.length > 0) {
-                service.attachBulk(toAttach);
-            }
-
-            service.collected = [];
-            modal.hide();
-        };
-
-        /**
-        * Attaches all images in the images2upload list that have been
-        * successfully uploaded to the article.
-        *¸
-        * @method attachAllUploaded
-        */
-        this.attachAllUploaded = function () {
-            var toAttach = [];
-
-            service.images2upload.forEach(function (image) {
-                if (image.isUploaded) {
-                    toAttach.push(image.id);
-                }
-            });
-
-            if (toAttach.length > 0) {
-                service.attachBulk(toAttach, true);
-            }
-        };
-
-        /**
-        * Attaches given images to the article (using HTTP LINK). For images
-        * that are already attached, it does not do anything.
-        * If loadFromServer flag is set, it also retrieves detailed image info
-        * for every image (after successfully attaching images to the article).
-        *
-        * @method attachBulk
-        * @param idList {Object} array with IDs of the images to attach
-        * @param [loadFromServer=false] {Boolean} whether or not to retrieve
-        *     images' info from the server after attaching (useful for images
-        *     uploaded from a computer)
-        */
-        this.attachBulk = function (idList, loadFromServer) {
-            var image,
-                match,
-                notYetAttached = [],
+        this.attachAllCollected = function () {
+            var notYetAttached = [],
                 resourceLinks = [],
                 url;
 
-            idList.forEach(function (imgId) {
-                match = service.matchMaker(imgId);
-                if (!_.find(service.attached, match)) {
-                    notYetAttached.push(imgId);
+            // skip already attached images (this should generally not happen,
+            // but if it does, it might be some bug in the basket logic)
+            service.collected.forEach(function (image) {
+                if (!_.find(service.attached, image)) {
+                    notYetAttached.push(image);
                 }
             });
 
@@ -255,8 +205,9 @@ angular.module('authoringEnvironmentApp').service('images', [
             url = apiRoot + '/articles/' + service.article.number +
                 '/' + service.article.language;
 
-            notYetAttached.forEach(function (imgId) {
-                resourceLinks.push('<' + apiRoot + '/images/' + imgId + '>');
+            notYetAttached.forEach(function (image) {
+                resourceLinks.push(
+                    '<' + apiRoot + '/images/' + image.id + '>');
             });
             resourceLinks = resourceLinks.join();
 
@@ -265,23 +216,13 @@ angular.module('authoringEnvironmentApp').service('images', [
                 method: 'LINK',
                 headers: { Link: resourceLinks }
             }).success(function () {
-                notYetAttached.forEach(function (imgId) {
-                    if (loadFromServer) {
-                        // uploaded images need to be retrieved from server
-                        // to get all image metadata
-                        $http.get(
-                            apiRoot + '/images/' + imgId
-                        )
-                        .success(function (data) {
-                            service.attached.push(data);
-                        });
-                    } else {
-                        match = service.matchMaker(imgId);
-                        image = _.find(service.displayed, match);
-                        service.attached.push(image);
-                    }
+                notYetAttached.forEach(function (image) {
+                    service.attached.push(image);
                 });
             });
+            // XXX: do we handle conflicts (409 errors)? For cases when
+            // another user attaches the same image(s) while we are still
+            // adding them to our own basket
         };
 
         /**
@@ -296,9 +237,6 @@ angular.module('authoringEnvironmentApp').service('images', [
         *     image info from the server after attaching (useful if the image
         *     is uploaded from a computer)
         */
-        // XXX: remove? The same can be done w/ attachBulk, it's basically
-        // the same code. Though we should probably wait until we have a much
-        // better test coverage.
         this.attach = function (id, loadFromServer) {
             var link,
                 match = this.matchMaker(id),

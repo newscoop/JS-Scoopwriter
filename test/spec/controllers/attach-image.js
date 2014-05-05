@@ -43,7 +43,7 @@ describe('Controller: AttachImageCtrl', function () {
         });
     });
 
-    describe('scope\'s select method', function () {
+    describe('scope\'s select() method', function () {
         it('sets given source as the new selected source', function () {
             var newSelected = {
                 value: 'foo',
@@ -55,70 +55,30 @@ describe('Controller: AttachImageCtrl', function () {
         });
     });
 
-    describe('scope\'s uploadImages method', function () {
+    describe('scope\'s attachCollected() method', function () {
         beforeEach(function () {
-            spyOn(images, 'uploadAll');
+            spyOn(images, 'attachAllCollected');
+            spyOn(images, 'discardAll');
+            spyOn(modal, 'hide');
         });
 
-        it('triggers image uploading', function () {
-            images.uploadAll.andReturn([]);  // empty promise list
-            scope.uploadImages();
-            expect(images.uploadAll).toHaveBeenCalled();
+        it('triggers attaching all images currently in basket', function () {
+            scope.attachCollected();
+            expect(images.attachAllCollected).toHaveBeenCalled();
         });
 
-        describe('after successful upload', function () {
-            var deferred,
-                deferred2;
+        it('triggers clearing the basket and upload list', function () {
+            scope.attachCollected();
+            expect(images.discardAll).toHaveBeenCalled();
+        });
 
-            beforeEach(inject(function (_$q_) {
-                var uploadPromise,
-                    uploadPromise2
-
-                deferred = _$q_.defer();
-                deferred2 = _$q_.defer();
-                uploadPromise = deferred.promise;
-                uploadPromise2 = deferred2.promise;
-
-                images.uploadAll.andReturn([uploadPromise, uploadPromise2]);
-                spyOn(images, 'attachAllUploaded');
-                spyOn(modal, 'hide');
-            }));
-
-            it('triggers attaching images to article', function () {
-                scope.uploadImages();
-
-                deferred.resolve();
-                deferred2.resolve();
-                scope.$apply();
-
-                expect(images.attachAllUploaded).toHaveBeenCalled();
-            });
-
-            it('clears images2upload list', function () {
-                images.images2upload = [{}, {}, {}];
-                scope.uploadImages();
-                expect(images.images2upload.length).toEqual(3);
-
-                deferred.resolve();
-                deferred2.resolve();
-                scope.$apply();
-
-                expect(images.images2upload.length).toEqual(0);
-            });
-
-            it('closes the modal', function () {
-                scope.uploadImages();
-
-                deferred.resolve();
-                deferred2.resolve();
-                scope.$apply();
-
-                expect(modal.hide).toHaveBeenCalled();
-            });
+        it('closes the modal', function () {
+            scope.attachCollected();
+            expect(modal.hide).toHaveBeenCalled();
         });
     });
 
-    describe('scope\'s discardChanges method', function () {
+    describe('scope\'s discardChanges() method', function () {
         var eventObj;
 
         beforeEach(function () {
