@@ -1805,18 +1805,24 @@ a:hover {
         font-size: 12px;
         .basket-head {
             color: gainsboro;
-            background: #333333;
-            padding: 5px;
+            #gradient > .vertical(@start-color: #1a1a1a; @end-color: #333);
+            @shadow: 0 -1px 0 rgba(0,0,0,1), inset 0 1px 0 rgba(255,255,255,.4);
+            .box-shadow(@shadow);
+            padding: 10px 15px;
+            border-bottom: 1px solid #373737;
             .description {
                 color: rgb(231, 231, 231);
                 margin-right: 20px;
             }
         }
         .basket {
-            background: #666666;
             height: @thumbnail-max-height + 90;
             overflow-x: hidden;
-            overflow-y: scroll;
+            overflow-y: auto;
+            &::-webkit-scrollbar { width: 8px; height: 8px; margin: -1px 0; background:#5c5c5c; }
+            &::-webkit-scrollbar-thumb { background: #808080; }
+            &::-webkit-scrollbar-thumb:hover { background: #999; }
+            margin-right:10px;
         }
         .thumbnail-wrapper {
             position: relative;
@@ -1900,11 +1906,6 @@ a:hover {
                 margin-top: 30px;
             }
         }
-        .archive {
-            height: 400px;
-            max-height: 400px;
-            overflow-y: scroll;
-        }
     }
 
     .image-panel {
@@ -1914,9 +1915,8 @@ a:hover {
         }
         .images-wrapper {
             position: relative;
-            height: 80%;
+            height: 86%;
             overflow: auto;
-            border: 1px solid @grayLight;
             .media-tab {
                 position: absolute;
                 top: 0;
@@ -1924,7 +1924,7 @@ a:hover {
                 bottom: 0;
                 left: 0;
                 overflow: auto;
-                padding: 12px 10px 10px;
+                padding: 12px 10px 10px 0;
                 &::-webkit-scrollbar { width: 8px; height: 8px; margin: -1px 0; }
                 &::-webkit-scrollbar-thumb { background: #949494; }
                 &::-webkit-scrollbar-thumb:hover { background: #6e6e6e; }
@@ -2371,14 +2371,14 @@ a:hover {
                         border-bottom-right-radius: 3px;
                         border-bottom-left-radius: 3px;
                     }
-            }        
+            } 
         }
         /*large modal */
         &.large { 
             position: fixed;
             width: auto;
             height: auto;
-            margin: 20px;
+            margin: 0 20px 20px;
             left: 0!important;
             top: 0!important;
             right: 0!important;
@@ -2389,6 +2389,7 @@ a:hover {
                 width: auto;
                 height: 100%;
                 margin: 0;
+                padding-top: 20px;
                 .modal-content {
                     height:100%;
                 }
@@ -2399,21 +2400,66 @@ a:hover {
                     .modal-content {
                         position:relative;
                         .modal-body {
-                            -webkit-box-sizing: border-box;
-                            -moz-box-sizing: border-box;
-                            -ms-box-sizing: border-box;
-                            box-sizing: border-box;
+                            .box-sizing(border-box);
                             position: absolute;
                             top: 42px;
                             left: 0;
                             bottom: 0;
                             right: 0;
+                            padding:0;
+                            .content-row {
+                                background-color: #f8f8f8;
+                                .box-sizing(border-box);
+                                position: absolute;
+                                bottom: 250px;
+                                top: 14px;
+                                width:100%;
+                                overflow:hidden; 
+                                .left-pane {
+                                    width: 130px;
+                                    .box-sizing(border-box);
+                                    position: absolute;
+                                    top: 0;
+                                    bottom: 0;
+                                    padding: 10px 0px 15px 0;
+                                    margin:0;
+                                    border-right: 1px solid #d2d2d2;
+                                }
+                                .right-pane {
+                                    position: absolute;
+                                    .box-sizing(border-box);
+                                    margin: 15px 10px 15px 15px;
+                                    top: 0;
+                                    bottom: 0;
+                                    right: 0;
+                                    left: 145px;
+                                    overflow:auto;
+                                    &::-webkit-scrollbar { width: 8px; height: 8px; margin: -1px 0; background: #ebebeb; }
+                                    &::-webkit-scrollbar-thumb { background: #949494; }
+                                    &::-webkit-scrollbar-thumb:hover { background: #6e6e6e; }
+                                    .archive {
+                                    }
+                                }                               
+                            }
+                            .basket-container {
+                                position:absolute;
+                                bottom: 60px;
+                                left:0;
+                                right:0;
+                                background: #4d4d4d;
+                            }
                             .commands-bar {
                                 position:absolute;
                                 bottom:0;
                                 left:0;
                                 right:0;
                                 text-align: right;
+                                padding: 15px;
+                                background-color: #f5f5f5;
+                                border-top: 1px solid white;
+                                .btn + .btn {
+                                    margin-left: 6px;
+                                }
                             }
                         }
                     }
