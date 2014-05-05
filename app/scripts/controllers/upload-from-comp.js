@@ -8,7 +8,8 @@
 angular.module('authoringEnvironmentApp').controller('UploadFromCompCtrl', [
     '$scope',
     'images',
-    function ($scope, images) {
+    '$q',
+    function ($scope, images, $q) {
 
         $scope.images2upload = images.images2upload;
 
@@ -30,5 +31,32 @@ angular.module('authoringEnvironmentApp').controller('UploadFromCompCtrl', [
             $scope.$apply();
         };
 
+        /**
+        * Triggers uploading of all the images in the images2upload list and
+        * clearing the list when done.
+        *
+        * @method uploadStaged
+        */
+        $scope.uploadStaged = function () {
+            var uploadPromises = images.uploadAll();
+
+            $q.all(uploadPromises).then(function (data) {
+
+                data.forEach(function (imageInfo) {
+                    images.collect(imageInfo.id, true);
+                });
+
+                images.clearUploadList();
+            });
+        };
+
+        /**
+        * Triggers clearing the list of images to upload.
+        *
+        * @method clearStaged
+        */
+        $scope.clearStaged = function () {
+            images.clearUploadList();
+        };
     }
 ]);

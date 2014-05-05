@@ -1884,12 +1884,14 @@ a:hover {
                 width: 100%;
             }
         }
+
         .computer {
             .drag-area {
                 background: #f8f8f8;
                 border: 3px dashed #e0e0e0;
                 padding: 2%;
             }
+
             .drag-area-title {
                 width: 100%;
                 background: url("../images/dragfiles.png") no-repeat 50% 0;
@@ -1899,11 +1901,30 @@ a:hover {
                 color: #a0a0a0;
                 font-size: 24px;
             }
+
             .drag-area-button {
                 text-align: center;
                 margin-top: 30px;
             }
+
+            .buttons-bar {
+                margin-bottom: 10px;
+                button {
+                    float: right;
+                    margin-left: 10px;
+                }
+
+                /* clearfix for floated buttons */
+                &:before, &:after {
+                    content: '';
+                    display: table;
+                }
+                &:after {
+                    clear: both;
+                }
+            }
         }
+
         .archive {
             height: 400px;
             max-height: 400px;

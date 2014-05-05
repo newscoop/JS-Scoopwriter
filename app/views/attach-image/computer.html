@@ -43,4 +43,21 @@
     </div>
   </div>
 
+  <div class="buttons-bar">
+    <button
+       type="button"
+       class="btn btn-primary"
+       ng-disabled="images.images2upload.length < 1"
+       ng-click="uploadStaged()">
+      Upload
+    </button>
+    <button
+       type="button"
+       class="btn btn-default"
+       ng-disabled="images.images2upload.length < 1"
+       ng-click="clearStaged()">
+      Clear
+    </button>
+  </div>
+
 </div>
