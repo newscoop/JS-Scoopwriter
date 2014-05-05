@@ -14,6 +14,15 @@
   <div class="image-uploading">
     <div class="placeholder" ng-repeat="image in images2upload">
 
+      <div class="remove">
+        <button
+          type="button"
+          class="close"
+          title="Remove"
+          ng-click="removeFromStaging(image)"
+          >×</button>
+      </div>
+
       <div class="progress">
         <div
            class="progress-bar"

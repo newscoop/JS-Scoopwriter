@@ -763,6 +763,14 @@ describe('Service: Images', function () {
         });
     });
 
+    describe('removeFromUploadList() method', function () {
+        it('removes image from the images2upload list', function () {
+            images.images2upload = [mock.items[1], mock.items[6]];
+            images.removeFromUploadList(mock.items[1]);
+            expect(images.images2upload).toEqual([mock.items[6]]);
+        });
+    });
+
     describe('clearUploadList() method', function () {
         it('clears the images2upload list', function () {
             images.images2upload = [mock.items[1], mock.items[6]];

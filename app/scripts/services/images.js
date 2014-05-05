@@ -474,6 +474,16 @@ angular.module('authoringEnvironmentApp').service('images', [
         };
 
         /**
+        * Removes image from the list of images to upload.
+        *
+        * @method removeFromUploadList
+        * @param image {Object} image to remove
+        */
+        this.removeFromUploadList = function (image) {
+            _.remove(this.images2upload, image);
+        };
+
+        /**
         * Clears the images to upload list, including the images that have
         * not been uploaded.
         *

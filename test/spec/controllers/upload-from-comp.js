@@ -41,6 +41,17 @@ describe('Controller: UploadFromCompCtrl', function () {
         });
     });
 
+    describe('scope\'s removeFromStaging method', function () {
+        beforeEach(inject(function (_images_) {
+            spyOn(images, 'removeFromUploadList');
+        }));
+
+        it('proxies the call to remove image from upload list', function () {
+            scope.removeFromStaging();
+            expect(images.removeFromUploadList).toHaveBeenCalled();
+        });
+    });
+
     describe('scope\'s uploadStaged method', function () {
         var deferred,
             deferred2;

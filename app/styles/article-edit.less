@@ -201,7 +201,7 @@ a:hover {
             padding-top: @placeholder-margin;
             overflow-y: scroll;
             .placeholder {
-                background-color: white;
+                position: relative;
                 display: inline-block;
                 float: left;
                 height: 300px;
@@ -212,6 +212,14 @@ a:hover {
                 border-bottom: 2px solid @placeholder-border-color;
                 border-radius: 4px;
                 padding: 2%;
+                background-color: white;
+
+                .remove {
+                    position: absolute;
+                    top: 1px;
+                    right: 5px;
+                }
+
                 .progress {
                     height: 10px;
                     margin-bottom: 10px;

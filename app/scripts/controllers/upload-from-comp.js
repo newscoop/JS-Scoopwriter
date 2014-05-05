@@ -32,6 +32,16 @@ angular.module('authoringEnvironmentApp').controller('UploadFromCompCtrl', [
         };
 
         /**
+        * Removes image from the upload staging panel.
+        *
+        * @method removeFromStaging
+        * @param image {Object} image to remove
+        */
+        $scope.removeFromStaging = function (image) {
+            images.removeFromUploadList(image);
+        };
+
+        /**
         * Triggers uploading of all the images in the images2upload list and
         * clearing the list when done.
         *
