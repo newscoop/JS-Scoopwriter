@@ -1,17 +1,22 @@
 <div class="computer" ng-controller="UploadFromCompCtrl">
 
-  <div class="drag-area" drop-images handler="addToUploadList(files)">
-    <div class="drag-area-title">
-      Drag Your Images Here
-    </div>
-    <div class="drag-area-button">
-      <button class="btn btn-default" file-upload handler="addToUploadList(files)">
-        <span class="glyphicon glyphicon-upload"></span> or Select them from folder
-      </button>
-    </div>
-  </div>
-
   <div class="image-uploading">
+
+    <div
+      class="drag-area"
+      ng-class="{placeholder: images.images2upload.length > 0}"
+      drop-images handler="addToUploadList(files)"
+      >
+      <div class="drag-area-title">
+        Drag Your Images Here
+      </div>
+      <div class="drag-area-button">
+        <button class="btn btn-default" file-upload handler="addToUploadList(files)">
+          <span class="glyphicon glyphicon-upload"></span> or Select them from folder
+        </button>
+      </div>
+    </div>
+
     <div class="placeholder" ng-repeat="image in images2upload">
 
       <div class="remove">
