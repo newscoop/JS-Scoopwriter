@@ -655,20 +655,32 @@ angular.module('authoringEnvironmentApp').service('images', [
             * @method readRawData
             * @return {Object} file read promise
             */
+            // TODO: update docstrings and tests as needed
+            // have some Image factory? for easier testing?
             image.readRawData = function () {
                 var deferred = $q.defer(),
                     reader = getFileReader.get();
 
-                reader.onload = function (ev) {
-                    image.b64data = btoa(this.result);
-                    deferred.resolve(this.result);
-                    // XXX: this might not be ideal, but there were problems
-                    // listening to the "file read" change, thus I added
-                    // $rootScope.$apply() here in the service itself
-                    $rootScope.$apply();
+                reader.onload = function () {
+                    var img = new Image();
+
+                    img.onload = function () {
+                        // TODO: image is loaded; sizes are available
+                        image.width = img.width;
+                        image.height = img.height;
+                        image.src = img.src;
+
+                        deferred.resolve(reader.result);
+                        // XXX: this might not be ideal, but there were problems
+                        // listening to the "file read" change, thus I added
+                        // $rootScope.$apply() here in the service itself
+                        $rootScope.$apply();
+                    };
+
+                    img.src = reader.result;
                 };
 
-                reader.readAsBinaryString(image);
+                reader.readAsDataURL(image);
                 return deferred.promise;
             };
 
