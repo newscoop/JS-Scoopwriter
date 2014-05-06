@@ -59,18 +59,9 @@
     <button
        type="button"
        class="btn btn-primary"
-       ng-show="selected.value === 'archive'"
        ng-disabled="images.collected.length < 1"
-       ng-click="images.attachAll()">
+       ng-click="attachCollected()">
       Attach Images
-    </button>
-    <button
-       type="button"
-       class="btn btn-primary"
-       ng-show="selected.value === 'computer'"
-       ng-disabled="images.images2upload.length < 1"
-       ng-click="uploadImages()">
-      Upload &amp; Attach
     </button>
   </div>
 </div>

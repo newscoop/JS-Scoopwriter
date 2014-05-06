@@ -5,14 +5,13 @@ angular.module('authoringEnvironmentApp').service('images', [
     'configuration',
     '$log',
     'article',
-    'modal',
     'getFileReader',
     'formDataFactory',
     '$upload',
     '$rootScope',
     '$q',
     function images(
-        $http, pageTracker, configuration, $log, article, modal,
+        $http, pageTracker, configuration, $log, article,
         getFileReader, formDataFactory, $upload, $rootScope, $q
     ) {
         /* more info about the page tracker in its tests */
@@ -121,15 +120,37 @@ angular.module('authoringEnvironmentApp').service('images', [
         };
 
         /**
-        * Adds image to the basket.
+        * Adds an image (from the list of displayed images) to the basket. If
+        * loadFromServer flag is set, it instead retrieves image data from the
+        * server before adding it to the basket. The latter is useful for
+        * adding just-uploaded images, for which we don't yet have all their
+        * metadata.
         *
         * @method collect
         * @param id {Number} ID of an image to add
+        * @param [loadFromServer=false] {Boolean} whether or not to retrieve
+        *     image info from the server
         */
-        this.collect = function (id) {
-            var match = this.matchMaker(id);
-            if (!this.isCollected(id)) {
-                this.collected.push(_.find(this.displayed, match));
+        this.collect = function (id, loadFromServer) {
+            var image,
+                match,
+                url;
+
+            if (this.isCollected(id)) {
+                return;
+            }
+
+            if (!loadFromServer) {
+                match = this.matchMaker(id);
+                image = _.find(this.displayed, match);
+                if (image) {
+                    service.collected.push(image);
+                }
+            } else {
+                url = apiRoot + '/images/' + id;
+                $http.get(url).then(function (result) {
+                    service.collected.push(result.data);
+                });
             }
         };
 
@@ -150,74 +171,30 @@ angular.module('authoringEnvironmentApp').service('images', [
         * @method discardAll
         */
         this.discardAll = function () {
-            service.collected = [];
-            service.images2upload = [];
-        };
-
-        /**
-        * Attaches all images in the basket to the article and closes
-        * the modal at the end.
-        *¸
-        * @method attachAll
-        */
-        this.attachAll = function () {
-            var toAttach = [];
-
-            service.collected.forEach(function (image) {
-                toAttach.push(image.id);
-            });
-
-            if (toAttach.length > 0) {
-                service.attachBulk(toAttach);
+            while (service.collected.length > 0) {
+                service.collected.pop();
             }
 
-            service.collected = [];
-            modal.hide();
-        };
-
-        /**
-        * Attaches all images in the images2upload list that have been
-        * successfully uploaded to the article.
-        *¸
-        * @method attachAllUploaded
-        */
-        this.attachAllUploaded = function () {
-            var toAttach = [];
-
-            service.images2upload.forEach(function (image) {
-                if (image.isUploaded) {
-                    toAttach.push(image.id);
-                }
-            });
-
-            if (toAttach.length > 0) {
-                service.attachBulk(toAttach, true);
+            while (service.images2upload.length > 0) {
+                service.images2upload.pop();
             }
         };
 
         /**
-        * Attaches given images to the article (using HTTP LINK). For images
-        * that are already attached, it does not do anything.
-        * If loadFromServer flag is set, it also retrieves detailed image info
-        * for every image (after successfully attaching images to the article).
-        *
-        * @method attachBulk
-        * @param idList {Object} array with IDs of the images to attach
-        * @param [loadFromServer=false] {Boolean} whether or not to retrieve
-        *     images' info from the server after attaching (useful for images
-        *     uploaded from a computer)
+        * Attaches all images in the basket to the article.
+        *¸
+        * @method attachAllCollected
         */
-        this.attachBulk = function (idList, loadFromServer) {
-            var image,
-                match,
-                notYetAttached = [],
+        this.attachAllCollected = function () {
+            var notYetAttached = [],
                 resourceLinks = [],
                 url;
 
-            idList.forEach(function (imgId) {
-                match = service.matchMaker(imgId);
-                if (!_.find(service.attached, match)) {
-                    notYetAttached.push(imgId);
+            // skip already attached images (this should generally not happen,
+            // but if it does, it might be some bug in the basket logic)
+            service.collected.forEach(function (image) {
+                if (!_.find(service.attached, image)) {
+                    notYetAttached.push(image);
                 }
             });
 
@@ -228,8 +205,9 @@ angular.module('authoringEnvironmentApp').service('images', [
             url = apiRoot + '/articles/' + service.article.number +
                 '/' + service.article.language;
 
-            notYetAttached.forEach(function (imgId) {
-                resourceLinks.push('<' + apiRoot + '/images/' + imgId + '>');
+            notYetAttached.forEach(function (image) {
+                resourceLinks.push(
+                    '<' + apiRoot + '/images/' + image.id + '>');
             });
             resourceLinks = resourceLinks.join();
 
@@ -238,23 +216,13 @@ angular.module('authoringEnvironmentApp').service('images', [
                 method: 'LINK',
                 headers: { Link: resourceLinks }
             }).success(function () {
-                notYetAttached.forEach(function (imgId) {
-                    if (loadFromServer) {
-                        // uploaded images need to be retrieved from server
-                        // to get all image metadata
-                        $http.get(
-                            apiRoot + '/images/' + imgId
-                        )
-                        .success(function (data) {
-                            service.attached.push(data);
-                        });
-                    } else {
-                        match = service.matchMaker(imgId);
-                        image = _.find(service.displayed, match);
-                        service.attached.push(image);
-                    }
+                notYetAttached.forEach(function (image) {
+                    service.attached.push(image);
                 });
             });
+            // XXX: do we handle conflicts (409 errors)? For cases when
+            // another user attaches the same image(s) while we are still
+            // adding them to our own basket
         };
 
         /**
@@ -269,9 +237,6 @@ angular.module('authoringEnvironmentApp').service('images', [
         *     image info from the server after attaching (useful if the image
         *     is uploaded from a computer)
         */
-        // XXX: remove? The same can be done w/ attachBulk, it's basically
-        // the same code. Though we should probably wait until we have a much
-        // better test coverage.
         this.attach = function (id, loadFromServer) {
             var link,
                 match = this.matchMaker(id),
@@ -490,12 +455,12 @@ angular.module('authoringEnvironmentApp').service('images', [
         };
 
         /**
-        * Adds new images to the list of images to upload. Before adding,
-        * images are decorated using the `decorate` method.
+        * Adds new local image files to the list of images to upload. Before
+        * adding, file objects are decorated using the `decorate` method.
         *
         * @method addToUploadList
-        * @param newImages {Object} array with objects cointaining image
-        *     metadata to attach
+        * @param newImages {Object} array with objects cointaining image Files
+        *     that user wants to upload
         */
         this.addToUploadList = function (newImages) {
             var i,
@@ -505,6 +470,28 @@ angular.module('authoringEnvironmentApp').service('images', [
                 image = this.decorate(newImages[i]);
                 this.images2upload.push(image);
                 image.readRawData();
+            }
+        };
+
+        /**
+        * Removes image from the list of images to upload.
+        *
+        * @method removeFromUploadList
+        * @param image {Object} image to remove
+        */
+        this.removeFromUploadList = function (image) {
+            _.remove(this.images2upload, image);
+        };
+
+        /**
+        * Clears the images to upload list, including the images that have
+        * not been uploaded.
+        *
+        * @method clearUploadList
+        */
+        this.clearUploadList = function () {
+            while (this.images2upload.length > 0) {
+                this.images2upload.pop();
             }
         };
 
@@ -528,12 +515,11 @@ angular.module('authoringEnvironmentApp').service('images', [
         };
 
         /**
-        * Decorates an object containing image metadata (as returned by
-        * the API) with various properties and methods (mostly
-        * uploading-related).
+        * Decorates an image file object with various properties and methods
+        * (mostly uploading-related).
         *
         * @class decorate
-        * @param image {Object} Object containing image's (meta)data
+        * @param image {Object} image File object that user wants to upload
         * @return {Object} Decorated image object
         */
         this.decorate = function (image) {
@@ -643,9 +629,12 @@ angular.module('authoringEnvironmentApp').service('images', [
                     if (imgUrl) {
                         parts = imgUrl.split('/');
                         image.id = parseInt(parts[parts.length - 1], 10);
-                        deferred.resolve(imgUrl);
+                        deferred.resolve({
+                            id: image.id,
+                            url: imgUrl
+                        });
                     } else {
-                        //  most likely an API bug
+                        // most likely an API bug
                         console.warn(rejectMsg);
                         deferred.reject(rejectMsg);
                     }

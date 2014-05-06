@@ -14,6 +14,15 @@
   <div class="image-uploading">
     <div class="placeholder" ng-repeat="image in images2upload">
 
+      <div class="remove">
+        <button
+          type="button"
+          class="close"
+          title="Remove"
+          ng-click="removeFromStaging(image)"
+          >×</button>
+      </div>
+
       <div class="progress">
         <div
            class="progress-bar"
@@ -41,6 +50,23 @@
       </div>
 
     </div>
+  </div>
+
+  <div class="buttons-bar">
+    <button
+       type="button"
+       class="btn btn-primary"
+       ng-disabled="images.images2upload.length < 1"
+       ng-click="uploadStaged()">
+      Upload
+    </button>
+    <button
+       type="button"
+       class="btn btn-default"
+       ng-disabled="images.images2upload.length < 1"
+       ng-click="clearStaged()">
+      Clear
+    </button>
   </div>
 
 </div>
