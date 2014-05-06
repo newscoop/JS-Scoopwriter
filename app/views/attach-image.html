@@ -51,6 +51,7 @@
     <button
        type="button"
        class="btn btn-default"
+       ng-disabled="images.images2upload.length > 0"
        ng-click="discardChanges($event)"
        data-test-button="modal-close"
        data-dismiss="modal">
@@ -59,7 +60,7 @@
     <button
        type="button"
        class="btn btn-primary"
-       ng-disabled="images.collected.length < 1"
+       ng-disabled="images.collected.length < 1 || images.images2upload.length > 0"
        ng-click="attachCollected()">
       Attach Images
     </button>
