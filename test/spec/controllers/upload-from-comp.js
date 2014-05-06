@@ -29,7 +29,7 @@ describe('Controller: UploadFromCompCtrl', function () {
         expect(scope.images2upload).toBeDefined();
     });
 
-    describe('scope\'s addToUploadList method', function () {
+    describe('scope\'s addToUploadList() method', function () {
         beforeEach(inject(function (_images_) {
             spyOn(images, 'addToUploadList');
         }));
@@ -41,7 +41,7 @@ describe('Controller: UploadFromCompCtrl', function () {
         });
     });
 
-    describe('scope\'s removeFromStaging method', function () {
+    describe('scope\'s removeFromStaging() method', function () {
         beforeEach(inject(function (_images_) {
             spyOn(images, 'removeFromUploadList');
         }));
@@ -52,7 +52,7 @@ describe('Controller: UploadFromCompCtrl', function () {
         });
     });
 
-    describe('scope\'s uploadStaged method', function () {
+    describe('scope\'s uploadStaged() method', function () {
         var deferred,
             deferred2;
 
@@ -94,7 +94,7 @@ describe('Controller: UploadFromCompCtrl', function () {
 
     });
 
-    describe('scope\'s clearStaged method', function () {
+    describe('scope\'s clearStaged() method', function () {
         it('clears the images2upload list by using the images service',
             function () {
                 spyOn(images, 'clearUploadList');
@@ -103,4 +103,35 @@ describe('Controller: UploadFromCompCtrl', function () {
         });
     });
 
+    describe('scope\'s setForAllPhotographer() method', function () {
+        it('sets given photographer name for all images in images2upload list',
+            function () {
+                images.images2upload = [
+                    {photographer: 'name 1'},
+                    {photographer: 'name 2'},
+                    {photographer: 'name 3'},
+                ];
+                scope.setForAllPhotographer('John Doe');
+
+                images.images2upload.forEach(function (item) {
+                    expect(item.photographer).toEqual('John Doe');
+            });
+        });
+    });
+
+    describe('scope\'s setForAllDescription() method', function () {
+        it('sets given image description for all images in images2upload list',
+            function () {
+                images.images2upload = [
+                    {description: 'description 1'},
+                    {description: 'description 2'},
+                    {description: 'description 3'},
+                ];
+                scope.setForAllDescription('A lovely picture!');
+
+                images.images2upload.forEach(function (item) {
+                    expect(item.description).toEqual('A lovely picture!');
+            });
+        });
+    });
 });

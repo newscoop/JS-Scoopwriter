@@ -68,5 +68,29 @@ angular.module('authoringEnvironmentApp').controller('UploadFromCompCtrl', [
         $scope.clearStaged = function () {
             images.clearUploadList();
         };
+
+        /**
+        * Sets given photographer name for all images in staging area.
+        *
+        * @method setForAllPhotographer
+        * @param photographer {String} photographer name to set
+        */
+        $scope.setForAllPhotographer = function (photographer) {
+            images.images2upload.forEach(function (item) {
+                item.photographer = photographer;
+            });
+        };
+
+        /**
+        * Sets given description for all images in staging area.
+        *
+        * @method setForAllDescription
+        * @param description {String} image description to set
+        */
+        $scope.setForAllDescription = function (description) {
+            images.images2upload.forEach(function (item) {
+                item.description = description;
+            });
+        };
     }
 ]);
