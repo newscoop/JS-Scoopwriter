@@ -103,7 +103,7 @@ describe('Controller: UploadFromCompCtrl', function () {
         });
     });
 
-    describe('scope\'s set4allPhotographer() method', function () {
+    describe('scope\'s setForAllPhotographer() method', function () {
         it('sets given photographer name for all images in images2upload list',
             function () {
                 images.images2upload = [
@@ -111,7 +111,7 @@ describe('Controller: UploadFromCompCtrl', function () {
                     {photographer: 'name 2'},
                     {photographer: 'name 3'},
                 ];
-                scope.set4allPhotographer('John Doe');
+                scope.setForAllPhotographer('John Doe');
 
                 images.images2upload.forEach(function (item) {
                     expect(item.photographer).toEqual('John Doe');
@@ -119,7 +119,7 @@ describe('Controller: UploadFromCompCtrl', function () {
         });
     });
 
-    describe('scope\'s set4allDescription() method', function () {
+    describe('scope\'s setForAllDescription() method', function () {
         it('sets given image description for all images in images2upload list',
             function () {
                 images.images2upload = [
@@ -127,7 +127,7 @@ describe('Controller: UploadFromCompCtrl', function () {
                     {description: 'description 2'},
                     {description: 'description 3'},
                 ];
-                scope.set4allDescription('A lovely picture!');
+                scope.setForAllDescription('A lovely picture!');
 
                 images.images2upload.forEach(function (item) {
                     expect(item.description).toEqual('A lovely picture!');

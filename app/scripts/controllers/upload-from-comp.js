@@ -72,10 +72,10 @@ angular.module('authoringEnvironmentApp').controller('UploadFromCompCtrl', [
         /**
         * Sets given photographer name for all images in staging area.
         *
-        * @method use4allPhotographer
+        * @method setForAllPhotographer
         * @param photographer {String} photographer name to set
         */
-        $scope.set4allPhotographer = function (photographer) {
+        $scope.setForAllPhotographer = function (photographer) {
             images.images2upload.forEach(function (item) {
                 item.photographer = photographer;
             });
@@ -84,10 +84,10 @@ angular.module('authoringEnvironmentApp').controller('UploadFromCompCtrl', [
         /**
         * Sets given description for all images in staging area.
         *
-        * @method use4allDescription
+        * @method setForAllDescription
         * @param description {String} image description to set
         */
-        $scope.set4allDescription = function (description) {
+        $scope.setForAllDescription = function (description) {
             images.images2upload.forEach(function (item) {
                 item.description = description;
             });
