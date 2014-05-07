@@ -1755,15 +1755,21 @@ a:hover {
             }
         }
         .basket-head {
-            color: gainsboro;
+            color: #999;
             #gradient > .vertical(@start-color: #1a1a1a; @end-color: #333);
             @shadow: 0 -1px 0 rgba(0,0,0,1), inset 0 1px 0 rgba(255,255,255,.4);
             .box-shadow(@shadow);
             padding: 10px 15px;
             border-bottom: 1px solid #373737;
             .description {
-                color: rgb(231, 231, 231);
-                margin-right: 20px;
+                color: #f5f5f5;
+                margin-right: 16px;
+                margin-left: 2px;
+                padding-right: 22px;
+                border-right: 1px solid #4d4d4d;
+            }
+            .badge {
+                margin-right: 6px;
             }
         }
         .basket {
@@ -1774,6 +1780,28 @@ a:hover {
             &::-webkit-scrollbar-thumb { background: #808080; }
             &::-webkit-scrollbar-thumb:hover { background: #999; }
             margin-right:10px;
+            .thumbnail-wrapper {
+                background-color: white;
+                border-width: 1px;
+                border-style: solid;
+                border-color: #000;
+                border-radius: 2px;
+                @shadow: 0 2px 0 #000;
+                .box-shadow(@shadow);
+                &:hover {
+                    background:#f6f6f6;
+                    cursor: pointer;
+                    border-color: #333;
+                    @shadow: 0 2px 0 #333, 0 0 6px rgba(0,0,0,.15);
+                    .box-shadow(@shadow);
+                    .toggler {
+                        display: block;
+                        border-right: 2px solid #f6f6f6;
+                        border-bottom: 2px solid #f6f6f6;
+                        padding: 3px 6px 3px 5px;
+                    }
+                }
+            }
         }
         .thumbnail-wrapper {
             position: relative;
@@ -1819,7 +1847,7 @@ a:hover {
             }
         }
 
-        .archive .thumbnail-wrapper:hover, .basket .thumbnail-wrapper:hover {
+        .archive .thumbnail-wrapper:hover {
             cursor: pointer;
             border-color: #707070;
             @shadow: 0 2px 0 #707070, 0 0 6px rgba(0,0,0,.15);
@@ -1833,6 +1861,8 @@ a:hover {
             opacity: 0.25;
             &:hover {
                 border-color: #d0d0d0;
+                @shadow: 0 2px 0 #d0d0d0;
+                .box-shadow(@shadow);
                 cursor: default;
                 .toggler {
                     display: none;
@@ -2468,7 +2498,7 @@ a:hover {
                                 width:100%;
                                 overflow:hidden; 
                                 .left-pane {
-                                    width: 130px;
+                                    width: 145px;
                                     .box-sizing(border-box);
                                     position: absolute;
                                     top: 0;
