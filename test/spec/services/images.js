@@ -825,17 +825,18 @@ describe('Service: Images', function () {
         var decoratedImg;
 
         beforeEach(function () {
-            var imgContents = ['\x46\x4F\x4F\x42\x41\x52'];  // 'FOOBAR'
-            decoratedImg = new Blob(imgContents, {type : 'image/png'});
+            var imgContents = [
+                '\x47\x49\x46\x38\x39\x61\x01\x00\x01\x00\x00\x00\x00\x21' +
+                '\xF9\x04\x01\x0A\x00\x01\x00\x2C\x00\x00\x00\x00\x01\x00' +
+                '\x01\x00\x00\x02\x02\x4C\x01\x00\x3B'
+            ];  // a small 1x1 transparent GIF
+
+            decoratedImg = new Blob(imgContents, {type : 'image/gif'});
             decoratedImg = images.decorate(decoratedImg);
         });
 
         it('has isUploaded flag cleared by default', function () {
             expect(decoratedImg.isUploaded).toEqual(false);
-        });
-
-        it('does not have its raw data initialized', function () {
-            expect(decoratedImg.b64data).toBe(null);
         });
 
         it('has uploaded bytes counter initialized to zero', function () {
@@ -997,25 +998,92 @@ describe('Service: Images', function () {
         });
 
         describe('readRawData() method', function () {
-            it('asynchronously reads raw image data', function () {
-                var readPromise,
+            // Currently only Firefox implements a native Object.watch()
+            // method. For other browsers we need to define our own function.
+            //
+            // BTW, kudos to the guy who wrote it:
+            // https://gist.github.com/eligrey/384583
+            function watch (prop, handler) {
+                var val = this[prop],
+                    getter = function () {
+                        return val;
+                    },
+                    setter = function (newVal) {
+                        return val = handler.call(this, prop, val, newVal);
+                    };
+
+                if (delete this[prop]) { // can't watch constants
+                    if (Object.defineProperty) { // ECMAScript 5
+                        Object.defineProperty(this, prop, {
+                           get: getter,
+                           set: setter
+                        });
+                    } else if (
+                        Object.prototype.__defineGetter__ &&
+                        Object.prototype.__defineSetter__
+                    ) {
+                        //legacy
+                        Object.prototype.__defineGetter__.call(
+                            this, prop, getter);
+                        Object.prototype.__defineSetter__.call(
+                            this, prop, setter);
+                    }
+                }
+            };
+
+            beforeEach(inject(function (imageFactory) {
+                // The readRawData() method contains an async event handler
+                // inside of another async event handler (img.onload inside of
+                // reader.onload). The problem is that this internal async
+                // handler is never triggered in tests, but we still want to
+                // test it.
+                // The solution is to observe the changes of the image's 'src'
+                // attribute and when the change happens, we manually trigger
+                // that image's onload handler (in an async fashion).
+                spyOn(imageFactory, 'makeInstance').andCallFake(function () {
+                    var fakeImg = {
+                        watch: this.watch || watch
+                    };
+
+                    fakeImg.watch('src', function (prop, val, newVal) {
+                        fakeImg.width = 155;  // just some made-up numbers
+                        fakeImg.height = 76;
+                        setTimeout(function () {
+                            fakeImg.onload({
+                                target: {result: newVal}
+                            });
+                        }, 0);
+                        return newVal;
+                    });
+                    return fakeImg;
+                });
+            }));
+
+            it('asynchronously reads image data', function () {
+                var expectedDataUrl,
+                    readPromise,
                     promiseResolved = false;
+
+                expectedDataUrl = 'data:image/gif;base64,R0lGODlhAQABAAAAA' +
+                    'CHDuQQBCgABACwAAAAAAQABAAACAkwBADs=';
 
                 runs(function () {
                     readPromise = decoratedImg.readRawData();
                     readPromise.then(function () {
                         promiseResolved = true;
                     });
-                    // check that read is indeed asynchronous
-                    expect(decoratedImg.b64data).toBe(null);
-                });
+                    // verify that reading data is indeed asynchronous
+                    expect(typeof decoratedImg.src).toEqual('undefined');
+               });
 
                 waitsFor(function () {
                     return promiseResolved;
                 }, 'the image data has been read');
 
                 runs(function () {
-                    expect(decoratedImg.b64data).toEqual('Rk9PQkFS');
+                    expect(decoratedImg.src).toEqual(expectedDataUrl);
+                    expect(decoratedImg.width).toEqual(155);
+                    expect(decoratedImg.height).toEqual(76);
                 });
             });
         });
