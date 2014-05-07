@@ -38,11 +38,16 @@
       </div>
 
       <div class="img-preview">
-         <img ng-show="image.b64data"
-              ng-src="data:{{image.type}};base64,{{image.b64data}}"/>
+         <img ng-show="image.src"
+              ng-src="{{image.src}}"/>
       </div>
 
       <div class="img-metadata">
+        <span class="img-size"
+              ng-show="image.width && image.height"
+              >{{image.width}} x {{image.height}}</span>
+        <br>
+
         <a class="set-for-all"
            ng-click="setForAllPhotographer(image.photographer)"
           >Use for all</a>
@@ -51,8 +56,8 @@
             placeholder="Photographer"
             />
 
-       <a class="set-for-all"
-          ng-click="setForAllDescription(image.description)"
+        <a class="set-for-all"
+           ng-click="setForAllDescription(image.description)"
           >Use for all</a>
         <textarea
             ng-model="image.description"
