@@ -52,19 +52,15 @@ angular.module('authoringEnvironmentApp').controller('AttachImageCtrl', [
         };
 
         /**
-        * Triggers uploading of all the images in the image upload list and
-        * when done, resets the upload list and closes the modal.
-        *
-        * @method uploadImages
+        * Triggers attaching all images in the basket to the article, then
+        * clears the basket and closes the modal.
+        *¸
+        * @method attachCollected
         */
-        $scope.uploadImages = function () {
-            var uploadPromises = images.uploadAll();
-
-            $q.all(uploadPromises).then(function (data) {
-                images.attachAllUploaded();
-                images.images2upload = [];
-                modal.hide();
-            });
+        $scope.attachCollected = function () {
+            images.attachAllCollected();
+            images.discardAll();  // clear the basket
+            modal.hide();
         };
 
         /**
@@ -76,6 +72,9 @@ angular.module('authoringEnvironmentApp').controller('AttachImageCtrl', [
         *     triggered the method.
         */
         $scope.discardChanges = function ($event) {
+            // we need to cancel the click event so that modal machinery
+            // does not close the modal immediately - we first need to
+            // do some other work and only then close the modal by ourselves
             $event.preventDefault();
             $event.stopPropagation();
             images.discardAll();

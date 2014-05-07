@@ -53,6 +53,7 @@
     <button
        type="button"
        class="btn btn-default"
+       ng-disabled="images.images2upload.length > 0"
        ng-click="discardChanges($event)"
        data-test-button="modal-close"
        data-dismiss="modal">
@@ -61,18 +62,9 @@
     <button
        type="button"
        class="btn btn-primary"
-       ng-show="selected.value === 'archive'"
-       ng-disabled="images.collected.length < 1"
-       ng-click="images.attachAll()">
+       ng-disabled="images.collected.length < 1 || images.images2upload.length > 0"
+       ng-click="attachCollected()">
       Attach Images
-    </button>
-    <button
-       type="button"
-       class="btn btn-primary"
-       ng-show="selected.value === 'computer'"
-       ng-disabled="images.images2upload.length < 1"
-       ng-click="uploadImages()">
-      Upload &amp; Attach
     </button>
   </div>
 </div>

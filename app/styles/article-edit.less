@@ -190,60 +190,6 @@ a:hover {
             margin-left: @indent-step * 3;
         }
     }
-    .modal-body {
-        @placeholder-margin: 5px;
-        @placeholder-border-color: rgb(155, 155, 155);
-        .image-uploading {
-            background-color: #E9E9E9;
-            height: 310px;
-            margin: 10px 0;
-            padding-right: @placeholder-margin;
-            padding-top: @placeholder-margin;
-            overflow-y: scroll;
-            .placeholder {
-                background-color: white;
-                display: inline-block;
-                float: left;
-                height: 300px;
-                width: 300px;
-                margin-left: @placeholder-margin;
-                margin-bottom: @placeholder-margin;
-                border: 1px solid @placeholder-border-color;
-                border-bottom: 2px solid @placeholder-border-color;
-                border-radius: 4px;
-                padding: 2%;
-                .progress {
-                    height: 10px;
-                    margin-bottom: 10px;
-                }
-                .img-preview {
-                    width: 260px;
-                    height: 150px;
-                    margin-bottom: 10px;
-                    display: table-cell;
-                    vertical-align: middle;
-                    text-align: center;
-                    border: 1px dashed black;
-                    &:before, &:after {
-                        content: '';
-                        display: table;
-                    }
-                    &:after {
-                        clear: both;
-                    }
-                    img {
-                        max-width: 260px;
-                        max-height: 150px;
-                    }
-                }
-                .img-metadata {
-                    input, textarea {
-                        width: 260px;
-                    }
-                }
-            }
-        }
-    }
 
     comment {
         display: block;
@@ -1803,6 +1749,11 @@ a:hover {
     }
     .attach-image {
         font-size: 12px;
+        .sources {
+            a {
+                cursor: pointer;
+            }
+        }
         .basket-head {
             color: gainsboro;
             #gradient > .vertical(@start-color: #1a1a1a; @end-color: #333);
@@ -1886,24 +1837,117 @@ a:hover {
                 width: 100%;
             }
         }
+
         .computer {
-            .drag-area {
-                background: #f8f8f8;
-                border: 3px dashed #e0e0e0;
-                padding: 2%;
-            }
-            .drag-area-title {
-                width: 100%;
-                background: url("../images/dragfiles.png") no-repeat 50% 0;
-                margin-top: 5%;
-                padding-top: 100px;
-                text-align: center;
-                color: #a0a0a0;
-                font-size: 24px;
-            }
-            .drag-area-button {
-                text-align: center;
-                margin-top: 30px;
+            @placeholder-margin: 5px;
+            @placeholder-border-color: rgb(155, 155, 155);
+            .image-uploading {
+                background-color: #E9E9E9;
+                height: 400px;
+                max-height: 400px;
+                margin-bottom: 10px;
+                padding: @placeholder-margin;
+                overflow-y: scroll;
+
+                .drag-area {
+                    height: 400px - 2 * @placeholder-margin;
+                    background: #f8f8f8;
+                    border: 3px dashed #e0e0e0;
+                    padding: 2%;
+                }
+                .drag-area.small {
+                    height: 300px;
+                    width: 300px;
+                    display: inline-block;
+                    float: left;
+                    margin-left: @placeholder-margin;
+                    margin-bottom: @placeholder-margin;
+                }
+                .drag-area-title {
+                    width: 100%;
+                    background: url("../images/dragfiles.png") no-repeat 50% 0;
+                    margin-top: 5%;
+                    padding-top: 100px;
+                    text-align: center;
+                    color: #a0a0a0;
+                    font-size: 24px;
+                }
+                .drag-area-button {
+                    text-align: center;
+                    margin-top: 30px;
+                }
+
+                .placeholder {
+                    position: relative;
+                    display: inline-block;
+                    float: left;
+                    height: 300px;
+                    width: 300px;
+                    margin-left: @placeholder-margin;
+                    margin-bottom: @placeholder-margin;
+                    border: 1px solid @placeholder-border-color;
+                    border-bottom: 2px solid @placeholder-border-color;
+                    border-radius: 4px;
+                    padding: 2%;
+                    background-color: white;
+
+                    .remove {
+                        position: absolute;
+                        top: 1px;
+                        right: 5px;
+                    }
+
+                    .progress {
+                        height: 10px;
+                        margin-bottom: 10px;
+                    }
+                    .img-preview {
+                        width: 260px;
+                        height: 150px;
+                        margin-bottom: 10px;
+                        display: table-cell;
+                        vertical-align: middle;
+                        text-align: center;
+                        border: 1px dashed black;
+                        &:before, &:after {
+                            content: '';
+                            display: table;
+                        }
+                        &:after {
+                            clear: both;
+                        }
+                        img {
+                            max-width: 260px;
+                            max-height: 150px;
+                        }
+                    }
+                    .img-metadata {
+                        a.set-for-all {
+                            cursor: pointer;
+                        }
+                        input, textarea {
+                            width: 260px;
+                        }
+                    }
+                }
+            }  /* end .image-uploading */
+
+            .buttons-bar {
+                height: 35px;
+                margin-bottom: 10px;
+                button {
+                    float: right;
+                    margin-left: 10px;
+                }
+
+                /* clearfix for floated buttons */
+                &:before, &:after {
+                    content: '';
+                    display: table;
+                }
+                &:after {
+                    clear: both;
+                }
             }
         }
     }
