@@ -92,7 +92,7 @@ angular.module('authoringEnvironmentApp').service('images', [
             var url = [
                     apiRoot, 'articles',
                     article.number, article.language,
-                    'images?expand=true'
+                    'images?items_per_page=99999&expand=true'
                 ].join('/');
 
             $http.get(url).then(function (result) {
