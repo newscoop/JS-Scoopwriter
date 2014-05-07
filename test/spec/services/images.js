@@ -117,8 +117,10 @@ describe('Service: Images', function () {
     describe('loadAttached() method', function () {
         beforeEach(function () {
             $httpBackend
-                .expect('GET', e + '/articles/64/de/images?expand=true')
-                .respond(mock);
+                .expectGET(
+                    rootURI + '/articles/64/de/images?' +
+                    'items_per_page=99999&expand=true'
+                ).respond(mock);
         });
 
         afterEach(function () {
