@@ -118,3 +118,43 @@
   opacity: 0.7;
   filter: alpha(opacity=70);
 }
+.thumbnail {
+  border-radius: 0;
+}
+
+
+//
+// List group - for tabs
+// --------------------------------------------------
+
+a.list-group-item {
+  border:none;
+  color:@linkColor;
+  font-size: @baseFontSize;
+  border-top: 1px solid #fff;
+  border-bottom: 1px solid #fff;
+  &:hover, 
+  &:focus {
+    text-decoration: none;
+    background-color: #fafafa;
+    color:@linkColor;
+    }
+  &.active,
+  &.active:hover,
+  &.active:focus {
+    background:#f8f8f8;
+    color:@grayDark;
+    font-weight: 500;
+    border-top: 1px solid #e8e8e8;
+    border-bottom: 1px solid #e8e8e8;
+    margin-right: -1px;
+    }
+}
+.list-group-item:first-child {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+.list-group-item:last-child {
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}

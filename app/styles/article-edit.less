@@ -1780,22 +1780,22 @@ a:hover {
             display: inline-block;
             float: left;
             margin: 10px;
-            padding: 5px;
+            padding: 6px;
             height: 110px;
-
             background-color: white;
             border-width: 1px;
             border-style: solid;
-            border-color: #d0d0d0;
+            border-color: #d4d4d4;
             border-radius: 2px;
+            @shadow: 0 2px 0 #d4d4d4;
+            .box-shadow(@shadow);
 
             .toggler {
                 display: none;
                 position: absolute;
                 color: white;
-                background: black;
-                padding: 7px;
-                line-height: 0;
+                background: #333;
+                padding: 3px 5px 3px 6px;
                 border-right: 2px solid white;
                 border-bottom: 2px solid white;
             }
@@ -1810,12 +1810,20 @@ a:hover {
                 white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;
+                margin-top: 2px;
+                color: @grayDark;
+                font-size: 11px;
+                .size-info {
+                    color:#999;
+                }
             }
         }
 
         .archive .thumbnail-wrapper:hover, .basket .thumbnail-wrapper:hover {
             cursor: pointer;
-            border-color: black;
+            border-color: #707070;
+            @shadow: 0 2px 0 #707070, 0 0 6px rgba(0,0,0,.15);
+            .box-shadow(@shadow);
             .toggler {
                 display: block;
             }
@@ -2467,7 +2475,8 @@ a:hover {
                                     bottom: 0;
                                     padding: 10px 0px 15px 0;
                                     margin:0;
-                                    border-right: 1px solid #d2d2d2;
+                                    border-right: 1px solid #e8e8e8;
+                                    background:#FFF;
                                 }
                                 .right-pane {
                                     position: absolute;
@@ -2501,6 +2510,8 @@ a:hover {
                                 padding: 15px;
                                 background-color: #f5f5f5;
                                 border-top: 1px solid white;
+                                .border-bottom-left-radius(6px);
+                                .border-bottom-right-radius(6px);
                                 .btn + .btn {
                                     margin-left: 6px;
                                 }

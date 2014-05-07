@@ -31,7 +31,7 @@ angular.module('authoringEnvironmentApp').controller('AttachImageCtrl', [
             {
                 value: 'archive',
                 url: 'views/attach-image/archive.html',
-                description: 'From Media Archive'
+                description: 'Media Archive'
             }
         ];
 
