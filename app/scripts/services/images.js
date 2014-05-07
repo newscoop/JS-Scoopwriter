@@ -7,12 +7,13 @@ angular.module('authoringEnvironmentApp').service('images', [
     'article',
     'getFileReader',
     'formDataFactory',
+    'imageFactory',
     '$upload',
     '$rootScope',
     '$q',
     function images(
         $http, pageTracker, configuration, $log, article,
-        getFileReader, formDataFactory, $upload, $rootScope, $q
+        getFileReader, formDataFactory, imageFactory, $upload, $rootScope, $q
     ) {
         /* more info about the page tracker in its tests */
         var service = this;
@@ -535,15 +536,6 @@ angular.module('authoringEnvironmentApp').service('images', [
             image.isUploaded = false;
 
             /**
-            * Raw image data encoded as base64 string. Relevant for images that
-            * are (going to be) uploaded from a computer.
-            * @property b64data
-            * @type String|null
-            * @default null
-            */
-            image.b64data = null;
-
-            /**
             * The number of bytes already sent to the server. Relevant for
             * images that are (going to be) uploaded from a computer.
             * @property progress
@@ -647,33 +639,31 @@ angular.module('authoringEnvironmentApp').service('images', [
             };
 
             /**
-            * Asynchronously reads raw data of the image that will be uploaded
-            * and stores it as a base64-encoded string once the image file
-            * has been successfully read from the computer's hard drive
-            * into memory.
+            * Asynchronously reads raw data of the image that will be uploaded.
+            * Once the data has been successfully read from computer's hard
+            * drive into memory, it sets image object's width, height and src
+            * attributes (the latter in data URI format).
             *
             * @method readRawData
             * @return {Object} file read promise
             */
-            // TODO: update docstrings and tests as needed
-            // have some Image factory? for easier testing?
             image.readRawData = function () {
                 var deferred = $q.defer(),
                     reader = getFileReader.get();
 
                 reader.onload = function () {
-                    var img = new Image();
+                    var img = imageFactory.makeInstance();
 
-                    img.onload = function () {
-                        // TODO: image is loaded; sizes are available
+                    img.onload = function (event) {
                         image.width = img.width;
                         image.height = img.height;
                         image.src = img.src;
 
-                        deferred.resolve(reader.result);
-                        // XXX: this might not be ideal, but there were problems
-                        // listening to the "file read" change, thus I added
-                        // $rootScope.$apply() here in the service itself
+                        deferred.resolve(event.target.result);
+                        // XXX: this might not be ideal, but there were
+                        // problems listening to the "file read" change,
+                        // thus I added $rootScope.$apply() here in the
+                        // service itself
                         $rootScope.$apply();
                     };
 
