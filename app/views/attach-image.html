@@ -1,6 +1,6 @@
 <div class="attach-image" ng-controller="AttachImageCtrl">
-  <div class="row">
-    <div class="col-md-2 sources list-group">
+  <div class="content-row">
+    <div class="left-pane sources list-group">
       <a
          class="list-group-item"
          ng-repeat="source in sources"
@@ -12,42 +12,44 @@
       </a>
     </div>
     <div
-       class="col-md-10 source"
+       class="right-pane source"
        ng-include="selected.url"
        >
     </div>
   </div>
 
-  <div class="row basket-head">
-    <span class="description">SELECTED IMAGES</span>
-    <span class="badge" ng-bind="images.collected.length"></span>
-    image{{(images.collected.length !== 1) ? 's' : ''}}
-  </div>
+  <div class="basket-container">
+    <div class="basket-head">
+      <span class="description">SELECTED IMAGES</span>
+      <span class="badge" ng-bind="images.collected.length"></span>
+      image{{(images.collected.length !== 1) ? 's' : ''}}
+    </div>
 
-  <div class="row basket">
-    <div
-       ng-repeat="image in images.collected"
-       class="thumbnail-wrapper"
-       ng-class="{attached: images.isAttached(image.id)}"
-       ng-click="images.toggleCollect(image.id)"
-       title="{{image.description || 'No description'}}"
-       >
-      <div class="toggler">
-        <span class="glyphicon glyphicon-minus"></span>
-      </div>
-      <img
-         class="thumbnail" 
-         ng-src="{{root}}/images/thumbnails/{{image.thumbnailPath}}"
-         alt="{{image.description || 'No description'}}"
+    <div class="basket">
+      <div
+         ng-repeat="image in images.collected"
+         class="thumbnail-wrapper"
+         ng-class="{attached: images.isAttached(image.id)}"
+         ng-click="images.toggleCollect(image.id)"
+         title="{{image.description || 'No description'}}"
          >
-      <div class="img-metadata">
-        {{image.description || "No description"}}<br/>
-        <span class="size-info">{{image.width}} x {{image.height}}</span>
+        <div class="toggler">
+          <span class="glyphicon glyphicon-minus"></span>
+        </div>
+        <img
+           class="thumbnail" 
+           ng-src="{{root}}/images/thumbnails/{{image.thumbnailPath}}"
+           alt="{{image.description || 'No description'}}"
+           >
+        <div class="img-metadata">
+          {{image.description || "No description"}}<br/>
+          <span class="size-info">{{image.width}} x {{image.height}}</span>
+        </div>
       </div>
     </div>
   </div>
-
-  <div class="modal-footer">
+  
+  <div class="commands-bar">
     <button
        type="button"
        class="btn btn-default"

@@ -87,6 +87,9 @@ a:hover {
     .more-button-wrapper {
         clear: both;
         text-align: center;
+        .btn {
+            margin: 12px 0 6px 0;
+        }
     }
 
     .tablist {
@@ -1660,11 +1663,7 @@ a:hover {
     section {
         height: 100%; /* for scrolling in child panes */
     }
-
-    .modal-dialog.large {
-        width: 80%;
-    }
-    
+ 
     /* more selectors to increase specificity */
     .navbar-fixed-top.navbar.navbar-default {
         top: @hostTop;
@@ -1759,41 +1758,76 @@ a:hover {
             }
         }
         .basket-head {
-            color: gainsboro;
-            background: #333333;
-            padding: 5px;
+            color: #999;
+            #gradient > .vertical(@start-color: #1a1a1a; @end-color: #333);
+            @shadow: 0 -1px 0 rgba(0,0,0,1), inset 0 1px 0 rgba(255,255,255,.4);
+            .box-shadow(@shadow);
+            padding: 10px 15px;
+            border-bottom: 1px solid #373737;
             .description {
-                color: rgb(231, 231, 231);
-                margin-right: 20px;
+                color: #f5f5f5;
+                margin-right: 16px;
+                margin-left: 2px;
+                padding-right: 22px;
+                border-right: 1px solid #4d4d4d;
+            }
+            .badge {
+                margin-right: 6px;
             }
         }
         .basket {
-            background: #666666;
             height: @thumbnail-max-height + 90;
             overflow-x: hidden;
-            overflow-y: scroll;
+            overflow-y: auto;
+            &::-webkit-scrollbar { width: 8px; height: 8px; margin: -1px 0; background:#5c5c5c; }
+            &::-webkit-scrollbar-thumb { background: #808080; }
+            &::-webkit-scrollbar-thumb:hover { background: #999; }
+            padding:6px;
+            .thumbnail-wrapper {
+                background-color: white;
+                border-width: 1px;
+                border-style: solid;
+                border-color: #000;
+                border-radius: 2px;
+                margin: 6px;
+                @shadow: 0 2px 0 #000;
+                .box-shadow(@shadow);
+                &:hover {
+                    background:#f6f6f6;
+                    cursor: pointer;
+                    border-color: #333;
+                    @shadow: 0 2px 0 #333, 0 0 6px rgba(0,0,0,.15);
+                    .box-shadow(@shadow);
+                    .toggler {
+                        display: block;
+                        border-right: 2px solid #f6f6f6;
+                        border-bottom: 2px solid #f6f6f6;
+                        padding: 3px 6px 3px 5px;
+                    }
+                }
+            }
         }
         .thumbnail-wrapper {
             position: relative;
             display: inline-block;
             float: left;
-            margin: 10px;
-            padding: 5px;
+            margin: 4px 8px 10px 4px;
+            padding: 6px;
             height: 110px;
-
             background-color: white;
             border-width: 1px;
             border-style: solid;
-            border-color: #d0d0d0;
+            border-color: #d4d4d4;
             border-radius: 2px;
+            @shadow: 0 2px 0 #d4d4d4;
+            .box-shadow(@shadow);
 
             .toggler {
                 display: none;
                 position: absolute;
                 color: white;
-                background: black;
-                padding: 7px;
-                line-height: 0;
+                background: #333;
+                padding: 3px 5px 3px 6px;
                 border-right: 2px solid white;
                 border-bottom: 2px solid white;
             }
@@ -1808,12 +1842,20 @@ a:hover {
                 white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;
+                margin-top: 2px;
+                color: @grayDark;
+                font-size: 11px;
+                .size-info {
+                    color:#999;
+                }
             }
         }
 
-        .archive .thumbnail-wrapper:hover, .basket .thumbnail-wrapper:hover {
+        .archive .thumbnail-wrapper:hover {
             cursor: pointer;
-            border-color: black;
+            border-color: #707070;
+            @shadow: 0 2px 0 #707070, 0 0 6px rgba(0,0,0,.15);
+            .box-shadow(@shadow);
             .toggler {
                 display: block;
             }
@@ -1823,6 +1865,8 @@ a:hover {
             opacity: 0.25;
             &:hover {
                 border-color: #d0d0d0;
+                @shadow: 0 2px 0 #d0d0d0;
+                .box-shadow(@shadow);
                 cursor: default;
                 .toggler {
                     display: none;
@@ -1837,29 +1881,48 @@ a:hover {
         }
 
         .computer {
-            @placeholder-margin: 5px;
-            @placeholder-border-color: rgb(155, 155, 155);
+            @placeholder-margin: 12px;
+            @placeholder-border-color: #d4d4d4;
             .image-uploading {
-                background-color: #E9E9E9;
-                height: 400px;
-                max-height: 400px;
+                position:absolute;
+                top:0px;
+                bottom:40px;
+                left:12px;
+                right:0px;
                 margin-bottom: 10px;
-                padding: @placeholder-margin;
-                overflow-y: scroll;
+                padding-bottom: 16px;
+                overflow-y: auto;
+                &::-webkit-scrollbar { width: 8px; height: 8px; margin: -1px 0; background: #e2e2e2; }
+                &::-webkit-scrollbar-thumb { background: #949494; }
+                &::-webkit-scrollbar-thumb:hover { background: #6e6e6e; }
 
                 .drag-area {
-                    height: 400px - 2 * @placeholder-margin;
-                    background: #f8f8f8;
+                    background: #fff;
                     border: 3px dashed #e0e0e0;
-                    padding: 2%;
+                    padding: 12px;
+                    position:absolute;
+                    top:12px;
+                    bottom:14px;
+                    left:0;
+                    right:12px;
                 }
                 .drag-area.small {
-                    height: 300px;
-                    width: 300px;
+                    position:relative;
+                    height: 318px;
+                    width: 300px; 
                     display: inline-block;
                     float: left;
-                    margin-left: @placeholder-margin;
                     margin-bottom: @placeholder-margin;
+                    margin-right: @placeholder-margin;
+                    .drag-area-title {
+                       font-size: 20px;
+                       background: url("../images/dragfiles-small.png") no-repeat 50% 0;
+                       margin-top: 30px;
+                       padding-top: 80px;
+                    }
+                    .drag-area-button {
+                        margin-top: 40px;
+                    }
                 }
                 .drag-area-title {
                     width: 100%;
@@ -1879,15 +1942,17 @@ a:hover {
                     position: relative;
                     display: inline-block;
                     float: left;
-                    height: 300px;
-                    width: 300px;
-                    margin-left: @placeholder-margin;
-                    margin-bottom: @placeholder-margin;
+                    width: 302px;
+                    margin-top: @placeholder-margin;
+                    margin-right: @placeholder-margin;
+                    margin-bottom: @placeholder-margin / 4;
                     border: 1px solid @placeholder-border-color;
                     border-bottom: 2px solid @placeholder-border-color;
-                    border-radius: 4px;
-                    padding: 2%;
-                    background-color: white;
+                    border-radius: 3px;
+                    padding: 30px 10px 7px 10px;
+                    background-color: #fafafa;
+                    @shadow: 0 2px 0 #d4d4d4;
+                    .box-shadow(@shadow);
 
                     .remove {
                         position: absolute;
@@ -1897,16 +1962,23 @@ a:hover {
 
                     .progress {
                         height: 10px;
+                        width:280px;
                         margin-bottom: 10px;
+                        background: #f0f0f0;
+                        -moz-box-shadow:none;
+                        -webkit-box-shadow:none;
+                        box-shadow:none;
+                        .border-radius(0);
+
                     }
                     .img-preview {
-                        width: 260px;
+                        width: 280px;
                         height: 130px;
-                        margin-bottom: 10px;
+                        margin-bottom: 11px;
                         display: table-cell;
                         vertical-align: middle;
                         text-align: center;
-                        border: 1px dashed black;
+                        background-color: #ebebeb;
                         &:before, &:after {
                             content: '';
                             display: table;
@@ -1915,24 +1987,40 @@ a:hover {
                             clear: both;
                         }
                         img {
-                            max-width: 260px;
+                            max-width: 280px;
                             max-height: 130px;
                         }
                     }
                     .img-metadata {
                         a.set-for-all {
                             cursor: pointer;
+                            text-transform: lowercase;
+                            float:right;
+                            &:hover{
+                                color:@linkColor;
+                            }
                         }
                         input, textarea {
-                            width: 260px;
+                            width: 280px;
+                            border: 1px solid #ccc;
+                            background-color: white;
+                            .border-radius(2px);
+                            padding: 4px 5px;
                         }
                     }
                 }
             }  /* end .image-uploading */
 
             .buttons-bar {
-                height: 35px;
-                margin-bottom: 10px;
+                position: absolute;
+                bottom: 0;
+                right: 0px;
+                left: 0px;
+                margin: 0;
+                padding: 10px;
+                @shadow: 0 -3px 5px rgba(0,0,0,.15);
+                .box-shadow(@shadow);
+            
                 button {
                     float: right;
                     margin-left: 10px;
@@ -1947,13 +2035,6 @@ a:hover {
                     clear: both;
                 }
             }
-        }  /* end .computer */
-
-        .archive {
-            height: 400px;
-            max-height: 400px;
-            overflow-y: scroll;
-            margin-bottom: 55px;
         }
     }
 
@@ -1964,9 +2045,8 @@ a:hover {
         }
         .images-wrapper {
             position: relative;
-            height: 80%;
+            height: 86%;
             overflow: auto;
-            border: 1px solid @grayLight;
             .media-tab {
                 position: absolute;
                 top: 0;
@@ -1974,7 +2054,7 @@ a:hover {
                 bottom: 0;
                 left: 0;
                 overflow: auto;
-                padding: 12px 10px 10px;
+                padding: 12px 10px 10px 0;
                 &::-webkit-scrollbar { width: 8px; height: 8px; margin: -1px 0; }
                 &::-webkit-scrollbar-thumb { background: #949494; }
                 &::-webkit-scrollbar-thumb:hover { background: #6e6e6e; }
@@ -2421,6 +2501,104 @@ a:hover {
                         border-bottom-right-radius: 3px;
                         border-bottom-left-radius: 3px;
                     }
-            }        
+            } 
+        }
+        /*large modal */
+        &.large { 
+            position: fixed;
+            width: auto;
+            height: auto;
+            margin: 0 20px 20px;
+            left: 0!important;
+            top: 0!important;
+            right: 0!important;
+            bottom: 0!important;
+            padding: 0!important;
+            overflow: hidden!important;
+            .modal-dialog {
+                width: auto;
+                height: 100%;
+                margin: 0;
+                padding-top: 20px;
+                .modal-content {
+                    height:100%;
+                }
+            }
+            /* image modal */
+            &.image {
+                .modal-dialog {
+                    .modal-content {
+                        position:relative;
+                        .modal-body {
+                            .box-sizing(border-box);
+                            position: absolute;
+                            top: 42px;
+                            left: 0;
+                            bottom: 0;
+                            right: 0;
+                            padding:0;
+                            .content-row {
+                                background-color: #f8f8f8;
+                                .box-sizing(border-box);
+                                position: absolute;
+                                bottom: 254px;
+                                top: 14px;
+                                width:100%;
+                                overflow:hidden; 
+                                .left-pane {
+                                    width: 145px;
+                                    .box-sizing(border-box);
+                                    position: absolute;
+                                    top: 0;
+                                    bottom: 0;
+                                    padding: 10px 0px 15px 0;
+                                    margin:0;
+                                    border-right: 1px solid #e8e8e8;
+                                    background:#FFF;
+                                }
+                                .right-pane {
+                                    position: absolute;
+                                    .box-sizing(border-box);
+                                    padding: 15px 0px 15px 15px;
+                                    top: 0;
+                                    bottom: 0;
+                                    right: 0;
+                                    left: 145px;
+                                    overflow-x:visible;
+                                    overflow-y:auto;
+                                    &::-webkit-scrollbar { width: 8px; height: 8px; margin: -1px 0; background: #e2e2e2; }
+                                    &::-webkit-scrollbar-thumb { background: #949494; }
+                                    &::-webkit-scrollbar-thumb:hover { background: #6e6e6e; }
+                                    .archive {
+                                        /*overflow-y:auto;*/
+                                    }
+                                }                               
+                            }
+                            .basket-container {
+                                position:absolute;
+                                bottom: 60px;
+                                left:0;
+                                right:0;
+                                background: #4d4d4d;
+                            }
+                            .commands-bar {
+                                position:absolute;
+                                bottom:0;
+                                left:0;
+                                right:0;
+                                text-align: right;
+                                padding: 15px;
+                                background-color: #f5f5f5;
+                                border-top: 1px solid white;
+                                .border-bottom-left-radius(6px);
+                                .border-bottom-right-radius(6px);
+                                .btn + .btn {
+                                    margin-left: 6px;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
