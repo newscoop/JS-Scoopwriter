@@ -14,9 +14,13 @@ angular.module('authoringEnvironmentApp').controller('MediaArchiveCtrl', [
         $scope.root = conf.API.rootURI;
 
         // TODO: comments and tests
-        $scope.searchString = '';
+        $scope.searchFilter = '';
 
-        images.init();
+        // TODO: display it ... and add watch ... and tests
+        $scope.appliedFilter = images.currentSearchFilter();
+
+        // TODO: also add search result count and dynamically hide
+        // "load more" button
 
         /**
         * Event handler for clicking a thumbnail. If the image is not attached
@@ -38,8 +42,8 @@ angular.module('authoringEnvironmentApp').controller('MediaArchiveCtrl', [
         };
 
         // TODO: comments and tests
-        $scope.searchArchive = function (searchString) {
-            console.log('searching for ' + searchString);
+        $scope.searchArchive = function (searchFilter) {
+            images.query(searchFilter);
         };
     }
 ]);

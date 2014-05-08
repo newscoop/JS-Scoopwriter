@@ -34,16 +34,27 @@ angular.module('authoringEnvironmentApp').service('images', [
         this.included = {};
         this.itemsPerPage = 10;
 
-        /**
-        * Loads and displays the first batch of images from the media archive.
-        *
-        * @method init
-        */
-        this.init = function () {
-            this.load(this.tracker.next()).success(function (data) {
+        // TODO: test
+        var searchFilter = '';  // <---- should not be accessible directly
+
+        this.currentSearchFilter = function () {
+            return searchFilter;
+        };
+
+        // sets the new filter and fetch (and display) the first page of it
+        // TODO: comments & tests
+        this.query = function (filter) {
+            searchFilter = filter;
+            this.tracker.reset();
+
+            this.load(
+                this.tracker.next(), searchFilter
+            ).success(function (data) {
                 service.displayed = data.items;
+                // TODO: bug ... data.pagination might not exist for
+                // single pages
                 service.itemsPerPage = data.pagination.itemsPerPage;
-                /* prepare the next batch, for an happy user */
+                /* prepare the next batch, for happy user */
                 service.more();
             });
         };
@@ -55,9 +66,14 @@ angular.module('authoringEnvironmentApp').service('images', [
         * @method more
         */
         this.more = function () {
+            // TODO: don't load next page if there are no more items
+            // see how it's done in comments
             var additional = service.loaded.splice(0, this.itemsPerPage);
             this.displayed = this.displayed.concat(additional);
-            this.load(this.tracker.next()).success(function (data) {
+
+            this.load(
+                this.tracker.next(), searchFilter
+            ).success(function (data) {
                 service.loaded = service.loaded.concat(data.items);
             });
         };
@@ -70,10 +86,26 @@ angular.module('authoringEnvironmentApp').service('images', [
         *     (NOTE: page indices start with 1)
         * @return {Object} promise object
         */
-        this.load = function (page) {
-            var url = apiRoot + '/images?items_per_page=50&page=' + page +
-                '&expand=true';
-            var promise = $http.get(url);
+        // TODO: optional searchString param ...
+        this.load = function (page, searchString) {
+            var getParams,
+                promise,
+                url;
+
+            getParams = {
+                expand: true,
+                items_per_page: 50,
+                page: page,
+            };
+
+            if (searchString) {
+                url = apiRoot + '/search/images';
+                getParams.query = searchString;
+            } else {
+                url = apiRoot + '/images';
+            }
+
+            promise = $http.get(url, {params: getParams});
             promise.error(function () {
                 service.tracker.remove(page);
             });

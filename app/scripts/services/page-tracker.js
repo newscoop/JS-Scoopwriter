@@ -70,6 +70,11 @@ angular.module('authoringEnvironmentApp').service('pageTracker', function PageTr
                         return i;
                     }
                 }
+            },
+            // TODO: add tests for this!
+            reset: function () {
+                this.pages = {};
+                this.counter = 1;
             }
         };
     };
