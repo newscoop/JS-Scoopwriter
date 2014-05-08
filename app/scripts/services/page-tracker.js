@@ -6,25 +6,26 @@
 * @class pageTracker
 */
 angular.module('authoringEnvironmentApp').service('pageTracker', function PageTracker() {
+
     /**
-        * Examines the given pagination object and determine, whether it
-        * represents the last page of items or not.
-        *
-        * @method isLastPage
-        * @param pagination {Object} Object containing pagination metadata.
-        *   @param pagination.currentPage {Number} Index of the current page
-        *     (NOTE: page indices start with 1).
-        *   @param pagination.itemsCount {Number} Total number of items
-        *     available.
-        *   @param pagination.itemsPerPage {Number} Maximum number of items
-        *     per page.
-        *   @param [pagination.nextPageLink] {String} URL of the next batch of
-        *     items. Undefined for the last page.
-        *   @param [pagination.previousPageLink] {String} URL of the previous
-        *     batch of items. Undefined for the first page.
-        *
-        * @return {Boolean} true if last page, otherwise false
-        */
+    * Examines the given pagination object and determine, whether it
+    * represents the last page of items or not.
+    *
+    * @method isLastPage
+    * @param pagination {Object} Object containing pagination metadata.
+    *   @param pagination.currentPage {Number} Index of the current page
+    *     (NOTE: page indices start with 1).
+    *   @param pagination.itemsCount {Number} Total number of items
+    *     available.
+    *   @param pagination.itemsPerPage {Number} Maximum number of items
+    *     per page.
+    *   @param [pagination.nextPageLink] {String} URL of the next batch of
+    *     items. Undefined for the last page.
+    *   @param [pagination.previousPageLink] {String} URL of the previous
+    *     batch of items. Undefined for the first page.
+    *
+    * @return {Boolean} true if last page, otherwise false
+    */
     this.isLastPage = function (pagination) {
         if (typeof pagination === 'undefined') {
             // when a resource is all contained in one page, there
@@ -41,16 +42,17 @@ angular.module('authoringEnvironmentApp').service('pageTracker', function PageTr
         var pages = pagination.itemsCount / pagination.itemsPerPage;
         return pagination.currentPage >= pages;
     };
+
     /**
-        * Creates and returns a new tracker object.
-        *
-        * @method getTracker
-        * @return {Object} New tracker object.
-        */
+    * Creates and returns a new tracker object.
+    *
+    * @method getTracker
+    * @return {Object} New tracker object.
+    */
     this.getTracker = function (opt) {
         /**
-            * @class tracker
-            */
+        * @class tracker
+        */
         return {
             counter: 1,
             pages: {},
@@ -71,7 +73,6 @@ angular.module('authoringEnvironmentApp').service('pageTracker', function PageTr
                     }
                 }
             },
-            // TODO: add tests for this!
             reset: function () {
                 this.pages = {};
                 this.counter = 1;

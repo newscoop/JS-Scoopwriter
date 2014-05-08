@@ -72,4 +72,20 @@ describe('Service: pageTracker', function () {
         });
     });
 
+    describe('reset() method', function() {
+        it('resets tracker to initial state', function() {
+            tracker.pages = {
+                1: true,
+                2: true,
+                3: true
+            };
+            tracker.counter = 4;
+
+            tracker.reset();
+
+            expect(tracker.pages).toEqual({});
+            expect(tracker.counter).toEqual(1);
+        });
+    });
+
 });
