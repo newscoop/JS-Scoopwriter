@@ -12,6 +12,10 @@ angular.module('authoringEnvironmentApp').controller('MediaArchiveCtrl', [
     function ($scope, images, conf) {
         $scope.images = images;
         $scope.root = conf.API.rootURI;
+
+        // TODO: comments and tests
+        $scope.searchString = '';
+
         images.init();
 
         /**
@@ -31,6 +35,11 @@ angular.module('authoringEnvironmentApp').controller('MediaArchiveCtrl', [
             } else {
                 images.toggleCollect(imageId);
             }
+        };
+
+        // TODO: comments and tests
+        $scope.searchArchive = function (searchString) {
+            console.log('searching for ' + searchString);
         };
     }
 ]);

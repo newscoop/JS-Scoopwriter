@@ -2,35 +2,52 @@
    class="archive"
    ng-controller="MediaArchiveCtrl"
    >
-  <div
-     ng-repeat="image in images.displayed"
-     class="thumbnail-wrapper"
-     ng-class="{attached: images.isAttached(image.id),
-                collected: images.isCollected(image.id)}"
-     ng-click="thumbnailClicked(image.id)"
-     title="{{image.description || 'No description'}}"
-     >
-    <div class="toggler">
-      <span class="glyphicon" ng-class="images.togglerClass(image.id)"></span>
-    </div>
-    <img
-       class="thumbnail" 
-       ng-src="{{root}}/images/thumbnails/{{image.thumbnailPath}}"
-       alt="{{image.description || 'No description'}}"
-       >
-    <div class="img-metadata">
-      {{image.description || "No description"}}<br/>
-      <span class="size-info">{{image.width}} x {{image.height}}</span>
-    </div>
+
+  <div class="search">
+    <form ng-submit="searchArchive(searchString)">
+      <input
+        type="text"
+        ng-model="searchString"
+        placeholder="Search Media Archive"
+        />
+      <button
+         type="submit"
+         class="btn btn-default"
+         >Search</button>
+    </form>
   </div>
 
-  <div
-     class="more-button-wrapper"
-     >
-    <button
-       type="button"
-       class="btn btn-default"
-       ng-click="images.more()"
-       >Load more</button>
+  <div class="search-results">
+    <div
+       ng-repeat="image in images.displayed"
+       class="thumbnail-wrapper"
+       ng-class="{attached: images.isAttached(image.id),
+                  collected: images.isCollected(image.id)}"
+       ng-click="thumbnailClicked(image.id)"
+       title="{{image.description || 'No description'}}"
+       >
+      <div class="toggler">
+        <span class="glyphicon" ng-class="images.togglerClass(image.id)"></span>
+      </div>
+      <img
+         class="thumbnail"
+         ng-src="{{root}}/images/thumbnails/{{image.thumbnailPath}}"
+         alt="{{image.description || 'No description'}}"
+         >
+      <div class="img-metadata">
+        {{image.description || "No description"}}<br/>
+        <span class="size-info">{{image.width}} x {{image.height}}</span>
+      </div>
+    </div>
+
+    <div
+       class="more-button-wrapper"
+       >
+      <button
+         type="button"
+         class="btn btn-default"
+         ng-click="images.more()"
+         >Load more</button>
+    </div>
   </div>
 </div>
