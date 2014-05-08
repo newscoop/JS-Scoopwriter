@@ -39,7 +39,7 @@ describe('Controller: AttachImageCtrl', function () {
         expect(scope.selected).toEqual({
             value : 'archive',
             url : 'views/attach-image/archive.html',
-            description : 'From Media Archive'
+            description : 'Media Archive'
         });
     });
 
