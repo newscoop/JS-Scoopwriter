@@ -22,6 +22,20 @@ describe('Controller: MediaArchiveCtrl', function () {
         });
     }));
 
+    it('sets searchFilter to empty string by default', function () {
+        expect(scope.searchFilter).toEqual('');
+    });
+
+    it('upadtes scope\'s appliedFilter property on changes in images service',
+        inject(function (images) {
+            scope.appliedFilter = 'foo';
+
+            images.searchFilter = 'bar';
+            scope.$apply();
+
+            expect(scope.appliedFilter).toEqual('bar');
+    }));
+
     it('should attach a list of images to the scope', function () {
         expect(scope.images).toBeDefined();
         expect(scope.images.displayed.length).toBe(0);
@@ -59,6 +73,26 @@ describe('Controller: MediaArchiveCtrl', function () {
             scope.thumbnailClicked(123);
             expect(images.toggleCollect).toHaveBeenCalledWith(123);
         });
+    });
+
+    describe('scope\'s searchArchive() method', function () {
+        it('delegates search action to images service', inject(
+            function (images) {
+                spyOn(images, 'query');
+                scope.searchArchive('flower');
+                expect(images.query).toHaveBeenCalledWith('flower');
+            }
+        ));
+    });
+
+    describe('scope\'s loadMore() method', function () {
+        it('delegates loading more images action to images service', inject(
+            function (images) {
+                spyOn(images, 'more');
+                scope.loadMore();
+                expect(images.more).toHaveBeenCalled();
+            }
+        ));
     });
 
 });

@@ -13,16 +13,15 @@ angular.module('authoringEnvironmentApp').controller('MediaArchiveCtrl', [
         $scope.images = images;
         $scope.root = conf.API.rootURI;
 
-        // TODO: comments and tests
-        $scope.searchFilter = '';
+        $scope.searchFilter = '';  // search term as entered by user
 
-        // TODO: and tests (correctly updating it)
         $scope.$watch('images.searchFilter', function (newVal, oldVal) {
+            // the actual search filter that is applied to current search
+            // results
             $scope.appliedFilter = newVal;
         });
 
-        // TODO: also add search result count and dynamically hide
-        // "load more" button
+        // TODO: also dynamically hide "load more" button
 
         /**
         * Event handler for clicking a thumbnail. If the image is not attached
@@ -43,12 +42,23 @@ angular.module('authoringEnvironmentApp').controller('MediaArchiveCtrl', [
             }
         };
 
-        // TODO: comments and tests
+        /**
+        * Event handler for clicking the Search button. If triggers a new
+        * media archive search with the given search filter.
+        *
+        * @method searchArchive
+        * @param searchFilter {String} media archive search term
+        */
         $scope.searchArchive = function (searchFilter) {
             images.query(searchFilter);
         };
 
-        // TODO: comments and tests
+        /**
+        * Event handler for clicking the Load More button. It triggers loading
+        * the next page of search results.
+        *
+        * @method loadMore
+        */
         $scope.loadMore = function () {
             images.more();
         };
