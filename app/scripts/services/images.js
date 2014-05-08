@@ -34,26 +34,42 @@ angular.module('authoringEnvironmentApp').service('images', [
         this.included = {};
         this.itemsPerPage = 10;
 
-        // TODO: test
-        var searchFilter = '';  // <---- should not be accessible directly
+        // TODO: test default value
+        this.itemsFound = 0;
 
-        this.currentSearchFilter = function () {
-            return searchFilter;
-        };
+        // TODO: test
+        this.searchFilter = '';
 
         // sets the new filter and fetch (and display) the first page of it
-        // TODO: comments & tests
+        // TODO: comments & tests .. first reset, then load all
         this.query = function (filter) {
-            searchFilter = filter;
+            this.searchFilter = filter;
+
+            // not so pretty, but it's the fastest way to clear an Array
+            while(service.displayed.length > 0) {
+                service.displayed.pop();
+            }
+            while(service.loaded.length > 0) {
+                service.loaded.pop();
+            }
             this.tracker.reset();
+            this.itemsFound = 0;
 
             this.load(
-                this.tracker.next(), searchFilter
+                this.tracker.next(), this.searchFilter
             ).success(function (data) {
                 service.displayed = data.items;
-                // TODO: bug ... data.pagination might not exist for
-                // single pages
-                service.itemsPerPage = data.pagination.itemsPerPage;
+
+                if (data.pagination) {
+                    // TODO: bug ... data.pagination might not exist for
+                    // single pages .. now fixed, update tests!
+                    service.itemsPerPage = data.pagination.itemsPerPage;
+                    service.itemsFound = data.pagination.itemsCount;
+                } else {
+                    service.itemsPerPage = 10;  // back to default value
+                    service.itemsFound = data.items.length;
+                }
+
                 /* prepare the next batch, for happy user */
                 service.more();
             });
@@ -72,7 +88,7 @@ angular.module('authoringEnvironmentApp').service('images', [
             this.displayed = this.displayed.concat(additional);
 
             this.load(
-                this.tracker.next(), searchFilter
+                this.tracker.next(), this.searchFilter
             ).success(function (data) {
                 service.loaded = service.loaded.concat(data.items);
             });

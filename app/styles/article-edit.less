@@ -1851,25 +1851,37 @@ a:hover {
             }
         }
 
-        .archive .thumbnail-wrapper:hover {
-            cursor: pointer;
-            border-color: #707070;
-            @shadow: 0 2px 0 #707070, 0 0 6px rgba(0,0,0,.15);
-            .box-shadow(@shadow);
-            .toggler {
-                display: block;
+        .archive {
+            .search {
+                background-color: orange;  /* XXX: just for debugging */
+                height: 40px;
+                padding: 5px;
+                input[type="text"] {
+                    width: 200px;
+                    padding: 5px;
+                }
             }
-        }
 
-        .archive .thumbnail-wrapper.attached, .archive .thumbnail-wrapper.collected {
-            opacity: 0.25;
-            &:hover {
-                border-color: #d0d0d0;
-                @shadow: 0 2px 0 #d0d0d0;
+            .thumbnail-wrapper:hover {
+                cursor: pointer;
+                border-color: #707070;
+                @shadow: 0 2px 0 #707070, 0 0 6px rgba(0,0,0,.15);
                 .box-shadow(@shadow);
-                cursor: default;
                 .toggler {
-                    display: none;
+                    display: block;
+                }
+            }
+
+            .thumbnail-wrapper.attached, .thumbnail-wrapper.collected {
+                opacity: 0.25;
+                &:hover {
+                    border-color: #d0d0d0;
+                    @shadow: 0 2px 0 #d0d0d0;
+                    .box-shadow(@shadow);
+                    cursor: default;
+                    .toggler {
+                        display: none;
+                    }
                 }
             }
         }

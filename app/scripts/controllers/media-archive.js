@@ -16,8 +16,10 @@ angular.module('authoringEnvironmentApp').controller('MediaArchiveCtrl', [
         // TODO: comments and tests
         $scope.searchFilter = '';
 
-        // TODO: display it ... and add watch ... and tests
-        $scope.appliedFilter = images.currentSearchFilter();
+        // TODO: and tests (correctly updating it)
+        $scope.$watch('images.searchFilter', function (newVal, oldVal) {
+            $scope.appliedFilter = newVal;
+        });
 
         // TODO: also add search result count and dynamically hide
         // "load more" button
