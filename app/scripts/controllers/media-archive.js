@@ -45,5 +45,10 @@ angular.module('authoringEnvironmentApp').controller('MediaArchiveCtrl', [
         $scope.searchArchive = function (searchFilter) {
             images.query(searchFilter);
         };
+
+        // TODO: comments and tests
+        $scope.loadMore = function () {
+            images.more();
+        };
     }
 ]);
