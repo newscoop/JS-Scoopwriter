@@ -87,6 +87,9 @@ a:hover {
     .more-button-wrapper {
         clear: both;
         text-align: center;
+        .btn {
+            margin: 12px 0 6px 0;
+        }
     }
 
     .tablist {
@@ -1779,13 +1782,14 @@ a:hover {
             &::-webkit-scrollbar { width: 8px; height: 8px; margin: -1px 0; background:#5c5c5c; }
             &::-webkit-scrollbar-thumb { background: #808080; }
             &::-webkit-scrollbar-thumb:hover { background: #999; }
-            margin-right:10px;
+            padding:6px;
             .thumbnail-wrapper {
                 background-color: white;
                 border-width: 1px;
                 border-style: solid;
                 border-color: #000;
                 border-radius: 2px;
+                margin: 6px;
                 @shadow: 0 2px 0 #000;
                 .box-shadow(@shadow);
                 &:hover {
@@ -1807,7 +1811,7 @@ a:hover {
             position: relative;
             display: inline-block;
             float: left;
-            margin: 10px;
+            margin: 4px 8px 10px 4px;
             padding: 6px;
             height: 110px;
             background-color: white;
@@ -1877,29 +1881,48 @@ a:hover {
         }
 
         .computer {
-            @placeholder-margin: 5px;
-            @placeholder-border-color: rgb(155, 155, 155);
+            @placeholder-margin: 12px;
+            @placeholder-border-color: #d4d4d4;
             .image-uploading {
-                background-color: #E9E9E9;
-                height: 400px;
-                max-height: 400px;
+                position:absolute;
+                top:0px;
+                bottom:40px;
+                left:12px;
+                right:0px;
                 margin-bottom: 10px;
-                padding: @placeholder-margin;
-                overflow-y: scroll;
+                padding-bottom: 16px;
+                overflow-y: auto;
+                &::-webkit-scrollbar { width: 8px; height: 8px; margin: -1px 0; background: #e2e2e2; }
+                &::-webkit-scrollbar-thumb { background: #949494; }
+                &::-webkit-scrollbar-thumb:hover { background: #6e6e6e; }
 
                 .drag-area {
-                    height: 400px - 2 * @placeholder-margin;
-                    background: #f8f8f8;
+                    background: #fff;
                     border: 3px dashed #e0e0e0;
-                    padding: 2%;
+                    padding: 12px;
+                    position:absolute;
+                    top:12px;
+                    bottom:14px;
+                    left:0;
+                    right:12px;
                 }
                 .drag-area.small {
-                    height: 300px;
-                    width: 300px;
+                    position:relative;
+                    height: 318px;
+                    width: 300px; 
                     display: inline-block;
                     float: left;
-                    margin-left: @placeholder-margin;
                     margin-bottom: @placeholder-margin;
+                    margin-right: @placeholder-margin;
+                    .drag-area-title {
+                       font-size: 20px;
+                       background: url("../images/dragfiles-small.png") no-repeat 50% 0;
+                       margin-top: 30px;
+                       padding-top: 80px;
+                    }
+                    .drag-area-button {
+                        margin-top: 40px;
+                    }
                 }
                 .drag-area-title {
                     width: 100%;
@@ -1919,15 +1942,17 @@ a:hover {
                     position: relative;
                     display: inline-block;
                     float: left;
-                    height: 300px;
-                    width: 300px;
-                    margin-left: @placeholder-margin;
-                    margin-bottom: @placeholder-margin;
+                    width: 302px;
+                    margin-top: @placeholder-margin;
+                    margin-right: @placeholder-margin;
+                    margin-bottom: @placeholder-margin / 4;
                     border: 1px solid @placeholder-border-color;
                     border-bottom: 2px solid @placeholder-border-color;
-                    border-radius: 4px;
-                    padding: 2%;
-                    background-color: white;
+                    border-radius: 3px;
+                    padding: 30px 10px 7px 10px;
+                    background-color: #fafafa;
+                    @shadow: 0 2px 0 #d4d4d4;
+                    .box-shadow(@shadow);
 
                     .remove {
                         position: absolute;
@@ -1937,16 +1962,23 @@ a:hover {
 
                     .progress {
                         height: 10px;
+                        width:280px;
                         margin-bottom: 10px;
+                        background: #f0f0f0;
+                        -moz-box-shadow:none;
+                        -webkit-box-shadow:none;
+                        box-shadow:none;
+                        .border-radius(0);
+
                     }
                     .img-preview {
-                        width: 260px;
+                        width: 280px;
                         height: 130px;
-                        margin-bottom: 10px;
+                        margin-bottom: 11px;
                         display: table-cell;
                         vertical-align: middle;
                         text-align: center;
-                        border: 1px dashed black;
+                        background-color: #ebebeb;
                         &:before, &:after {
                             content: '';
                             display: table;
@@ -1955,24 +1987,40 @@ a:hover {
                             clear: both;
                         }
                         img {
-                            max-width: 260px;
+                            max-width: 280px;
                             max-height: 130px;
                         }
                     }
                     .img-metadata {
                         a.set-for-all {
                             cursor: pointer;
+                            text-transform: lowercase;
+                            float:right;
+                            &:hover{
+                                color:@linkColor;
+                            }
                         }
                         input, textarea {
-                            width: 260px;
+                            width: 280px;
+                            border: 1px solid #ccc;
+                            background-color: white;
+                            .border-radius(2px);
+                            padding: 4px 5px;
                         }
                     }
                 }
             }  /* end .image-uploading */
 
             .buttons-bar {
-                height: 35px;
-                margin-bottom: 10px;
+                position: absolute;
+                bottom: 0;
+                right: 0px;
+                left: 0px;
+                margin: 0;
+                padding: 10px;
+                @shadow: 0 -3px 5px rgba(0,0,0,.15);
+                .box-shadow(@shadow);
+            
                 button {
                     float: right;
                     margin-left: 10px;
@@ -2493,7 +2541,7 @@ a:hover {
                                 background-color: #f8f8f8;
                                 .box-sizing(border-box);
                                 position: absolute;
-                                bottom: 250px;
+                                bottom: 254px;
                                 top: 14px;
                                 width:100%;
                                 overflow:hidden; 
@@ -2511,16 +2559,18 @@ a:hover {
                                 .right-pane {
                                     position: absolute;
                                     .box-sizing(border-box);
-                                    margin: 15px 10px 15px 15px;
+                                    padding: 15px 0px 15px 15px;
                                     top: 0;
                                     bottom: 0;
                                     right: 0;
                                     left: 145px;
-                                    overflow:auto;
-                                    &::-webkit-scrollbar { width: 8px; height: 8px; margin: -1px 0; background: #ebebeb; }
+                                    overflow-x:visible;
+                                    overflow-y:auto;
+                                    &::-webkit-scrollbar { width: 8px; height: 8px; margin: -1px 0; background: #e2e2e2; }
                                     &::-webkit-scrollbar-thumb { background: #949494; }
                                     &::-webkit-scrollbar-thumb:hover { background: #6e6e6e; }
                                     .archive {
+                                        /*overflow-y:auto;*/
                                     }
                                 }                               
                             }
