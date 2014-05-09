@@ -16,8 +16,9 @@ angular.module('authoringEnvironmentApp').service('images', [
         getFileReader, formDataFactory, imageFactory, $upload, $rootScope, $q
     ) {
         /* more info about the page tracker in its tests */
-        var service = this;
-        var apiRoot = configuration.API.full;
+        var apiRoot = configuration.API.full,
+            service = this,
+            ITEMS_PER_PAGE_DEFAULT = 50;
 
         article.promise.then(function (article) {
             service.article = article;
@@ -32,33 +33,78 @@ angular.module('authoringEnvironmentApp').service('images', [
         this.images2upload = [];  // list of images to upload
         this.includedIndex = -1;
         this.included = {};
-        this.itemsPerPage = 10;
+        this.itemsPerPage = ITEMS_PER_PAGE_DEFAULT;
+
+        this.itemsFound = 0;
+        this.searchFilter = '';
+        this.canLoadMore = false;  // is there another page to fetch?
 
         /**
-        * Loads and displays the first batch of images from the media archive.
+        * Fetches and displays the first page of results using the given search
+        * filter. Search filter is remembered for subsequent fetching of
+        * additional pages.
+        * NOTE: for users' convenience, an additional page is fetched (if
+        * available) after a successful server response.
         *
-        * @method init
+        * @method query
+        * @param filter {String} search term by which to filter results.
+        *     Empty string is interpreted as "no filtering".
         */
-        this.init = function () {
-            this.load(this.tracker.next()).success(function (data) {
+        this.query = function (filter) {
+            this.searchFilter = filter;
+
+            // not so pretty, but it's the fastest way to clear an Array
+            while(service.displayed.length > 0) {
+                service.displayed.pop();
+            }
+            while(service.loaded.length > 0) {
+                service.loaded.pop();
+            }
+            this.tracker.reset();
+            this.itemsFound = 0;
+            this.canLoadMore = false;
+
+            this.load(
+                this.tracker.next(), this.searchFilter
+            ).success(function (data) {
                 service.displayed = data.items;
-                service.itemsPerPage = data.pagination.itemsPerPage;
-                /* prepare the next batch, for an happy user */
-                service.more();
+
+                if (data.pagination) {
+                    service.itemsPerPage = data.pagination.itemsPerPage;
+                    service.itemsFound = data.pagination.itemsCount;
+                } else {
+                    service.itemsPerPage = ITEMS_PER_PAGE_DEFAULT;
+                    service.itemsFound = data.items.length;
+                }
+
+                service.canLoadMore = !pageTracker.isLastPage(data.pagination);
+
+                if (service.canLoadMore) {
+                    service.more();
+                }
             });
         };
 
         /**
         * Displays an additional preloaded page of the media archive images
-        * and asynchronously fetches the next page from the server.
+        * and, if available, asynchronously fetches next page of results
+        * from the server.
         *
         * @method more
         */
         this.more = function () {
-            var additional = service.loaded.splice(0, this.itemsPerPage);
+            var additional = this.loaded.splice(0, this.itemsPerPage);
             this.displayed = this.displayed.concat(additional);
-            this.load(this.tracker.next()).success(function (data) {
+
+            if (!service.canLoadMore) {
+                return;
+            }
+
+            this.load(
+                this.tracker.next(), this.searchFilter
+            ).success(function (data) {
                 service.loaded = service.loaded.concat(data.items);
+                service.canLoadMore = !pageTracker.isLastPage(data.pagination);
             });
         };
 
@@ -66,14 +112,31 @@ angular.module('authoringEnvironmentApp').service('images', [
         * Asynchronously loads a single page of images from the server.
         *
         * @method load
-        * @param page {Number} Index of the page to load
+        * @param page {Number} index of the page to load
         *     (NOTE: page indices start with 1)
+        * @param searchString {String} Search term to narrow down the list of
+        *     results. Empty string is interpreted by API as "no restrictions".
         * @return {Object} promise object
         */
-        this.load = function (page) {
-            var url = apiRoot + '/images?items_per_page=50&page=' + page +
-                '&expand=true';
-            var promise = $http.get(url);
+        this.load = function (page, searchString) {
+            var getParams,
+                promise,
+                url;
+
+            getParams = {
+                expand: true,
+                items_per_page: this.itemsPerPage,
+                page: page,
+            };
+
+            if (searchString) {
+                url = apiRoot + '/search/images';
+                getParams.query = searchString;
+            } else {
+                url = apiRoot + '/images';
+            }
+
+            promise = $http.get(url, {params: getParams});
             promise.error(function () {
                 service.tracker.remove(page);
             });
