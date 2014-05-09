@@ -21,8 +21,6 @@ angular.module('authoringEnvironmentApp').controller('MediaArchiveCtrl', [
             $scope.appliedFilter = newVal;
         });
 
-        // TODO: also dynamically hide "load more" button
-
         /**
         * Event handler for clicking a thumbnail. If the image is not attached
         * to the article and not in the basket (not collected), it is added
