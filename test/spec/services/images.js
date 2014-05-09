@@ -89,13 +89,315 @@ describe('Service: Images', function () {
         };
     }));
 
+    it('sets itemsPerPage to 50 by default', function () {
+        expect(images.itemsPerPage).toEqual(50);
+    });
+
+    it('sets itemsFound to 0 by default', function () {
+        expect(images.itemsFound).toEqual(0);
+    });
+
+    it('sets searchFilter to empty string by default', function () {
+        expect(images.searchFilter).toEqual('');
+    });
+
+    it('has canLoadMore flag cleared by default', function () {
+        expect(images.canLoadMore).toEqual(false);
+    });
+
+    describe('query() method', function () {
+        var deferredLoad,
+            $rootScope;
+
+        beforeEach(inject(function (_$rootScope_, $q) {
+            $rootScope = _$rootScope_;
+            deferredLoad = $q.defer();
+
+            // mock load() method so that the more() method tests do not
+            // depend on correct functioning of the load() method
+            spyOn(images, 'load').andCallFake(function () {
+                return {
+                    success: function (handler) {
+                        deferredLoad.promise.then(function (data) {
+                            handler(data);
+                        });
+                    }
+                };
+            });
+        }));
+
+        it('stores the new value of search filter', function () {
+            images.searchFilter = 'fish';
+            images.query('duck');
+            expect(images.searchFilter).toEqual('duck');
+        });
+
+        it('clears displayed images list before invoking API', function () {
+            images.displayed = [{id:1}, {id:2}, {id:3}];
+            images.query('duck');
+            expect(images.displayed).toEqual([]);
+        });
+
+        it('clears preloaded images list before invoking API', function () {
+            images.loaded = [{id:4}, {id:5}, {id:6}];
+            images.query('duck');
+            expect(images.loaded).toEqual([]);
+        });
+
+        it('resets page tracker before invoking API', function () {
+            spyOn(images.tracker, 'reset');
+            images.query('duck');
+            expect(images.tracker.reset).toHaveBeenCalled();
+        });
+
+        it('resets items found count to 0 before invoking API', function () {
+            images.itemsFound = 17;
+            images.query('duck');
+            expect(images.itemsFound).toEqual(0);
+        });
+
+        it('clears canLoadMore flag before invoking API', function () {
+            images.canLoadMore = true;
+            images.query('duck');
+            expect(images.canLoadMore).toEqual(false);
+        });
+
+        it('invokes load() with correct parameters', function () {
+            images.searchFilter = 'fish';
+            images.tracker.next();
+            images.tracker.next(); // simulate previously loaded pages
+
+            images.query('duck');
+            expect(images.load).toHaveBeenCalledWith(1, 'duck');
+        });
+
+        describe('on successful server response', function () {
+            var pageTracker;
+
+            beforeEach(inject(function (_pageTracker_) {
+                pageTracker = _pageTracker_;
+                spyOn(images, 'more');
+                spyOn(pageTracker, 'isLastPage');
+            }));
+
+            it('sets the list of displayed images to result set', function () {
+                var resultSet = [{id:12}, {id:55}, {id:167}];
+
+                images.displayed = [{id:1}, {id:2}, {id:3}];
+
+                images.query('duck');
+                deferredLoad.resolve({items: resultSet});
+                $rootScope.$apply();
+
+                expect(images.displayed).toEqual(resultSet);
+            });
+
+            it('preloads the next page of results if available', function () {
+                pageTracker.isLastPage.andReturn(false);
+
+                images.query('duck');
+                deferredLoad.resolve({items: []});
+                $rootScope.$apply();
+
+                expect(images.more).toHaveBeenCalled();
+            });
+
+            it('sets canLoadMore flag if more pages available', function () {
+                pageTracker.isLastPage.andReturn(false);
+
+                images.query('duck');
+                images.canLoadMore = false;  // before server response
+                deferredLoad.resolve({items: []});
+                $rootScope.$apply();
+
+                expect(images.canLoadMore).toEqual(true);
+            });
+
+            it('does not preload the next page of results if not available',
+                function () {
+                    pageTracker.isLastPage.andReturn(true);
+
+                    images.query('duck');
+                    deferredLoad.resolve({items: []});
+                    $rootScope.$apply();
+
+                    expect(images.more).not.toHaveBeenCalled();
+            });
+
+            it('clears canLoadMore flag if no more pages applicable',
+                function () {
+                    pageTracker.isLastPage.andReturn(true);
+
+                    images.query('duck');
+                    images.canLoadMore = true;  // before server response
+                    deferredLoad.resolve({items: []});
+                    $rootScope.$apply();
+
+                    expect(images.canLoadMore).toEqual(false);
+            });
+
+            describe('pagination object available', function () {
+                it('sets result page size to what server returned',
+                    function () {
+                        images.itemsPerPage = 20;
+
+                        images.query('duck');
+                        deferredLoad.resolve({
+                            items: [{id:6}, {id:29}, {id:55}, {id:101}],
+                            pagination: {
+                                itemsPerPage: 4,
+                                itemsCount: 419
+                            }
+                        });
+                        $rootScope.$apply();
+
+                        expect(images.itemsPerPage).toEqual(4);
+                });
+                it('sets items found count to total number of matches',
+                    function () {
+                        images.itemsFound = 50;
+
+                        images.query('duck');
+                        deferredLoad.resolve({
+                            items: [{id:6}, {id:29}, {id:55}, {id:101}],
+                            pagination: {
+                                itemsPerPage: 4,
+                                itemsCount: 419
+                            }
+                        });
+                        $rootScope.$apply();
+
+                        expect(images.itemsFound).toEqual(419);
+                });
+            });
+
+            describe('pagination object not available', function () {
+                it('sets page size back to default value', function () {
+                    images.itemsPerPage = 30;
+
+                    images.query('duck');
+                    deferredLoad.resolve({items: []});
+                    $rootScope.$apply();
+
+                    expect(images.itemsPerPage).toEqual(50);
+                });
+
+                it('sets items found count to result set size', function () {
+                    images.itemsFound = 50;
+
+                    images.query('duck');
+                    deferredLoad.resolve({
+                        items: [{id:6}, {id:29}, {id:55}]
+                    });
+                    $rootScope.$apply();
+
+                    expect(images.itemsFound).toEqual(3);
+                });
+            });
+        });
+    });
+
+    describe('more() method', function () {
+        var deferredLoad,
+            $rootScope;
+
+        beforeEach(inject(function (_$rootScope_, $q) {
+            $rootScope = _$rootScope_;
+            deferredLoad = $q.defer();
+
+            // mock load() method so that the more() method tests do not
+            // depend on correct functioning of the load() method
+            spyOn(images, 'load').andCallFake(function () {
+                return {
+                    success: function (handler) {
+                        deferredLoad.promise.then(function (data) {
+                            handler(data);
+                        });
+                    }
+                };
+            });
+        }));
+
+        it('moves the next page of preloaded images to displayed',
+            function () {
+                var i;
+
+                images.displayed = [{id:1}, {id:2}, {id:3}];
+                images.loaded = [];
+                for (i = 4; i <= 13; i++) {
+                    images.loaded.push({id:i});  // 10 items (IDs 4 to 13)
+                }
+                images.itemsPerPage = 5;
+
+                images.more();
+
+                expect(images.displayed.length).toEqual(8);
+                for (i = 0; i < 8; i++) {
+                      // IDs 1 to 8
+                    expect(images.displayed[i].id).toEqual(i + 1);
+                }
+
+                expect(images.loaded.length).toEqual(5);
+                for (i = 0; i < 5; i++) {
+                    // IDs 9 to 13
+                    expect(images.loaded[i].id).toEqual(i + 9);
+                }
+        });
+
+        it('preloads another page of images if available', function () {
+            var len,
+                slice;
+            images.displayed = [];
+            images.loaded = [{id:1}, {id:2}, {id:3}, {id:4}, {id:5}];
+            images.tracker.next();  // one page has been loaded before
+
+            images.canLoadMore = true;
+            images.itemsPerPage = 5;
+            images.searchFilter = 'bear';
+
+            images.more();
+            deferredLoad.resolve({
+                 items: [{id:6}, {id:7}, {id:8}, {id:9}, {id:10}]
+            });
+            $rootScope.$apply();
+
+            expect(images.load).toHaveBeenCalledWith(2, 'bear');
+
+            len = images.loaded.length;
+            slice = images.loaded.slice(len - 5);
+            expect(slice).toEqual(
+                [{id:6}, {id:7}, {id:8}, {id:9}, {id:10}]
+            );
+        });
+
+        it('does not try to preload another page of images if not available',
+            function () {
+                images.canLoadMore = false;
+                images.more();
+                expect(images.load).not.toHaveBeenCalled();
+        });
+    });
+
     describe('load() method', function () {
-        it('issues a correct API call', function () {
+        it('issues a correct API call (search filter not set)', function () {
+            images.searchFilter = '';
             $httpBackend.expectGET(
-                e + '/images?items_per_page=50&page=4&expand=true'
+                rootURI + '/images?expand=true&items_per_page=50&page=4'
             ).respond(mock);
 
             images.load(4);
+            $httpBackend.flush(1);
+            $httpBackend.verifyNoOutstandingExpectation();
+        });
+
+        it('issues a correct API call (search filter set)', function () {
+            images.searchFilter = 'fish'
+            $httpBackend.expectGET(
+                rootURI + '/search/images?expand=true&items_per_page=50' +
+                '&page=4&query=fish'
+            ).respond(mock);
+
+            images.load(4, 'fish');
             $httpBackend.flush(1);
             $httpBackend.verifyNoOutstandingExpectation();
         });
@@ -104,7 +406,7 @@ describe('Service: Images', function () {
             spyOn(images.tracker, 'remove');
 
             $httpBackend.expectGET(
-                e + '/images?items_per_page=50&page=4&expand=true'
+                rootURI + '/images?expand=true&items_per_page=50&page=4'
             ).respond(500, 'Internal Server Error');
 
             images.load(4);
@@ -1091,74 +1393,4 @@ describe('Service: Images', function () {
         });
     });
 
-    describe('after initialization', function() {
-        beforeEach(function() {
-            $httpBackend
-                .expect('GET', e+'/images?items_per_page=50&page=1&expand=true')
-                .respond(mock);
-            $httpBackend
-                .expect('GET', e+'/images?items_per_page=50&page=2&expand=true')
-                .respond(mock);
-            images.init();
-            $httpBackend.flush(1);
-        });
-        it('shows the first batch of images immediately', function () {
-            expect(images.loaded.length).toBe(0);
-            expect(images.displayed.length).toBe(10);
-            $httpBackend.flush();
-        });
-        it('loads the second batch of images but does not show them', function () {
-            $httpBackend.flush();
-            expect(images.loaded.length).toBe(10);
-            expect(images.displayed.length).toBe(10);
-        });
-        it('handles the loaded buffer properly', function() {
-            $httpBackend.flush();
-            $httpBackend
-                .expect('GET', e+'/images?items_per_page=50&page=3&expand=true')
-                .respond(mock);
-            expect(images.loaded.length).toBe(10);
-            expect(images.displayed.length).toBe(10);
-            images.more();
-            expect(images.loaded.length).toBe(0);
-            expect(images.displayed.length).toBe(20);
-            $httpBackend.flush();
-            expect(images.loaded.length).toBe(10);
-            expect(images.displayed.length).toBe(20);
-            $httpBackend
-                .expectGET(e+'/images?items_per_page=50&page=4&expand=true')
-                .respond({});
-            images.more();
-            expect(images.loaded.length).toBe(0);
-            expect(images.displayed.length).toBe(30);
-            $httpBackend.flush();
-        });
-    });
-    describe('after loading pages successively', function() {
-        beforeEach(function() {
-            $httpBackend
-                .expect('GET', e+'/images?items_per_page=50&page=1&expand=true')
-                .respond(mock);
-            $httpBackend
-                .expect('GET', e+'/images?items_per_page=50&page=2&expand=true')
-                .respond(mock);
-            $httpBackend
-                .expect('GET', e+'/images?items_per_page=50&page=3&expand=true')
-                .respond(mock);
-            $httpBackend
-                .expect('GET', e+'/images?items_per_page=50&page=4&expand=true')
-                .respond(mock);
-            images.init();
-            images.more();
-            images.more();
-            $httpBackend.flush();
-        });
-        it('does not overlap the requests', function() {
-            expect(images.loaded.length).toBe(30);
-            expect(images.displayed.length).toBe(10);
-            /* the most important part of this test is not visible
-             * here, it depends on the http request expectations and
-             * `afterEach` controls */
-        });
-    });
 });
