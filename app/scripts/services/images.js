@@ -37,6 +37,7 @@ angular.module('authoringEnvironmentApp').service('images', [
 
         this.itemsFound = 0;
         this.searchFilter = '';
+        this.canLoadMore = false;  // is there another page to fetch?
 
         /**
         * Fetches and displays the first page of results using the given search
@@ -61,6 +62,7 @@ angular.module('authoringEnvironmentApp').service('images', [
             }
             this.tracker.reset();
             this.itemsFound = 0;
+            this.canLoadMore = false;
 
             this.load(
                 this.tracker.next(), this.searchFilter
@@ -75,28 +77,34 @@ angular.module('authoringEnvironmentApp').service('images', [
                     service.itemsFound = data.items.length;
                 }
 
-                /* prepare the next batch, for happy user */
-                service.more();
+                service.canLoadMore = !pageTracker.isLastPage(data.pagination);
+
+                if (service.canLoadMore) {
+                    service.more();
+                }
             });
         };
 
         /**
         * Displays an additional preloaded page of the media archive images
-        * and asynchronously fetches the next page from the server.
+        * and, if available, asynchronously fetches next page of results
+        * from the server.
         *
         * @method more
         */
         this.more = function () {
-            // TODO: don't load next page if there are no more items
-            // see how it's done in comments .. and comment above (query())
-            // update on this more() fetching
-            var additional = service.loaded.splice(0, this.itemsPerPage);
+            var additional = this.loaded.splice(0, this.itemsPerPage);
             this.displayed = this.displayed.concat(additional);
+
+            if (!service.canLoadMore) {
+                return;
+            }
 
             this.load(
                 this.tracker.next(), this.searchFilter
             ).success(function (data) {
                 service.loaded = service.loaded.concat(data.items);
+                service.canLoadMore = !pageTracker.isLastPage(data.pagination);
             });
         };
 

@@ -101,6 +101,10 @@ describe('Service: Images', function () {
         expect(images.searchFilter).toEqual('');
     });
 
+    it('has canLoadMore flag cleared by default', function () {
+        expect(images.canLoadMore).toEqual(false);
+    });
+
     describe('query() method', function () {
         var deferredLoad,
             $rootScope;
@@ -152,6 +156,12 @@ describe('Service: Images', function () {
             expect(images.itemsFound).toEqual(0);
         });
 
+        it('clears canLoadMore flag before invoking API', function () {
+            images.canLoadMore = true;
+            images.query('duck');
+            expect(images.canLoadMore).toEqual(false);
+        });
+
         it('invokes load() with correct parameters', function () {
             images.searchFilter = 'fish';
             images.tracker.next();
@@ -162,9 +172,13 @@ describe('Service: Images', function () {
         });
 
         describe('on successful server response', function () {
-            beforeEach(function () {
+            var pageTracker;
+
+            beforeEach(inject(function (_pageTracker_) {
+                pageTracker = _pageTracker_;
                 spyOn(images, 'more');
-            });
+                spyOn(pageTracker, 'isLastPage');
+            }));
 
             it('sets the list of displayed images to result set', function () {
                 var resultSet = [{id:12}, {id:55}, {id:167}];
@@ -178,7 +192,9 @@ describe('Service: Images', function () {
                 expect(images.displayed).toEqual(resultSet);
             });
 
-            it('preloads the next page of results', function () {
+            it('preloads the next page of results if available', function () {
+                pageTracker.isLastPage.andReturn(false);
+
                 images.query('duck');
                 deferredLoad.resolve({items: []});
                 $rootScope.$apply();
@@ -186,7 +202,41 @@ describe('Service: Images', function () {
                 expect(images.more).toHaveBeenCalled();
             });
 
-            describe('with pagination object', function () {
+            it('sets canLoadMore flag if more pages available', function () {
+                pageTracker.isLastPage.andReturn(false);
+
+                images.query('duck');
+                images.canLoadMore = false;  // before server response
+                deferredLoad.resolve({items: []});
+                $rootScope.$apply();
+
+                expect(images.canLoadMore).toEqual(true);
+            });
+
+            it('does not preload the next page of results if not available',
+                function () {
+                    pageTracker.isLastPage.andReturn(true);
+
+                    images.query('duck');
+                    deferredLoad.resolve({items: []});
+                    $rootScope.$apply();
+
+                    expect(images.more).not.toHaveBeenCalled();
+            });
+
+            it('clears canLoadMore flag if no more pages applicable',
+                function () {
+                    pageTracker.isLastPage.andReturn(true);
+
+                    images.query('duck');
+                    images.canLoadMore = true;  // before server response
+                    deferredLoad.resolve({items: []});
+                    $rootScope.$apply();
+
+                    expect(images.canLoadMore).toEqual(false);
+            });
+
+            describe('pagination object available', function () {
                 it('sets result page size to what server returned',
                     function () {
                         images.itemsPerPage = 20;
@@ -221,7 +271,7 @@ describe('Service: Images', function () {
                 });
             });
 
-            describe('without pagination object', function () {
+            describe('pagination object not available', function () {
                 it('sets page size back to default value', function () {
                     images.itemsPerPage = 30;
 
@@ -294,14 +344,16 @@ describe('Service: Images', function () {
                 }
         });
 
-        it('preloads another page of images', function () {
+        it('preloads another page of images if available', function () {
             var len,
                 slice;
             images.displayed = [];
             images.loaded = [{id:1}, {id:2}, {id:3}, {id:4}, {id:5}];
+            images.tracker.next();  // one page has been loaded before
+
+            images.canLoadMore = true;
             images.itemsPerPage = 5;
             images.searchFilter = 'bear';
-            images.tracker.next();  // one page has been loaded before
 
             images.more();
             deferredLoad.resolve({
@@ -316,6 +368,13 @@ describe('Service: Images', function () {
             expect(slice).toEqual(
                 [{id:6}, {id:7}, {id:8}, {id:9}, {id:10}]
             );
+        });
+
+        it('does not try to preload another page of images if not available',
+            function () {
+                images.canLoadMore = false;
+                images.more();
+                expect(images.load).not.toHaveBeenCalled();
         });
     });
 
