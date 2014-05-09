@@ -1257,11 +1257,9 @@ a:hover {
             list-style-type: none;
             padding: 0;
             margin:0;
-            border-top: 1px solid #dcdcdc;
-            padding-top: 14px;
             clear: both;
             position: relative;
-            margin-bottom: 15px;
+            margin-bottom: 0;
 
             &:before {
                 font-size: 13px;
@@ -1273,7 +1271,7 @@ a:hover {
             }
 
             &.media-images:before {
-                content: "Attached Images";
+                /*content: "Attached Images";*/
             }
             &.media-videos:before {
                 content: "Videos";
@@ -1375,7 +1373,10 @@ a:hover {
                     }
                 }
                 &:first-child {
-                    margin-top: 10px;
+                    margin-top: 0px;
+                }
+                &:last-child {
+                    margin-bottom: 0px;
                 }
                 .drag-bar {
                     position: absolute;
@@ -2044,20 +2045,25 @@ a:hover {
             padding: 0 0 10px 0;
         }
         .images-wrapper {
-            position: relative;
-            height: 86%;
-            overflow: auto;
+            position: absolute;
+            top:120px;
+            bottom: 18px;
+            left:0;
+            right:0px;
             .media-tab {
                 position: absolute;
-                top: 0;
-                right: 0;
+                top: 30px;
+                right: 12px;
                 bottom: 0;
                 left: 0;
                 overflow: auto;
-                padding: 12px 10px 10px 0;
-                &::-webkit-scrollbar { width: 8px; height: 8px; margin: -1px 0; }
-                &::-webkit-scrollbar-thumb { background: #949494; }
-                &::-webkit-scrollbar-thumb:hover { background: #6e6e6e; }
+                padding: 0px 0px 0px 12px;
+                &::-webkit-scrollbar { width: 14px; height: 8px; margin: -1px 0; }
+                &::-webkit-scrollbar-thumb { background: #949494; 
+                 border-left: 6px solid rgba(0,0,0,0);background-clip: padding-box;
+                }
+                &::-webkit-scrollbar-thumb:hover { background: #6e6e6e; border-left: 6px solid rgba(0,0,0,0);background-clip: padding-box; }
+
                 .draggable {
                     cursor: all-scroll;
                 }
@@ -2088,6 +2094,21 @@ a:hover {
                     background: green;
                     padding: 7px;
                     line-height: 0;
+                }
+            }
+            .attached-title {
+                position:relative;
+                clear:both;
+                padding: 0 12px;
+                background-color: @tabpane-background;
+                &:before {
+                    content: " ";
+                    position: absolute;
+                    top: 10px;
+                    left: 120px;
+                    right: 12px;
+                    background: #dcdcdc;
+                    height: 1px;
                 }
             }
         }
