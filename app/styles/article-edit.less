@@ -1855,12 +1855,32 @@ a:hover {
         .archive {
             .search {
                 height: 40px;
-                padding: 5px;
+                padding: 0 10px 10px;
+                margin-left: -16px;
+                margin-top: -6px;
+                position:absolute;
+                top:16px;
+                right:0;
+                left:16px;
+                @shadow: 0 2px 5px rgba(0,0,0,.1);
+                .box-shadow(@shadow);
+            
                 input[type="text"] {
                     width: 200px;
                     padding: 5px;
                 }
             }
+            .search-results {
+                position: absolute;
+                top: 50px;
+                bottom: 0;
+                padding-top: 10px;
+                overflow-y: auto;
+                &::-webkit-scrollbar { width: 8px; height: 8px; margin: -1px 0; background: #e2e2e2; }
+                &::-webkit-scrollbar-thumb { background: #949494; }
+                &::-webkit-scrollbar-thumb:hover { background: #6e6e6e; }                                        
+            }
+            
 
             .thumbnail-wrapper:hover {
                 cursor: pointer;
@@ -2583,7 +2603,7 @@ a:hover {
                                     position: absolute;
                                     top: 0;
                                     bottom: 0;
-                                    padding: 10px 0px 15px 0;
+                                    padding: 20px 0px 15px 0;
                                     margin:0;
                                     border-right: 1px solid #e8e8e8;
                                     background:#FFF;
@@ -2596,13 +2616,8 @@ a:hover {
                                     bottom: 0;
                                     right: 0;
                                     left: 145px;
-                                    overflow-x:visible;
-                                    overflow-y:auto;
-                                    &::-webkit-scrollbar { width: 8px; height: 8px; margin: -1px 0; background: #e2e2e2; }
-                                    &::-webkit-scrollbar-thumb { background: #949494; }
-                                    &::-webkit-scrollbar-thumb:hover { background: #6e6e6e; }
-                                    .archive {
-                                        /*overflow-y:auto;*/
+                                    overflow:hidden;
+                                    .archive {                                        
                                     }
                                 }                               
                             }
