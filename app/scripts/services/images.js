@@ -16,8 +16,9 @@ angular.module('authoringEnvironmentApp').service('images', [
         getFileReader, formDataFactory, imageFactory, $upload, $rootScope, $q
     ) {
         /* more info about the page tracker in its tests */
-        var service = this;
-        var apiRoot = configuration.API.full;
+        var apiRoot = configuration.API.full,
+            service = this,
+            ITEMS_PER_PAGE_DEFAULT = 50;
 
         article.promise.then(function (article) {
             service.article = article;
@@ -32,16 +33,22 @@ angular.module('authoringEnvironmentApp').service('images', [
         this.images2upload = [];  // list of images to upload
         this.includedIndex = -1;
         this.included = {};
-        this.itemsPerPage = 10;
+        this.itemsPerPage = ITEMS_PER_PAGE_DEFAULT;
 
-        // TODO: test default value
         this.itemsFound = 0;
-
-        // TODO: test
         this.searchFilter = '';
 
-        // sets the new filter and fetch (and display) the first page of it
-        // TODO: comments & tests .. first reset, then load all
+        /**
+        * Fetches and displays the first page of results using the given search
+        * filter. Search filter is remembered for subsequent fetching of
+        * additional pages.
+        * NOTE: for users' convenience, an additional page is fetched (if
+        * available) after a successful server response.
+        *
+        * @method query
+        * @param filter {String} search term by which to filter results.
+        *     Empty string is interpreted as "no filtering".
+        */
         this.query = function (filter) {
             this.searchFilter = filter;
 
@@ -61,12 +68,10 @@ angular.module('authoringEnvironmentApp').service('images', [
                 service.displayed = data.items;
 
                 if (data.pagination) {
-                    // TODO: bug ... data.pagination might not exist for
-                    // single pages .. now fixed, update tests!
                     service.itemsPerPage = data.pagination.itemsPerPage;
                     service.itemsFound = data.pagination.itemsCount;
                 } else {
-                    service.itemsPerPage = 10;  // back to default value
+                    service.itemsPerPage = ITEMS_PER_PAGE_DEFAULT;
                     service.itemsFound = data.items.length;
                 }
 
@@ -83,7 +88,8 @@ angular.module('authoringEnvironmentApp').service('images', [
         */
         this.more = function () {
             // TODO: don't load next page if there are no more items
-            // see how it's done in comments
+            // see how it's done in comments .. and comment above (query())
+            // update on this more() fetching
             var additional = service.loaded.splice(0, this.itemsPerPage);
             this.displayed = this.displayed.concat(additional);
 
@@ -98,11 +104,12 @@ angular.module('authoringEnvironmentApp').service('images', [
         * Asynchronously loads a single page of images from the server.
         *
         * @method load
-        * @param page {Number} Index of the page to load
+        * @param page {Number} index of the page to load
         *     (NOTE: page indices start with 1)
+        * @param searchString {String} Search term to narrow down the list of
+        *     results. Empty string is interpreted by API as "no restrictions".
         * @return {Object} promise object
         */
-        // TODO: optional searchString param ...
         this.load = function (page, searchString) {
             var getParams,
                 promise,
@@ -110,7 +117,7 @@ angular.module('authoringEnvironmentApp').service('images', [
 
             getParams = {
                 expand: true,
-                items_per_page: 50,
+                items_per_page: this.itemsPerPage,
                 page: page,
             };
 
