@@ -26,7 +26,7 @@ describe('Controller: MediaArchiveCtrl', function () {
         expect(scope.searchFilter).toEqual('');
     });
 
-    it('upadtes scope\'s appliedFilter property on changes in images service',
+    it('updates scope\'s appliedFilter property on changes in images service',
         inject(function (images) {
             scope.appliedFilter = 'foo';
 
