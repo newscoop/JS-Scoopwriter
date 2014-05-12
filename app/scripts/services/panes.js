@@ -14,6 +14,16 @@ angular.module('authoringEnvironmentApp').factory('panes', [
                     selected: true
                 },
                 {
+                    name: 'Authors',
+                    id: 'authors',
+                    icon: 'authors',
+                    template: 'views/pane-authors.html',
+                    position: 'right',
+                    size: 'small',
+                    active: false,
+                    selected: true
+                },
+                {
                     name: 'Images',
                     id: 'images',
                     icon: 'media',
