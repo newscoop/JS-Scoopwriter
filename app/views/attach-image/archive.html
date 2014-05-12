@@ -12,11 +12,11 @@
         />
       <button
          type="submit"
-         class="btn btn-default"
+         class="btn btn-default btn-sm"
          >Search</button>
 
-      <span>Displaying: {{images.displayed.length}} / {{images.itemsFound}}</span>
-      <span>Current filter: {{appliedFilter}}</span>
+      <span>Displaying: <span class="label label-default">{{images.displayed.length}} / {{images.itemsFound}}</span></span>
+      <span>Current filter: <span class="label label-info">{{appliedFilter}}</span></span>
     </form>
   </div>
 
