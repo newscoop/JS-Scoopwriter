@@ -7,7 +7,22 @@
 */
 angular.module('authoringEnvironmentApp').controller('PaneAuthorsCtrl', [
     '$scope',
-    function ($scope) {
-        // TODO: add logic
+    'article',
+    'articleAuthor',
+    function ($scope, article, articleAuthor) {
+
+        $scope.authors = [];
+
+        // TODO: tests & comments
+        this.retrieveAuthors = function () {
+            article.promise.then(function (articleData) {
+                $scope.authors = articleAuthor.getAll({
+                    articleId: articleData.number,
+                    articleLang: articleData.language
+                });
+            });
+        };
+
+        this.retrieveAuthors();
     }
 ]);

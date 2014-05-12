@@ -1,3 +1,15 @@
 <section ng-controller="PaneAuthorsCtrl" class="tab-content" id="authors-tab">
-    Authors management
+  <div class="panel-title">
+    Authors Management
+  </div>
+
+  <button ng-click="click()">Query</button>
+
+  <div ng-repeat="author in authors">
+    ID: {{author.id}}<br>
+    Name: {{author.firstName}} {{author.lastName}}<br>
+    Role: {{author.articleRole.name}}<br>
+    <img ng-src="{{author.avatarUrl}}"
+         alt="{{author.firstName}} {{author.lastName}}"/>
+  </div>
 </section>
