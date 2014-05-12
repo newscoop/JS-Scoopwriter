@@ -88,7 +88,7 @@ a:hover {
         clear: both;
         text-align: center;
         .btn {
-            margin: 12px 0 6px 0;
+            margin: 12px 0 16px 0;
         }
     }
 
@@ -1854,27 +1854,43 @@ a:hover {
 
         .archive {
             .search {
-                height: 40px;
-                padding: 0 10px 10px;
                 margin-left: -16px;
-                margin-top: -6px;
-                position:absolute;
-                top:16px;
-                right:0;
-                left:16px;
-                @shadow: 0 2px 5px rgba(0,0,0,.1);
-                .box-shadow(@shadow);
+                margin-top: -15px;
+                padding: 10px 20px 11px 20px;
+                border-bottom: 1px solid #e8e8e8;
+                background: #f1f1f1;
+                .box-sizing(border-box);
             
                 input[type="text"] {
-                    width: 200px;
-                    padding: 5px;
+                    width: 300px;
+                    padding: 5px 7px 5px 26px;
+                    border:1px solid #ccc;
+                    margin: 2px 6px 0 0;
+                    @shadow: inset 0 1px 2px rgba(0,0,0,.05);
+                    .box-shadow(@shadow);
+                    .border-radius(2px);
+                    background: #fff url("../images/search-icon.png") no-repeat 6px center;
+                }
+                .btn.btn-sm {
+                    margin-top: -2px;
+                    margin-right: 22px;
+                }
+                span { 
+                    margin-right: 6px;
+                    color:#777;
+                }
+                .label {
+                    font-size: 11px;
+                    font-weight: normal;
+                    color: white;
+                    margin-left:3px; 
                 }
             }
             .search-results {
                 position: absolute;
-                top: 50px;
+                top: 53px;
                 bottom: 0;
-                padding-top: 10px;
+                padding: 10px 0;
                 overflow-y: auto;
                 &::-webkit-scrollbar { width: 8px; height: 8px; margin: -1px 0; background: #e2e2e2; }
                 &::-webkit-scrollbar-thumb { background: #949494; }
@@ -1940,7 +1956,7 @@ a:hover {
                 }
                 .drag-area.small {
                     position:relative;
-                    height: 318px;
+                    height: 314px;
                     width: 300px; 
                     display: inline-block;
                     float: left;
@@ -1993,7 +2009,7 @@ a:hover {
                     }
 
                     .progress {
-                        height: 10px;
+                        height: 6px;
                         width:280px;
                         margin-bottom: 10px;
                         background: #f0f0f0;
@@ -2077,7 +2093,7 @@ a:hover {
         }
         .images-wrapper {
             position: absolute;
-            top:120px;
+            top:114px;
             bottom: 18px;
             left:0;
             right:0px;
@@ -2485,12 +2501,8 @@ a:hover {
             .modal-heavy {
                 .modal-header {
                     background-color: #b90e0e;
-                    -webkit-border-top-left-radius: 3px;
-                    -webkit-border-top-right-radius: 3px;
-                    -moz-border-radius-topleft: 3px;
-                    -moz-border-radius-topright: 3px;
-                    border-top-left-radius: 3px;
-                    border-top-right-radius: 3px;
+                    .border-top-left-radius(3px);
+                    .border-top-right-radius(3px);
                     h3 { 
                         color: white; 
                         font-size: 18px;
@@ -2509,12 +2521,8 @@ a:hover {
                 .modal-footer {
                     margin-top: 0;
                     background-color: #fafafa;
-                    -webkit-border-bottom-right-radius: 3px;
-                    -webkit-border-bottom-left-radius: 3px;
-                    -moz-border-radius-bottomright: 3px;
-                    -moz-border-radius-bottomleft: 3px;
-                    border-bottom-right-radius: 3px;
-                    border-bottom-left-radius: 3px;
+                    .border-bottom-left-radius(3px);
+                    .border-bottom-right-radius(3px);
                 }
             }   
 
@@ -2522,12 +2530,8 @@ a:hover {
             .modal-light {
                     .modal-header {
                         background-color: #D8D8D8;
-                        -webkit-border-top-left-radius: 3px;
-                        -webkit-border-top-right-radius: 3px;
-                        -moz-border-radius-topleft: 3px;
-                        -moz-border-radius-topright: 3px;
-                        border-top-left-radius: 3px;
-                        border-top-right-radius: 3px;
+                        .border-top-left-radius(3px);
+                        .border-top-right-radius(3px);
                         h3 { 
                             font-size: 18px;
                             .fa { font-size: 24px; margin-right: 10px; vertical-align: text-bottom; }
@@ -2546,12 +2550,8 @@ a:hover {
                     .modal-footer {
                         margin-top: 0;
                         background-color: #fafafa;
-                        -webkit-border-bottom-right-radius: 3px;
-                        -webkit-border-bottom-left-radius: 3px;
-                        -moz-border-radius-bottomright: 3px;
-                        -moz-border-radius-bottomleft: 3px;
-                        border-bottom-right-radius: 3px;
-                        border-bottom-left-radius: 3px;
+                        .border-bottom-left-radius(3px);
+                        .border-bottom-right-radius(3px);
                     }
             } 
         }
@@ -2575,6 +2575,9 @@ a:hover {
                 .modal-content {
                     height:100%;
                 }
+                .modal-header {
+                    border-bottom: 1px solid #d2d2d2;
+                }
             }
             /* image modal */
             &.image {
@@ -2584,7 +2587,7 @@ a:hover {
                         .modal-body {
                             .box-sizing(border-box);
                             position: absolute;
-                            top: 42px;
+                            top: 56px;
                             left: 0;
                             bottom: 0;
                             right: 0;
@@ -2594,7 +2597,7 @@ a:hover {
                                 .box-sizing(border-box);
                                 position: absolute;
                                 bottom: 254px;
-                                top: 14px;
+                                top: 0;
                                 width:100%;
                                 overflow:hidden; 
                                 .left-pane {
@@ -2603,9 +2606,9 @@ a:hover {
                                     position: absolute;
                                     top: 0;
                                     bottom: 0;
-                                    padding: 20px 0px 15px 0;
+                                    padding: 26px 0px 15px 0;
                                     margin:0;
-                                    border-right: 1px solid #e8e8e8;
+                                    border-right: 1px solid #d2d2d2;
                                     background:#FFF;
                                 }
                                 .right-pane {
