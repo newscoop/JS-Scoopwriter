@@ -5,6 +5,7 @@ body {
   margin: 0;
   font-family: @baseFontFamily;
   font-size: @baseFontSize;
+  font-weight: @baseFontWeight;
   color: @textColor;
   background-color: @bodyBackground;
 }
@@ -408,7 +409,7 @@ a:hover {
             display: block;
         }
         .btn + .btn {
-            margin: 0 6px 0 0;
+            margin: 0;
         }
     }
 
@@ -1937,8 +1938,7 @@ a:hover {
                 bottom:40px;
                 left:12px;
                 right:0px;
-                margin-bottom: 10px;
-                padding-bottom: 16px;
+                margin-bottom: 26px;
                 overflow-y: auto;
                 &::-webkit-scrollbar { width: 8px; height: 8px; margin: -1px 0; background: #e2e2e2; }
                 &::-webkit-scrollbar-thumb { background: #949494; }
@@ -1962,6 +1962,7 @@ a:hover {
                     float: left;
                     margin-bottom: @placeholder-margin;
                     margin-right: @placeholder-margin;
+                    .box-sizing(border-box);
                     .drag-area-title {
                        font-size: 20px;
                        background: url("../images/dragfiles-small.png") no-repeat 50% 0;
@@ -1991,6 +1992,7 @@ a:hover {
                     display: inline-block;
                     float: left;
                     width: 302px;
+                    height: 312px;
                     margin-top: @placeholder-margin;
                     margin-right: @placeholder-margin;
                     margin-bottom: @placeholder-margin / 4;
@@ -2054,6 +2056,9 @@ a:hover {
                             background-color: white;
                             .border-radius(2px);
                             padding: 4px 5px;
+                        }
+                        textarea {
+                            height: 45px;
                         }
                     }
                 }
@@ -2132,16 +2137,17 @@ a:hover {
                     }
                 }
                 .attached {
-                    border-radius: 20px;
-                    display: inline;
-                    position: absolute;
-                    right: -3px;
-                    top: -4px;
-                    color: white;
-                    background: green;
-                    padding: 7px;
-                    line-height: 0;
-                }
+                   border-radius: 35px;
+                   display: inline;
+                   position: absolute;
+                   right: -9px;
+                   top: -12px;
+                   color: white;
+                   background: #489729;
+                   padding: 14px 8px;
+                   line-height: 0;
+                   width: 35px;
+                   height: 35px;                }
             }
             .attached-title {
                 position:relative;
@@ -2267,7 +2273,7 @@ a:hover {
                 input { margin: -2px 1px 0 0; vertical-align: middle; }
             }
             .status-buttons {
-                padding: 10px;
+                padding: 4px 10px 10px;
                 .delete-button {
                     margin-left: 20px;
                 }
@@ -2348,6 +2354,9 @@ a:hover {
                 padding: 15px;
                 .controls {
                     overflow: hidden;
+                    .btn + .btn {
+                        margin: 0 6px 0 0;
+                     }
                 }
             }
         }
@@ -2576,7 +2585,11 @@ a:hover {
                     height:100%;
                 }
                 .modal-header {
-                    border-bottom: 1px solid #d2d2d2;
+                    border-bottom: none;
+                    .box-sizing(border-box);
+                }
+                .modal-body {
+                    border-top: 1px solid #d2d2d2;
                 }
             }
             /* image modal */
