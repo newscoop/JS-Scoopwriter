@@ -1,9 +1,9 @@
 'use strict';
 
 /**
-* Service representing an author resource.
+* Service representing an article author resource.
 *
-* @class Author
+* @class articleAuthor
 */
 angular.module('authoringEnvironmentApp').service('articleAuthor', [
     '$http',
