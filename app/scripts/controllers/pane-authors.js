@@ -8,24 +8,25 @@
 angular.module('authoringEnvironmentApp').controller('PaneAuthorsCtrl', [
     '$scope',
     'article',
-    'articleAuthor',
-    function ($scope, article, articleAuthor) {
+    'articleAuthors',
+    function ($scope, article, articleAuthors) {
 
         $scope.authorRoles = [];
         $scope.authors = [];
 
-        $scope.authorRoles = articleAuthor.getRoleList();
+        $scope.authorRoles = articleAuthors.getRoleList();
 
         article.promise.then(function (articleData) {
-            $scope.authors = articleAuthor.getAll({
-                articleId: articleData.number,
-                articleLang: articleData.language
+            $scope.authors = articleAuthors.getAll({
+                number: articleData.number,
+                language: articleData.language
             });
         });
 
         // TODO: comments & tests when done
         $scope.authorRoleChanged = function (author) {
-            // implement ...
+            // just an empty handler for now
+            console.log(author);
         };
     }
 ]);

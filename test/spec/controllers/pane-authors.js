@@ -11,7 +11,7 @@ describe('Controller: PaneAuthorsCtrl', function () {
     beforeEach(module('authoringEnvironmentApp'));
 
     var article,
-        articleAuthor,
+        articleAuthors,
         authors,
         ctrl,
         roles,
@@ -48,9 +48,9 @@ describe('Controller: PaneAuthorsCtrl', function () {
     ];
 
     beforeEach(inject(
-        function ($controller, $rootScope, _article_, _articleAuthor_) {
+        function ($controller, $rootScope, _article_, _articleAuthors_) {
             article = _article_;
-            articleAuthor = _articleAuthor_;
+            articleAuthors = _articleAuthors_;
 
             article.promise = {
                 then: function (callback) {
@@ -58,11 +58,11 @@ describe('Controller: PaneAuthorsCtrl', function () {
                 }
             };
 
-            spyOn(articleAuthor, 'getRoleList').andCallFake(function () {
+            spyOn(articleAuthors, 'getRoleList').andCallFake(function () {
                 return roles;
             });
 
-            spyOn(articleAuthor, 'getAll').andCallFake(function () {
+            spyOn(articleAuthors, 'getAll').andCallFake(function () {
                 return authors;
             });
 
@@ -70,19 +70,19 @@ describe('Controller: PaneAuthorsCtrl', function () {
             ctrl = $controller('PaneAuthorsCtrl', {
                 $scope: scope,
                 article: article,
-                articleAuthor: articleAuthor
+                articleAuthors: articleAuthors
             });
         }
     ));
 
     it('initializes a list of author roles in scope', function () {
-        expect(articleAuthor.getRoleList).toHaveBeenCalled();
+        expect(articleAuthors.getRoleList).toHaveBeenCalled();
         expect(scope.authorRoles).toEqual(roles);
     });
 
     it('initializes a list of article authors in scope', function () {
-        expect(articleAuthor.getAll)
-            .toHaveBeenCalledWith({articleId: 64, articleLang: 'de'});
+        expect(articleAuthors.getAll)
+            .toHaveBeenCalledWith({number: 64, language: 'de'});
         expect(scope.authors).toEqual(authors);
     });
 
