@@ -1,15 +1,28 @@
-<section ng-controller="PaneAuthorsCtrl" class="tab-content" id="authors-tab">
+<section
+    ng-controller="PaneAuthorsCtrl"
+    class="tab-content authors-panel"
+    id="authors-tab">
+
   <div class="panel-title">
     Authors Management
   </div>
 
-  <button ng-click="click()">Query</button>
+  <div ng-repeat="author in authors" class="author clearfix">
+    <div class="remove" title="Remove" ng-click="removeAuthor(author)">
+      <span class="glyphicon glyphicon-remove"></span>
+    </div>
 
-  <div ng-repeat="author in authors">
-    ID: {{author.id}}<br>
-    Name: {{author.firstName}} {{author.lastName}}<br>
-    Role: {{author.articleRole.name}}<br>
     <img ng-src="{{author.avatarUrl}}"
-         alt="{{author.firstName}} {{author.lastName}}"/>
+         alt="{{author.firstName}} {{author.lastName}}"
+         title="{{author.firstName}} {{author.lastName}}"/>
+    {{author.firstName}} {{author.lastName}}<br>
+
+    <select
+        class="author-role"
+        ng-model="author.articleRole.id"
+        ng-options="role.id as role.name for role in authorRoles"
+        ng-change="authorRoleChanged(author)"
+    ></select>
   </div>
+
 </section>

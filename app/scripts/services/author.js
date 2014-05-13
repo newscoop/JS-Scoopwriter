@@ -37,6 +37,24 @@ angular.module('authoringEnvironmentApp').service('articleAuthor', [
                         return authors;
                     },
                     isArray: true
+                },
+                authorRoles: {
+                    method: 'GET',
+                    url: API_ROOT + '/authors/types',
+                    params: {
+                        items_per_page: 999  // de facto "all roles"
+                    },
+                    transformResponse: function (data, headersGetter) {
+                        var roles = JSON.parse(data).items;
+
+                        roles.forEach(function (item) {
+                            // "name" is more informative attribute name
+                            item.name = item.type;
+                            delete item.type;
+                        });
+                        return roles;
+                    },
+                    isArray: true
                 }
             }
         );
@@ -49,6 +67,11 @@ angular.module('authoringEnvironmentApp').service('articleAuthor', [
                 number: queryParams.articleId,
                 language: queryParams.articleLang
             });
+        };
+
+        // TODO: comments and tests
+        self.getRoleList = function () {
+            return authorResource.authorRoles();
         };
 
         // TODO: comments and tests
@@ -79,7 +102,12 @@ angular.module('authoringEnvironmentApp').service('articleAuthor', [
         // service.query()  <---- all
         // author object ... a single entity
         // author.addNew
-        // author.setRole()
+        // author.setRole() ... maybe better to have utility methods
+        // here in service (eg. set author role(articleId, articleNumber,
+        // authorID, newRole))
+        // PROBLEM: we need OLD author value as well! do it with
+        // scope.watchCollection probably ...or $scope.$watch
+        // every author object
 
         // TODO: and then methods to add, delete, changeRole etc.
         // so that Author returns self-contained author objects
