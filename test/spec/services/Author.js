@@ -47,8 +47,7 @@ describe('Factory: Author', function () {
     describe('getAll() method', function () {
         beforeEach(function () {
             $httpBackend.expectGET(
-                rootURI + '/articles/64/de/authors?' +
-                'expand=true&items_per_page=99999'
+                rootURI + '/articles/64/de/authors?items_per_page=99999'
             ).respond(JSON.stringify(authorsResponse));
         });
 
@@ -58,6 +57,7 @@ describe('Factory: Author', function () {
 
         it('sends a correct request to API', function () {
             Author.getAll({number: 64, language: 'de'});
+            $httpBackend.flush(1);
         });
 
         it('correctly transforms server response', function () {
@@ -107,6 +107,7 @@ describe('Factory: Author', function () {
 
         it('sends a correct request to API', function () {
             Author.getRoleList();
+            $httpBackend.flush(1);
         });
 
         it('correctly transforms server response', function () {
