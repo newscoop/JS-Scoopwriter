@@ -48,6 +48,44 @@ angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
             article.modified = value;
         };
         $scope.save = function () {
+            function snippetDivsToComments(text) {
+                if (text === null) {return text;}
+                                                            // the extra backward slash (\) is because of Javascript being picky
+                var snippetRegex  = '<div';                 // exact match
+                snippetRegex     += '\\s';                  // single whitespace
+                snippetRegex     += 'class="snippet"';      // exact match
+                snippetRegex     += '\\s';                  // single whitespace
+                snippetRegex     += 'data-snippet-id="';    // exact match
+                snippetRegex     += '([\\d]+)';             // capture group 1, match 1 or more digits (\d)
+                snippetRegex     += '"';                    // exact match
+                                                            // OPTIONAL for align only
+                snippetRegex     += '(?:';                  // start of non-capture group
+                snippetRegex     += '\\s';                  // single whitespace
+                snippetRegex     += 'data-snippet-align="'; // exact match
+                snippetRegex     += '([^"]+)';              // capture group 2, match 1 or more characters (^) not equal to "
+                snippetRegex     += '"';                    // exact match
+                snippetRegex     += ')?';                   // end of non-capture group
+                                                            // END OPTIONAL
+                snippetRegex     += '><\/div>';             // exact match
+                var snippetPattern = new RegExp(snippetRegex, 'ig');
+                return text.replace(snippetPattern, function(whole, ID, align) {
+                    var output = '';
+                    if (ID !== undefined) {
+                        output += '<!-- Snippet '+parseInt(ID);
+                        if (align !== undefined) {
+                            output += ' align="'+align+'"';
+                        }
+                        output += ' -->';
+                    }
+
+                    return output;
+                });
+            }
+            for (var key in $scope.article.fields) {
+                if($scope.article.fields.hasOwnProperty(key)) {
+                    $scope.article.fields[key] = snippetDivsToComments($scope.article.fields[key]);
+                }
+            }
             article.resource.save({
                 articleId: n,
                 language: l
@@ -66,7 +104,45 @@ angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
             }
         });
         article.promise.then(function (article) {
+            // Convert the Snippet comments into divs so that Aloha can process them
+            function snippetCommentsToDivs(text) {
+                if (text === null) {return text;}
+                                                // the extra backward slash (\) is because of Javascript being picky
+                var snippetRegex  = '<!--';     // exact match
+                snippetRegex     += '\\s';      // single whitespace
+                snippetRegex     += 'Snippet';  // exact match
+                snippetRegex     += '\\s';      // single whitespace
+                snippetRegex     += '([\\d]+)'; // capture group 1, match 1 or more digits (\d)
+                                                // OPTIONAL for align only
+                snippetRegex     += '(?:';      // start of non-capture group
+                snippetRegex     += '\\s';      // single whitespace
+                snippetRegex     += 'align="';  // exact match
+                snippetRegex     += '([^"]+)';  // capture group 2, match 1 or more characters (^) not equal to "
+                snippetRegex     += '"';        // exact match
+                snippetRegex     += ')?';       // end of non-capture group
+                                                // END OPTIONAL
+                snippetRegex     += '\\s';      // single whitespace
+                snippetRegex     += '-->';      // exact match
+                var snippetPattern = new RegExp(snippetRegex, 'ig');
+                return text.replace(snippetPattern, function(whole, ID, align) {
+                    var output = '';
+                    if (ID !== undefined) {
+                        output += '<div class="snippet" data-snippet-id="'+parseInt(ID)+'"';
+                        if (align !== undefined) {
+                            output += ' data-snippet-align="'+align+'"';
+                        }
+                        output += '></div>';
+                    }
+
+                    return output;
+                });
+            }
             $scope.article = article;
+            for (var key in article.fields) {
+                if(article.fields.hasOwnProperty(key)) {
+                    article.fields[key] = snippetCommentsToDivs(article.fields[key]);
+                }
+            }
             if (typeof $scope.type === 'undefined') {
                 $scope.type = articleType.get({ type: article.type }, function () {
                     var additional = configuration.additionalFields[article.type];
