@@ -20,7 +20,7 @@ describe('Service: panes', function () {
     });
     describe('activated a pane', function() {
         beforeEach(function() {
-            panes.active(p[1]);
+            panes.active(p[2]);
         });
         it('should tell the layout', function() {
             expect(p.layout).toEqual({
@@ -47,7 +47,7 @@ describe('Service: panes', function () {
             });
             describe('activated a wider pane', function() {
                 beforeEach(function() {
-                    panes.active(p[3]);
+                    panes.active(p[4]);
                 });
                 it('should tell the layout', function() {
                     expect(p.layout).toEqual({

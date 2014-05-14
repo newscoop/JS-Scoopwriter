@@ -30,6 +30,15 @@ a:hover {
 .aloha-ui-toolbar {display:none !important;}
 .aloha-sidebar-bar {display:none !important;}
 
+/* a modern fix for containers whose floated elements fall outside them */
+.clearfix:before, .clearfix:after {
+    content: ' ';
+    display: table;
+}
+.clearfix:after {
+    clear: both;
+}
+
 
 .authoring-environment {
 
@@ -2163,6 +2172,33 @@ a:hover {
                     background: #dcdcdc;
                     height: 1px;
                 }
+            }
+        }
+    }
+
+    .authors-panel {
+        .author {
+            position: relative;
+            padding: 5px;
+            border: 1px solid gray;
+
+            .remove {
+                position: absolute;
+                right: 3px;
+                top: 2px;
+                color: gainsboro;
+                cursor: pointer;
+                &:hover {
+                    color: gray;
+                }
+            }
+
+            img {
+                float: left;
+                margin-right: 5px;
+                margin-bottom: 5px;
+                max-width: 64px;
+                max-height: 64px;
             }
         }
     }
