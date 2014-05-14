@@ -48,6 +48,27 @@ angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
             article.modified = value;
         };
         $scope.save = function () {
+            function snippetDivsToComments(text) {
+                if (text === null) {return text;}
+                var snippetPattern = new RegExp('<div\\sclass="snippet"\\sdata-snippet-id="([\\d]+)"(?:\\sdata-snippet-align="([^"]+)")?><\/div>', 'ig');
+                return text.replace(snippetPattern, function(whole, ID, align) {
+                    var output = '';
+                    if (ID !== undefined) {
+                        output += '<!-- Snippet '+parseInt(ID);
+                        if (align !== undefined) {
+                            output += ' align="'+align+'"';
+                        }
+                        output += ' -->';
+                    }
+
+                    return output;
+                });
+            }
+            for (var key in $scope.article.fields) {
+                if($scope.article.fields.hasOwnProperty(key)) {
+                    $scope.article.fields[key] = snippetDivsToComments($scope.article.fields[key]);
+                }
+            }
             article.resource.save({
                 articleId: n,
                 language: l
@@ -66,7 +87,29 @@ angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
             }
         });
         article.promise.then(function (article) {
+            // Convert the Snippet comments into divs so that Aloha can process them
+            function snippetCommentsToDivs(text) {
+                if (text === null) {return text;}
+                var snippetPattern = new RegExp('<!--\\sSnippet\\s([\\d]+)\\s(?:align="([^"]+)")*[^\\s]*[\\s]*-->', 'ig');
+                return text.replace(snippetPattern, function(whole, ID, align) {
+                    var output = '';
+                    if (ID !== undefined) {
+                        output += '<div class="snippet" data-snippet-id="'+parseInt(ID)+'"';
+                        if (align !== undefined) {
+                            output += ' data-snippet-align="'+align+'"';
+                        }
+                        output += '></div>';
+                    }
+
+                    return output;
+                });
+            }
             $scope.article = article;
+            for (var key in article.fields) {
+                if(article.fields.hasOwnProperty(key)) {
+                    article.fields[key] = snippetCommentsToDivs(article.fields[key]);
+                }
+            }
             if (typeof $scope.type === 'undefined') {
                 $scope.type = articleType.get({ type: article.type }, function () {
                     var additional = configuration.additionalFields[article.type];
