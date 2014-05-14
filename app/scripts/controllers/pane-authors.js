@@ -8,16 +8,16 @@
 angular.module('authoringEnvironmentApp').controller('PaneAuthorsCtrl', [
     '$scope',
     'article',
-    'articleAuthors',
-    function ($scope, article, articleAuthors) {
+    'Author',
+    function ($scope, article, Author) {
 
         $scope.authorRoles = [];
         $scope.authors = [];
 
-        $scope.authorRoles = articleAuthors.getRoleList();
+        $scope.authorRoles = Author.getRoleList();
 
         article.promise.then(function (articleData) {
-            $scope.authors = articleAuthors.getAll({
+            $scope.authors = Author.getAll({
                 number: articleData.number,
                 language: articleData.language
             });

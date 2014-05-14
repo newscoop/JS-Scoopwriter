@@ -1,11 +1,11 @@
 'use strict';
 
 /**
-* A factory which creates article authors resource object.
+* A factory which creates article author resource object.
 *
-* @class articleAuthors
+* @class Author
 */
-angular.module('authoringEnvironmentApp').factory('articleAuthors', [
+angular.module('authoringEnvironmentApp').factory('Author', [
     '$http',
     '$resource',
     'configuration',
@@ -23,7 +23,7 @@ angular.module('authoringEnvironmentApp').factory('articleAuthors', [
         * @return {Object} author resource object
         */
         self.authorFromApiData = function (data) {
-            var author = new self.Author();
+            var author = new self.authorResource();
 
             author.id = data.author.id;
             author.firstName = data.author.firstName;
@@ -91,7 +91,7 @@ angular.module('authoringEnvironmentApp').factory('articleAuthors', [
         };
 
         // th actual object representing the Author resource on the server
-        self.Author = $resource(
+        self.authorResource = $resource(
             API_ROOT + '/articles/:number/:language/authors', {
                 items_per_page: 99999  // de facto "all"
             }, {
@@ -100,7 +100,7 @@ angular.module('authoringEnvironmentApp').factory('articleAuthors', [
             }
         );
 
-        return self.Author;
+        return self.authorResource;
     }
 ]);
 

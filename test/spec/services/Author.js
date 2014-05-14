@@ -1,14 +1,14 @@
 'use strict';
 
 /**
-* Module with tests for the articleAuthors factory.
+* Module with tests for the Author resource factory.
 *
-* @module articleAuthors factory tests
+* @module Author resource factory tests
 */
 
-describe('Factory: articleAuthors', function () {
+describe('Factory: Author', function () {
 
-    var articleAuthors,
+    var Author,
         authorsResponse,
         rolesResponse,
         $httpBackend;
@@ -39,8 +39,8 @@ describe('Factory: articleAuthors', function () {
 
     beforeEach(module('authoringEnvironmentApp'));
 
-    beforeEach(inject(function (_articleAuthors_, _$httpBackend_) {
-        articleAuthors = _articleAuthors_;
+    beforeEach(inject(function (_Author_, _$httpBackend_) {
+        Author = _Author_;
         $httpBackend = _$httpBackend_;
     }));
 
@@ -57,14 +57,14 @@ describe('Factory: articleAuthors', function () {
         });
 
         it('sends a correct request to API', function () {
-            articleAuthors.getAll({number: 64, language: 'de'});
+            Author.getAll({number: 64, language: 'de'});
         });
 
         it('correctly transforms server response', function () {
             var authors,
                 expectedItemData;
 
-            authors = articleAuthors.getAll({number: 64, language: 'de'})
+            authors = Author.getAll({number: 64, language: 'de'})
 
             // array is empty until the server responds
             expect(_.difference(authors, [])).toEqual([]);
@@ -72,7 +72,7 @@ describe('Factory: articleAuthors', function () {
             $httpBackend.flush(1);
 
             authors.forEach(function (item) {
-                expect(item instanceof articleAuthors).toEqual(true);
+                expect(item instanceof Author).toEqual(true);
             });
 
             expectedItemData = [{
@@ -106,12 +106,12 @@ describe('Factory: articleAuthors', function () {
         });
 
         it('sends a correct request to API', function () {
-            articleAuthors.getRoleList();
+            Author.getRoleList();
         });
 
         it('correctly transforms server response', function () {
             var expectedItemData,
-                roles = articleAuthors.getRoleList();
+                roles = Author.getRoleList();
 
             // array is empty until the server responds
             expect(_.difference(roles, [])).toEqual([]);
@@ -119,7 +119,7 @@ describe('Factory: articleAuthors', function () {
             $httpBackend.flush(1);
 
             roles.forEach(function (item) {
-                expect(item instanceof articleAuthors).toEqual(true);
+                expect(item instanceof Author).toEqual(true);
             });
 
             expectedItemData = [

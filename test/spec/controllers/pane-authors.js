@@ -11,7 +11,7 @@ describe('Controller: PaneAuthorsCtrl', function () {
     beforeEach(module('authoringEnvironmentApp'));
 
     var article,
-        articleAuthors,
+        Author,
         authors,
         ctrl,
         roles,
@@ -48,9 +48,9 @@ describe('Controller: PaneAuthorsCtrl', function () {
     ];
 
     beforeEach(inject(
-        function ($controller, $rootScope, _article_, _articleAuthors_) {
+        function ($controller, $rootScope, _article_, _Author_) {
             article = _article_;
-            articleAuthors = _articleAuthors_;
+            Author = _Author_;
 
             article.promise = {
                 then: function (callback) {
@@ -58,11 +58,11 @@ describe('Controller: PaneAuthorsCtrl', function () {
                 }
             };
 
-            spyOn(articleAuthors, 'getRoleList').andCallFake(function () {
+            spyOn(Author, 'getRoleList').andCallFake(function () {
                 return roles;
             });
 
-            spyOn(articleAuthors, 'getAll').andCallFake(function () {
+            spyOn(Author, 'getAll').andCallFake(function () {
                 return authors;
             });
 
@@ -70,18 +70,18 @@ describe('Controller: PaneAuthorsCtrl', function () {
             ctrl = $controller('PaneAuthorsCtrl', {
                 $scope: scope,
                 article: article,
-                articleAuthors: articleAuthors
+                Author: Author
             });
         }
     ));
 
     it('initializes a list of author roles in scope', function () {
-        expect(articleAuthors.getRoleList).toHaveBeenCalled();
+        expect(Author.getRoleList).toHaveBeenCalled();
         expect(scope.authorRoles).toEqual(roles);
     });
 
     it('initializes a list of article authors in scope', function () {
-        expect(articleAuthors.getAll)
+        expect(Author.getAll)
             .toHaveBeenCalledWith({number: 64, language: 'de'});
         expect(scope.authors).toEqual(authors);
     });
