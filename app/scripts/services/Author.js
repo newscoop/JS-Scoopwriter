@@ -54,7 +54,6 @@ angular.module('authoringEnvironmentApp').factory('Author', [
         */
         self.getAll = {
             method: 'GET',
-            params: {expand: true},
             isArray: true,
             transformResponse: function (data, headersGetter) {
                 var authors = [],
