@@ -6,7 +6,7 @@ angular.module('authoringEnvironmentApp').factory('panes', [
                 {
                     name: 'Topics',
                     id: 'topics',
-                    icon: 'chat',
+                    icon: 'topics',
                     template: 'views/pane-topics.html',
                     position: 'right',
                     size: 'small',
