@@ -89,13 +89,38 @@ angular.module('authoringEnvironmentApp').factory('Author', [
             }
         };
 
+ //</api/authors/types/1; rel="old-author-type">,</api/authors/types/2; rel="new-author-type">
+
+        // TODO:c comment ... updates (persists) authors role on the srver
+        // comment on the hack ... set oldRoleId
+        self.updateRole = {
+            method: 'POST',
+            isArray: true,
+            headers: {
+                link: '</content-api/authors/types/:oldId;' +
+                      '  rel="old-author-type">,' +
+                      '</content-api/authors/types/:newId;' +
+                      '  rel="new-author-type">'
+            },
+            transformRequest: function (author, headersGetter) {
+                var headers = headersGetter(),
+                    newLink;
+
+                newLink = headers.link.replace(':oldId', author.oldRoleId);
+                newLink = newLink.replace(':newId', author.articleRole.id);
+                headers.link = newLink;
+            }
+        };
+
         // th actual object representing the Author resource on the server
         self.authorResource = $resource(
-            API_ROOT + '/articles/:number/:language/authors', {
+            API_ROOT + '/articles/:number/:language/authors/:authorId', {
+                authorId: '@id',
                 items_per_page: 99999  // de facto "all"
             }, {
                 getAll: self.getAll,
-                getRoleList:  self.getRoleList
+                getRoleList:  self.getRoleList,
+                updateRole: self.updateRole
             }
         );
 

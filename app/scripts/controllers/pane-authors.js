@@ -11,22 +11,56 @@ angular.module('authoringEnvironmentApp').controller('PaneAuthorsCtrl', [
     'Author',
     function ($scope, article, Author) {
 
-        $scope.authorRoles = [];
-        $scope.authors = [];
+        var self = this;
+
+        // // TODO: we watch for author role changes like this,
+        // // because we need the old value as well (API needs it),
+        // // therefore we can't use ng-change for the role dropdown menu
+        // $scope.$watchCollection($scope.authors, function (newVal, oldVal) {
+        //     console.log('$scope.authors item changed');
+        // });
+        var setRoleChangeWatch = function (author, callback) {
+            $scope.$watch(
+                function () {
+                    return author.articleRole;
+                },
+                function (newVal, oldVal) {
+                    if (newVal === oldVal) {
+                        return;  // listener called due to initialization
+                    }
+                    callback(newVal, oldVal, author);
+                },
+                true  // test object equality, not reference
+            );
+        };
+
+        // TODO: comments & tests
+        self.authorRoleChanged = function (newRole, oldRole, author) {
+            console.log('NEW:', newRole, 'OLD:', oldRole);
+            article.promise.then(function (articleData) {
+                author.oldRoleId = oldRole.id;  // XXX: explain hack
+                author.$updateRole({
+                    number: articleData.number,
+                    language: articleData.language
+                });
+            });
+        };
 
         $scope.authorRoles = Author.getRoleList();
+        $scope.authors = [];
 
         article.promise.then(function (articleData) {
-            $scope.authors = Author.getAll({
+            return Author.getAll({
                 number: articleData.number,
                 language: articleData.language
+            }).$promise;
+        })
+        .then(function (authors) {
+            $scope.authors = authors;
+            authors.forEach(function (author) {
+                setRoleChangeWatch(author, self.authorRoleChanged);
             });
         });
 
-        // TODO: comments & tests when done
-        $scope.authorRoleChanged = function (author) {
-            // just an empty handler for now
-            console.log(author);
-        };
     }
 ]);

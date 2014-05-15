@@ -52,6 +52,12 @@ describe('Controller: PaneAuthorsCtrl', function () {
             article = _article_;
             Author = _Author_;
 
+            // TODO: mock differently
+            // spyOn article.promise, resolve it with articleData,
+            // it will call .then and in this method spyOn Author.getAll,
+            // ki vrne [].$promise, ampak ta je fake in ta
+            // drugi promise resolvaš, da mu podaš list of authors,
+            // ki ga FUT nastavi na scope (no, to testiraš, da je res)
             article.promise = {
                 then: function (callback) {
                     callback({number: 64, language: 'de'});

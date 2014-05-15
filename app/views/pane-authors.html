@@ -25,9 +25,8 @@
 
     <select
         class="author-role"
-        ng-model="author.articleRole.id"
-        ng-options="role.id as role.name for role in authorRoles"
-        ng-change="authorRoleChanged(author)"
+        ng-model="author.articleRole"
+        ng-options="role.name for role in authorRoles track by role.id"
     ></select>
   </div>
 
