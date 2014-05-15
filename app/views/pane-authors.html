@@ -8,14 +8,20 @@
   </div>
 
   <div ng-repeat="author in authors" class="author clearfix">
+    <div class="drag-bar"></div>
     <div class="remove" title="Remove" ng-click="removeAuthor(author)">
       <span class="glyphicon glyphicon-remove"></span>
     </div>
 
+    <div class="authors-image">
     <img ng-src="{{author.avatarUrl}}"
          alt="{{author.firstName}} {{author.lastName}}"
          title="{{author.firstName}} {{author.lastName}}"/>
-    {{author.firstName}} {{author.lastName}}<br>
+    </div>
+    
+    <div class="authors-name">
+      {{author.firstName}} {{author.lastName}}
+    </div>
 
     <select
         class="author-role"
