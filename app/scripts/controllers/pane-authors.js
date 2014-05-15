@@ -13,12 +13,17 @@ angular.module('authoringEnvironmentApp').controller('PaneAuthorsCtrl', [
 
         var self = this;
 
-        // // TODO: we watch for author role changes like this,
-        // // because we need the old value as well (API needs it),
-        // // therefore we can't use ng-change for the role dropdown menu
-        // $scope.$watchCollection($scope.authors, function (newVal, oldVal) {
-        //     console.log('$scope.authors item changed');
-        // });
+        /**
+        * Sets a watch on the author object for its article role changes.
+        *
+        * NOTE: We can't simply use role dropdown menu's ng-change, because
+        * we need to know the old role value, too (API requirement). Therefore
+        * we manually set the watch, which provides us that value.
+        *
+        * @method setRoleChangeWatch
+        * @param author {Object} author whose role changes to watch
+        * @param callback {Function} function to invoke when role change occurs
+        */
         var setRoleChangeWatch = function (author, callback) {
             $scope.$watch(
                 function () {
@@ -34,11 +39,25 @@ angular.module('authoringEnvironmentApp').controller('PaneAuthorsCtrl', [
             );
         };
 
-        // TODO: comments & tests
+        /**
+        * Handles author's article role changed event. It triggers persisting
+        * the change on the server.
+        *
+        * @method authorRoleChanged
+        * @param newRole {Object} author's new role on the article
+        * @param oldRole {Object} author's old role on the article
+        * @param author {Object} author resource object itself
+        */
+        // TODO: tests
         self.authorRoleChanged = function (newRole, oldRole, author) {
             article.promise.then(function (articleData) {
                 author.updatingRole = true;
-                author.oldRoleId = oldRole.id;  // XXX: explain hack
+
+                // A hack to circumvent $resource object's limitations.
+                // We pass the author's old role ID in through the author
+                // object itself, so that we know what value to put into
+                // request headers (API expects special headers).
+                author.oldRoleId = oldRole.id;
 
                 author.$updateRole({
                     number: articleData.number,
@@ -54,6 +73,7 @@ angular.module('authoringEnvironmentApp').controller('PaneAuthorsCtrl', [
         $scope.authorRoles = Author.getRoleList();
         $scope.authors = [];
 
+        // retrieve all article auhors from server
         article.promise.then(function (articleData) {
             return Author.getAll({
                 number: articleData.number,

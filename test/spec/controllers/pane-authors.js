@@ -11,11 +11,13 @@ describe('Controller: PaneAuthorsCtrl', function () {
     beforeEach(module('authoringEnvironmentApp'));
 
     var article,
+        articleDeferred,
         Author,
         authors,
         ctrl,
         roles,
-        scope;
+        scope,
+        $q;
 
     roles = [
         {id: 1, name: 'Writer'},
@@ -48,28 +50,16 @@ describe('Controller: PaneAuthorsCtrl', function () {
     ];
 
     beforeEach(inject(
-        function ($controller, $rootScope, _article_, _Author_) {
+        function ($controller, $rootScope, _$q_, _article_, _Author_) {
+            $q = _$q_;
             article = _article_;
             Author = _Author_;
 
-            // TODO: mock differently
-            // spyOn article.promise, resolve it with articleData,
-            // it will call .then and in this method spyOn Author.getAll,
-            // ki vrne [].$promise, ampak ta je fake in ta
-            // drugi promise resolvaš, da mu podaš list of authors,
-            // ki ga FUT nastavi na scope (no, to testiraš, da je res)
-            article.promise = {
-                then: function (callback) {
-                    callback({number: 64, language: 'de'});
-                }
-            };
+            articleDeferred = $q.defer();
+            article.promise = articleDeferred.promise;
 
             spyOn(Author, 'getRoleList').andCallFake(function () {
                 return roles;
-            });
-
-            spyOn(Author, 'getAll').andCallFake(function () {
-                return authors;
             });
 
             scope = $rootScope.$new();
@@ -87,9 +77,26 @@ describe('Controller: PaneAuthorsCtrl', function () {
     });
 
     it('initializes a list of article authors in scope', function () {
+        var authorsDeferred = $q.defer();
+
+        spyOn(Author, 'getAll').andCallFake(function () {
+            var result = angular.copy(authors);
+            result.$promise = authorsDeferred.promise;
+            return result;
+        });
+
+        // authors list is empty until the server responds
+        expect(_.difference(scope.authors, [])).toEqual([]);
+
+        articleDeferred.resolve({number: 64, language: 'de'});
+        authorsDeferred.resolve(authors);
+        scope.$apply();
+
         expect(Author.getAll)
             .toHaveBeenCalledWith({number: 64, language: 'de'});
         expect(scope.authors).toEqual(authors);
     });
+
+    // TODO: tests that authors watches are initialized
 
 });
