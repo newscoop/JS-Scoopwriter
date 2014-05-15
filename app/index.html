@@ -81,7 +81,10 @@
     // Load your Plugins here, can't be done after Aloha has loaded
     Aloha.settings = {
         plugins: {
-            load: "common/ui, common/format, common/paste, common/block, common/list, common/table"
+            load: "common/ui, common/format, common/paste, common/block, common/list, common/table, aes/snippet"
+        },
+        bundles: {
+            aes: '../../../../../../../scripts/aloha/plugins/aes'
         }
     }
     // Restore the global $ and jQuery variables of your project's jQuery
