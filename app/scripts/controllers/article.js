@@ -50,7 +50,24 @@ angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
         $scope.save = function () {
             function snippetDivsToComments(text) {
                 if (text === null) {return text;}
-                var snippetPattern = new RegExp('<div\\sclass="snippet"\\sdata-snippet-id="([\\d]+)"(?:\\sdata-snippet-align="([^"]+)")?><\/div>', 'ig');
+                                                            // the extra backward slash (\) is because of Javascript being picky
+                var snippetRegex  = '<div';                 // exact match
+                snippetRegex     += '\\s';                  // single whitespace
+                snippetRegex     += 'class="snippet"';      // exact match
+                snippetRegex     += '\\s';                  // single whitespace
+                snippetRegex     += 'data-snippet-id="';    // exact match
+                snippetRegex     += '([\\d]+)';             // capture group 1, match 1 or more digits (\d)
+                snippetRegex     += '"';                    // exact match
+                                                            // OPTIONAL for align only
+                snippetRegex     += '(?:';                  // start of non-capture group
+                snippetRegex     += '\\s';                  // single whitespace
+                snippetRegex     += 'data-snippet-align="'; // exact match
+                snippetRegex     += '([^"]+)';              // capture group 2, match 1 or more characters (^) not equal to "
+                snippetRegex     += '"';                    // exact match
+                snippetRegex     += ')?';                   // end of non-capture group
+                                                            // END OPTIONAL
+                snippetRegex     += '><\/div>';             // exact match
+                var snippetPattern = new RegExp(snippetRegex, 'ig');
                 return text.replace(snippetPattern, function(whole, ID, align) {
                     var output = '';
                     if (ID !== undefined) {
@@ -90,7 +107,23 @@ angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
             // Convert the Snippet comments into divs so that Aloha can process them
             function snippetCommentsToDivs(text) {
                 if (text === null) {return text;}
-                var snippetPattern = new RegExp('<!--\\sSnippet\\s([\\d]+)\\s(?:align="([^"]+)")*[^\\s]*[\\s]*-->', 'ig');
+                                                // the extra backward slash (\) is because of Javascript being picky
+                var snippetRegex  = '<!--';     // exact match
+                snippetRegex     += '\\s';      // single whitespace
+                snippetRegex     += 'Snippet';  // exact match
+                snippetRegex     += '\\s';      // single whitespace
+                snippetRegex     += '([\\d]+)'; // capture group 1, match 1 or more digits (\d)
+                                                // OPTIONAL for align only
+                snippetRegex     += '(?:';      // start of non-capture group
+                snippetRegex     += '\\s';      // single whitespace
+                snippetRegex     += 'align="';  // exact match
+                snippetRegex     += '([^"]+)';  // capture group 2, match 1 or more characters (^) not equal to "
+                snippetRegex     += '"';        // exact match
+                snippetRegex     += ')?';       // end of non-capture group
+                                                // END OPTIONAL
+                snippetRegex     += '\\s';      // single whitespace
+                snippetRegex     += '-->';      // exact match
+                var snippetPattern = new RegExp(snippetRegex, 'ig');
                 return text.replace(snippetPattern, function(whole, ID, align) {
                     var output = '';
                     if (ID !== undefined) {
