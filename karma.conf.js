@@ -36,11 +36,11 @@ module.exports = function(config) {
       'app/scripts/filters/*.js',
       'test/globals.js',
       'test/spec/**/*.js',
-      'app/scripts/aloha/lib/require.js',
-      'app/scripts/aloha/lib/vendor/jquery-1.7.2.js',
+      'app/bower_components/ng-aloha-editor/libs/alohaeditor-0.23.26/aloha/lib/require.js',
+      'app/bower_components/ng-aloha-editor/libs/alohaeditor-0.23.26/aloha/lib/vendor/jquery-1.7.2.js',
       'test/configure.js',
       'app/bower_components/ng-aloha-editor/ng-aloha-editor.js',
-      'app/scripts/aloha/lib/aloha-full.js',
+      'app/bower_components/ng-aloha-editor/libs/alohaeditor-0.23.26/aloha/lib/aloha-full.js',
       'app/bower_components/bootstrap/dist/js/bootstrap.js',
       //include the directory where directive templates are stored
       'app/views/*.html'
