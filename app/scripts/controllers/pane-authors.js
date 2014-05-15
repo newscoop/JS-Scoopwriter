@@ -36,12 +36,17 @@ angular.module('authoringEnvironmentApp').controller('PaneAuthorsCtrl', [
 
         // TODO: comments & tests
         self.authorRoleChanged = function (newRole, oldRole, author) {
-            console.log('NEW:', newRole, 'OLD:', oldRole);
             article.promise.then(function (articleData) {
+                author.updatingRole = true;
                 author.oldRoleId = oldRole.id;  // XXX: explain hack
+
                 author.$updateRole({
                     number: articleData.number,
                     language: articleData.language
+                })
+                .then(function (author) {
+                    delete author.updatingRole;
+                    delete author.oldRoleId;
                 });
             });
         };

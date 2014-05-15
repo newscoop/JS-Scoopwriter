@@ -7,16 +7,23 @@
     Authors Management
   </div>
 
-  <div ng-repeat="author in authors" class="author clearfix">
-    <div class="drag-bar"></div>
-    <div class="remove" title="Remove" ng-click="removeAuthor(author)">
+  <div ng-repeat="author in authors"
+       class="author clearfix"
+       ng-class="{actionsDisabled: author.updatingRole}"
+      >
+      <div class="drag-bar"></div>
+    <div
+      class="remove"
+      title="Remove"
+      ng-click="!author.updatingRole && removeAuthor(author)"
+      >
       <span class="glyphicon glyphicon-remove"></span>
     </div>
 
     <div class="authors-image">
-    <img ng-src="{{author.avatarUrl}}"
-         alt="{{author.firstName}} {{author.lastName}}"
-         title="{{author.firstName}} {{author.lastName}}"/>
+      <img ng-src="{{author.avatarUrl}}"
+           alt="{{author.firstName}} {{author.lastName}}"
+           title="{{author.firstName}} {{author.lastName}}"/>
     </div>
     
     <div class="authors-name">
@@ -27,6 +34,7 @@
         class="author-role"
         ng-model="author.articleRole"
         ng-options="role.name for role in authorRoles track by role.id"
+        ng-disabled="author.updatingRole"
     ></select>
   </div>
 
