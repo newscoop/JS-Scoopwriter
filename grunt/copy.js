@@ -11,6 +11,7 @@ module.exports = {
                     '*.{ico,png,txt}',
                     '.htaccess',
                     'bower_components/**/*',
+                    'scripts/aloha/plugins/aes/**/*',
                     'images/{,*/}*',
                     'fonts/*'
                 ]
