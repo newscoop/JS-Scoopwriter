@@ -89,27 +89,38 @@ angular.module('authoringEnvironmentApp').factory('Author', [
             }
         };
 
- //</api/authors/types/1; rel="old-author-type">,</api/authors/types/2; rel="new-author-type">
+        /**
+        * Updates author's role on a specific article on the server.
+        *
+        * @method updateRole
+        * @param params {Object} object containing API parameters
+        *   @param params.number {Number} article ID
+        *   @param params.language {String} article language code (e.g. 'de')
+        *   @param params.oldRoleId {Number} author's previous role ID
+        *   @param params.newRoleId {Number} author's new role ID
+        * @return {Object} $http promise
+        */
+        self.updateRole = function (params) {
+            var linkHeader,
+                promise,
+                url;
 
-        // TODO:c comment ... updates (persists) authors role on the srver
-        // comment on the hack ... set oldRoleId
-        self.updateRole = {
-            method: 'POST',
-            isArray: true,
-            headers: {
-                link: '</content-api/authors/types/:oldId;' +
-                      '  rel="old-author-type">,' +
-                      '</content-api/authors/types/:newId;' +
-                      '  rel="new-author-type">'
-            },
-            transformRequest: function (author, headersGetter) {
-                var headers = headersGetter(),
-                    newLink;
+            url = [API_ROOT,
+                  'articles', params.number, params.language,
+                  'authors', this.id  // this refers to the author obj. itself
+                  ].join('/');
 
-                newLink = headers.link.replace(':oldId', author.oldRoleId);
-                newLink = newLink.replace(':newId', author.articleRole.id);
-                headers.link = newLink;
-            }
+            linkHeader = '</content-api/authors/types/' + params.oldRoleId +
+                         '; rel="old-author-type">,' +
+                         '</content-api/authors/types/' + params.newRoleId +
+                         '; rel="new-author-type">';
+
+            promise = $http.post(url, {}, {
+                headers: {
+                    link: linkHeader
+                }
+            });
+            return promise;
         };
 
         // th actual object representing the Author resource on the server
@@ -119,10 +130,11 @@ angular.module('authoringEnvironmentApp').factory('Author', [
                 items_per_page: 99999  // de facto "all"
             }, {
                 getAll: self.getAll,
-                getRoleList:  self.getRoleList,
-                updateRole: self.updateRole
+                getRoleList:  self.getRoleList
+                // updateRole: self.updateRole
             }
         );
+        self.authorResource.prototype.updateRole = self.updateRole;
 
         return self.authorResource;
     }
