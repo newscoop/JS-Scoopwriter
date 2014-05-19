@@ -131,7 +131,6 @@ angular.module('authoringEnvironmentApp').factory('Author', [
             }, {
                 getAll: self.getAll,
                 getRoleList:  self.getRoleList
-                // updateRole: self.updateRole
             }
         );
         self.authorResource.prototype.updateRole = self.updateRole;
