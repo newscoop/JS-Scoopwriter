@@ -11,11 +11,13 @@ describe('Controller: PaneAuthorsCtrl', function () {
     beforeEach(module('authoringEnvironmentApp'));
 
     var article,
+        articleDeferred,
         Author,
         authors,
         ctrl,
         roles,
-        scope;
+        scope,
+        $q;
 
     roles = [
         {id: 1, name: 'Writer'},
@@ -33,7 +35,8 @@ describe('Controller: PaneAuthorsCtrl', function () {
                 name: 'Writer'
             },
             avatarUrl: 'http://foo.bar/image/thumb_22.png',
-            sortOrder: 1
+            sortOrder: 1,
+            updateRole: function () {}
         }, {
             id: 162,
             firstName: 'Jack',
@@ -43,27 +46,22 @@ describe('Controller: PaneAuthorsCtrl', function () {
                 name: 'Photographer'
             },
             avatarUrl: 'http://foo.bar/image/thumb_162.png',
-            sortOrder: 5
+            sortOrder: 5,
+            updateRole: function () {}
         }
     ];
 
     beforeEach(inject(
-        function ($controller, $rootScope, _article_, _Author_) {
+        function ($controller, $rootScope, _$q_, _article_, _Author_) {
+            $q = _$q_;
             article = _article_;
             Author = _Author_;
 
-            article.promise = {
-                then: function (callback) {
-                    callback({number: 64, language: 'de'});
-                }
-            };
+            articleDeferred = $q.defer();
+            article.promise = articleDeferred.promise;
 
             spyOn(Author, 'getRoleList').andCallFake(function () {
                 return roles;
-            });
-
-            spyOn(Author, 'getAll').andCallFake(function () {
-                return authors;
             });
 
             scope = $rootScope.$new();
@@ -81,9 +79,154 @@ describe('Controller: PaneAuthorsCtrl', function () {
     });
 
     it('initializes a list of article authors in scope', function () {
+        var authorsDeferred = $q.defer();
+
+        spyOn(Author, 'getAll').andCallFake(function () {
+            var result = angular.copy(authors);
+            result.$promise = authorsDeferred.promise;
+            return result;
+        });
+
+        // authors list is empty until the server responds
+        expect(_.difference(scope.authors, [])).toEqual([]);
+
+        articleDeferred.resolve({number: 64, language: 'de'});
+        authorsDeferred.resolve(authors);
+        scope.$apply();
+
         expect(Author.getAll)
             .toHaveBeenCalledWith({number: 64, language: 'de'});
         expect(scope.authors).toEqual(authors);
+    });
+
+    it('watches authors for artcile role changes', function () {
+        var authorsDeferred = $q.defer();
+
+        // first we need some to have some authors in scope
+        spyOn(Author, 'getAll').andCallFake(function () {
+            var result = angular.copy(authors);
+            result.$promise = authorsDeferred.promise;
+            return result;
+        });
+
+        articleDeferred.resolve({number: 64, language: 'de'});
+        authorsDeferred.resolve(authors);
+        scope.$apply();
+
+        // now change author role and see what happens
+        spyOn(ctrl, 'authorRoleChanged');
+        spyOn(scope.authors[0], 'updateRole').andCallFake(function () {
+            return $q.defer().promise;
+        });
+
+        scope.authors[0].articleRole = roles[1];  // 4, Photograhper
+        scope.$apply();
+
+        expect(ctrl.authorRoleChanged).toHaveBeenCalledWith(
+            roles[1], roles[0], authors[0]);
+    });
+
+    describe('authorRoleChanged() method', function () {
+        var author,
+            deferredUpdate;
+
+        beforeEach(inject(function ($q) {
+            author = {
+                updateRole: function () {},
+                articleRole: roles[3]  // 13, Lector
+            };
+
+            deferredUpdate = $q.defer();
+            spyOn(author, 'updateRole').andCallFake(function () {
+                return deferredUpdate.promise;
+            })
+
+            // prevent firing of controller init code
+            spyOn(Author, 'getAll').andCallFake(function () {
+                return {
+                    $promise: {
+                        then: function () {}
+                    }
+                }
+            });
+        }));
+
+        it('sets author\'s updatingRole flag', function () {
+            var newRole = roles[0],  // 1, Writer
+                oldRole = roles[3],  // 13, Lector
+                promise;
+
+            author.articleRole = newRole;  // Writer
+            author.updatingRole = false;
+
+            ctrl.authorRoleChanged(newRole, oldRole, author);
+            articleDeferred.resolve({number: 64, language: 'de'});
+            scope.$apply();
+
+            expect(author.updatingRole).toEqual(true);
+        });
+
+        it('invokes author.updateRole() with correct parameters', function () {
+            var newRole = roles[0],  // 1, Writer
+                oldRole = roles[3],  // 13, Lector
+                promise;
+
+            author.articleRole = newRole;  // Writer
+
+            ctrl.authorRoleChanged(newRole, oldRole, author);
+            articleDeferred.resolve({number: 64, language: 'de'});
+            scope.$apply();
+
+            expect(author.updateRole).toHaveBeenCalledWith(
+                {number: 64, language: 'de', oldRoleId: 13, newRoleId: 1});
+        });
+
+        it('clears author\'s updatingRole flag on success', function () {
+            var newRole = roles[0],  // 1, Writer
+                oldRole = roles[3],  // 13, Lector
+                promise;
+
+            author.articleRole = newRole;  // Writer
+            author.updatingRole = true;  // make sure the flag is set
+
+            ctrl.authorRoleChanged(newRole, oldRole, author);
+            articleDeferred.resolve({number: 64, language: 'de'});
+            deferredUpdate.resolve();
+            scope.$apply();
+
+            expect(author.updatingRole).toEqual(false);
+        });
+
+        it('clears author\'s updatingRole flag on error', function () {
+            var newRole = roles[0],  // 1, Writer
+                oldRole = roles[3],  // 13, Lector
+                promise;
+
+            author.articleRole = newRole;  // Writer
+            author.updatingRole = true;  // make sure the flag is set
+
+            ctrl.authorRoleChanged(newRole, oldRole, author);
+            articleDeferred.resolve({number: 64, language: 'de'});
+            deferredUpdate.reject();
+            scope.$apply();
+
+            expect(author.updatingRole).toEqual(false);
+        });
+
+        it('reverts back to original author role on error', function () {
+            var newRole = roles[0],  // 1, Writer
+                oldRole = roles[3],  // 13, Lector
+                promise;
+
+            author.articleRole = newRole;  // Writer
+
+            ctrl.authorRoleChanged(newRole, oldRole, author);
+            articleDeferred.resolve({number: 64, language: 'de'});
+            deferredUpdate.reject();
+            scope.$apply();
+
+            expect(author.articleRole).toEqual(oldRole);
+        });
     });
 
 });

@@ -93,7 +93,6 @@ describe('Factory: Author', function () {
         });
     });
 
-
     describe('getRoleList() method', function () {
         beforeEach(function () {
             $httpBackend.expectGET(
@@ -131,6 +130,41 @@ describe('Factory: Author', function () {
             expectedItemData.forEach(function (data) {
                 expect(_.findIndex(roles, data)).toBeGreaterThan(-1);
             });
+        });
+    });
+
+    describe('updateRole() method', function () {
+        it('sends a correct request to API', function () {
+            var author,
+                expectedLinkHeader;
+
+            author = new Author({
+                id: 22,
+                firstName: 'John',
+                lastName: 'Doe',
+                articleRole: {
+                    id: 4,
+                    name: 'Photographer'
+                }
+            });
+            expectedLinkHeader =
+                '</content-api/authors/types/1; rel="old-author-type">,' +
+                '</content-api/authors/types/4; rel="new-author-type">';
+
+            $httpBackend.expectPOST(
+                rootURI + '/articles/64/de/authors/22',
+                {},
+                function (headers) {
+                    return headers.link === expectedLinkHeader;
+                }
+            ).respond(201, 'Created');
+
+            author.updateRole(
+                {number: 64, language: 'de', oldRoleId: 1, newRoleId: 4}
+            );
+            $httpBackend.flush(1);
+
+            $httpBackend.verifyNoOutstandingExpectation();
         });
     });
 

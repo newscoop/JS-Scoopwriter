@@ -2197,7 +2197,7 @@ a:hover {
             overflow:hidden;
             .box-shadow(0 1px 0px #e0e0e0);
             .border-radius(4px);
-            
+
             .drag-bar {
                 position: absolute;
                 left: -2px;
@@ -2208,16 +2208,16 @@ a:hover {
                 border-width: 2px 0;
                 background: #ccc url(../../images/drag_bg.png) repeat-y 3px 1px;
                 visibility:hidden;
-                }
+            }
 
-            &:hover {                    
+            &:hover {
                 border: 1px solid #ccc;
                 .box-shadow(0 1px 0px #ccc);
                 cursor:pointer;
                 .drag-bar {
                     visibility:visible;
                 }
-            } 
+            }
 
             .remove {
                 position: absolute;
@@ -2229,6 +2229,17 @@ a:hover {
                     color: gray;
                 }
             }
+
+            &.actionsDisabled {
+                opacity: 0.5;
+                .remove {
+                    cursor: default;
+                    &:hover {
+                        color: gainsboro;
+                    };
+                }
+            }
+
             .authors-image {   
                 float:left;
                 text-align: center;

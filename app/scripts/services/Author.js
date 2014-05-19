@@ -89,15 +89,51 @@ angular.module('authoringEnvironmentApp').factory('Author', [
             }
         };
 
+        /**
+        * Updates author's role on a specific article on the server.
+        *
+        * @method updateRole
+        * @param params {Object} object containing API parameters
+        *   @param params.number {Number} article ID
+        *   @param params.language {String} article language code (e.g. 'de')
+        *   @param params.oldRoleId {Number} author's previous role ID
+        *   @param params.newRoleId {Number} author's new role ID
+        * @return {Object} $http promise
+        */
+        self.updateRole = function (params) {
+            var linkHeader,
+                promise,
+                url;
+
+            url = [API_ROOT,
+                  'articles', params.number, params.language,
+                  'authors', this.id  // this refers to the author obj. itself
+                  ].join('/');
+
+            linkHeader = '</content-api/authors/types/' + params.oldRoleId +
+                         '; rel="old-author-type">,' +
+                         '</content-api/authors/types/' + params.newRoleId +
+                         '; rel="new-author-type">';
+
+            promise = $http.post(url, {}, {
+                headers: {
+                    link: linkHeader
+                }
+            });
+            return promise;
+        };
+
         // th actual object representing the Author resource on the server
         self.authorResource = $resource(
-            API_ROOT + '/articles/:number/:language/authors', {
+            API_ROOT + '/articles/:number/:language/authors/:authorId', {
+                authorId: '@id',
                 items_per_page: 99999  // de facto "all"
             }, {
                 getAll: self.getAll,
                 getRoleList:  self.getRoleList
             }
         );
+        self.authorResource.prototype.updateRole = self.updateRole;
 
         return self.authorResource;
     }
