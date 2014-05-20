@@ -12,6 +12,7 @@ angular.module('authoringEnvironmentApp', [
     'template/modal/backdrop.html',
     'template/modal/window.html',
     'ui.bootstrap.modal',
+    'ui.select2',
     'angularFileUpload'
 ]).config([
     '$routeProvider',
