@@ -75,6 +75,8 @@ angular.module('authoringEnvironmentApp').controller('PaneAuthorsCtrl', [
 
         $scope.authorRoles = Author.getRoleList();
         $scope.authors = [];
+        $scope.searchTerm = '';
+        $scope.newAuthorRoleId = null;
 
         // retrieve all article auhors from server
         article.promise.then(function (articleData) {

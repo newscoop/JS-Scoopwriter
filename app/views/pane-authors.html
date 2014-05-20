@@ -7,6 +7,35 @@
     Authors Management
   </div>
 
+  <div class="add-author-box">
+    <form>
+      <input
+        type="text"
+        placeholder="Type author name (min. 3 characters)"
+        ng-model="searchTerm">
+
+      <br>
+
+      <select
+          ng-model="newAuthorRoleId"
+          class="author-role"
+          ng-options="role.id as role.name for role in authorRoles"
+          >
+        <option value="">-- choose author role --</option>
+      </select>
+
+      <div class="controls clearfix">
+        <button
+            type="submit"
+            class="btn btn-primary btn-sm pull-right"
+           >Add</button>
+        <button
+           class="btn btn-default btn-sm pull-right"
+           >Clear</button>
+      </div>
+    </form>
+  </div>
+
   <div ng-repeat="author in authors"
        class="author clearfix"
        ng-class="{actionsDisabled: author.updatingRole}"
