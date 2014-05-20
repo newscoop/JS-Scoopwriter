@@ -5,7 +5,20 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
         return {
             templateUrl: 'views/dropped-image.html',
             restrict: 'A',
+            scope: {
+                imageId: '@imageId',
+                imageAlign: '@imageAlign',
+                imageAlt: '@imageAlt',
+                imageSub: '@imageSub',
+                imageWidth: '@imageWidth',
+                imageHeight: '@imageHeight'
+            },
             link: function postLink(scope, element, attrs) {
+                // the following code has to be entirely updated
+                // the new scope.imageId etc has to be used to properly read the ID
+                // of also included images
+                //
+                /*
                 var id = element.attr('data-id');
                 var includedId = scope.get(id);
                 // handler for close button
@@ -22,7 +35,9 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                     html: true,
                     template: 'views/popover-image.html'
                 });
-                Aloha.jQuery(element).alohaBlock();
+                */
+                // this is no longer needed
+                //Aloha.jQuery(element).alohaBlock();
             }
         };
     }
