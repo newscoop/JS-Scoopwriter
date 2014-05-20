@@ -49,30 +49,26 @@ angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
         };
         $scope.save = function () {
             function divsToCommentsFor(type, text) {
-                if (type === 'snippet' || type === 'image') {
-                    if (text === null) {return text;}
-                    var sep = {'snippet': '--', 'image': '**'};
-                    var content = $('<div/>').html(text);
-                    content.contents().filter('div.'+type)
-                        .replaceWith(function() {
-                            var contents = '<'+sep[type] +' '+ type[0].toUpperCase() + type.slice(1) +' '+parseInt($(this).data('id'));
-                            $.each( $(this).data(),function(name, value) {
-                                if (name !== 'id') {
-                                    contents += ' '+name+'="'+value+'"';
-                                }
-                            });
-                            return contents += ' '+sep[type]+'>';
+                if (type === 'snippet' || type === 'image') {return text;}
+                if (text === null) {return text;}
+                var sep = {'snippet': '--', 'image': '**'};
+                var content = $('<div/>').html(text);
+                content.contents().filter('div.'+type)
+                    .replaceWith(function() {
+                        var contents = '<'+sep[type] +' '+ type[0].toUpperCase() + type.slice(1) +' '+parseInt($(this).data('id'));
+                        $.each( $(this).data(),function(name, value) {
+                            if (name !== 'id') {
+                                contents += ' '+name+'="'+value+'"';
+                            }
                         });
+                        return contents += ' '+sep[type]+'>';
+                    });
 
-                    return content.html()
-                        .replace(/\&lt\;\*\*/g,'<**')   // replace &lt;** with <**
-                        .replace(/\*\*\&gt\;/g, '**>')  // replace **&gt; with **>
-                        .replace(/\&lt\;\-\-/g,'<--')   // replace &lt;-- with <--
-                        .replace(/\-\-\&gt\;/g, '-->'); // replace --&gt; with -->
-
-                } else {
-                    return text;
-                }
+                return content.html()
+                    .replace(/\&lt\;\*\*/g,'<**')   // replace &lt;** with <**
+                    .replace(/\*\*\&gt\;/g, '**>')  // replace **&gt; with **>
+                    .replace(/\&lt\;\-\-/g,'<--')   // replace &lt;-- with <--
+                    .replace(/\-\-\&gt\;/g, '-->'); // replace --&gt; with -->
             }
             for (var key in $scope.article.fields) {
                 if($scope.article.fields.hasOwnProperty(key)) {
