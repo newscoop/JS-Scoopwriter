@@ -54,7 +54,6 @@ define(['aloha', 'aloha/plugin', 'jquery',  'aloha/console', 'block/block', 'blo
                     });
                 },
                    init: function () {
-                       console.log('registered');
                        // Register this block
                        BlockManager.registerBlockType('ImageBlock', ImageBlock);
 

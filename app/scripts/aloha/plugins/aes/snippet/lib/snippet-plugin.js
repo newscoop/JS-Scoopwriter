@@ -10,7 +10,7 @@ define(['aloha', 'aloha/plugin', 'jquery',  'aloha/console', 'block/block', 'blo
                 isDraggable: function() {return true;},
                 init: function($element, postProcessFn) { 
                     // First we have to find the SnippetId
-                    var snippetId = $element.data('snippetId');
+                    var snippetId = $element.data('id');
                     // we need the AngularJS injector
                     var $injector = angular.element($('body')).injector();
                     $injector.invoke(function($rootScope, $compile) {
@@ -30,8 +30,8 @@ define(['aloha', 'aloha/plugin', 'jquery',  'aloha/console', 'block/block', 'blo
                     jQuery(obj).find('.aloha-block-SnippetBlock').each(function() {
                         var $this = jQuery(this);
                         var output = '';
-                        if ($this.data('snippetId') !== undefined) {
-                            output += '<div class="snippet" data-snippet-id="'+ parseInt($this.data('snippetId')) +'"';
+                        if ($this.data('id') !== undefined) {
+                            output += '<div class="snippet" data-id="'+ parseInt($this.data('id')) +'"';
                             if ($this.data('snippetAlign') !== undefined) {
                                 output += ' align="'+ $this.data('snippetAlign') +'"';
                             }
