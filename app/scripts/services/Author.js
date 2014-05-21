@@ -69,15 +69,84 @@ angular.module('authoringEnvironmentApp').factory('Author', [
             }
         };
 
-        // TODO: comments & tests
-        self.liveSearchQuery = function (options) {
-            var pageNumber = 1;
+        // XXX: move vars to top
+        // XXX: change to 250ms?
+        var SEARCH_DELAY_MS = 250;  // after the last change
+        var lastPaginationContext = null,
+            lastSearchTerm = null,
+            lastTermChange = 0;
 
-            // console.log('search context: ', options.context);
+        var callCount = 0;
+
+        // TODO: comments & tests
+        self.liveSearchQuery = function (options, isCallback) {
+            var now = new Date(),
+                pageNumber = 1,
+                paginationCall = false;
+
+            callCount += 1;
+
+            // XXX: wrap this into helper function?
+            if (!isCallback) {  // regular select2's onType event, input changed
+
+                // TODO: pagination! if this is 2nd page, don't delay
+                // XXX: could use context null?
+                //if (options.term !== lastSearchTerm) {
+                if (options.context === null) {
+                    // console.log('S2: term changed to "' + options.term +
+                    //     '" from "' + lastSearchTerm + '", see ya in 1000 ms;',
+                    //     'callCount:', callCount);
+
+                    lastSearchTerm = options.term;
+                    lastTermChange = now;
+
+                    setTimeout(function () {
+                        self.liveSearchQuery(options, true);
+                    }, SEARCH_DELAY_MS);
+                    return;
+                } else {
+                    // console.log('S2: seems like pagination for term', options.term,
+                    //     'callCount:', callCount);
+                    paginationCall = true;
+
+                    // console.log('old pagination context:', lastPaginationContext);
+
+                    // compare by equality? althouh by reference works, too
+                    if (paginationCall && options.context == lastPaginationContext) {
+                        console.warn('pagination: SAME AS OLD CONTEXT!');
+                        return; // skip this duplicate page
+                    }
+
+                     // to see if it helps page bug
+                    lastPaginationContext = options.context;
+                }
+            }
+
+            if (!paginationCall && now - lastTermChange < SEARCH_DELAY_MS) {
+                // term changed, delay event
+                // console.log('too early, term "' + options.term + '" seems',
+                //     'obsolete, aborting;', 'callCount:', callCount);
+                return;
+            } else {
+                // console.log('context:', options.context);
+
+                // console.log('no delay, will search for "' + options.term +
+                //     '"; pagination:', paginationCall, '; callCount:', callCount);
+            }
+
+            // XXX: bug - pagination called twice for the same page:
+            // https://github.com/ivaynberg/select2/issues/1610
+            // implement a workaround! (i.e. skipping request if
+            // requesting the same page) ... maybe compare old context?
+
+            // ........... od tu naprej normalno naprej, kot je že bilo
             if (options.context) {
                 pageNumber = options.context.currentPage + 1;
             }
-            // console.log('Will retrieve page', pageNumber);
+
+            if (paginationCall) {  // XXX: for debug only, later delete
+                console.log('pagination for', options.term, 'page ', pageNumber);
+            }
 
             $http.get(API_ROOT + '/search/authors', {
                 params: {
