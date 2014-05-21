@@ -99,8 +99,8 @@ describe('Controller: PaneAuthorsCtrl', function () {
         expect(scope.authors).toEqual(authors);
     });
 
-    it('initializes new author search term to empty string', function () {
-        expect(scope.searchTerm).toEqual('');
+    it('initializes new author to null', function () {
+        expect(scope.newAuthor).toBe(null);
     });
 
     it('initializes new author role ID to null', function () {

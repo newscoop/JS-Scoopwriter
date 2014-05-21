@@ -9,7 +9,8 @@ angular.module('authoringEnvironmentApp').factory('Author', [
     '$http',
     '$resource',
     'configuration',
-    function ($http, $resource, configuration) {
+    'pageTracker',
+    function ($http, $resource, configuration, pageTracker) {
 
         var API_ENDPOINT = configuration.API.endpoint,
             API_ROOT = configuration.API.full,
@@ -67,6 +68,66 @@ angular.module('authoringEnvironmentApp').factory('Author', [
                 return authors;
             }
         };
+
+        // TODO: comments & tests
+        self.liveSearchQuery = function (options) {
+            var pageNumber = 1;
+
+            // console.log('search context: ', options.context);
+            if (options.context) {
+                pageNumber = options.context.currentPage + 1;
+            }
+            // console.log('Will retrieve page', pageNumber);
+
+            $http.get(API_ROOT + '/search/authors', {
+                params: {
+                    query: options.term,
+                    page: pageNumber,
+                    items_per_page: 10
+                }
+            }).success(function (response) {
+                response.items.forEach(function (item) {
+                    item.text = item.firstName + ' ' + item.lastName;
+                });
+
+                options.callback({
+                    results: response.items,
+                    more: !pageTracker.isLastPage(response.pagination),
+                    context: response.pagination
+                });
+            });
+        };
+
+        // function addToArtcile(authorId, authorRoleId) {
+        //     var linkHeader,
+        //         url;
+
+        //     url = [
+        //         API_ROOT, 'articles',
+        //         options.number, options.language
+        //     ].join('/');
+
+        //     linkHeader = '<' + API_ENDPOINT + '/authors/' + authorId +
+        //                     '; rel="author">,' +
+        //                  '<' + API_ENDPOINT + '/authors/types/' +
+        //                     authorRoleId + '; rel="author-type">';
+
+        //     $http({
+        //         url: url,
+        //         method: 'LINK',
+        //         headers: {link: linkHeader}
+        //     }).success(function (data) {
+        //         console.log('retrieved data:', data);
+        //         // TODO: invoke callback with results data
+        //         // options.callback({
+        //         //     results: results,
+        //         //     more: true,
+        //         //     context: ctx
+        //         // });
+        //     });
+
+        //     // TODO: return promise?
+        // };
 
         /**
         * Retrieves a list of all defined author roles from the server.
@@ -134,7 +195,9 @@ angular.module('authoringEnvironmentApp').factory('Author', [
                 getRoleList:  self.getRoleList
             }
         );
+
         self.authorResource.prototype.updateRole = self.updateRole;
+        self.authorResource.liveSearchQuery = self.liveSearchQuery;
 
         return self.authorResource;
     }

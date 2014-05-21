@@ -75,8 +75,14 @@ angular.module('authoringEnvironmentApp').controller('PaneAuthorsCtrl', [
 
         $scope.authorRoles = Author.getRoleList();
         $scope.authors = [];
-        $scope.searchTerm = '';
+
+        $scope.newAuthor = null;
         $scope.newAuthorRoleId = null;
+
+        $scope.select2Options = {  // TODO: tests (default values)
+            minimumInputLength: 3,
+            query: Author.liveSearchQuery
+        };
 
         // retrieve all article auhors from server
         article.promise.then(function (articleData) {
@@ -91,6 +97,5 @@ angular.module('authoringEnvironmentApp').controller('PaneAuthorsCtrl', [
                 setRoleChangeWatch(author);
             });
         });
-
     }
 ]);
