@@ -11,7 +11,8 @@ angular.module('authoringEnvironmentApp').factory('Author', [
     'configuration',
     function ($http, $resource, configuration) {
 
-        var API_ROOT = configuration.API.full,
+        var API_ENDPOINT = configuration.API.endpoint,
+            API_ROOT = configuration.API.full,
             self = this;
 
         /**
@@ -110,10 +111,10 @@ angular.module('authoringEnvironmentApp').factory('Author', [
                   'authors', this.id  // this refers to the author obj. itself
                   ].join('/');
 
-            linkHeader = '</content-api/authors/types/' + params.oldRoleId +
-                         '; rel="old-author-type">,' +
-                         '</content-api/authors/types/' + params.newRoleId +
-                         '; rel="new-author-type">';
+            linkHeader = '<' + API_ENDPOINT + '/authors/types/' +
+                             params.oldRoleId + '; rel="old-author-type">,' +
+                         '<' + API_ENDPOINT + '/authors/types/' +
+                             params.newRoleId + '; rel="new-author-type">';
 
             promise = $http.post(url, {}, {
                 headers: {
