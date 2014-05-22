@@ -79,7 +79,7 @@ angular.module('authoringEnvironmentApp').controller('PaneAuthorsCtrl', [
         $scope.newAuthor = null;
         $scope.newAuthorRoleId = null;
 
-        $scope.select2Options = {  // TODO: tests (default values)
+        $scope.select2Options = {
             minimumInputLength: 3,
             query: Author.liveSearchQuery
         };

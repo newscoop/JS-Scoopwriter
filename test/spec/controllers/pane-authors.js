@@ -107,6 +107,13 @@ describe('Controller: PaneAuthorsCtrl', function () {
         expect(scope.newAuthorRoleId).toBe(null);
     });
 
+    it('sets correct configuration options for select2 widget', function () {
+        expect(scope.select2Options).toEqual({
+            minimumInputLength: 3,
+            query: Author.liveSearchQuery
+        });
+    });
+
     it('watches authors for artcile role changes', function () {
         var authorsDeferred = $q.defer();
 
