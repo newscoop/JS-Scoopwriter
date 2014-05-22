@@ -8,12 +8,18 @@
 angular.module('authoringEnvironmentApp').factory('Author', [
     '$http',
     '$resource',
+    '$timeout',
     'configuration',
+    'dateFactory',
     'pageTracker',
-    function ($http, $resource, configuration, pageTracker) {
-
+    function (
+        $http, $resource, $timeout, configuration, dateFactory, pageTracker
+    ) {
         var API_ENDPOINT = configuration.API.endpoint,
             API_ROOT = configuration.API.full,
+            SEARCH_DELAY_MS = 250,  // after the last search term change
+            lastContext = null,  // most recent live search context
+            lastTermChange = 0,  // time of the most recent search term change
             self = this;
 
         /**
@@ -69,89 +75,51 @@ angular.module('authoringEnvironmentApp').factory('Author', [
             }
         };
 
-        // XXX: move vars to top
-        // XXX: change to 250ms?
-        var SEARCH_DELAY_MS = 250;  // after the last change
-        var lastPaginationContext = null,
-            lastSearchTerm = null,
-            lastTermChange = 0;
-
-        var callCount = 0;
-
-        // TODO: comments & tests
+        /**
+        * Retrieves a list of article authors in a way that is suitable for use
+        * as a query function for the select2 widget.
+        *
+        * @method liveSearchQuery
+        * @param options {Object} options object provided by select2 on every
+        *   invocation.
+        * @param [isCallback=false] {Boolean} if the method is "manually"
+        *   invoked (i.e. not by the select2 machinery), this flag should be
+        *   set so that the method is aware of this fact
+        */
         self.liveSearchQuery = function (options, isCallback) {
-            var now = new Date(),
-                pageNumber = 1,
-                paginationCall = false;
+            var now = dateFactory.makeInstance(),
+                isPaginationCall = (options.page > 1);
 
-            callCount += 1;
-
-            // XXX: wrap this into helper function?
             if (!isCallback) {  // regular select2's onType event, input changed
 
-                // TODO: pagination! if this is 2nd page, don't delay
-                // XXX: could use context null?
-                //if (options.term !== lastSearchTerm) {
-                if (options.context === null) {
-                    // console.log('S2: term changed to "' + options.term +
-                    //     '" from "' + lastSearchTerm + '", see ya in 1000 ms;',
-                    //     'callCount:', callCount);
-
-                    lastSearchTerm = options.term;
+                if (!isPaginationCall) {
                     lastTermChange = now;
 
-                    setTimeout(function () {
-                        self.liveSearchQuery(options, true);
+                    $timeout(function () {
+                        // NOTE: tests spy on self.authorResource object, thus
+                        // we don't call self.liveSearchQuery() but instead
+                        // invoke the method through self.authorResource object
+                        self.authorResource.liveSearchQuery(options, true);
                     }, SEARCH_DELAY_MS);
                     return;
                 } else {
-                    // console.log('S2: seems like pagination for term', options.term,
-                    //     'callCount:', callCount);
-                    paginationCall = true;
-
-                    // console.log('old pagination context:', lastPaginationContext);
-
-                    // compare by equality? althouh by reference works, too
-                    if (paginationCall && options.context == lastPaginationContext) {
-                        console.warn('pagination: SAME AS OLD CONTEXT!');
-                        return; // skip this duplicate page
+                    if (angular.equals(options.context, lastContext)) {
+                        // select2 bug, same pagination page called twice:
+                        // https://github.com/ivaynberg/select2/issues/1610
+                        return;  // just skip it
                     }
-
-                     // to see if it helps page bug
-                    lastPaginationContext = options.context;
+                    lastContext = options.context;
                 }
             }
 
-            if (!paginationCall && now - lastTermChange < SEARCH_DELAY_MS) {
-                // term changed, delay event
-                // console.log('too early, term "' + options.term + '" seems',
-                //     'obsolete, aborting;', 'callCount:', callCount);
-                return;
-            } else {
-                // console.log('context:', options.context);
-
-                // console.log('no delay, will search for "' + options.term +
-                //     '"; pagination:', paginationCall, '; callCount:', callCount);
-            }
-
-            // XXX: bug - pagination called twice for the same page:
-            // https://github.com/ivaynberg/select2/issues/1610
-            // implement a workaround! (i.e. skipping request if
-            // requesting the same page) ... maybe compare old context?
-
-            // ........... od tu naprej normalno naprej, kot je že bilo
-            if (options.context) {
-                pageNumber = options.context.currentPage + 1;
-            }
-
-            if (paginationCall) {  // XXX: for debug only, later delete
-                console.log('pagination for', options.term, 'page ', pageNumber);
+            if (!isPaginationCall && now - lastTermChange < SEARCH_DELAY_MS) {
+                return;  // search term changed, skip this obsolete call
             }
 
             $http.get(API_ROOT + '/search/authors', {
                 params: {
                     query: options.term,
-                    page: pageNumber,
+                    page: options.page,
                     items_per_page: 10
                 }
             }).success(function (response) {
@@ -167,6 +135,9 @@ angular.module('authoringEnvironmentApp').factory('Author', [
             });
         };
 
+        // XXX: should this be "instance method"?
+        // e.g. author.addToArticle(roleId) - depends what you get from
+        // the author live search (if object, do with it, else use authorID)
         // function addToArtcile(authorId, authorRoleId) {
         //     var linkHeader,
         //         url;
