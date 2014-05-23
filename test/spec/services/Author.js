@@ -59,6 +59,62 @@ describe('Factory: Author', function () {
         $httpBackend = _$httpBackend_;
     }));
 
+    describe('createFromApiData() method', function () {
+        var data;
+
+        beforeEach(function () {
+            data = {
+                author: {
+                    id: 155,
+                    firstName: 'Foo',
+                    lastName: 'Bar',
+                    image: 'baz.com%2Fimage%2Fimg_155.jpg'
+                },
+                type: {
+                    id: 13,
+                    type: 'Lector'
+                },
+                order: 5
+            };
+        });
+
+        it('creates correct instance when data object has no missing data',
+            function () {
+                var instance = Author.createFromApiData(data);
+
+                expect(instance instanceof Author).toEqual(true);
+                expect(instance.id).toEqual(155);
+                expect(instance.firstName).toEqual('Foo');
+                expect(instance.lastName).toEqual('Bar');
+                expect(instance.text).toEqual('Foo Bar');
+                expect(instance.articleRole).toEqual({id: 13, name: 'Lector'});
+                expect(instance.avatarUrl).toEqual(
+                    'http://baz.com/image/img_155.jpg');
+                expect(instance.sortOrder).toEqual(5);
+            }
+        );
+
+        it('sets instance\'s articleRole to null if missing in data',
+            function () {
+                var instance;
+
+                delete data.type;
+                instance = Author.createFromApiData(data);
+                expect(instance.articleRole).toBeNull();
+            }
+        );
+
+        it('sets instance\'s avatarUrl to null if missing in data',
+            function () {
+                var instance;
+
+                delete data.author.image;
+                instance = Author.createFromApiData(data);
+                expect(instance.avatarUrl).toBeNull();
+            }
+        );
+    });
+
     describe('getAll() method', function () {
         beforeEach(function () {
             $httpBackend.expectGET(
@@ -277,6 +333,78 @@ describe('Factory: Author', function () {
                     'http://foo.bar/images/img_66.jpg');
             }
         );
+    });
+
+
+    describe('addToArtcile() method', function () {
+        var expectedLinkHeader;
+
+        beforeEach(function () {
+            expectedLinkHeader =
+                '<' + apiEndpoint + '/authors/22; rel="author">,' +
+                '<' + apiEndpoint + '/authors/types/7; rel="author-type">';
+
+            $httpBackend.expect(
+                'LINK',
+                rootURI + '/articles/64/de',
+                undefined,
+                function (headers) {
+                    return headers.link === expectedLinkHeader;
+                }
+            ).respond(201, '');
+        });
+
+        it('sends a correct request to API', function () {
+            var author = new Author({id: 22});
+            author.addToArtcile(64, 'de', 7);
+            $httpBackend.verifyNoOutstandingExpectation();
+        });
+
+        it('updates author\'s role ID on successful server response',
+            function () {
+                var author = new Author({id: 22});
+                author.addToArtcile(64, 'de', 7);
+                $httpBackend.flush(1);
+
+                expect(author.articleRole.id).toEqual(7);
+            }
+        );
+
+        it('resolves given promise on successful server response',
+            function () {
+                var author = new Author({id: 22}),
+                    promise,
+                    spyHelper = {
+                        callMeOnSuccess: jasmine.createSpy()
+                    };
+
+                author.addToArtcile(64, 'de', 7)
+                    .then(spyHelper.callMeOnSuccess);
+
+                $httpBackend.flush(1);
+
+                expect(spyHelper.callMeOnSuccess).toHaveBeenCalled();
+            }
+        );
+
+        it('rejects given promise on server error response', function () {
+            var author = new Author({id: 22}),
+                promise,
+                spyHelper = {
+                    callMeOnError: jasmine.createSpy()
+                };
+
+            $httpBackend.resetExpectations();
+            $httpBackend.expect('LINK', rootURI + '/articles/64/de')
+                .respond(500, 'Error :(');
+
+            author.addToArtcile(64, 'de', 7)
+                .then(null, spyHelper.callMeOnError);
+
+            $httpBackend.flush(1);
+
+            expect(spyHelper.callMeOnError).toHaveBeenCalledWith('Error :(');
+        });
     });
 
     describe('getRoleList() method', function () {

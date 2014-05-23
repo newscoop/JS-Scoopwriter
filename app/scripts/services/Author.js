@@ -27,12 +27,11 @@ angular.module('authoringEnvironmentApp').factory('Author', [
         * Converts author data object to an Author resource object with
         * more structured data and methods for communicating with API.
         *
-        * @method authorFromApiData
+        * @method createFromApiData
         * @param data {Object} object containing author data as returned by API
         * @return {Object} author resource object
         */
-        self.authorFromApiData = function (data) {
-            // TODO: test new changes!
+        self.createFromApiData = function (data) {
             var author = new self.authorResource();
 
             author.id = data.author.id;
@@ -50,7 +49,7 @@ angular.module('authoringEnvironmentApp').factory('Author', [
             }
 
             if (data.author.image) {
-                // XXX: temporary fix until the API will start returning
+                // XXX: temporary fix until the API starts returning
                 // un-encoded avatar image paths, without host name
                 author.avatarUrl =
                     'http://' + decodeURIComponent(data.author.image);
@@ -80,7 +79,7 @@ angular.module('authoringEnvironmentApp').factory('Author', [
                     authorsData = JSON.parse(data).items;
 
                 authorsData.forEach(function (item) {
-                    var author = self.authorFromApiData(item);
+                    var author = self.createFromApiData(item);
                     authors.push(author);
                 });
                 return authors;
@@ -140,7 +139,7 @@ angular.module('authoringEnvironmentApp').factory('Author', [
                     authorList = [];
 
                 response.items.forEach(function (item) {
-                    author = self.authorFromApiData({author: item});
+                    author = self.createFromApiData({author: item});
                     authorList.push(author);
                 });
 
@@ -152,7 +151,17 @@ angular.module('authoringEnvironmentApp').factory('Author', [
             });
         };
 
-        // TODO: tests & comments ... (number, language, roleId)
+        /**
+        * Sets the author as article author on the given article
+        * with the given role.
+        *
+        * @method addToArtcile
+        * @param number {Number} article ID
+        * @param language {String} article language code (e.g. 'de')
+        * @param roleId {Number} ID of the author's tole on the article
+        * @return {Object} promise object that is resolved on successful server
+        *   response and rejected on server error response
+        */
         self.addToArtcile = function(number, language, roleId) {
             var author = this,
                 deferred = $q.defer(),
@@ -254,6 +263,7 @@ angular.module('authoringEnvironmentApp').factory('Author', [
         self.authorResource.prototype.updateRole = self.updateRole;
 
         // "class" methods
+        self.authorResource.createFromApiData = self.createFromApiData;
         self.authorResource.liveSearchQuery = self.liveSearchQuery;
 
         return self.authorResource;

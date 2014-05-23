@@ -1,1 +1,2 @@
-var rootURI = 'http://newscoop.aes.sourcefabric.net/content-api';
+var rootURI = 'http://newscoop.aes.sourcefabric.net/content-api',
+    apiEndpoint = '/content-api';
