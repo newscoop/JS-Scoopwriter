@@ -107,6 +107,10 @@ describe('Controller: PaneAuthorsCtrl', function () {
         expect(scope.newAuthorRoleId).toBe(null);
     });
 
+    it('initializes addingNewAuthor flag to false', function () {
+        expect(scope.addingNewAuthor).toEqual(false);
+    });
+
     it('sets correct configuration options for select2 widget', function () {
         expect(scope.select2Options).toEqual({
             minimumInputLength: 3,
@@ -244,7 +248,7 @@ describe('Controller: PaneAuthorsCtrl', function () {
         });
     });
 
-    describe('clearNewAuthorForm() method', function () {
+    describe('scope\'s clearNewAuthorForm() method', function () {
         it('clears all new author form fields', function () {
             scope.newAuthor = {id: 22, text: 'John Doe'};
             scope.newAuthorRoleId = 4;
@@ -254,5 +258,103 @@ describe('Controller: PaneAuthorsCtrl', function () {
             expect(scope.newAuthor).toBe(null);
             expect(scope.newAuthorRoleId).toBe(null);
         });
+    });
+
+    describe('scope\'s addAuthorToArticle() method', function () {
+        var author,
+            deferredAddToArticle;
+
+        beforeEach(inject(function ($q) {
+            author = {
+                id: 82,
+                articleRole: null,
+                addToArtcile: function () {}
+            };
+
+            scope.newAuthor = author;
+            scope.newAuthorRoleId = 13;  // Lector
+
+            spyOn(angular, 'copy').andCallFake(function (object) {
+                return object;  // don't clone anything
+            });
+
+            deferredAddToArticle = $q.defer();
+            spyOn(author, 'addToArtcile').andCallFake(function () {
+                return deferredAddToArticle.promise;
+            });
+
+            // prevent firing of controller init code
+            spyOn(Author, 'getAll').andCallFake(function () {
+                return {
+                    $promise: {
+                        then: function () {}
+                    }
+                }
+            });
+        }));
+
+        it('sets addingNewAuthor flag before doing anything', function () {
+            scope.addingNewAuthor = false;
+            scope.addAuthorToArticle();
+            expect(scope.addingNewAuthor).toEqual(true);
+        });
+
+        it('invokes author\'s addToArtcile() method with correct parameters',
+            function () {
+                scope.addAuthorToArticle();
+                articleDeferred.resolve({number: 75, language: 'en'});
+                scope.$apply();
+
+                expect(author.addToArtcile).toHaveBeenCalledWith(75, 'en', 13);
+            }
+        );
+
+        it('appends new author to the list of article authors' +
+           'on sucessful server response',
+            function () {
+                var appendedAuthor;
+
+                scope.authors = [{id: 1}, {id: 2}];
+
+                scope.addAuthorToArticle();
+                articleDeferred.resolve({number: 75, language: 'en'});
+                deferredAddToArticle.resolve();
+                author.articleRole = {id: 13, name: 'Lector'};
+                scope.$apply();
+
+                expect(scope.authors.length).toEqual(3);
+                appendedAuthor = scope.authors[2];
+                expect(appendedAuthor.id).toEqual(82);
+                expect(appendedAuthor.articleRole.id).toEqual(13);
+            }
+        );
+
+        it('clears addingNewAuthor flag on sucessful server response',
+            function () {
+
+                scope.addAuthorToArticle();
+                scope.addingNewAuthor = true;
+
+                articleDeferred.resolve({number: 75, language: 'en'});
+                deferredAddToArticle.resolve();
+                scope.$apply();
+
+                expect(scope.addingNewAuthor).toEqual(false);
+            }
+        );
+
+        it('clears addingNewAuthor flag on error server response',
+            function () {
+
+                scope.addAuthorToArticle();
+                scope.addingNewAuthor = true;
+
+                articleDeferred.resolve({number: 75, language: 'en'});
+                deferredAddToArticle.reject();
+                scope.$apply();
+
+                expect(scope.addingNewAuthor).toEqual(false);
+            }
+        );
     });
 });

@@ -231,7 +231,8 @@ describe('Factory: Author', function () {
         it('correctly invokes callback on successful server response',
             function () {
                 var callbackArgs,
-                    items;
+                    response = {},
+                    resultItem;
 
                 // test fixtures
                 $httpBackend.expectGET(
@@ -239,20 +240,15 @@ describe('Factory: Author', function () {
                               '&page=1&query=hans'
                 ).respond(200, response);
 
+                response.items = [{
+                    id: 66, firstName: 'Hans', lastName: 'Doe',
+                    image: 'foo.bar/images/img_66.jpg'}
+                ];
                 response.pagination = {
                     itemsPerPage: 10,
                     currentPage: 1,
-                    itemsCount: 2,
+                    itemsCount: 1,
                     nextPageLink: ''
-                };
-
-                items = angular.copy(response.items);
-                items[0].text = 'John Doe';
-                items[1].text = 'Wesley Snipes';
-                callbackArgs = {
-                    results: items,
-                    more: false,
-                    context: response.pagination
                 };
 
                 spyOn(options, 'callback');
@@ -265,7 +261,20 @@ describe('Factory: Author', function () {
 
                 // assertions
                 $httpBackend.verifyNoOutstandingExpectation();
-                expect(options.callback).toHaveBeenCalledWith(callbackArgs);
+
+                expect(options.callback.callCount).toEqual(1);
+                callbackArgs = options.callback.calls[0].args;
+                expect(callbackArgs.length).toEqual(1);
+
+                expect(callbackArgs[0].more).toEqual(false);
+                expect(callbackArgs[0].context).toEqual(response.pagination);
+
+                resultItem = callbackArgs[0].results[0];
+                expect(resultItem.id).toEqual(66);
+                expect(resultItem.firstName).toEqual('Hans');
+                expect(resultItem.lastName).toEqual('Doe');
+                expect(resultItem.avatarUrl).toEqual(
+                    'http://foo.bar/images/img_66.jpg');
             }
         );
     });

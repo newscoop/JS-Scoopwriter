@@ -8,12 +8,13 @@
 angular.module('authoringEnvironmentApp').factory('Author', [
     '$http',
     '$resource',
+    '$q',
     '$timeout',
     'configuration',
     'dateFactory',
     'pageTracker',
     function (
-        $http, $resource, $timeout, configuration, dateFactory, pageTracker
+        $http, $resource, $q, $timeout, configuration, dateFactory, pageTracker
     ) {
         var API_ENDPOINT = configuration.API.endpoint,
             API_ROOT = configuration.API.full,
@@ -31,20 +32,31 @@ angular.module('authoringEnvironmentApp').factory('Author', [
         * @return {Object} author resource object
         */
         self.authorFromApiData = function (data) {
+            // TODO: test new changes!
             var author = new self.authorResource();
 
             author.id = data.author.id;
             author.firstName = data.author.firstName;
             author.lastName = data.author.lastName;
-            author.articleRole = {
-                id: data.type.id,
-                name: data.type.type
-            };
+            author.text = data.author.firstName + ' ' + data.author.lastName;
 
-            // XXX: temporary fix until the API will start returning
-            // un-encoded avatar image paths, without host name
-            author.avatarUrl =
-                'http://' + decodeURIComponent(data.author.image);
+            if (data.type) {
+                author.articleRole = {
+                    id: data.type.id,
+                    name: data.type.type
+                };
+            } else {
+                author.articleRole = null;
+            }
+
+            if (data.author.image) {
+                // XXX: temporary fix until the API will start returning
+                // un-encoded avatar image paths, without host name
+                author.avatarUrl =
+                    'http://' + decodeURIComponent(data.author.image);
+            } else {
+                author.avatarUrl = null;
+            }
 
             author.sortOrder = data.order;
 
@@ -123,51 +135,52 @@ angular.module('authoringEnvironmentApp').factory('Author', [
                     items_per_page: 10
                 }
             }).success(function (response) {
+                // TODO: test response transformations!
+                var author,
+                    authorList = [];
+
                 response.items.forEach(function (item) {
-                    item.text = item.firstName + ' ' + item.lastName;
+                    author = self.authorFromApiData({author: item});
+                    authorList.push(author);
                 });
 
                 options.callback({
-                    results: response.items,
+                    results: authorList,
                     more: !pageTracker.isLastPage(response.pagination),
                     context: response.pagination
                 });
             });
         };
 
-        // XXX: should this be "instance method"?
-        // e.g. author.addToArticle(roleId) - depends what you get from
-        // the author live search (if object, do with it, else use authorID)
-        // function addToArtcile(authorId, authorRoleId) {
-        //     var linkHeader,
-        //         url;
+        // TODO: tests & comments ... (number, language, roleId)
+        self.addToArtcile = function(number, language, roleId) {
+            var author = this,
+                deferred = $q.defer(),
+                linkHeader,
+                url;
 
-        //     url = [
-        //         API_ROOT, 'articles',
-        //         options.number, options.language
-        //     ].join('/');
+            url = [API_ROOT, 'articles', number, language].join('/');
 
-        //     linkHeader = '<' + API_ENDPOINT + '/authors/' + authorId +
-        //                     '; rel="author">,' +
-        //                  '<' + API_ENDPOINT + '/authors/types/' +
-        //                     authorRoleId + '; rel="author-type">';
+            linkHeader = '<' + API_ENDPOINT + '/authors/' + author.id +
+                            '; rel="author">,' +
+                         '<' + API_ENDPOINT + '/authors/types/' +
+                            roleId + '; rel="author-type">';
+            $http({
+                url: url,
+                method: 'LINK',
+                headers: {link: linkHeader}
+            })
+            .success(function () {
+                author.articleRole = author.articleRole || {};
+                author.articleRole.id = roleId;
+                deferred.resolve();
+            })
+            .error(function (responseBody) {
+                deferred.reject(responseBody);
+            });
 
-        //     $http({
-        //         url: url,
-        //         method: 'LINK',
-        //         headers: {link: linkHeader}
-        //     }).success(function (data) {
-        //         console.log('retrieved data:', data);
-        //         // TODO: invoke callback with results data
-        //         // options.callback({
-        //         //     results: results,
-        //         //     more: true,
-        //         //     context: ctx
-        //         // });
-        //     });
-
-        //     // TODO: return promise?
-        // };
+            return deferred.promise;
+        };
 
         /**
         * Retrieves a list of all defined author roles from the server.
@@ -236,7 +249,11 @@ angular.module('authoringEnvironmentApp').factory('Author', [
             }
         );
 
+        // instance methods
+        self.authorResource.prototype.addToArtcile = self.addToArtcile;
         self.authorResource.prototype.updateRole = self.updateRole;
+
+        // "class" methods
         self.authorResource.liveSearchQuery = self.liveSearchQuery;
 
         return self.authorResource;

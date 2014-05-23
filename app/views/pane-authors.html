@@ -13,6 +13,7 @@
         class="authorSearch"
         ng-model="newAuthor"
         data-placeholder="-- select new author --"
+        ng-disabled="addingNewAuthor"
         />
 
       <br>
@@ -21,6 +22,7 @@
           ng-model="newAuthorRoleId"
           class="author-role"
           ng-options="role.id as role.name for role in authorRoles"
+          ng-disabled="addingNewAuthor"
           >
         <option value="">-- choose author role --</option>
       </select>
@@ -30,10 +32,12 @@
             type="submit"
             class="btn btn-primary btn-sm pull-right"
             ng-click="addAuthorToArticle()"
+            ng-disabled="addingNewAuthor || !newAuthorRoleId || !newAuthor"
            >Add</button>
         <button
            class="btn btn-default btn-sm pull-right"
            ng-click="clearNewAuthorForm()"
+           ng-disabled="addingNewAuthor || (!newAuthorRoleId && !newAuthor)"
            >Clear</button>
       </div>
     </form>
