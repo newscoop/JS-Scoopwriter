@@ -84,6 +84,16 @@ angular.module('authoringEnvironmentApp').controller('PaneAuthorsCtrl', [
             query: Author.liveSearchQuery
         };
 
+        /**
+        * Resets all new author form fields.
+        *
+        * @method clearNewAuthorForm
+        */
+        $scope.clearNewAuthorForm = function () {
+            $scope.newAuthor = null;
+            $scope.newAuthorRoleId = null;
+        };
+
         // retrieve all article auhors from server
         article.promise.then(function (articleData) {
             return Author.getAll({

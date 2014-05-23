@@ -244,4 +244,15 @@ describe('Controller: PaneAuthorsCtrl', function () {
         });
     });
 
+    describe('clearNewAuthorForm() method', function () {
+        it('clears all new author form fields', function () {
+            scope.newAuthor = {id: 22, text: 'John Doe'};
+            scope.newAuthorRoleId = 4;
+
+            scope.clearNewAuthorForm();
+
+            expect(scope.newAuthor).toBe(null);
+            expect(scope.newAuthorRoleId).toBe(null);
+        });
+    });
 });
