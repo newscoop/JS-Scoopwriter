@@ -49,7 +49,7 @@ describe('Directive: droppedImage', function () {
     it('finds valid dropped template in the cache', function() {
         expect(templates.dropped).toBeTruthy();
     });
-    it('gets the image', inject(function($compile) {
+    xit('gets the image', inject(function($compile) {
         expect(scope.get).toHaveBeenCalledWith('4');
     }));
     describe('the image element', function() {
@@ -68,7 +68,7 @@ describe('Directive: droppedImage', function () {
         beforeEach(function() {
             $(element).click();
         });
-        it('shows the popover', function() {
+        xit('shows the popover', function() {
             expect(scope.select).toHaveBeenCalledWith(64);
         });
     });
@@ -76,7 +76,7 @@ describe('Directive: droppedImage', function () {
         beforeEach(function() {
             $(element).find('.close').click();
         });
-        it('excludes the image from the article', function() {
+        xit('excludes the image from the article', function() {
             expect(scope.images.exclude).toHaveBeenCalledWith('4');
         });
     });

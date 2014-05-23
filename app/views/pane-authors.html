@@ -7,35 +7,73 @@
     Authors Management
   </div>
 
-  <div ng-repeat="author in authors"
-       class="author clearfix"
-       ng-class="{actionsDisabled: author.updatingRole}"
-      >
-      <div class="drag-bar"></div>
-    <div
-      class="remove"
-      title="Remove"
-      ng-click="!author.updatingRole && removeAuthor(author)"
-      >
-      <span class="glyphicon glyphicon-remove"></span>
-    </div>
+  <div class="add-author-box">
+    <form>
+      <input type="hidden" ui-select2="select2Options"
+        class="authorSearch"
+        ng-model="newAuthor"
+        data-placeholder="-- select new author --"
+        ng-disabled="addingNewAuthor"
+        />
 
-    <div class="authors-image">
-      <img ng-src="{{author.avatarUrl}}"
-           alt="{{author.firstName}} {{author.lastName}}"
-           title="{{author.firstName}} {{author.lastName}}"/>
-    </div>
-    
-    <div class="authors-name">
-      {{author.firstName}} {{author.lastName}}
-    </div>
+      <br>
 
-    <select
-        class="author-role"
-        ng-model="author.articleRole"
-        ng-options="role.name for role in authorRoles track by role.id"
-        ng-disabled="author.updatingRole"
-    ></select>
+      <select
+          ng-model="newAuthorRoleId"
+          class="author-role"
+          ng-options="role.id as role.name for role in authorRoles"
+          ng-disabled="addingNewAuthor"
+          >
+        <option value="">-- choose author role --</option>
+      </select>
+
+      <div class="controls clearfix">
+        <button
+            type="submit"
+            class="btn btn-primary btn-sm pull-right"
+            ng-click="addAuthorToArticle()"
+            ng-disabled="addingNewAuthor || !newAuthorRoleId || !newAuthor"
+           >Add</button>
+        <button
+           class="btn btn-default btn-sm pull-right"
+           ng-click="clearNewAuthorForm()"
+           ng-disabled="addingNewAuthor || (!newAuthorRoleId && !newAuthor)"
+           >Clear</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="authors-list">
+    <div ng-repeat="author in authors"
+         class="author clearfix"
+         ng-class="{actionsDisabled: author.updatingRole}"
+        >
+        <div class="drag-bar"></div>
+      <div
+        class="remove"
+        title="Remove"
+        ng-click="!author.updatingRole && removeAuthor(author)"
+        >
+        <span class="glyphicon glyphicon-remove"></span>
+      </div>
+
+      <div class="authors-image">
+        <img ng-src="{{author.avatarUrl}}"
+             alt="{{author.firstName}} {{author.lastName}}"
+             title="{{author.firstName}} {{author.lastName}}"/>
+      </div>
+
+      <div class="authors-name">
+        {{author.firstName}} {{author.lastName}}
+      </div>
+
+      <select
+          class="author-role"
+          ng-model="author.articleRole"
+          ng-options="role.name for role in authorRoles track by role.id"
+          ng-disabled="author.updatingRole"
+      ></select>
+    </div>
   </div>
 
 </section>

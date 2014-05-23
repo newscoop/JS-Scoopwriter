@@ -76,6 +76,52 @@ angular.module('authoringEnvironmentApp').controller('PaneAuthorsCtrl', [
         $scope.authorRoles = Author.getRoleList();
         $scope.authors = [];
 
+        $scope.newAuthor = null;
+        $scope.newAuthorRoleId = null;
+        $scope.addingNewAuthor = false;
+
+        $scope.select2Options = {
+            minimumInputLength: 3,
+            query: Author.liveSearchQuery
+        };
+
+        /**
+        * Resets all new author form fields.
+        *
+        * @method clearNewAuthorForm
+        */
+        $scope.clearNewAuthorForm = function () {
+            $scope.newAuthor = null;
+            $scope.newAuthorRoleId = null;
+        };
+
+        /**
+        * Adds a new author to the article.
+        *
+        * @method addAuthorToArticle
+        */
+        $scope.addAuthorToArticle = function () {
+            // NOTE: An author can be added multiple times (with different
+            // roles), therefore we need multiple deep copies of the object to
+            // distinguish between them in $scope.authors ng-repeat.
+            var author = angular.copy($scope.newAuthor),
+                roleId = $scope.newAuthorRoleId;
+
+            $scope.addingNewAuthor = true;
+
+            article.promise.then(function (articleData) {
+                author.addToArtcile(
+                    articleData.number, articleData.language, roleId
+                )
+                .then(function () {
+                    $scope.authors.push(author);
+                })
+                .finally(function () {
+                    $scope.addingNewAuthor = false;
+                });
+            });
+        };
+
         // retrieve all article auhors from server
         article.promise.then(function (articleData) {
             return Author.getAll({
@@ -89,6 +135,5 @@ angular.module('authoringEnvironmentApp').controller('PaneAuthorsCtrl', [
                 setRoleChangeWatch(author);
             });
         });
-
     }
 ]);

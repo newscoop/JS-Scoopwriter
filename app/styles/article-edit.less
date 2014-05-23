@@ -2165,7 +2165,8 @@ a:hover {
                    padding: 14px 8px;
                    line-height: 0;
                    width: 35px;
-                   height: 35px;                }
+                   height: 35px;
+                }
             }
             .attached-title {
                 position:relative;
@@ -2186,6 +2187,29 @@ a:hover {
     }
 
     .authors-panel {
+        .add-author-box {
+            border: 1px solid gray;
+            margin-bottom: 10px;
+            padding: 10px;
+            .authorSearch {
+                width: 100%;
+                margin-bottom: 5px;
+            }
+            .controls {
+                margin-top: 10px;
+                button {
+                    margin-left: 5px;
+                }
+            }
+        }
+
+        .authors-list {
+            max-height: 400px;
+            padding: 5px;
+            overflow-y: auto;
+            border: 1px solid gray;
+        }
+
         .author {
             position: relative;
             padding: 5px;
