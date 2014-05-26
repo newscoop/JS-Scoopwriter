@@ -335,8 +335,7 @@ describe('Factory: Author', function () {
         );
     });
 
-
-    describe('addToArtcile() method', function () {
+    describe('addToArticle() method', function () {
         var expectedLinkHeader;
 
         beforeEach(function () {
@@ -356,14 +355,14 @@ describe('Factory: Author', function () {
 
         it('sends a correct request to API', function () {
             var author = new Author({id: 22});
-            author.addToArtcile(64, 'de', 7);
+            author.addToArticle(64, 'de', 7);
             $httpBackend.verifyNoOutstandingExpectation();
         });
 
         it('updates author\'s role ID on successful server response',
             function () {
                 var author = new Author({id: 22});
-                author.addToArtcile(64, 'de', 7);
+                author.addToArticle(64, 'de', 7);
                 $httpBackend.flush(1);
 
                 expect(author.articleRole.id).toEqual(7);
@@ -378,7 +377,7 @@ describe('Factory: Author', function () {
                         callMeOnSuccess: jasmine.createSpy()
                     };
 
-                author.addToArtcile(64, 'de', 7)
+                author.addToArticle(64, 'de', 7)
                     .then(spyHelper.callMeOnSuccess);
 
                 $httpBackend.flush(1);
@@ -398,8 +397,69 @@ describe('Factory: Author', function () {
             $httpBackend.expect('LINK', rootURI + '/articles/64/de')
                 .respond(500, 'Error :(');
 
-            author.addToArtcile(64, 'de', 7)
+            author.addToArticle(64, 'de', 7)
                 .then(null, spyHelper.callMeOnError);
+
+            $httpBackend.flush(1);
+
+            expect(spyHelper.callMeOnError).toHaveBeenCalledWith('Error :(');
+        });
+    });
+
+    describe('removeFromArticle() method', function () {
+        var expectedLinkHeader;
+
+        beforeEach(function () {
+            expectedLinkHeader =
+                '<' + apiEndpoint + '/authors/22; rel="author">,' +
+                '<' + apiEndpoint + '/authors/types/7; rel="author-type">';
+
+            $httpBackend.expect(
+                'UNLINK',
+                rootURI + '/articles/64/de',
+                undefined,
+                function (headers) {
+                    return headers.link === expectedLinkHeader;
+                }
+            ).respond(204, '');
+        });
+
+        it('sends a correct request to API', function () {
+            var author = new Author({id: 22});
+            author.removeFromArticle(64, 'de', 7);
+            $httpBackend.verifyNoOutstandingExpectation();
+        });
+
+        it('resolves given promise on successful server response',
+            function () {
+                var author = new Author({id: 22}),
+                    promise,
+                    spyHelper = {
+                        callMeOnSuccess: jasmine.createSpy()
+                    };
+
+                author.removeFromArticle(64, 'de', 7)
+                    .then(spyHelper.callMeOnSuccess);
+
+                $httpBackend.flush(1);
+
+                expect(spyHelper.callMeOnSuccess).toHaveBeenCalled();
+            }
+        );
+
+        it('rejects given promise on server error response', function () {
+            var author = new Author({id: 22}),
+                promise,
+                spyHelper = {
+                    callMeOnError: jasmine.createSpy()
+                };
+
+            $httpBackend.resetExpectations();
+            $httpBackend.expect('UNLINK', rootURI + '/articles/64/de')
+                .respond(500, 'Error :(');
+
+            author.removeFromArticle(64, 'de', 7)
+                .catch(spyHelper.callMeOnError);
 
             $httpBackend.flush(1);
 
