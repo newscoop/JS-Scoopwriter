@@ -145,6 +145,38 @@ describe('Controller: PaneAuthorsCtrl', function () {
             roles[1], roles[0], authors[0]);
     });
 
+    it('adds stopRoleChangeWatch method to author objects', function () {
+        var authorsDeferred = $q.defer();
+
+        // first we need some to have some authors in scope
+        spyOn(Author, 'getAll').andCallFake(function () {
+            var result = angular.copy(authors);
+            result.$promise = authorsDeferred.promise;
+            return result;
+        });
+
+        articleDeferred.resolve({number: 64, language: 'de'});
+        authorsDeferred.resolve(authors);
+        scope.$apply();
+
+        scope.authors.forEach(function (author) {
+            expect(typeof author.stopRoleChangeWatch).toEqual('function');
+        });
+
+        scope.authors[0].stopRoleChangeWatch();
+
+        // now change author role and see what happens
+        spyOn(ctrl, 'authorRoleChanged');
+        spyOn(scope.authors[0], 'updateRole').andCallFake(function () {
+            return $q.defer().promise;
+        });
+
+        scope.authors[0].articleRole = roles[2];  // 6, Comments moderator
+        scope.$apply();
+
+        expect(ctrl.authorRoleChanged).not.toHaveBeenCalled();
+    });
+
     describe('authorRoleChanged() method', function () {
         var author,
             deferredUpdate;
@@ -221,6 +253,7 @@ describe('Controller: PaneAuthorsCtrl', function () {
                 oldRole = roles[3],  // 13, Lector
                 promise;
 
+            author.stopRoleChangeWatch = jasmine.createSpy();
             author.articleRole = newRole;  // Writer
             author.updatingRole = true;  // make sure the flag is set
 
@@ -237,6 +270,7 @@ describe('Controller: PaneAuthorsCtrl', function () {
                 oldRole = roles[3],  // 13, Lector
                 promise;
 
+            author.stopRoleChangeWatch = jasmine.createSpy();
             author.articleRole = newRole;  // Writer
 
             ctrl.authorRoleChanged(newRole, oldRole, author);
@@ -245,6 +279,28 @@ describe('Controller: PaneAuthorsCtrl', function () {
             scope.$apply();
 
             expect(author.articleRole).toEqual(oldRole);
+        });
+
+        it('does not cause infinite request loop on error', function () {
+            var newRole = roles[0],  // 1, Writer
+                oldRole = roles[3],  // 13, Lector
+                promise;
+
+            spyOn(ctrl, 'authorRoleChanged').andCallThrough();
+            ctrl.setRoleChangeWatch(author);
+            spyOn(author, 'stopRoleChangeWatch').andCallThrough();
+            author.articleRole = newRole;  // Writer
+
+            ctrl.authorRoleChanged(newRole, oldRole, author);
+            articleDeferred.resolve({number: 64, language: 'de'});
+            deferredUpdate.reject();
+            scope.$apply();
+
+            // XXX: for some reason changing the author role in error handler
+            // does *not* trigger another roleChanged event as it does in
+            // the browser, therefore ATM this test does not properly detect
+            // infinite request loop caused by repeated roleChanged events
+            expect(ctrl.authorRoleChanged.callCount).toBeLessThan(2);
         });
     });
 
