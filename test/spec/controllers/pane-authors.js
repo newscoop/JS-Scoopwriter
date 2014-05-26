@@ -36,7 +36,8 @@ describe('Controller: PaneAuthorsCtrl', function () {
             },
             avatarUrl: 'http://foo.bar/image/thumb_22.png',
             sortOrder: 1,
-            updateRole: function () {}
+            updateRole: function () {},
+            removeFromArticle: function () {}
         }, {
             id: 162,
             firstName: 'Jack',
@@ -47,7 +48,8 @@ describe('Controller: PaneAuthorsCtrl', function () {
             },
             avatarUrl: 'http://foo.bar/image/thumb_162.png',
             sortOrder: 5,
-            updateRole: function () {}
+            updateRole: function () {},
+            removeFromArticle: function () {}
         }
     ];
 
@@ -324,7 +326,7 @@ describe('Controller: PaneAuthorsCtrl', function () {
             author = {
                 id: 82,
                 articleRole: null,
-                addToArtcile: function () {}
+                addToArticle: function () {}
             };
 
             scope.newAuthor = author;
@@ -335,7 +337,7 @@ describe('Controller: PaneAuthorsCtrl', function () {
             });
 
             deferredAddToArticle = $q.defer();
-            spyOn(author, 'addToArtcile').andCallFake(function () {
+            spyOn(author, 'addToArticle').andCallFake(function () {
                 return deferredAddToArticle.promise;
             });
 
@@ -355,13 +357,13 @@ describe('Controller: PaneAuthorsCtrl', function () {
             expect(scope.addingNewAuthor).toEqual(true);
         });
 
-        it('invokes author\'s addToArtcile() method with correct parameters',
+        it('invokes author\'s addToArticle() method with correct parameters',
             function () {
                 scope.addAuthorToArticle();
                 articleDeferred.resolve({number: 75, language: 'en'});
                 scope.$apply();
 
-                expect(author.addToArtcile).toHaveBeenCalledWith(75, 'en', 13);
+                expect(author.addToArticle).toHaveBeenCalledWith(75, 'en', 13);
             }
         );
 
@@ -387,7 +389,6 @@ describe('Controller: PaneAuthorsCtrl', function () {
 
         it('clears addingNewAuthor flag on sucessful server response',
             function () {
-
                 scope.addAuthorToArticle();
                 scope.addingNewAuthor = true;
 
@@ -401,7 +402,6 @@ describe('Controller: PaneAuthorsCtrl', function () {
 
         it('clears addingNewAuthor flag on error server response',
             function () {
-
                 scope.addAuthorToArticle();
                 scope.addingNewAuthor = true;
 
@@ -412,5 +412,88 @@ describe('Controller: PaneAuthorsCtrl', function () {
                 expect(scope.addingNewAuthor).toEqual(false);
             }
         );
+    });
+
+    describe('scope\'s confirmRemoveAuthor() method', function () {
+        var author,
+            authorRemoveDeferred,
+            modalDeferred,
+            modalFactory;
+
+        beforeEach(inject(function ($q, _modalFactory_) {
+            authorRemoveDeferred = $q.defer();
+            modalDeferred = $q.defer();
+            modalFactory = _modalFactory_;
+
+            spyOn(modalFactory, 'confirmLight').andCallFake(function () {
+                return {
+                    result: modalDeferred.promise
+                }
+            });
+
+            author = {
+                id: 82,
+                articleRole: {id: 2, name: 'Reviewer'},
+                removeFromArticle: jasmine.createSpy().andCallFake(
+                    function () {
+                        return authorRemoveDeferred.promise;
+                    })
+            };
+
+            // prevent firing of controller init code
+            spyOn(Author, 'getAll').andCallFake(function () {
+                return {
+                    $promise: {
+                        then: function () {}
+                    }
+                }
+            });
+        }));
+
+        it('opens a "light" confirmation dialog', function () {
+            scope.confirmRemoveAuthor();
+            expect(modalFactory.confirmLight).toHaveBeenCalled();
+        });
+
+        it('removes correct author on action confirmation', function () {
+            scope.authors = [{id:123}, author, {id:321}];
+
+            scope.confirmRemoveAuthor(author);
+            modalDeferred.resolve(true);
+            articleDeferred.resolve({number: 75, language: 'en'});
+            scope.$apply();
+
+            expect(author.removeFromArticle).toHaveBeenCalledWith(75, 'en', 2);
+
+            authorRemoveDeferred.resolve();
+            scope.$apply();
+
+            expect(scope.authors).toEqual(
+                [{id:123}, {id:321}]
+            );
+        });
+
+        it('does not remove anything on action rejection', function () {
+            scope.authors = [{id:123}, author, {id:321}];
+
+            scope.confirmRemoveAuthor(author);
+            modalDeferred.reject(true);
+            scope.$apply();
+
+            expect(author.removeFromArticle).not.toHaveBeenCalled();
+            expect(scope.authors.length).toEqual(3);
+        });
+
+        it('does not remove author on server error response', function () {
+            scope.authors = [{id:123}, author, {id:321}];
+
+            scope.confirmRemoveAuthor(author);
+            modalDeferred.resolve(true);
+            articleDeferred.resolve({number: 75, language: 'en'});
+            authorRemoveDeferred.reject();
+            scope.$apply();
+
+            expect(scope.authors.length).toEqual(3);
+        });
     });
 });

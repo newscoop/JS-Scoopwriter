@@ -9,7 +9,8 @@ angular.module('authoringEnvironmentApp').controller('PaneAuthorsCtrl', [
     '$scope',
     'article',
     'Author',
-    function ($scope, article, Author) {
+    'modalFactory',
+    function ($scope, article, Author, modalFactory) {
 
         var self = this;
 
@@ -121,7 +122,7 @@ angular.module('authoringEnvironmentApp').controller('PaneAuthorsCtrl', [
             $scope.addingNewAuthor = true;
 
             article.promise.then(function (articleData) {
-                author.addToArtcile(
+                author.addToArticle(
                     articleData.number, articleData.language, roleId
                 )
                 .then(function () {
@@ -129,6 +130,38 @@ angular.module('authoringEnvironmentApp').controller('PaneAuthorsCtrl', [
                 })
                 .finally(function () {
                     $scope.addingNewAuthor = false;
+                });
+            });
+        };
+
+        /**
+        * Asks user to confirm removing an author from the list of article
+        * authors and then removes the author, if the action is confirmed.
+        *
+        * @method confirmRemoveAuthor
+        * @param author {Object} author to remove
+        */
+        $scope.confirmRemoveAuthor = function (author) {
+            var modal,
+                title,
+                text;
+
+            title = 'Do you really want to remove this author?';
+            text = 'Should you change your mind, the same author can ' +
+                'always be added again.';
+
+            modal = modalFactory.confirmLight(title, text);
+
+            modal.result.then(function (data) {
+                article.promise.then(function (articleData) {
+                    return author.removeFromArticle(
+                        articleData.number, articleData.language,
+                        author.articleRole.id
+                    );
+                }).then(function () {
+                    _.remove($scope.authors, function (item) {
+                        return item === author;
+                    });
                 });
             });
         };

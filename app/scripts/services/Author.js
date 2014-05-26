@@ -152,17 +152,17 @@ angular.module('authoringEnvironmentApp').factory('Author', [
         };
 
         /**
-        * Sets the author as article author on the given article
+        * Sets author as article author on the given article
         * with the given role.
         *
-        * @method addToArtcile
+        * @method addToArticle
         * @param number {Number} article ID
         * @param language {String} article language code (e.g. 'de')
-        * @param roleId {Number} ID of the author's tole on the article
+        * @param roleId {Number} ID of the author's role on the article
         * @return {Object} promise object that is resolved on successful server
         *   response and rejected on server error response
         */
-        self.addToArtcile = function(number, language, roleId) {
+        self.addToArticle = function(number, language, roleId) {
             var author = this,
                 deferred = $q.defer(),
                 linkHeader,
@@ -182,6 +182,45 @@ angular.module('authoringEnvironmentApp').factory('Author', [
             .success(function () {
                 author.articleRole = author.articleRole || {};
                 author.articleRole.id = roleId;
+                deferred.resolve();
+            })
+            .error(function (responseBody) {
+                deferred.reject(responseBody);
+            });
+
+            return deferred.promise;
+        };
+
+
+        /**
+        * Removes author as article author from the given article for the
+        * specified role.
+        *
+        * @method removeFromArticle
+        * @param number {Number} article ID
+        * @param language {String} article language code (e.g. 'de')
+        * @param roleId {Number} ID of the author's role on the article
+        * @return {Object} promise object that is resolved on successful server
+        *   response and rejected on server error response
+        */
+        self.removeFromArticle = function(number, language, roleId) {
+            var author = this,
+                deferred = $q.defer(),
+                linkHeader,
+                url;
+
+            url = [API_ROOT, 'articles', number, language].join('/');
+
+            linkHeader = '<' + API_ENDPOINT + '/authors/' + author.id +
+                            '; rel="author">,' +
+                         '<' + API_ENDPOINT + '/authors/types/' +
+                            roleId + '; rel="author-type">';
+            $http({
+                url: url,
+                method: 'UNLINK',
+                headers: {link: linkHeader}
+            })
+            .success(function () {
                 deferred.resolve();
             })
             .error(function (responseBody) {
@@ -259,7 +298,9 @@ angular.module('authoringEnvironmentApp').factory('Author', [
         );
 
         // instance methods
-        self.authorResource.prototype.addToArtcile = self.addToArtcile;
+        self.authorResource.prototype.addToArticle = self.addToArticle;
+        self.authorResource.prototype.removeFromArticle =
+            self.removeFromArticle;
         self.authorResource.prototype.updateRole = self.updateRole;
 
         // "class" methods
