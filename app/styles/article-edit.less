@@ -2187,10 +2187,10 @@ a:hover {
     }
 
     .authors-panel {
-        .add-author-box {
-            border: 1px solid gray;
-            margin-bottom: 10px;
+        .add-author-box {           
+            margin-bottom: 30px;
             padding: 10px;
+            background-color: #ebebeb;
             .authorSearch {
                 width: 100%;
                 margin-bottom: 5px;
@@ -2202,95 +2202,129 @@ a:hover {
                 }
             }
         }
-
-        .authors-list {
-            max-height: 400px;
-            padding: 5px;
-            overflow-y: auto;
-            border: 1px solid gray;
-        }
-
-        .author {
-            position: relative;
-            padding: 5px;
-            background: #fff;
-            border: 1px solid #e0e0e0;
-            padding: 10px;
-            min-height: 50px;
-            margin-bottom: 8px;
-            overflow:hidden;
-            .box-shadow(0 1px 0px #e0e0e0);
-            .border-radius(4px);
-
-            .drag-bar {
-                position: absolute;
-                left: -2px;
-                top: 0px;
-                bottom: 0px;
-                width: 9px;
-                border: 3px solid #ccc;
-                border-width: 2px 0;
-                background: #ccc url(../../images/drag_bg.png) repeat-y 3px 1px;
-                visibility:hidden;
-            }
-
-            &:hover {
-                border: 1px solid #ccc;
-                .box-shadow(0 1px 0px #ccc);
-                cursor:pointer;
-                .drag-bar {
-                    visibility:visible;
+        .authors-wrapper {
+            position: absolute;
+            top: 194px;
+            bottom: 18px;
+            left: 0;
+            right: 0px;
+            .attached-title {
+                position:relative;
+                clear:both;
+                padding: 0 12px;
+                background-color: @tabpane-background;
+                &:before {
+                    content: " ";
+                    position: absolute;
+                    top: 10px;
+                    left: 120px;
+                    right: 12px;
+                    background: #dcdcdc;
+                    height: 1px;
                 }
             }
-
-            .remove {
-                position: absolute;
-                right: 3px;
-                top: 2px;
-                color: gainsboro;
-                cursor: pointer;
-                &:hover {
-                    color: gray;
+            .authors-list {
+               position: absolute;
+                top: 30px;
+                right: 12px;
+                bottom: 0;
+                left: 12px;
+                overflow: auto;
+                padding: 0;
+                &::-webkit-scrollbar { width: 14px; height: 8px; margin: -1px 0; }
+                &::-webkit-scrollbar-thumb { background: #949494; 
+                 border-left: 6px solid rgba(0,0,0,0);background-clip: padding-box;
                 }
+                &::-webkit-scrollbar-thumb:hover { background: #6e6e6e; border-left: 6px solid rgba(0,0,0,0);background-clip: padding-box; }
             }
 
-            &.actionsDisabled {
-                opacity: 0.5;
-                .remove {
-                    cursor: default;
-                    &:hover {
-                        color: gainsboro;
-                    };
-                }
-            }
-
-            .authors-image {   
-                float:left;
-                text-align: center;
-                width: 62px;
-                height: 62px;
-                margin-right: 10px;
-                background: #eee;
-                .border-radius(2px);
-                img {                    
-                    max-width: 62px;
-                    max-height: 62px;
-                    height: 62px;
-                }
-            }
-            .authors-name {
-                float:left;
-                width: 200px;
-                border-bottom: 1px solid #eee;
+            .author {
+                position: relative;
+                background: #fff;
+                border: 1px solid #e0e0e0;
+                padding: 12px 10px;
+                min-height: 50px;
                 margin-bottom: 8px;
-                padding-bottom: 2px;
-            }     
-            select {
-                border: 1px solid #d4d4d4;
-                .border-radius(2px);
-                width:200px;
-                padding: 3px 4px;
-                margin-top: 5px;
+                overflow:hidden;
+                .box-shadow(0 1px 0px #e0e0e0);
+                .border-radius(4px);
+
+                .drag-bar {
+                    position: absolute;
+                    left: -2px;
+                    top: 0px;
+                    bottom: 0px;
+                    width: 9px;
+                    border: 3px solid #ccc;
+                    border-width: 2px 0;
+                    background: #ccc url(../../images/drag_bg.png) repeat-y 3px 1px;
+                    visibility:hidden;
+                }
+
+                &:hover {
+                    border: 1px solid #ccc;
+                    .box-shadow(0 1px 0px #ccc);
+                    cursor:pointer;
+                    .drag-bar {
+                        visibility:visible;
+                    }
+                }
+
+                .remove {
+                    position: absolute;
+                    right: 3px;
+                    top: 2px;
+                    color: gainsboro;
+                    cursor: pointer;
+                    &:hover {
+                        color: gray;
+                    }
+                }
+
+                &.actionsDisabled {
+                    opacity: 0.5;
+                    .remove {
+                        cursor: default;
+                        &:hover {
+                            color: gainsboro;
+                        };
+                    }
+                }
+
+                .authors-image {   
+                    float:left;
+                    text-align: center;
+                    margin: 0 14px 0 2px;
+                    background: #eee;
+                    .border-radius(50%);
+                    max-height: 60px;
+                    height: 60px;
+                    width: 60px;
+                    /*height: auto;*/
+                    overflow: hidden;
+
+                    img {                    
+                        display: block;
+                        max-width: 100%;
+                        /* just in case, to force correct aspect ratio */
+                        height: auto !important;
+                        width: auto\9; /* ie8+9 */
+                    }
+                }
+                .authors-name {
+                    float:left;
+                    width: 190px;
+                    border-bottom: 1px solid #eee;
+                    margin-bottom: 4px;
+                    padding-bottom: 2px;
+                }     
+                select {
+                    border: 1px solid #d4d4d4;
+                    .border-radius(2px);
+                    width:190px;
+                    padding: 3px 4px;
+                    margin-top: 5px;
+                }
             }
         }
     }
