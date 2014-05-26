@@ -4,7 +4,7 @@
 * AngularJS Filter for sorting article comments by their creation date or
 * by their hierarchy.
 *
-* @class comments
+* @class sortComments
 */
 angular.module('authoringEnvironmentApp')
     .filter('sortComments', ['$log', function ($log) {
