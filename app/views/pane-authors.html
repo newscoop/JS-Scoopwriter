@@ -21,7 +21,8 @@
       <select
           ng-model="newAuthorRoleId"
           class="author-role"
-          ng-options="role.id as role.name for role in authorRoles"
+          ng-options="role.id as role.name for role in (authorRoles |
+                      availableRoles : newAuthor : authors)"
           ng-disabled="addingNewAuthor"
           >
         <option value="">-- choose author role --</option>
@@ -71,7 +72,9 @@
           <select
               class="author-role"
               ng-model="author.articleRole"
-              ng-options="role.name for role in authorRoles track by role.id"
+              ng-options="role.name for role in
+                         (authorRoles | availableRoles : author : authors)
+                         track by role.id"
               ng-disabled="author.updatingRole"
           ></select>
         </div>
