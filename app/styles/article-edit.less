@@ -89,7 +89,7 @@ a:hover {
     .main-article-title {
         font-family: Georgia, serif;
         font-weight: normal;
-        color: #0088CC;
+        color: #007fb3;
         font-size: 26px;
         float: left;
     }
@@ -1240,7 +1240,6 @@ a:hover {
     }
 
 
-
     /* INGEST TAB*/
 
     .ingest-header {
@@ -2193,12 +2192,24 @@ a:hover {
             background-color: #ebebeb;
             .authorSearch {
                 width: 100%;
-                margin-bottom: 5px;
+                margin-bottom: 10px;
             }
             .controls {
                 margin-top: 10px;
                 button {
                     margin-left: 5px;
+                }
+            }
+            .author-role {
+                width:100%;
+                padding:3px 4px;
+                border: 1px solid #ccc;
+                .border-radius(2px);
+                &:focus {
+                    border: 1px solid #5897fb;
+                    outline:none;
+                    -webkit-box-shadow: none;
+                    box-shadow: none;
                 }
             }
         }
@@ -2658,6 +2669,69 @@ a:hover {
         }
     }
 }
+
+/* Select2 js custom */
+.select2 {
+    &-container {
+         .select2-choice {
+            height:auto !important;
+            .border-radius(2px) !important;
+            background-image: none !important;
+            border:1px solid #ccc !important;
+            color: #333 !important;
+            .select2-arrow {
+                background:#fff !important;
+                border:none !important;
+                b {
+                    background: url('../../images/select2.png') no-repeat 0 1px !important;
+                }
+            }
+            &.select2-default {
+                outline:0 !important;
+                -webkit-box-shadow: none !important;
+                box-shadow: none !important;
+            }
+         }
+         &-active {
+            .select2-choice,
+            .select2-choices {
+                border: 1px solid #5897fb !important;
+                -webkit-box-shadow: none !important;
+                box-shadow: none !important;
+            }
+         }
+        .select2-drop { 
+            border-radius: 0 !important;
+            &-active {                
+            }
+        }
+    }
+    &-search {
+        input { 
+            border:1px solid #ccc !important;
+            background: url('../../images/select2.png') no-repeat 100% -22px, -webkit-gradient(linear, left bottom, left top, color-stop(0.85, #fff), color-stop(0.99, #eee)) !important;
+        }
+    }
+    &-results {
+        margin: 6px 4px 6px 0 !important;
+        .select2-highlighted {
+           background: #5897fb !important;
+        }
+        .select2-no-results {
+            font-size: 11px !important;
+            color:#777 !important;
+        }
+    }
+    &-dropdown {
+        &-open {
+            .select2-choice {
+                background:#fff !important;
+                color: #333 !important;
+            }
+        }
+    }
+}
+
 
 
 // Modals
