@@ -91,6 +91,7 @@ angular.module('authoringEnvironmentApp').controller('PaneAuthorsCtrl', [
         $scope.newAuthor = null;
         $scope.newAuthorRoleId = null;
         $scope.addingNewAuthor = false;
+        $scope.showAddAuthor = true;  // add author form expanded by default
 
         $scope.select2Options = {
             minimumInputLength: 3,

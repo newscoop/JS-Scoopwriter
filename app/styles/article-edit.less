@@ -2186,10 +2186,25 @@ a:hover {
     }
 
     .authors-panel {
-        .add-author-box {           
+        .add-author-box {
             margin-bottom: 30px;
-            padding: 10px;
             background-color: #ebebeb;
+            .heading {
+                button {
+                    line-height: 1em;
+                    box-shadow: none;
+                    padding: 8px 8px 10px 8px;
+                    margin: 0;
+                    width: 100%;
+                    text-align: left;
+                }
+                span.add-author {
+                    margin-left: 5px;
+                }
+            }
+            form {
+                padding: 10px;
+            }
             .authorSearch {
                 width: 100%;
                 margin-bottom: 10px;
@@ -2215,7 +2230,12 @@ a:hover {
         }
         .authors-wrapper {
             position: absolute;
-            top: 194px;
+            &.low {
+                top: 235px;
+            }
+            &.high {
+                top: 110px;
+            }
             bottom: 18px;
             left: 0;
             right: 0px;

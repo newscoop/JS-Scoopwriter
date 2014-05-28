@@ -113,6 +113,10 @@ describe('Controller: PaneAuthorsCtrl', function () {
         expect(scope.addingNewAuthor).toEqual(false);
     });
 
+    it('initializes showAddAuthor flag to true', function () {
+        expect(scope.showAddAuthor).toEqual(true);
+    });
+
     it('sets correct configuration options for select2 widget', function () {
         expect(scope.select2Options).toEqual({
             minimumInputLength: 3,
