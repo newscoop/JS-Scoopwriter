@@ -8,7 +8,18 @@
   </div>
 
   <div class="add-author-box">
-    <form>
+
+    <div class="heading">
+      <button class="btn btn-sf-invisible"
+              ng-click="showAddAuthor = !showAddAuthor">
+        <span class="glyphicon"
+              ng-class="{'glyphicon-plus': !showAddAuthor,
+                         'glyphicon-minus': showAddAuthor}"
+              ></span><span class="add-author">ADD AN AUTHOR</span>
+      </button>
+    </div>
+
+    <form ng-show="showAddAuthor">
       <input type="hidden" ui-select2="select2Options"
         class="authorSearch"
         ng-model="newAuthor"
@@ -43,7 +54,9 @@
       </div>
     </form>
   </div>
-  <div class="authors-wrapper">
+
+  <div class="authors-wrapper"
+       ng-class="{low: showAddAuthor, high: !showAddAuthor}">
     <div class="attached-title">Attached Authors</div>
       <div class="authors-list">
         <div ng-repeat="author in authors"
