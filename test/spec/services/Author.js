@@ -104,13 +104,14 @@ describe('Factory: Author', function () {
             }
         );
 
-        it('sets instance\'s avatarUrl to null if missing in data',
+        it('sets instance\'s avatarUrl to default image if missing in data',
             function () {
                 var instance;
 
                 delete data.author.image;
                 instance = Author.createFromApiData(data);
-                expect(instance.avatarUrl).toBeNull();
+                expect(instance.avatarUrl).toEqual(
+                    '/images/authors-default-avatar.png');
             }
         );
     });

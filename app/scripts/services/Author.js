@@ -54,7 +54,7 @@ angular.module('authoringEnvironmentApp').factory('Author', [
                 author.avatarUrl =
                     'http://' + decodeURIComponent(data.author.image);
             } else {
-                author.avatarUrl = null;
+                author.avatarUrl = '/images/authors-default-avatar.png';
             }
 
             author.sortOrder = data.order;
@@ -134,7 +134,6 @@ angular.module('authoringEnvironmentApp').factory('Author', [
                     items_per_page: 10
                 }
             }).success(function (response) {
-                // TODO: test response transformations!
                 var author,
                     authorList = [];
 
