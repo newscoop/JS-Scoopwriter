@@ -428,6 +428,7 @@ a:hover {
         }
         .btn + .btn {
             margin: 0;
+            vertical-align: baseline;
         }
     }
 
@@ -1734,7 +1735,7 @@ a:hover {
     .draggable-panel-heading {
         font-size: 11px;
         text-transform: uppercase;
-        padding: 5px;
+        padding: 7px 6px;
     }
 
     .btn-sf-invisible {
@@ -2128,9 +2129,7 @@ a:hover {
                 overflow: auto;
                 padding: 0px 0px 0px 12px;
                 &::-webkit-scrollbar { width: 14px; height: 8px; margin: -1px 0; }
-                &::-webkit-scrollbar-thumb { background: #949494; 
-                 border-left: 6px solid rgba(0,0,0,0);background-clip: padding-box;
-                }
+                &::-webkit-scrollbar-thumb { background: #949494; border-left: 6px solid rgba(0,0,0,0);background-clip: padding-box; }
                 &::-webkit-scrollbar-thumb:hover { background: #6e6e6e; border-left: 6px solid rgba(0,0,0,0);background-clip: padding-box; }
 
                 .draggable {
@@ -2197,6 +2196,9 @@ a:hover {
                     margin: 0;
                     width: 100%;
                     text-align: left;
+                    &:hover {
+                        background:#e6e6e6;
+                    }
                 }
                 span.add-author {
                     margin-left: 5px;
@@ -2475,23 +2477,128 @@ a:hover {
     }
 
     .embed-panel {
-        .add-element.expanded {
-            /*height: 250px;*/
+        .add-element {
+            margin: 10px 0 20px 0 !important;
         }
         .list {
             right: @pane-padding;
             bottom: @pane-padding;
             left: @pane-padding;
+            &::-webkit-scrollbar { width: 14px !important; height: 8px; margin: -1px 0; }
+            &::-webkit-scrollbar-thumb { background: #949494; border-left: 6px solid rgba(0,0,0,0) !important; background-clip: padding-box !important; }
+            &::-webkit-scrollbar-thumb:hover { background: #6e6e6e; border-left: 6px solid rgba(0,0,0,0);background-clip: padding-box; }
+
             &.high {
-                top: 120px;
+                top: 148px;
             }
             &.low {
-                top: 365px;
+                top: 392px;
+            }            
+        }
+        .attached-title {
+                position:relative;
+                clear:both;
+                padding: 0;
+                background-color: @tabpane-background;
+                &:before {
+                    content: " ";
+                    position: absolute;
+                    top: 10px;
+                    left: 150px;
+                    right: 0px;
+                    background: #dcdcdc;
+                    height: 1px;
+                }
+        }
+        .panel {            
+            .box-shadow(none);
+            border:none;
+            &.panel-default {
+                background: #fff;
+                border: 1px solid #e0e0e0;            
+                margin-bottom: 8px;
+                .box-shadow(0 1px 0px #e0e0e0);
+                .border-radius(3px);        
+                .draggable-panel-heading {
+                    background:transparent;
+                    border:none;
+                    .box-shadow(none);
+                    padding: 4px 2px;
+                    overflow: hidden;
+                    .title-block {
+                        width: 70%;
+                        margin:6px 0 0;
+                    }
+                    .editable.title {
+                        width:100%;
+                    }
+                    .btn {
+                        margin: 0;
+                        padding: 4px 6px;
+                        .border-radius(1px);
+                        &:active, 
+                        &.active {
+                            @shadow: 0 0 0 rgba(0,0,0,0);
+                            .box-shadow(@shadow);
+                        }
+                        &:hover {
+                            color: #777;
+                        }
+                    }
+                } 
+                .panel-body {
+                    background:#f8f8f8;
+                    border-top:1px solid #e0e0e0;
+                    padding: 0;
+                    line-height: 0;
+                }
+                .footer {
+                    padding: 0px 7px;
+                    height: 30px;
+                    background: #fff;
+                    .btn {
+                        .btn-styles(@btn-default-bg); 
+                        text-shadow: 0 1px 0 #fff; 
+                        border-color: #cecece;
+                        border-style: solid;
+                        border-width: 0 1px 1px 1px;
+                        padding:2px 6px;
+                        .border-radius(1px);
+                        & + .btn {
+                            border-right: 0;
+                            }
+                        }
+                }  
+            }
+            &.collapsed:hover {               
+            }
+        }
+        .title {
+            margin: 0;
+            line-height: 14px;
+            text-transform: none;
+            font-size: 12px;
+            font-weight: 400;
+        }
+        .code {
+            background:#fff;
+            border: 1px solid #67afe6;
+            font-size: 11px;
+            line-height: normal;
+            padding: 8px 10px;
+            &::-webkit-scrollbar { width: 8px; height: 8px; margin: -1px 0; }
+            &::-webkit-scrollbar-thumb { background: #949494; }
+            &::-webkit-scrollbar-thumb:hover { background: #6e6e6e; }
+            &[readonly] {
+                background: #ebebeb;
+            }
+            &:focus {
+                .box-shadow(0 0 5px 0 rgba(103,175,230, .7));
+                outline: 0;
             }
         }
     }
     /* end of the javascript scroll part */
-
 
     .embed-panel, .comments-panel {
         .panel-title-button-group .btn {
@@ -2503,7 +2610,7 @@ a:hover {
         textarea {
             width: 100%;
             padding: 5px;
-            height:100px;
+            height:110px;
             resize: none;
         }
         .editor-input {
@@ -2544,7 +2651,7 @@ a:hover {
                 }
             }
             .body {
-                padding: 15px;
+                padding: 10px 15px 15px;
                 .controls {
                     overflow: hidden;
                     .btn + .btn {
@@ -2581,9 +2688,16 @@ a:hover {
                 .glyphicon-pencil:before {
                     content: '';
                 }
+                .fa-trash-o:before {
+                    content: '';   
+                }
+                .fa-pencil:before {
+                    content: '';   
+                }
             }
             &:hover {
-                border: 1px solid gray;
+                border: 1px solid #ccc;
+                .box-shadow(0 1px 0px #ccc);
             }
         }
         .title, .subject {
@@ -2591,7 +2705,7 @@ a:hover {
             background: none;
             box-sizing: content-box;
             &.editable {
-                border-bottom: 1px dashed black;
+                border-bottom: 1px dashed #666;
                 /*
                   about this width: the same elements are used in different
                   ways among different panels. either we write
@@ -2607,15 +2721,12 @@ a:hover {
             height: 10em;
         }
         .code {
-            overflow: hidden;
-            text-overflow: ellipsis;
+            .box-sizing(border-box);           
             background: none;
-            box-sizing: content-box;
-            font-weight: 200;
             
             &[readonly] {
                 border: none;
-                color: #737373;
+                color: #636363;
             }
         }
     }
