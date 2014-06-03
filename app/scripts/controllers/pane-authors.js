@@ -169,7 +169,14 @@ angular.module('authoringEnvironmentApp').controller('PaneAuthorsCtrl', [
             });
         };
 
-        // TODO: comments... and tests
+        /**
+        * A handler to be called whenever the order of article authors changes.
+        * It persists the new order on the server.
+        * Used as a parameter to the drag-sort directive.
+        *
+        * @method orderChanged
+        */
+        // TODO: tests
         $scope.orderChanged = function () {
             article.promise.then(function (articleData) {
                 Author.setOrderOnArticle(

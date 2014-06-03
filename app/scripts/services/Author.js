@@ -150,7 +150,15 @@ angular.module('authoringEnvironmentApp').factory('Author', [
             });
         };
 
-        // TODO: comments and tests
+        /**
+        * Sets a new order of article authors.
+        *
+        * @method setOrderOnArticle
+        * @param number {Number} article ID
+        * @param language {String} article language code (e.g. 'de')
+        * @param authors {Object} array with author object(s) in desired order
+        */
+        // TODO: tests
         self.setOrderOnArticle = function (number, language, authors) {
             var order = [],
                 requestConfig,

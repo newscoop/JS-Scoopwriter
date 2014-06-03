@@ -11,37 +11,43 @@ angular.module('authoringEnvironmentApp').directive('dragSort', [
     function () {
 
         var newIdx = -1,  // new element position
-            $emptySlot = null,
-            $rootElement, // reference to root DOM div where directive applied
+            $emptySlot = null,  // DOM marker for the new position
+            $rootElement,  // root DOM element the directive is applied to
             draggedElementIdx = -1;
 
-        // TODO: rename? bascially we attach some behavior on item
-        var setElementHandlers = function ($element, dataItem) {
+        /**
+        * Sets drag-n-drop event handlers for the given node, making it
+        * draggable.
+        *
+        * @method setEventHandlers
+        * @param $element {Object} jQuery-wrapped DOM element for which to set
+        *   the event handlers
+        */
+        var setEventHandlers = function ($element) {
             $element.attr('draggable', true);
 
             $element.on('dragstart', function (e) {
+                var dragData;
+
                 $rootElement.children().each(function (i, child) {
                     $(child).attr('data-sort-index', i);
                 });
 
-                var dragData = {
+                dragData = {
                     sortIndex: parseInt($element.attr('data-sort-index'), 10)
                 };
-
                 draggedElementIdx = dragData.sortIndex;
 
-                console.log('dragstart', dragData);  // TODO: remove
                 e.originalEvent.dataTransfer.setData(
                     'text/plain', JSON.stringify(dragData));
-                // TODO: application/json? bo delalo v drop?
 
                 e.originalEvent.dataTransfer.effectAllowed = 'move';
 
                 $element.addClass('dragged');
             });
 
+            // cleanup and reset stuff when dragging ends
             $element.on('dragend', function (e) {
-                // cleanup ...
                 $element.removeClass('dragged');
 
                 if ($emptySlot) {
@@ -67,13 +73,13 @@ angular.module('authoringEnvironmentApp').directive('dragSort', [
                     posY,
                     $child,
                     sortIdx = parseInt($element.attr('data-sort-index'), 10);
-                // dragData not accessible (security), only on drop...
 
                 e.originalEvent.preventDefault();  // allow drop
                 e.originalEvent.dataTransfer.dropEffect = 'move';
 
+                // determine if drop index should be changed
+                // (if it crosses the Y-midpoint of the element)
                 if (e.offsetY === undefined) {  // Firefox
-                    // or is it clientY? verjetno pageY (relative to document)
                     posY = e.originalEvent.pageY - $element.offset().top;
                 } else {
                     posY = e.originalEvent.offsetY;
@@ -94,23 +100,22 @@ angular.module('authoringEnvironmentApp').directive('dragSort', [
                     newIdx = dropIdx;
 
                     // append empty slot before the child at newIdx
-                    // if no child (last index), amppend to the end
+                    // if no child (last index), append to the end
                     if ($emptySlot) {
                         $emptySlot.remove();
                     }
-
-                    // prevent showing newitemslot right before or after the
+                    // prevent showing new item slot right before or after the
                     // dragged element itself (would make no sense, dropping
-                    // there wpuld not change the order)
+                    // there would not change the order)
                     if (newIdx === draggedElementIdx ||
                         newIdx === draggedElementIdx + 1
                     ) {
-                        // console.log('not doing anything, dropSlot too close');
                         return;
                     }
 
                     $emptySlot = $('<div class="new-item-slot"></div>');
                     $child = $rootElement.children().eq(newIdx);
+
                     if ($child.length > 0) {
                         $emptySlot.insertBefore($child);
                     } else {
@@ -123,66 +128,70 @@ angular.module('authoringEnvironmentApp').directive('dragSort', [
                 // just let the drop even through to the parent container
                 e.preventDefault();
             });
-
         };
 
-        var setRootElementHandlers = function ($rootElement, scope) {
-            $rootElement.on('dragover', function (e) {
-                e.originalEvent.preventDefault();  // allow drop on container
+        /**
+        * Sets drag-n-drop event handlers for the container of the nodes
+        * representing the items in collection.
+        *
+        * @method setContainerEventHandlers
+        * @param $container {Object} jQuery-wrapped DOM element representing
+        *   the container
+        * @param scope {Object} scope of the directive
+        */
+        var setContainerEventHandlers = function ($container, scope) {
+            $container.on('dragover', function (e) {
+                e.originalEvent.preventDefault();  // allow drop
                 e.originalEvent.dataTransfer.dropEffect = 'move';
             });
 
-            $rootElement.on('dragenter', function (e) {
-                e.originalEvent.preventDefault();  // allow drop on container
+            $container.on('dragenter', function (e) {
+                e.originalEvent.preventDefault();  // allow drop (IE)
                 e.originalEvent.dataTransfer.dropEffect = 'move';
             });
 
-            $rootElement.on('drop', function (e) {
+            $container.on('drop', function (e) {
+                var dragData,
+                    item,
+                    oldIndex;
+
                 e.preventDefault();
                 e.stopPropagation();
 
-                var dragData = e.originalEvent.dataTransfer.getData('Text');
+                dragData = e.originalEvent.dataTransfer.getData('text/plain');
                 dragData = JSON.parse(dragData);
-                //console.log('rootElement drop, dragData:', dragData);
 
-                var oldIndex = dragData.sortIndex;
+                oldIndex = dragData.sortIndex;
 
-                // TODO: index correction by -1 if higher that original!
                 if (newIdx > oldIndex) {
                     newIdx -= 1;  // correction for the dragged element itself
                 }
 
-                if (oldIndex !== newIdx) {
-                    console.log('moving element from', oldIndex, 'to', newIdx);
-
-                    var item = scope.items[oldIndex];
-                    scope.items.splice(oldIndex, 1);
+                if (oldIndex !== newIdx) {  // order must be changed
+                    item = scope.items.splice(oldIndex, 1)[0];
                     scope.items.splice(newIdx, 0, item);
-
                     scope.$apply();
-
                     scope.orderChangedCallback();
-                } else {
-                    console.log('no change, nothing to swap');
                 }
             });
         };
 
+        // directive's linking function
         var linkFunction = function (scope, element, attrs) {
             $rootElement = element;
 
             scope.$watchCollection('items', function (newItems, oldItems) {
                 var diff = _.difference(newItems, oldItems);
 
-                // only set event handlers for new elements in collection
                 $rootElement.children().each(function (i, el) {
+                    // only set event handlers for new elements in collection
                     if (_.indexOf(diff, newItems[i]) > -1) {
-                        setElementHandlers($(el), newItems[i]);
+                        setEventHandlers($(el));
                     }
                 });
             });
 
-            setRootElementHandlers($rootElement, scope);
+            setContainerEventHandlers($rootElement, scope);
         };
 
         return {
