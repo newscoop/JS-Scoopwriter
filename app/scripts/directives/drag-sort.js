@@ -172,15 +172,14 @@ angular.module('authoringEnvironmentApp').directive('dragSort', [
             $rootElement = element;
 
             scope.$watchCollection('items', function (newItems, oldItems) {
-                // TODO: make sure not to set duplicate handlers!
-                // only set handlers on new elements, not all!
-                $rootElement.children().each(function (i, el) {
-                    setElementHandlers($(el), newItems[i]);
-                });
+                var diff = _.difference(newItems, oldItems);
 
-                // TODO: delete
-                // console.log('children:', $rootElement.children().length);
-                // console.log('array elements:', newItems.length);
+                // only set event handlers for new elements in collection
+                $rootElement.children().each(function (i, el) {
+                    if (_.indexOf(diff, newItems[i]) > -1) {
+                        setElementHandlers($(el), newItems[i]);
+                    }
+                });
             });
 
             setRootElementHandlers($rootElement, scope);
