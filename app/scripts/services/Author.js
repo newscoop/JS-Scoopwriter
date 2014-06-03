@@ -158,10 +158,8 @@ angular.module('authoringEnvironmentApp').factory('Author', [
         * @param language {String} article language code (e.g. 'de')
         * @param authors {Object} array with author object(s) in desired order
         */
-        // TODO: tests
         self.setOrderOnArticle = function (number, language, authors) {
             var order = [],
-                requestConfig,
                 url;
 
             authors.forEach(function (item) {
@@ -169,18 +167,13 @@ angular.module('authoringEnvironmentApp').factory('Author', [
             });
             order = order.join();
 
-            requestConfig = {
-                params: {number: number, language: language}
-            };
-
             url = [
                 API_ROOT, 'articles', number, language, 'authors','order'
             ].join('/');
 
             $http.post(
                 url,
-                {order: order},
-                requestConfig
+                {order: order}
             );
         };
 

@@ -176,7 +176,6 @@ angular.module('authoringEnvironmentApp').controller('PaneAuthorsCtrl', [
         *
         * @method orderChanged
         */
-        // TODO: tests
         $scope.orderChanged = function () {
             article.promise.then(function (articleData) {
                 Author.setOrderOnArticle(

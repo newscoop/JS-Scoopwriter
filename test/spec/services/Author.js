@@ -336,6 +336,25 @@ describe('Factory: Author', function () {
         );
     });
 
+    describe('setOrderOnArticle() method', function () {
+        it('sends a correct request to API', function () {
+            var authors = [
+                {id: 7, articleRole: {id: 11}},
+                {id: 2, articleRole: {id: 6}},
+                {id: 11, articleRole: {id: 7}}
+            ];
+
+            $httpBackend.expectPOST(
+                rootURI + '/articles/82/it/authors/order',
+                {order: '7-11,2-6,11-7'}
+            ).respond(204);
+
+            Author.setOrderOnArticle(82, 'it', authors);
+
+            $httpBackend.verifyNoOutstandingExpectation();
+        });
+    });
+
     describe('addToArticle() method', function () {
         var expectedLinkHeader;
 
