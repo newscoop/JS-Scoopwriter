@@ -160,6 +160,8 @@ angular.module('authoringEnvironmentApp').directive('dragSort', [
                     scope.items.splice(newIdx, 0, item);
 
                     scope.$apply();
+
+                    scope.orderChangedCallback();
                 } else {
                     console.log('no change, nothing to swap');
                 }
@@ -176,8 +178,9 @@ angular.module('authoringEnvironmentApp').directive('dragSort', [
                     setElementHandlers($(el), newItems[i]);
                 });
 
-                console.log('children:', $rootElement.children().length);
-                console.log('array elements:', newItems.length);
+                // TODO: delete
+                // console.log('children:', $rootElement.children().length);
+                // console.log('array elements:', newItems.length);
             });
 
             setRootElementHandlers($rootElement, scope);
@@ -186,7 +189,8 @@ angular.module('authoringEnvironmentApp').directive('dragSort', [
         return {
             restrict: 'A',
             scope: {
-                items: '='
+                items: '=',
+                orderChangedCallback: '&onOrderChanged'
             },
             link: linkFunction
         };

@@ -60,7 +60,8 @@
 
     <div class="attached-title">Attached Authors</div>
 
-    <div class="authors-list" drag-sort data-items="authors">
+    <div class="authors-list"
+         drag-sort items="authors" on-order-changed="orderChanged()">
       <div ng-repeat="author in authors"
            class="author clearfix"
            ng-class="{actionsDisabled: author.updatingRole}"

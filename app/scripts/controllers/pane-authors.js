@@ -127,6 +127,8 @@ angular.module('authoringEnvironmentApp').controller('PaneAuthorsCtrl', [
                     articleData.number, articleData.language, roleId
                 )
                 .then(function () {
+                    // append to the end, since this is the same way as it
+                    // works on the server
                     $scope.authors.push(author);
                 })
                 .finally(function () {
@@ -164,6 +166,14 @@ angular.module('authoringEnvironmentApp').controller('PaneAuthorsCtrl', [
                         return item === author;
                     });
                 });
+            });
+        };
+
+        // TODO: comments... and tests
+        $scope.orderChanged = function () {
+            article.promise.then(function (articleData) {
+                Author.setOrderOnArticle(
+                    articleData.number, articleData.language, $scope.authors);
             });
         };
 

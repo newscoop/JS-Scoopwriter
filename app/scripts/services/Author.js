@@ -150,6 +150,32 @@ angular.module('authoringEnvironmentApp').factory('Author', [
             });
         };
 
+        // TODO: comments and tests
+        self.setOrderOnArticle = function (number, language, authors) {
+            var order = [],
+                requestConfig,
+                url;
+
+            authors.forEach(function (item) {
+                order.push(item.id + '-' + item.articleRole.id);
+            });
+            order = order.join();
+
+            requestConfig = {
+                params: {number: number, language: language}
+            };
+
+            url = [
+                API_ROOT, 'articles', number, language, 'authors','order'
+            ].join('/');
+
+            $http.post(
+                url,
+                {order: order},
+                requestConfig
+            );
+        };
+
         /**
         * Sets author as article author on the given article
         * with the given role.
@@ -305,6 +331,7 @@ angular.module('authoringEnvironmentApp').factory('Author', [
         // "class" methods
         self.authorResource.createFromApiData = self.createFromApiData;
         self.authorResource.liveSearchQuery = self.liveSearchQuery;
+        self.authorResource.setOrderOnArticle = self.setOrderOnArticle;
 
         return self.authorResource;
     }
