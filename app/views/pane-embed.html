@@ -53,7 +53,9 @@
       </div>
     </div>
   </div>
+  <div class="attached-title">Attached code snippets</div>
   <div class="list" ng-class="{low: adding, high: !adding}">
+
     <div
        ng-repeat="snippet in snippets"
        ng-class="{collapsed: !snippet.expanded}"
@@ -64,42 +66,51 @@
        >
       <div class="panel-heading draggable-panel-heading">
         <span class="expand"></span>
-        <button
-           class="btn btn-sf-invisible pull-right"
-           ng-click="remove(snippet.id)"
-           >
-          <span class="glyphicon glyphicon-trash"></span>
-        </button>
-        <button
-           class="btn btn-sf-invisible pull-right"
-           ng-click="snippet.edit()"
-           >
-          <span class="glyphicon glyphicon-pencil"></span>
-        </button>
-        <button
-           class="btn btn-sf-invisible"
-           ng-hide="snippet.expanded"
-           ng-click="snippet.expanded = true"
-           >
-          <span class="glyphicon glyphicon-chevron-right"></span>
-        </button>
-        <button
-           class="btn btn-sf-invisible"
-           ng-show="snippet.expanded"
-           ng-click="snippet.expanded = false"
-           >
-          <span class="glyphicon glyphicon-chevron-down"></span>
-        </button>
-        <input
-           class="editable title"
-           ng-model="snippet.title"
-           ng-show="snippet.editing">
-        <span
-           class="title"
-           ng-bind="snippet.title"
-           ng-hide="snippet.editing">
-        </span>
-      </div>
+        <div class="pull-right">
+          <button
+             class="btn btn-sf-invisible pull-right"
+             ng-click="remove(snippet.id)"
+             >          
+            <i class="fa fa-trash-o"></i>
+          </button>
+          <button
+             class="btn btn-sf-invisible pull-right"
+             ng-click="snippet.edit()"
+             >
+            <i class="fa fa-pencil"></i>
+          </button>
+        </div>
+        
+        <div class="pull-left">
+          <button
+             class="btn btn-sf-invisible"
+             ng-hide="snippet.expanded"
+             ng-click="snippet.expanded = true"
+             >
+            <span class="glyphicon glyphicon-chevron-right"></span>
+          </button>
+          <button
+             class="btn btn-sf-invisible"
+             ng-show="snippet.expanded"
+             ng-click="snippet.expanded = false"
+             >
+            <span class="glyphicon glyphicon-chevron-down"></span>
+          </button>
+        </div>
+        <div class="pull-left title-block">
+          <input
+             class="editable"
+             ng-model="snippet.title"
+            ng-show="snippet.editing">
+          <span
+            class="title"
+            ng-bind="snippet.title"
+            ng-hide="snippet.editing">
+          </span>
+        </div>              
+
+      </div><!-- end panel heading -->
+
       <div class="panel-body" ng-show="snippet.expanded">
         <textarea
            rows="3"
@@ -111,16 +122,17 @@
              class="btn btn-sf-invisible pull-right"
              ng-click="snippet.editing = false"
              >
-            <span class="glyphicon glyphicon-floppy-disk"></span>
+             <i class="fa fa-floppy-o"></i>
           </button>
           <button
              class="btn btn-sf-invisible pull-right"
              ng-click="snippet.cancel()"
              >
-            <span class="glyphicon glyphicon-remove"></span>
+            <i class="fa fa-times"></i>
           </button>
         </div>
-      </div>
-    </div>
-  </div>
+      </div><!-- end panel body -->
+    </div><!-- end panel -->
+
+  </div><!-- end  list -->
 </section>
