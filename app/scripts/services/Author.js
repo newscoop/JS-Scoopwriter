@@ -168,7 +168,7 @@ angular.module('authoringEnvironmentApp').factory('Author', [
             order = order.join();
 
             url = [
-                API_ROOT, 'articles', number, language, 'authors','order'
+                API_ROOT, 'articles', number, language, 'authors', 'order'
             ].join('/');
 
             $http.post(
