@@ -127,6 +127,8 @@ angular.module('authoringEnvironmentApp').controller('PaneAuthorsCtrl', [
                     articleData.number, articleData.language, roleId
                 )
                 .then(function () {
+                    // append to the end, since this is the same way as it
+                    // works on the server
                     $scope.authors.push(author);
                 })
                 .finally(function () {
@@ -164,6 +166,20 @@ angular.module('authoringEnvironmentApp').controller('PaneAuthorsCtrl', [
                         return item === author;
                     });
                 });
+            });
+        };
+
+        /**
+        * A handler to be called whenever the order of article authors changes.
+        * It persists the new order on the server.
+        * Used as a parameter to the drag-sort directive.
+        *
+        * @method orderChanged
+        */
+        $scope.orderChanged = function () {
+            article.promise.then(function (articleData) {
+                Author.setOrderOnArticle(
+                    articleData.number, articleData.language, $scope.authors);
             });
         };
 

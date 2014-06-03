@@ -500,4 +500,29 @@ describe('Controller: PaneAuthorsCtrl', function () {
             expect(scope.authors.length).toEqual(3);
         });
     });
+
+    describe('scope\'s orderChanged() method', function () {
+        beforeEach(inject(function ($q) {
+            // prevent firing of controller init code
+            spyOn(Author, 'getAll').andCallFake(function () {
+                return {
+                    $promise: {
+                        then: function () {}
+                    }
+                }
+            });
+            spyOn(Author, 'setOrderOnArticle');
+        }));
+
+        it('correctly delegates work to Author service', function () {
+            scope.authors = authors;
+
+            scope.orderChanged();
+            articleDeferred.resolve({number: 64, language: 'de'});
+            scope.$apply();
+
+            expect(Author.setOrderOnArticle).toHaveBeenCalledWith(
+                64, 'de', authors);
+        });
+    });
 });

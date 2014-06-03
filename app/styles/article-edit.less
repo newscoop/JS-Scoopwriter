@@ -2222,6 +2222,7 @@ a:hover {
                 padding:3px 4px;
                 border: 1px solid #ccc;
                 .border-radius(2px);
+                background-color: white;
                 &:focus {
                     border: 1px solid #5897fb;
                     outline:none;
@@ -2257,7 +2258,7 @@ a:hover {
                 }
             }
             .authors-list {
-               position: absolute;
+                position: absolute;
                 top: 30px;
                 right: 12px;
                 bottom: 0;
@@ -2269,6 +2270,12 @@ a:hover {
                  border-left: 6px solid rgba(0,0,0,0);background-clip: padding-box;
                 }
                 &::-webkit-scrollbar-thumb:hover { background: #6e6e6e; border-left: 6px solid rgba(0,0,0,0);background-clip: padding-box; }
+
+                .new-item-slot {
+                    height: 8px;
+                    border: 1px dashed black;
+                    background-color: orange;
+                }
             }
 
             .author {
@@ -2281,6 +2288,11 @@ a:hover {
                 overflow:hidden;
                 .box-shadow(0 1px 0px #e0e0e0);
                 .border-radius(4px);
+
+                &.dragged {
+                    opacity: 0.4;
+                    background-color: Gold;
+                }
 
                 .drag-bar {
                     position: absolute;
@@ -2357,6 +2369,7 @@ a:hover {
                     width:190px;
                     padding: 3px 4px;
                     margin-top: 5px;
+                    background-color: white;
                 }
             }
         }

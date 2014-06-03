@@ -151,6 +151,33 @@ angular.module('authoringEnvironmentApp').factory('Author', [
         };
 
         /**
+        * Sets a new order of article authors.
+        *
+        * @method setOrderOnArticle
+        * @param number {Number} article ID
+        * @param language {String} article language code (e.g. 'de')
+        * @param authors {Object} array with author object(s) in desired order
+        */
+        self.setOrderOnArticle = function (number, language, authors) {
+            var order = [],
+                url;
+
+            authors.forEach(function (item) {
+                order.push(item.id + '-' + item.articleRole.id);
+            });
+            order = order.join();
+
+            url = [
+                API_ROOT, 'articles', number, language, 'authors', 'order'
+            ].join('/');
+
+            $http.post(
+                url,
+                {order: order}
+            );
+        };
+
+        /**
         * Sets author as article author on the given article
         * with the given role.
         *
@@ -305,6 +332,7 @@ angular.module('authoringEnvironmentApp').factory('Author', [
         // "class" methods
         self.authorResource.createFromApiData = self.createFromApiData;
         self.authorResource.liveSearchQuery = self.liveSearchQuery;
+        self.authorResource.setOrderOnArticle = self.setOrderOnArticle;
 
         return self.authorResource;
     }
