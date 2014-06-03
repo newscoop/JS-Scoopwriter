@@ -10,10 +10,10 @@
 angular.module('authoringEnvironmentApp').directive('dragSort', [
     function () {
 
-        var newIdx = -1,  // new element position
+        var newIdx = -1,  // dragged element's (potential) new position
             $emptySlot = null,  // DOM marker for the new position
             $rootElement,  // root DOM element the directive is applied to
-            draggedElementIdx = -1;
+            draggedElementIdx = -1;  // index of the element being dragged
 
         /**
         * Sets drag-n-drop event handlers for the given node, making it
@@ -68,9 +68,9 @@ angular.module('authoringEnvironmentApp').directive('dragSort', [
             });
 
             $element.on('dragover', function (e) {
-                var elementHeight,
+                var elementHeight,  // dragged DOM element's height
                     dropIdx,
-                    posY,
+                    posY,  // mouse Y position relative to $element
                     $child,
                     sortIdx = parseInt($element.attr('data-sort-index'), 10);
 
@@ -93,7 +93,7 @@ angular.module('authoringEnvironmentApp').directive('dragSort', [
                     dropIdx = sortIdx + 1;
                 }
 
-                // if new element index different from current one,
+                // if new element index different from the current one,
                 // update it and add DOM placeholder (for the gap)
                 if (dropIdx !== newIdx) {
 
@@ -125,8 +125,9 @@ angular.module('authoringEnvironmentApp').directive('dragSort', [
             });
 
             $element.on('drop', function (e) {
-                // just let the drop even through to the parent container
                 e.preventDefault();
+                // let the drop even through to the parent container, thus
+                // don't call e.stopPropagation()
             });
         };
 
@@ -152,8 +153,8 @@ angular.module('authoringEnvironmentApp').directive('dragSort', [
 
             $container.on('drop', function (e) {
                 var dragData,
-                    item,
-                    oldIndex;
+                    item,      // item that was dragged around
+                    oldIndex;  // item's original index in collection
 
                 e.preventDefault();
                 e.stopPropagation();
@@ -164,10 +165,12 @@ angular.module('authoringEnvironmentApp').directive('dragSort', [
                 oldIndex = dragData.sortIndex;
 
                 if (newIdx > oldIndex) {
-                    newIdx -= 1;  // correction for the dragged element itself
+                    // there is an extra drop slot after the dragged item,
+                    // thus new position index equals (slot index - 1)
+                    newIdx -= 1;
                 }
 
-                if (oldIndex !== newIdx) {  // order must be changed
+                if (oldIndex !== newIdx) {  // order changed
                     item = scope.items.splice(oldIndex, 1)[0];
                     scope.items.splice(newIdx, 0, item);
                     scope.$apply();
