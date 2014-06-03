@@ -2524,14 +2524,35 @@ a:hover {
                     border:none;
                     .box-shadow(none);
                     padding: 4px 2px;
-                    overflow: hidden;
+                    overflow: auto;
                     .title-block {
-                        width: 70%;
-                        margin:6px 0 0;
-                    }
-                    .editable.title {
-                        width:100%;
-                    }
+                        width: 72%;
+                        margin:2px 0 3px 0;
+                        line-height: 14px;
+                        text-transform: none;
+                        font-size: 12px;
+                        font-weight: 400;
+                        .title {                         
+                            border: 0;
+                            border: 1px solid #fff;
+                            width:100%;
+                            line-height: 16px;
+                            padding: 3px 4px;
+                            display:inline-block;                            
+                        }
+                        .editable {
+                            width:100%;
+                            padding:3px 4px;
+                            border-style: dashed;
+                            border-color: #67afe6;
+                            border-width: 1px;
+                            &:focus {
+                                .box-shadow(0 0 5px 0 rgba(103,175,230, .7));
+                                outline: 0;
+                                border-style: solid;
+                            }                            
+                        }
+                    }                    
                     .btn {
                         margin: 0;
                         padding: 4px 6px;
@@ -2570,22 +2591,16 @@ a:hover {
                         }
                 }  
             }
-            &.collapsed:hover {               
-            }
-        }
-        .title {
-            margin: 0;
-            line-height: 14px;
-            text-transform: none;
-            font-size: 12px;
-            font-weight: 400;
         }
         .code {
-            background:#fff;
-            border: 1px solid #67afe6;
+            background: #fff;
+            border-style: dashed;
+            border-color: #67afe6;
+            border-width: 1px;
             font-size: 11px;
             line-height: normal;
             padding: 8px 10px;
+            color: #222;
             &::-webkit-scrollbar { width: 8px; height: 8px; margin: -1px 0; }
             &::-webkit-scrollbar-thumb { background: #949494; }
             &::-webkit-scrollbar-thumb:hover { background: #6e6e6e; }
@@ -2595,6 +2610,7 @@ a:hover {
             &:focus {
                 .box-shadow(0 0 5px 0 rgba(103,175,230, .7));
                 outline: 0;
+                border-style: solid;
             }
         }
     }
