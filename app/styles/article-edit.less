@@ -2272,9 +2272,11 @@ a:hover {
                 &::-webkit-scrollbar-thumb:hover { background: #6e6e6e; border-left: 6px solid rgba(0,0,0,0);background-clip: padding-box; }
 
                 .new-item-slot {
-                    height: 8px;
-                    border: 1px dashed black;
-                    background-color: orange;
+                    height: 86px;
+                    border: 1px dashed #a6d9ee;
+                    background-color: #edf4f7;
+                    margin-bottom: 8px;
+                    .border-radius(4px);
                 }
             }
 
@@ -2290,8 +2292,9 @@ a:hover {
                 .border-radius(4px);
 
                 &.dragged {
-                    opacity: 0.4;
-                    background-color: Gold;
+                    opacity: 0.5;
+                    background-color: #eee;   
+                    cursor:all-scroll;                 
                 }
 
                 .drag-bar {
@@ -2309,7 +2312,7 @@ a:hover {
                 &:hover {
                     border: 1px solid #ccc;
                     .box-shadow(0 1px 0px #ccc);
-                    cursor:pointer;
+                    cursor:move;
                     .drag-bar {
                         visibility:visible;
                     }
