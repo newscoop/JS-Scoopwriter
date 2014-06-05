@@ -391,6 +391,23 @@ describe('Controller: PaneAuthorsCtrl', function () {
             }
         );
 
+        it('sets role change watch on new author on sucessful server response',
+            function () {
+                scope.authors = [{id: 1}, {id: 2}];
+                author.articleRole = {id: 13, name: 'Lector'};
+                spyOn(ctrl, 'setRoleChangeWatch');
+
+                scope.addAuthorToArticle();
+                articleDeferred.resolve({number: 75, language: 'en'});
+                deferredAddToArticle.resolve();
+                scope.$apply();
+
+                expect(ctrl.setRoleChangeWatch).toHaveBeenCalled();
+                expect(ctrl.setRoleChangeWatch.mostRecentCall.args[0])
+                    .toBe(author);  // need to check for object *identity*!
+            }
+        );
+
         it('clears addingNewAuthor flag on sucessful server response',
             function () {
                 scope.addAuthorToArticle();
