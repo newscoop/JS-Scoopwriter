@@ -130,6 +130,7 @@ angular.module('authoringEnvironmentApp').controller('PaneAuthorsCtrl', [
                     // append to the end, since this is the same way as it
                     // works on the server
                     $scope.authors.push(author);
+                    self.setRoleChangeWatch(author);
                 })
                 .finally(function () {
                     $scope.addingNewAuthor = false;
