@@ -1,5 +1,12 @@
 'use strict';
-angular.module('authoringEnvironmentApp').factory('snippet', [
+
+/**
+* A factory which creates a snippet model.
+*
+* @class Snippet
+*/
+'use strict';
+angular.module('authoringEnvironmentApp').factory('Snippet', [
     '$resource',
     function ($resource) {
         return {

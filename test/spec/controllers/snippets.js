@@ -1,6 +1,6 @@
 'use strict';
 
-describe('Controller: SnippetsCtrl', function () {
+describe('Controller: PaneSnippetsCtrl', function () {
 
     // load the controller's module
     beforeEach(module('authoringEnvironmentApp'));
@@ -11,7 +11,7 @@ describe('Controller: SnippetsCtrl', function () {
     // Initialize the controller and a mock scope
     beforeEach(inject(function ($controller, $rootScope) {
         scope = $rootScope.$new();
-        SnippetsCtrl = $controller('SnippetsCtrl', {
+        SnippetsCtrl = $controller('PaneSnippetsCtrl', {
             $scope: scope
         });
     }));

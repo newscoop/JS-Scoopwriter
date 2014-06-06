@@ -1,5 +1,5 @@
 'use strict';
-angular.module('authoringEnvironmentApp').controller('SnippetsCtrl', [
+angular.module('authoringEnvironmentApp').controller('PaneSnippetsCtrl', [
     '$scope',
     function ($scope) {
         function decorate(snippet) {
