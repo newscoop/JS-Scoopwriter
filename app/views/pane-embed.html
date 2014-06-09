@@ -2,28 +2,19 @@
   <div class="panel-title">
     Embed Code
   </div>
-  <div class="add-element" ng-class="{expanded: adding}">
+
+  <div class="add-element" ng-class="{expanded: showAddSnippet}">
     <div class="heading">
-      <button
-         class="btn btn-sf-invisible"
-         data-test-button="add"
-         ng-click="adding = true"
-         ng-hide="adding"
-         >
-        <span class="glyphicon glyphicon-plus"></span><span class="add-text">ADD A SNIPPET</span>
-      </button>
-      <button
-         class="btn btn-sf-invisible"
-         ng-click="adding = false"
-         ng-show="adding"
-         >
-        <span class="glyphicon glyphicon-minus"></span><span class="add-text">ADD A SNIPPET</span>
+      <button class="btn btn-sf-invisible"
+              ng-click="showAddSnippet = !showAddSnippet">
+        <span class="glyphicon"
+              ng-class="{'glyphicon-plus': !showAddSnippet,
+                         'glyphicon-minus': showAddSnippet}"
+              ></span><span class="add-text">ADD A SNIPPET</span>
       </button>
     </div>
-    <div
-       ng-show="adding"
-       class="body"
-       >
+
+    <div ng-show="showAddSnippet" class="body">
       <div class="input-name">Title</div>
       <input
          class="editor-input"
@@ -53,8 +44,9 @@
       </div>
     </div>
   </div>
+
   <div class="attached-title">Attached code snippets</div>
-  <div class="list" ng-class="{low: adding, high: !adding}">
+  <div class="list" ng-class="{low: showAddSnippet, high: !showAddSnippet}">
 
     <div
        ng-repeat="snippet in snippets"
@@ -68,17 +60,17 @@
         <span class="expand"></span>
         <div class="pull-right">
           <button
-             class="btn btn-sf-invisible pull-right"
-             ng-click="remove(snippet.id)"
-             >          
-            <i class="fa fa-trash-o"></i>
+              class="btn btn-sf-invisible pull-right"
+              title="Remove"
+              ng-click="confirmRemoveSnippet(snippet)">
+              <i class="fa fa-trash-o"></i>
           </button>
           <button
-             class="btn btn-sf-invisible pull-right"
-             ng-click="snippet.edit()"
-             >
-            <i class="fa fa-pencil"></i>
-          </button>
+              class="btn btn-sf-invisible pull-right"
+              title="Edit"
+              ng-click="toggleEdit(snippet, true)">
+              <i class="fa fa-pencil"></i>
+            </button>
         </div>
         
         <div class="pull-left">
@@ -101,13 +93,13 @@
           <input
              class="editable"
              ng-model="snippet.title"
-            ng-show="snippet.editing">
+             ng-show="snippet.editing">
           <span
             class="title"
             ng-bind="snippet.title"
             ng-hide="snippet.editing">
           </span>
-        </div>              
+        </div>
 
       </div><!-- end panel heading -->
 
@@ -120,13 +112,15 @@
         <div class="footer" ng-show="snippet.editing">
           <button
              class="btn btn-sf-invisible pull-right"
-             ng-click="snippet.editing = false"
+             title="Save"
+             ng-click="updateSnippet(snippet)"
              >
              <i class="fa fa-floppy-o"></i>
           </button>
           <button
              class="btn btn-sf-invisible pull-right"
-             ng-click="snippet.cancel()"
+             title="Cancel"
+             ng-click="toggleEdit(snippet, false)"
              >
             <i class="fa fa-times"></i>
           </button>
