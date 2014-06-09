@@ -12,7 +12,7 @@ angular.module('authoringEnvironmentApp').controller('PaneSnippetsCtrl', [
         // (idea: perhaps wrap all UI flags into snippet.UI object
         // snippet.UI.editing, snippet.UI.expanded, snippet.UI.copy)
 
-        $scope.showAddSnippet = false;  // TODO: test default value
+        $scope.showAddSnippet = false;
 
         // TODO: comments
         $scope.toggleEdit = function (snippet, editMode) {

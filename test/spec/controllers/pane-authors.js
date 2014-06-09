@@ -110,11 +110,11 @@ describe('Controller: PaneAuthorsCtrl', function () {
     });
 
     it('initializes addingNewAuthor flag to false', function () {
-        expect(scope.addingNewAuthor).toEqual(false);
+        expect(scope.addingNewAuthor).toBe(false);
     });
 
     it('initializes showAddAuthor flag to true', function () {
-        expect(scope.showAddAuthor).toEqual(true);
+        expect(scope.showAddAuthor).toBe(true);
     });
 
     it('sets correct configuration options for select2 widget', function () {

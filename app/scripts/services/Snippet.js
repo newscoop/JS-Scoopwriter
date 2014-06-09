@@ -12,7 +12,7 @@ angular.module('authoringEnvironmentApp').factory('Snippet', [
     function ($http, $q, configuration) {
         var API_ROOT = configuration.API.full,
             self = this,
-            Snippet = function () {};
+            Snippet = function () {};  // snippet constructor function
 
         var snippetsResponseMock = [
             {
