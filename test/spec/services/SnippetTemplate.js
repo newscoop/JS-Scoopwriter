@@ -19,6 +19,54 @@ describe('Factory: SnippetTemplate', function () {
         $httpBackend = _$httpBackend_;
     }));
 
+
+    describe('createFromApiData() method', function () {
+        var data;
+
+        beforeEach(function () {
+            data = {
+                id: 42, name: 'YouTube', favourite: false, enabled: true,
+                fields: {
+                    URL: {
+                        name: 'URL',
+                        type: 'url',
+                        scope: 'frontend',
+                        required: true
+                    }
+                }
+            };
+        });
+
+        it('creates SnippetTemplate instance from data object',
+            function () {
+                var instance = SnippetTemplate.createFromApiData(data);
+
+                expect(instance instanceof SnippetTemplate).toEqual(true);
+                expect(instance.id).toEqual(42);
+                expect(instance.name).toEqual('YouTube');
+                expect(instance.favourite).toEqual(false);
+                expect(instance.enabled).toEqual(true);
+                expect(instance.fields).toEqual([data.fields.URL]);
+            }
+        );
+
+        it('skips non-frontend fields in data',
+            function () {
+                var instance;
+
+                data.fields.foo = {
+                    name: 'foo',
+                    type: 'integer',
+                    scope: 'backend',
+                    required: false
+                };
+
+                instance = SnippetTemplate.createFromApiData(data);
+                expect(instance.fields).toEqual([data.fields.URL]);
+            }
+        );
+    });
+
     describe('getAll() method', function () {
         beforeEach(function () {
             templates = [
@@ -94,7 +142,6 @@ describe('Factory: SnippetTemplate', function () {
                 expect(spy).toHaveBeenCalledWith('Server error');
             });
         });
-
     });
 
 });

@@ -22,7 +22,6 @@ angular.module('authoringEnvironmentApp').factory('SnippetTemplate', [
         *   (as returned by API)
         * @return {Object} new SnippetTemplate instance
         */
-        // TODO: tests
         self.createFromApiData = function (data) {
             var template = Object.create(SnippetTemplate.prototype);
 
@@ -36,7 +35,7 @@ angular.module('authoringEnvironmentApp').factory('SnippetTemplate', [
                 if (field.scope !== 'frontend') {
                     return;  // skip internal Newscoop fields
                 } else {
-                    template.fields.push(field);
+                    template.fields.push(angular.copy(field));
                 }
             });
 
@@ -76,6 +75,9 @@ angular.module('authoringEnvironmentApp').factory('SnippetTemplate', [
 
             return templates;
         };
+
+        // expose as "class" method
+        SnippetTemplate.createFromApiData = self.createFromApiData;
 
         return SnippetTemplate;
     }
