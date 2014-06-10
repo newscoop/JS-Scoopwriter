@@ -38,20 +38,61 @@ describe('Factory: Snippet', function () {
         });
 
         it('sends a correct request to API', function () {
-            var aa = Snippet.getAllByArticle(77, 'pl');
+            Snippet.getAllByArticle(77, 'pl');
         });
 
-        // TODO: test returns "future" object
+        it('returns an empty array which is populated on successful response',
+            function () {
+                var result = Snippet.getAllByArticle(77, 'pl');
+                expect(result instanceof Array).toEqual(true);
+                expect(result.length).toEqual(0);
 
-        // TODO: test populates future object on success
+                $httpBackend.flush(1);
+                expect(result.length).toEqual(3);
+        });
 
-        // TODO: does not populate future object on error
+        it('returned array\'s promise is resolved on successful response',
+            function () {
+                var result,
+                    spy = jasmine.createSpy();
 
-        // TODO: future object has a $promise (check type!)
+                result = Snippet.getAllByArticle(77, 'pl');
+                result.$promise.then(spy);
+                expect(spy).not.toHaveBeenCalled();
 
-        // TODO: resolves object.$promise on success
+                $httpBackend.flush(1);
+                expect(spy).toHaveBeenCalled();
+        });
 
-        // TODO: rejects object.$promise on error
+        describe('on server error response', function () {
+            beforeEach(function () {
+                $httpBackend.resetExpectations();
+                $httpBackend.expectGET(
+                    rootURI + '/snippets/article/77/pl?items_per_page=99999'
+                )
+                .respond(500, '');
+            });
+
+            it('returned array is not populated', function () {
+                var result = Snippet.getAllByArticle(77, 'pl');
+                expect(result.length).toEqual(0);
+                $httpBackend.flush(1);
+                expect(result.length).toEqual(0);  // still empty
+            });
+
+            it('returned array\'s promise is rejected', function () {
+                var result,
+                    spy = jasmine.createSpy();
+
+                result = Snippet.getAllByArticle(77, 'pl');
+                result.$promise.catch(spy);
+                expect(spy).not.toHaveBeenCalled();
+
+                $httpBackend.flush(1);
+                expect(spy).toHaveBeenCalled();
+            });
+        });
+
     });
 
 });

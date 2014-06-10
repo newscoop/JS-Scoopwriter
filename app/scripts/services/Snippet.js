@@ -14,6 +14,7 @@ angular.module('authoringEnvironmentApp').factory('Snippet', [
             self = this,
             Snippet = function () {};  // snippet constructor function
 
+        // TODO: later delete when not needed anymore!
         var snippetsResponseMock = [
             {
                 id: 1,
@@ -62,7 +63,6 @@ angular.module('authoringEnvironmentApp').factory('Snippet', [
         *   actual data (once the http promise has been successfully resolved)
         */
         Snippet.getAllByArticle = function (number, language) {
-
             var deferredGet = $q.defer(),
                 snippets = [],
                 url;
@@ -75,10 +75,10 @@ angular.module('authoringEnvironmentApp').factory('Snippet', [
 
             $http.get(url, {
                 params: {
-                    items_per_page: 99999  // de facto "all"  TODO: needed?
+                    items_per_page: 99999  // de facto "all"  XXX: needed?
                 }
             }).success(function (response) {
-                JSON.parse(response).items.forEach(function (item) {
+                response.items.forEach(function (item) {
                     item = self.createFromApiData(item);
                     snippets.push(item);
                 });
@@ -88,10 +88,10 @@ angular.module('authoringEnvironmentApp').factory('Snippet', [
                 // TODO: just for now when API misbehaves for empty
                 // result sets
                 // pretend that request succeeded
-                snippetsResponseMock.forEach(function (item) {
-                    item = self.createFromApiData(item);
-                    snippets.push(item);
-                });
+                // snippetsResponseMock.forEach(function (item) {
+                //     item = self.createFromApiData(item);
+                //     snippets.push(item);
+                // });
                 deferredGet.reject();  // XXX: give reason?
             });
 
