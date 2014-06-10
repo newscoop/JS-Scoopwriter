@@ -21,10 +21,9 @@ angular.module('authoringEnvironmentApp').controller('PaneSnippetsCtrl', [
         *
         * @method clearNewSnippetForm
         */
-        // TODO: add tests
         $scope.clearNewSnippetForm = function () {
-            $scope.newSnippetTitle = '';
-            $scope.newSnippetCode = '';
+            $scope.newSnippet.title = '';
+            $scope.newSnippet.template = null;
         };
 
         /**
@@ -91,9 +90,10 @@ angular.module('authoringEnvironmentApp').controller('PaneSnippetsCtrl', [
 
         $scope.showAddSnippet = false;
 
-        // TODO: tests for default values!
-        $scope.newSnippetTitle = '';
-        $scope.newSnippetCode = '';
+        $scope.newSnippet = {
+            title: '',
+            template: null
+        };
         $scope.addingNewSnippet = false;
 
         $scope.snippetTemplates = SnippetTemplate.getAll();

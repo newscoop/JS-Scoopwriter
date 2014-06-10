@@ -19,12 +19,12 @@
       <input
           class="editor-input"
           placeholder="Title"
-          ng-model="newSnippetTitle">
+          ng-model="newSnippet.title">
 
       <div class="input-name">Template</div>
       <select
-          ng-model="newSnippetTemplateId"
-          ng-options="template.id as template.name for
+          ng-model="newSnippet.template"
+          ng-options="template as template.name for
                       template in snippetTemplates"
           ng-disabled="addingNewSnippet"
           >
@@ -42,13 +42,13 @@
             data-test-button="new"
             ng-click="addNewSnippetToArticle()"
             ng-disabled="addingNewSnippet ||
-                         !newSnippetTitle || !newSnippetTemplateId"
+                         !newSnippet.title || !newSnippet.template"
             >Add</button>
         <button
             class="btn btn-default btn-sm pull-right"
             ng-click="clearNewSnippetForm()"
             ng-disabled="addingNewSnippet ||
-                        (!newSnippetTitle && !newSnippetTemplateId)"
+                        (!newSnippet.title && !newSnippet.template)"
             >Clear</button>
       </div>
     </div>

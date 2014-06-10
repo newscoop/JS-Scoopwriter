@@ -49,8 +49,16 @@ describe('Controller: PaneSnippetsCtrl', function () {
         }
     ));
 
-    it('initializes showAddSnippet flag to false', function () {
+    it('initializes scope\'s showAddSnippet flag to false', function () {
         expect(scope.showAddSnippet).toBe(false);
+    });
+
+    it('initializes newSnippet object in scope', function () {
+        expect(scope.newSnippet).toEqual({title: '', template: null});
+    });
+
+    it('initializes scope\'s addingNewSnippet flag to false', function () {
+        expect(scope.addingNewSnippet).toBe(false);
     });
 
     it('initializes a list of snippet templates in scope', function () {
@@ -67,5 +75,16 @@ describe('Controller: PaneSnippetsCtrl', function () {
         scope.$apply();
         expect(Snippet.getAllByArticle).toHaveBeenCalledWith(55, 'pl');
         expect(scope.snippets).toEqual([{id:1}, {id:2}, {id:3}]);
+    });
+
+    describe('scope\'s clearNewSnippetForm() method', function () {
+        it('clears all new snippet form fields', function () {
+            scope.newSnippet = {
+                title: 'YouTube',
+                template: {id: 5, code: '<foo>'}
+            };
+            scope.clearNewSnippetForm();
+            expect(scope.newSnippet).toEqual({title: '', template: null});
+        });
     });
 });
