@@ -3,16 +3,9 @@ angular.module('authoringEnvironmentApp').controller('PaneSnippetsCtrl', [
     '$scope',
     'article',
     'Snippet',
+    'SnippetTemplate',
     'modalFactory',
-    function ($scope, article, Snippet, modalFactory) {
-
-        // TODO: init UI flags like editing, expanded etc. for
-        // snippets objects? on load and on adding new snippet
-        // (set $watchCollection, just like in authors?)
-        // (idea: perhaps wrap all UI flags into snippet.UI object
-        // snippet.UI.editing, snippet.UI.expanded, snippet.UI.copy)
-
-        $scope.showAddSnippet = false;
+    function ($scope, article, Snippet, SnippetTemplate, modalFactory) {
 
         // TODO: comments
         $scope.toggleEdit = function (snippet, editMode) {
@@ -22,6 +15,45 @@ angular.module('authoringEnvironmentApp').controller('PaneSnippetsCtrl', [
             // TODO: copy snippet data and restore if user cancels
             // editing
         };
+
+        /**
+        * Resets all new snippet form fields.
+        *
+        * @method clearNewSnippetForm
+        */
+        // TODO: add tests
+        $scope.clearNewSnippetForm = function () {
+            $scope.newSnippetTitle = '';
+            $scope.newSnippetCode = '';
+        };
+
+        /**
+        * Adds a new snippet to the article.
+        *
+        * @method addNewSnippetToArticle
+        */
+        // TODO: tests
+        // $scope.addNewSnippetToArticle = function () {
+        //     var articleData,
+        //         newSnippet;
+
+        //     $scope.addingNewSnippet = true;
+
+        //     article.promise.then(function (data) {
+        //         articleData = data;
+        //         return Snippet.create(
+        //             $scope.newSnippetTitle, $scope.newSnippetCode);
+        //     })
+        //     .then(function (snippet) {
+        //         newSnippet = snippet;
+        //         // TODO: attach snippet to article, on success
+        //         // append it to $scope.snippets
+        //         // articleData.number, articleData.language;
+        //     })
+        //     .finally(function () {
+        //         $scope.addingNewSnippet = false;
+        //     });
+        // };
 
         // TODO: comments
         $scope.updateSnippet = function (snippet) {
@@ -50,6 +82,21 @@ angular.module('authoringEnvironmentApp').controller('PaneSnippetsCtrl', [
                 console.log('TODO: remove snippet', snippet);
             });
         };
+
+        // TODO: init UI flags like editing, expanded etc. for
+        // snippets objects? on load and on adding new snippet
+        // (set $watchCollection, just like in authors?)
+        // (idea: perhaps wrap all UI flags into snippet.UI object
+        // snippet.UI.editing, snippet.UI.expanded, snippet.UI.copy)
+
+        $scope.showAddSnippet = false;
+
+        // TODO: tests for default values!
+        $scope.newSnippetTitle = '';
+        $scope.newSnippetCode = '';
+        $scope.addingNewSnippet = false;
+
+        $scope.snippetTemplates = SnippetTemplate.getAll();
 
         // initialization: retrieve all article snippets from server
         article.promise.then(function (articleData) {

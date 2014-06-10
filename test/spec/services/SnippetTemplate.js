@@ -1,36 +1,36 @@
 'use strict';
 
 /**
-* Module with tests for the Snippet factory.
+* Module with tests for the SnippetTemplate factory.
 *
-* @module Snippet factory tests
+* @module SnippetTemplate factory tests
 */
 
-describe('Factory: Snippet', function () {
+describe('Factory: SnippetTemplate', function () {
 
-    var Snippet,
-        snippets,
+    var SnippetTemplate,
+        templates,
         $httpBackend;
 
     beforeEach(module('authoringEnvironmentApp'));
 
-    beforeEach(inject(function (_Snippet_, _$httpBackend_) {
-        Snippet = _Snippet_;
+    beforeEach(inject(function (_SnippetTemplate_, _$httpBackend_) {
+        SnippetTemplate = _SnippetTemplate_;
         $httpBackend = _$httpBackend_;
     }));
 
-    describe('getAllByArticle() method', function () {
+    describe('getAll() method', function () {
         beforeEach(function () {
-            snippets = [
-                {id: 1, title: 'foo 1', code: '<bar 1>'},
-                {id: 2, title: 'foo 2', code: '<bar 2>'},
-                {id: 3, title: 'foo 3', code: '<bar 3>'},
+            templates = [
+                {id: 10, name: 'tpl 1', fields: {}},
+                {id: 20, name: 'tpl 2', fields: {}},
+                {id: 30, name: 'tpl 3', fields: {}},
             ];
 
             $httpBackend.expectGET(
-                rootURI + '/snippets/article/77/pl?items_per_page=99999'
+                rootURI + '/snippetTemplates?items_per_page=99999'
             )
-            .respond(200, JSON.stringify({ items: snippets }));
+            .respond(200, JSON.stringify({ items: templates }));
         });
 
         afterEach(function () {
@@ -38,12 +38,12 @@ describe('Factory: Snippet', function () {
         });
 
         it('sends a correct request to API', function () {
-            Snippet.getAllByArticle(77, 'pl');
+            SnippetTemplate.getAll();
         });
 
         it('returns an empty array which is populated on successful response',
             function () {
-                var result = Snippet.getAllByArticle(77, 'pl');
+                var result = SnippetTemplate.getAll();
                 expect(result instanceof Array).toEqual(true);
                 expect(result.length).toEqual(0);
 
@@ -56,7 +56,7 @@ describe('Factory: Snippet', function () {
                 var result,
                     spy = jasmine.createSpy();
 
-                result = Snippet.getAllByArticle(77, 'pl');
+                result = SnippetTemplate.getAll();
                 result.$promise.then(spy);
                 expect(spy).not.toHaveBeenCalled();
 
@@ -68,13 +68,13 @@ describe('Factory: Snippet', function () {
             beforeEach(function () {
                 $httpBackend.resetExpectations();
                 $httpBackend.expectGET(
-                    rootURI + '/snippets/article/77/pl?items_per_page=99999'
+                    rootURI + '/snippetTemplates?items_per_page=99999'
                 )
                 .respond(500, 'Server error');
             });
 
             it('returned array is not populated', function () {
-                var result = Snippet.getAllByArticle(77, 'pl');
+                var result = SnippetTemplate.getAll();
                 expect(result.length).toEqual(0);
                 $httpBackend.flush(1);
                 expect(result.length).toEqual(0);  // still empty
@@ -84,7 +84,7 @@ describe('Factory: Snippet', function () {
                 var result,
                     spy = jasmine.createSpy();
 
-                result = Snippet.getAllByArticle(77, 'pl');
+                result = SnippetTemplate.getAll();
                 result.$promise.catch(function (reason) {
                     spy(reason);
                 });

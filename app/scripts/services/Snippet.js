@@ -14,33 +14,15 @@ angular.module('authoringEnvironmentApp').factory('Snippet', [
             self = this,
             Snippet = function () {};  // snippet constructor function
 
-        // TODO: later delete when not needed anymore!
-        var snippetsResponseMock = [
-            {
-                id: 1,
-                title: 'Sound of the story',
-                code: '<iframe width="100%" height="166" scrolling="no" frameborder="no" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/128775977&amp;color=ff6600&amp;auto_play=false&amp;show_artwork=true"></iframe>'
-            },
-            {
-                id: 2,
-                title: 'Sound of the story 2',
-                code: '<iframe width="100%" height="166" scrolling="no" frameborder="no" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/128775977&amp;color=ff6600&amp;auto_play=false&amp;show_artwork=true"></iframe>'
-            },
-            {
-                id: 3,
-                title: 'Sound of the story 3',
-                code: '<iframe width="100%" height="166" scrolling="no" frameborder="no" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/128775977&amp;color=ff6600&amp;auto_play=false&amp;show_artwork=true"></iframe>'
-            }
-        ];
-
         /**
         * Converts plain snippet data object to a new Snippet instance.
         *
         * @method createFromApiData
-        * @param data {Object} plan object containing snippet data
+        * @param data {Object} plain object containing snippet data
         *   (as returned by API)
-        * @return {Object} Snippet resource object
+        * @return {Object} new Snippet instance
         */
+        // TODO: tests
         self.createFromApiData = function (data) {
             var snippet = Object.create(Snippet.prototype);
             // TODO: copy properties as needed
@@ -82,21 +64,30 @@ angular.module('authoringEnvironmentApp').factory('Snippet', [
                     item = self.createFromApiData(item);
                     snippets.push(item);
                 });
-                // XXX: resolve with data that you put into results array?
                 deferredGet.resolve();
-            }).error(function (data, status, headers, config) {
-                // TODO: just for now when API misbehaves for empty
-                // result sets
-                // pretend that request succeeded
-                // snippetsResponseMock.forEach(function (item) {
-                //     item = self.createFromApiData(item);
-                //     snippets.push(item);
-                // });
-                deferredGet.reject();  // XXX: give reason?
+            }).error(function (responseBody) {
+                deferredGet.reject(responseBody);
             });
 
             return snippets;
         };
+
+        // // TODO: tests
+        // Snippet.create = function (name) {
+        //     var deferredPost = $q.defer(),
+        //         url = API_ROOT + '/snippets';
+
+        //     $http.post(url, {
+        //         name: name
+        //     }).success(function (response) {
+        //         var snippet = {};  // TODO: create new Snippet instance
+        //         deferredPost.resolve(snippet);
+        //     }).error(function (data, status, headers, config) {
+        //         deferredPost.reject();  // XXX: give reason? responseBody?
+        //     });
+
+        //     return deferredPost.promise;
+        // };
 
         // instance methods  XXX: just an example, later remove foo()
         Snippet.prototype.foo = function () {

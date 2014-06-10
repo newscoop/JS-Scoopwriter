@@ -17,30 +17,39 @@
     <div ng-show="showAddSnippet" class="body">
       <div class="input-name">Title</div>
       <input
-         class="editor-input"
-         placeholder="Title"
-         ng-model="create.title"
-         >
-      <div class="input-name">Code</div>
+          class="editor-input"
+          placeholder="Title"
+          ng-model="newSnippetTitle">
+
+      <div class="input-name">Template</div>
+      <select
+          ng-model="newSnippetTemplateId"
+          ng-options="template.id as template.name for
+                      template in snippetTemplates"
+          ng-disabled="addingNewSnippet"
+          >
+        <option value="">-- choose a template --</option>
+      </select>
+
+<!--       <div class="input-name">Code</div>
       <textarea
          class="editor-input"
-         ng-model="create.code"
-         >
-      </textarea>
+         ng-model="newSnippetCode"></textarea> -->
+
       <div class="controls">
         <button
-           class="btn btn-primary btn-sm pull-right"
-           data-test-button="new"
-           ng-click="add()"
-           >
-          Save
-        </button>
+            class="btn btn-primary btn-sm pull-right"
+            data-test-button="new"
+            ng-click="addNewSnippetToArticle()"
+            ng-disabled="addingNewSnippet ||
+                         !newSnippetTitle || !newSnippetTemplateId"
+            >Add</button>
         <button
-           class="btn btn-default btn-sm pull-right"
-           ng-click="cancel()"
-           >
-          Cancel
-        </button>
+            class="btn btn-default btn-sm pull-right"
+            ng-click="clearNewSnippetForm()"
+            ng-disabled="addingNewSnippet ||
+                        (!newSnippetTitle && !newSnippetTemplateId)"
+            >Clear</button>
       </div>
     </div>
   </div>
