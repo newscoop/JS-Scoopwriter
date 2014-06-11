@@ -27,32 +27,48 @@ angular.module('authoringEnvironmentApp').controller('PaneSnippetsCtrl', [
         };
 
         /**
-        * Adds a new snippet to the article.
+        * Creates a new snippet and then attaches it to the article.
         *
         * @method addNewSnippetToArticle
+        * @param snippetData {Object} object describing the new snippet
+        *   @param snippetData.title {String} new snippet's name
+        *   @param snippetData.template {Object} object describing snippet
+        *     template used for the new snippet
+        *     @param snippetData.template.id {Number} ID of the template
+        *     @param snippetData.template.fields {Object} Array containing
+        *       objects representing the template fields. Each object must
+        *       have a "name" property and a "fromValue" property (value of
+        *       the field as entered by user).
         */
-        // TODO: tests
-        // $scope.addNewSnippetToArticle = function () {
-        //     var articleData,
-        //         newSnippet;
+        $scope.addNewSnippetToArticle = function (snippetData) {
+            var fields = {},
+                newSnippet;
 
-        //     $scope.addingNewSnippet = true;
+            $scope.addingNewSnippet = true;
 
-        //     article.promise.then(function (data) {
-        //         articleData = data;
-        //         return Snippet.create(
-        //             $scope.newSnippetTitle, $scope.newSnippetCode);
-        //     })
-        //     .then(function (snippet) {
-        //         newSnippet = snippet;
-        //         // TODO: attach snippet to article, on success
-        //         // append it to $scope.snippets
-        //         // articleData.number, articleData.language;
-        //     })
-        //     .finally(function () {
-        //         $scope.addingNewSnippet = false;
-        //     });
-        // };
+            snippetData.template.fields.forEach(function (field) {
+                fields[field.name] = field.formValue;
+            });
+
+            Snippet.create(
+                snippetData.title, snippetData.template.id, fields
+            )
+            .then(function (snippet) {
+                newSnippet = snippet;
+                return article.promise;
+            })
+            .then(function (articleData) {
+                // TODO: attach snippet to article,
+                // articleData.number, articleData.language;
+
+                // append snippet to $scope.snippets on success (another then)
+                // newSnippet.addToArticle(
+                //    articleData.number, articleData.language)
+            })
+            .finally(function () {
+                $scope.addingNewSnippet = false;
+            });
+        };
 
         // TODO: comments
         $scope.updateSnippet = function (snippet) {

@@ -102,4 +102,24 @@ describe('Controller: PaneSnippetsCtrl', function () {
             expect(scope.newSnippet).toEqual({title: '', template: null});
         });
     });
+
+    describe('scope\'s addNewSnippetToArticle() method', function () {
+        beforeEach(function () {
+            // TODO: mock Snippet.create()
+        });
+
+        // TODO: sets the addingNewSnippet flag before doing anything
+
+        // TODO: clears scope's addingNewSnippet flag on success
+
+        // TODO: clears scope's addingNewSnippet flag on error
+
+        // TODO: calls snippet factory method with correct params
+        // (Snippet.create)
+
+        // TODO: attaches new snippet to article
+
+        // TODO: appends new snippet to snippets list on success
+        // (perhaps also does not append it on attaching error?)
+    });
 });

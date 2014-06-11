@@ -94,7 +94,72 @@ describe('Factory: Snippet', function () {
                 expect(spy).toHaveBeenCalledWith('Server error');
             });
         });
+    });
 
+    describe('create() method', function () {
+        var postDataCheck,
+            postDataCheckWrapper,
+            templateFields;
+
+        beforeEach(function () {
+            templateFields = {foo:'bar', baz:42};
+
+            // this can be easily customized in tests if needed
+            postDataCheck = function (data) {
+                return true;
+            };
+            postDataCheckWrapper = function (data) {
+                return postDataCheck(data);
+            };
+
+            $httpBackend.expectPOST(
+                rootURI + '/snippets', postDataCheckWrapper
+            ).respond(201, '');
+        });
+
+        afterEach(function () {
+            $httpBackend.verifyNoOutstandingExpectation();
+        });
+
+        it('sends a correct request to API', function () {
+            postDataCheck = function (data) {
+                var expected = JSON.stringify({
+                    name: 'foo',
+                    template: 7,
+                    'snippet[fields][][foo]': 'bar',
+                    'snippet[fields][][baz]': 42
+                });
+                return data === expected;
+            };
+            Snippet.create('foo', 7, templateFields);
+        });
+
+        it('returns a promise', inject(function ($q) {
+            var deferred = $q.defer(),
+                promise;
+            promise = Snippet.create('foo', 7, templateFields)
+            expect(promise instanceof deferred.promise.constructor).toBe(true);
+        }));
+
+        // TODO: resolves promise wiht new Snippet instance on success
+
+        it('rejects given promise on server error', function () {
+            var errorSpy,
+                promise;
+
+            errorSpy = jasmine.createSpy();
+
+            $httpBackend.resetExpectations();
+            $httpBackend.expectPOST(
+                rootURI + '/snippets', postDataCheckWrapper
+            ).respond(500, 'Server error');
+
+            promise = Snippet.create('foo', 7, templateFields);
+            promise.catch(errorSpy);
+
+            $httpBackend.flush(1);
+            expect(errorSpy).toHaveBeenCalledWith('Server error');
+        });
     });
 
 });

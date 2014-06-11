@@ -72,22 +72,44 @@ angular.module('authoringEnvironmentApp').factory('Snippet', [
             return snippets;
         };
 
-        // // TODO: tests
-        // Snippet.create = function (name) {
-        //     var deferredPost = $q.defer(),
-        //         url = API_ROOT + '/snippets';
+        /**
+        * Creates a new snippet on the server and returns a Snippet instance
+        * representing it.
+        *
+        * @method create
+        * @param name {String} new snippet's name
+        * @param templateId {Number} ID of the snippet template to use
+        *   by the new snippet
+        * @param fields {Object} object with (key, value) pairs, where "key" is
+        *   a name of a field in the snippet template and "value" is the
+        *   value to use for this field
+        * @return {Object} promise object which is resolved with new Snippet
+        *   instance on success and rejected on error
+        */
+        Snippet.create = function (name, templateId, fields) {
+            var deferredPost = $q.defer(),
+                postData = {},
+                url = API_ROOT + '/snippets';
 
-        //     $http.post(url, {
-        //         name: name
-        //     }).success(function (response) {
-        //         var snippet = {};  // TODO: create new Snippet instance
-        //         deferredPost.resolve(snippet);
-        //     }).error(function (data, status, headers, config) {
-        //         deferredPost.reject();  // XXX: give reason? responseBody?
-        //     });
+            postData.name = name;
+            postData.template = templateId;
 
-        //     return deferredPost.promise;
-        // };
+            _.forEach(fields, function (fieldValue, fieldName) {
+                var paramName = 'snippet[fields][][' + fieldName + ']';
+                postData[paramName] = fieldValue;
+            });
+
+            $http.post(
+                url, postData
+            ).success(function (response) {
+                var snippet = {foo: 'bar'};  // TODO: create new Snippet instance
+                deferredPost.resolve(snippet);
+            }).error(function (responseBody) {
+                deferredPost.reject(responseBody);
+            });
+
+            return deferredPost.promise;
+        };
 
         // instance methods  XXX: just an example, later remove foo()
         Snippet.prototype.foo = function () {
