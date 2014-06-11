@@ -96,6 +96,12 @@ angular.module('authoringEnvironmentApp').controller('PaneSnippetsCtrl', [
         };
         $scope.addingNewSnippet = false;
 
+        $scope.inputFieldTypes = Object.freeze({
+            integer: 'number',
+            text: 'text',
+            url: 'url'
+        });
+
         $scope.snippetTemplates = SnippetTemplate.getAll();
 
         // initialization: retrieve all article snippets from server

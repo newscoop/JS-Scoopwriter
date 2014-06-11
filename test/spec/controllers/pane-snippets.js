@@ -61,6 +61,21 @@ describe('Controller: PaneSnippetsCtrl', function () {
         expect(scope.addingNewSnippet).toBe(false);
     });
 
+    it('initializes (template field type --> HTML input type) ' +
+       'mapping in scope',
+        function () {
+            // NOTE: must use a "frozen" version, otherwise built-in comparison
+            // fails (probably due to different data descriptors of object's
+            // properties)
+            var expected = Object.freeze({
+                integer: 'number',
+                text: 'text',
+                url: 'url'
+            });
+            expect(scope.inputFieldTypes).toEqual(expected);
+        }
+    );
+
     it('initializes a list of snippet templates in scope', function () {
         expect(SnippetTemplate.getAll).toHaveBeenCalled();
         expect(scope.snippetTemplates).toEqual([

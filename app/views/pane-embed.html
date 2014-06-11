@@ -14,15 +14,15 @@
       </button>
     </div>
 
-    <div ng-show="showAddSnippet" class="body">
+    <form ng-show="showAddSnippet" class="body">
       <div class="input-name">Title</div>
-      <input
+      <input required
           class="editor-input"
           placeholder="Title"
           ng-model="newSnippet.title">
 
-      <div class="input-name">Template</div>
-      <select
+      <div class="input-name">Snippet Template</div>
+      <select required
           ng-model="newSnippet.template"
           ng-options="template as template.name for
                       template in snippetTemplates"
@@ -31,10 +31,24 @@
         <option value="">-- choose a template --</option>
       </select>
 
-<!--       <div class="input-name">Code</div>
-      <textarea
-         class="editor-input"
-         ng-model="newSnippetCode"></textarea> -->
+      <label ng-if="newSnippet.template"
+          >(template fields marked with (*) are required)</label>
+
+      <div class="input-name"
+           ng-repeat-start="field in (newSnippet ? newSnippet.template.fields : [])"
+           >{{field.name}}<span ng-if="field.required">*</span>
+            ({{field.type}})
+      </div>
+      <div class="template-field"
+           ng-switch="field.type" ng-repeat-end>
+        <textarea ng-switch-when="textarea"
+                  ng-required="field.required"
+                  ng-model="field.formValue"></textarea>
+        <input ng-switch-default
+               type="{{inputFieldTypes[field.type] || 'text'}}"
+               ng-required="field.required"
+               ng-model="field.formValue"/>
+      </div>
 
       <div class="controls">
         <button
@@ -51,7 +65,7 @@
                         (!newSnippet.title && !newSnippet.template)"
             >Clear</button>
       </div>
-    </div>
+    </form>
   </div>
 
   <div class="attached-title">Attached code snippets</div>
