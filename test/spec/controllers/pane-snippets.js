@@ -93,13 +93,42 @@ describe('Controller: PaneSnippetsCtrl', function () {
     });
 
     describe('scope\'s clearNewSnippetForm() method', function () {
-        it('clears all new snippet form fields', function () {
+        it('clears all new snippet form fields (deep)', function () {
+            scope.snippetTemplates = [
+                {
+                    id:10,
+                    name: 'YouTube',
+                    fields: [
+                        {name: 'field_1', formValue: 'foobar'},
+                        {name: 'field_2', formValue: 'barbaz'}
+                    ]
+                },
+                {
+                    id:30,
+                    name: 'FB Like',
+                    fields: [ {name: 'counter', formValue: 42} ]
+                }
+            ];
+
             scope.newSnippet = {
                 title: 'YouTube',
                 template: {id: 5, code: '<foo>'}
             };
+
             scope.clearNewSnippetForm();
+
             expect(scope.newSnippet).toEqual({title: '', template: null});
+            expect(scope.snippetTemplates).toEqual([
+                {
+                    id:10, name: 'YouTube',
+                        fields: [
+                            {name: 'field_1'}, {name: 'field_2'}
+                        ]
+                },
+                {
+                    id:30, name: 'FB Like', fields: [{name: 'counter'}]
+                }
+            ]);
         });
     });
 

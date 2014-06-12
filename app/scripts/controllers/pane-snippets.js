@@ -24,6 +24,13 @@ angular.module('authoringEnvironmentApp').controller('PaneSnippetsCtrl', [
         $scope.clearNewSnippetForm = function () {
             $scope.newSnippet.title = '';
             $scope.newSnippet.template = null;
+
+            // deep reset of all template fields' values
+            $scope.snippetTemplates.forEach(function (template) {
+                template.fields.forEach(function (field) {
+                    delete field.formValue;
+                });
+            });
         };
 
         /**
