@@ -61,7 +61,7 @@ angular.module('authoringEnvironmentApp').factory('SnippetTemplate', [
 
             $http.get(url, {
                 params: {
-                    items_per_page: 99999  // de facto "all"  XXX: needed?
+                    items_per_page: 99999  // de facto "all"
                 }
             }).success(function (response) {
                 response.items.forEach(function (item) {

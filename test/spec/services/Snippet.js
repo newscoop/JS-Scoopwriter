@@ -22,9 +22,9 @@ describe('Factory: Snippet', function () {
     describe('getAllByArticle() method', function () {
         beforeEach(function () {
             snippets = [
-                {id: 1, title: 'foo 1', code: '<bar 1>'},
-                {id: 2, title: 'foo 2', code: '<bar 2>'},
-                {id: 3, title: 'foo 3', code: '<bar 3>'},
+                {id: 1, name: 'foo 1', code: '<bar 1>'},
+                {id: 2, name: 'foo 2', code: '<bar 2>'},
+                {id: 3, name: 'foo 3', code: '<bar 3>'},
             ];
 
             $httpBackend.expectGET(
@@ -97,40 +97,51 @@ describe('Factory: Snippet', function () {
     });
 
     describe('create() method', function () {
-        var postDataCheck,
-            postDataCheckWrapper,
+        var reqCheckers = {},  // http request checker functions
             templateFields;
 
         beforeEach(function () {
             templateFields = {foo:'bar', baz:42};
 
-            // this can be easily customized in tests if needed
-            postDataCheck = function (data) {
+            reqCheckers.postDataCheck = function (data) {
                 return true;
             };
-            postDataCheckWrapper = function (data) {
-                return postDataCheck(data);
+
+            reqCheckers.headersCheck = function (headers) {
+                return true;
             };
 
             $httpBackend.expectPOST(
-                rootURI + '/snippets', postDataCheckWrapper
-            ).respond(201, '');
+                rootURI + '/snippets',
+                function (data) {
+                    return reqCheckers.postDataCheck(data);
+                },
+                function (headers) {
+                    return reqCheckers.headersCheck(headers);
+                }
+            ).respond(201, '', {'x-location': '/api/snippets/1'});
         });
 
         afterEach(function () {
             $httpBackend.verifyNoOutstandingExpectation();
         });
 
-        it('sends a correct request to API', function () {
-            postDataCheck = function (data) {
-                var expected = JSON.stringify({
-                    name: 'foo',
-                    template: 7,
-                    'snippet[fields][][foo]': 'bar',
-                    'snippet[fields][][baz]': 42
+        it('sends a correct request to API to create a snippet', function () {
+            reqCheckers.postDataCheck = function (data) {
+                var expected = $.param({
+                    'snippet[name]': 'foo',
+                    'template': 7,
+                    'snippet[fields][foo][data]': 'bar',
+                    'snippet[fields][baz][data]': 42
                 });
                 return data === expected;
             };
+
+            reqCheckers.headersCheck = function (headers) {
+                return headers['Content-Type'] ===
+                    'application/x-www-form-urlencoded';
+            };
+
             Snippet.create('foo', 7, templateFields);
         });
 
@@ -141,25 +152,54 @@ describe('Factory: Snippet', function () {
             expect(promise instanceof deferred.promise.constructor).toBe(true);
         }));
 
-        // TODO: resolves promise wiht new Snippet instance on success
+        it('requests created snippet\'s data from API', function () {
+            $httpBackend.expectGET('/api/snippets/1')
+                .respond(200, {id: 1});
 
-        it('rejects given promise on server error', function () {
+            Snippet.create('foo', 7, templateFields);
+            $httpBackend.flush(1);
+        });
+
+        it('resolves promise wiht new Snippet instance on success',
+            function () {
+                var snippet,
+                    successSpy = jasmine.createSpy();
+
+                $httpBackend.expectGET('/api/snippets/1')
+                    .respond(200, {id: 1, templateId: 7, name: 'foo'});
+
+                Snippet.create('foo', 7, templateFields).then(successSpy);
+
+                $httpBackend.flush(2);
+
+                expect(successSpy).toHaveBeenCalled();
+                snippet = successSpy.mostRecentCall.args[0];
+
+                expect(snippet instanceof Snippet).toBe(true);
+                expect(angular.equals(
+                    snippet, { id: 1, templateId: 7, name: 'foo'}
+                )).toBe(true);
+            }
+        );
+
+        it('rejects given promise on snippet creation error', function () {
             var errorSpy,
                 promise;
 
             errorSpy = jasmine.createSpy();
 
             $httpBackend.resetExpectations();
-            $httpBackend.expectPOST(
-                rootURI + '/snippets', postDataCheckWrapper
-            ).respond(500, 'Server error');
+            $httpBackend.expectPOST(rootURI + '/snippets')
+                .respond(500, 'Server error');
 
             promise = Snippet.create('foo', 7, templateFields);
             promise.catch(errorSpy);
 
             $httpBackend.flush(1);
-            expect(errorSpy).toHaveBeenCalledWith('Server error');
+            expect(errorSpy).toHaveBeenCalled();
         });
     });
+
+    // TODO: addToArticle() method
 
 });

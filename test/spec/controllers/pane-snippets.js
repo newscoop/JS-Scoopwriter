@@ -54,7 +54,7 @@ describe('Controller: PaneSnippetsCtrl', function () {
     });
 
     it('initializes newSnippet object in scope', function () {
-        expect(scope.newSnippet).toEqual({title: '', template: null});
+        expect(scope.newSnippet).toEqual({name: '', template: null});
     });
 
     it('initializes scope\'s addingNewSnippet flag to false', function () {
@@ -99,25 +99,25 @@ describe('Controller: PaneSnippetsCtrl', function () {
                     id:10,
                     name: 'YouTube',
                     fields: [
-                        {name: 'field_1', formValue: 'foobar'},
-                        {name: 'field_2', formValue: 'barbaz'}
+                        {name: 'field_1', value: 'foobar'},
+                        {name: 'field_2', value: 'barbaz'}
                     ]
                 },
                 {
                     id:30,
                     name: 'FB Like',
-                    fields: [ {name: 'counter', formValue: 42} ]
+                    fields: [ {name: 'counter', value: 42} ]
                 }
             ];
 
             scope.newSnippet = {
-                title: 'YouTube',
+                name: 'YouTube',
                 template: {id: 5, code: '<foo>'}
             };
 
             scope.clearNewSnippetForm();
 
-            expect(scope.newSnippet).toEqual({title: '', template: null});
+            expect(scope.newSnippet).toEqual({name: '', template: null});
             expect(scope.snippetTemplates).toEqual([
                 {
                     id:10, name: 'YouTube',

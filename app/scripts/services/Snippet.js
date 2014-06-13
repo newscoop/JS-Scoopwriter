@@ -24,24 +24,11 @@ angular.module('authoringEnvironmentApp').factory('Snippet', [
         *   (as returned by API)
         * @return {Object} new Snippet instance
         */
-        // TODO: tests
         self.createFromApiData = function (data) {
             var snippet = Object.create(Snippet.prototype);
 
             ['id', 'templateId', 'name'].forEach(function (attribute) {
                 snippet[attribute] = data[attribute];
-            });
-
-            snippet.fields = {};
-
-            _.forEach(data.fields, function (field, fieldName) {
-                if (field.scope !== 'frontend') {
-                    return;
-                }
-                 snippet.fields[fieldName] = {};
-                 snippet.fields[fieldName].name = field.name;
-                 snippet.fields[fieldName].type = field.type;
-                 snippet.fields[fieldName].value = field.data;
             });
 
             return snippet;
@@ -72,7 +59,7 @@ angular.module('authoringEnvironmentApp').factory('Snippet', [
 
             $http.get(url, {
                 params: {
-                    items_per_page: 99999  // de facto "all"  XXX: needed?
+                    items_per_page: 99999  // de facto "all"
                 }
             }).success(function (response) {
                 response.items.forEach(function (item) {
@@ -118,7 +105,7 @@ angular.module('authoringEnvironmentApp').factory('Snippet', [
                 transformRequest: transform.formEncode
             })
             .then(function (response) {
-                var resourceUrl = response.headers()['x-location'];
+                var resourceUrl = response.headers('x-location');
                 return $http.get(resourceUrl);  // retrieve created snippet
             }, function () {
                 return $q.reject();

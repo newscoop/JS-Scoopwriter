@@ -19,7 +19,7 @@
       <input name="snippetTitle" required
           class="editor-input"
           placeholder="Title"
-          ng-model="newSnippet.title">
+          ng-model="newSnippet.name">
 
       <div class="input-name">Snippet Template</div>
       <select name="snippetTemplate" required
@@ -63,7 +63,7 @@
             class="btn btn-default btn-sm pull-right"
             ng-click="clearNewSnippetForm()"
             ng-disabled="addingNewSnippet ||
-                        (!newSnippet.title && !newSnippet.template)"
+                        (!newSnippet.name && !newSnippet.template)"
             >Clear</button>
       </div>
     </form>

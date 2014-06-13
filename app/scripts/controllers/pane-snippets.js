@@ -23,7 +23,7 @@ angular.module('authoringEnvironmentApp').controller('PaneSnippetsCtrl', [
         * @method clearNewSnippetForm
         */
         $scope.clearNewSnippetForm = function () {
-            $scope.newSnippet.title = '';
+            $scope.newSnippet.name = '';
             $scope.newSnippet.template = null;
 
             // deep reset of all template fields' values
@@ -39,7 +39,7 @@ angular.module('authoringEnvironmentApp').controller('PaneSnippetsCtrl', [
         *
         * @method addNewSnippetToArticle
         * @param snippetData {Object} object describing the new snippet
-        *   @param snippetData.title {String} new snippet's name
+        *   @param snippetData.name {String} new snippet's name
         *   @param snippetData.template {Object} object describing snippet
         *     template used for the new snippet
         *     @param snippetData.template.id {Number} ID of the template
@@ -59,7 +59,7 @@ angular.module('authoringEnvironmentApp').controller('PaneSnippetsCtrl', [
             });
 
             Snippet.create(
-                snippetData.title, snippetData.template.id, fields
+                snippetData.name, snippetData.template.id, fields
             )
             .then(function (snippet) {
                 newSnippet = snippet;
@@ -115,7 +115,7 @@ angular.module('authoringEnvironmentApp').controller('PaneSnippetsCtrl', [
         $scope.showAddSnippet = false;
 
         $scope.newSnippet = {
-            title: '',
+            name: '',
             template: null
         };
         $scope.addingNewSnippet = false;
