@@ -28,7 +28,7 @@ angular.module('authoringEnvironmentApp').controller('PaneSnippetsCtrl', [
             // deep reset of all template fields' values
             $scope.snippetTemplates.forEach(function (template) {
                 template.fields.forEach(function (field) {
-                    delete field.formValue;
+                    delete field.value;
                 });
             });
         };
@@ -54,7 +54,7 @@ angular.module('authoringEnvironmentApp').controller('PaneSnippetsCtrl', [
             $scope.addingNewSnippet = true;
 
             snippetData.template.fields.forEach(function (field) {
-                fields[field.name] = field.formValue;
+                fields[field.name] = field.value;
             });
 
             Snippet.create(
@@ -65,16 +65,19 @@ angular.module('authoringEnvironmentApp').controller('PaneSnippetsCtrl', [
                 return article.promise;
             })
             .then(function (articleData) {
-                // TODO: attach snippet to article,
-                // articleData.number, articleData.language;
-
-                // append snippet to $scope.snippets on success (another then)
-                // newSnippet.addToArticle(
-                //    articleData.number, articleData.language)
+                // snippet created, attach it to article
+                console.log('going to attach the snippet');
+                return newSnippet.addToArticle(
+                    articleData.number, articleData.language);
+            })
+            .then(function () {
+                $scope.snippets.push(newSnippet);
             })
             .finally(function () {
                 $scope.addingNewSnippet = false;
             });
+
+            // TODO: error handlers in between! (addingnewSnippet = false)
         };
 
         // TODO: comments

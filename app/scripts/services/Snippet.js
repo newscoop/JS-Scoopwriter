@@ -9,8 +9,10 @@ angular.module('authoringEnvironmentApp').factory('Snippet', [
     '$http',
     '$q',
     'configuration',
-    function ($http, $q, configuration) {
-        var API_ROOT = configuration.API.full,
+    'transform',
+    function ($http, $q, configuration, transform) {
+        var API_ENDPOINT = configuration.API.endpoint,
+            API_ROOT = configuration.API.full,
             self = this,
             Snippet = function () {};  // snippet constructor function
 
@@ -25,10 +27,23 @@ angular.module('authoringEnvironmentApp').factory('Snippet', [
         // TODO: tests
         self.createFromApiData = function (data) {
             var snippet = Object.create(Snippet.prototype);
-            // TODO: copy properties as needed
-            ['id', 'title', 'code'].forEach(function (attribute) {
+
+            ['id', 'templateId', 'name'].forEach(function (attribute) {
                 snippet[attribute] = data[attribute];
             });
+
+            snippet.fields = {};
+
+            _.forEach(data.fields, function (field, fieldName) {
+                if (field.scope !== 'frontend') {
+                    return;
+                }
+                 snippet.fields[fieldName] = {};
+                 snippet.fields[fieldName].name = field.name;
+                 snippet.fields[fieldName].type = field.type;
+                 snippet.fields[fieldName].value = field.data;
+            });
+
             return snippet;
         };
 
@@ -91,29 +106,68 @@ angular.module('authoringEnvironmentApp').factory('Snippet', [
                 postData = {},
                 url = API_ROOT + '/snippets';
 
-            postData.name = name;
+            postData['snippet[name]'] = name;
             postData.template = templateId;
 
             _.forEach(fields, function (fieldValue, fieldName) {
-                var paramName = 'snippet[fields][][' + fieldName + ']';
+                var paramName = 'snippet[fields][' + fieldName + '][data]';
                 postData[paramName] = fieldValue;
             });
 
-            $http.post(
-                url, postData
-            ).success(function (response) {
-                var snippet = {foo: 'bar'};  // TODO: create new Snippet instance
+            $http.post(url, postData, {
+                transformRequest: transform.formEncode
+            })
+            .then(function (response) {
+                var resourceUrl = response.headers()['x-location'];
+                return $http.get(resourceUrl);
+            })
+            .then(function (response) {
+                var snippet = self.createFromApiData(response.data);
                 deferredPost.resolve(snippet);
-            }).error(function (responseBody) {
-                deferredPost.reject(responseBody);
             });
+
+            // TODO: put error handler(s) somewhere!
+            // .error(function (responseBody) {
+            //     // TODO: this executes? test the chaining!
+            //     deferredPost.reject(responseBody);
+            // })
 
             return deferredPost.promise;
         };
 
-        // instance methods  XXX: just an example, later remove foo()
-        Snippet.prototype.foo = function () {
-            console.log('method foo');
+        /**
+        * Attaches snippet to article.
+        *
+        * @method addToArticle
+        * @param number {Number} article ID
+        * @param language {String} article language code (e.g. 'de')
+        * @return {Object} promise object that is resolved on successful server
+        *   response and rejected on server error response
+        */
+        Snippet.prototype.addToArticle = function (number, language) {
+            var snippet = this,
+                deferred = $q.defer(),
+                linkHeader,
+                url;
+
+            url = [API_ROOT, 'articles', number, language].join('/');
+
+            linkHeader = '<' + API_ENDPOINT + '/snippets/' + snippet.id +
+                            '; rel="snippet">';
+
+            $http({
+                url: url,
+                method: 'LINK',
+                headers: {link: linkHeader}
+            })
+            .success(function () {
+                deferred.resolve();
+            })
+            .error(function (responseBody) {
+                deferred.reject(responseBody);
+            });
+
+            return deferred.promise;
         };
 
         return Snippet;

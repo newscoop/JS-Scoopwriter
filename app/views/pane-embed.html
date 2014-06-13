@@ -43,11 +43,11 @@
            ng-switch="field.type" ng-repeat-end>
         <textarea ng-switch-when="textarea"
                   ng-required="field.required"
-                  ng-model="field.formValue"></textarea>
+                  ng-model="field.value"></textarea>
         <input ng-switch-default
                type="{{inputFieldTypes[field.type] || 'text'}}"
                ng-required="field.required"
-               ng-model="field.formValue"/>
+               ng-model="field.value"/>
       </div>
 
       <div class="controls">
