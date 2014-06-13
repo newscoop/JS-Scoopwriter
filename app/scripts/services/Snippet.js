@@ -119,18 +119,16 @@ angular.module('authoringEnvironmentApp').factory('Snippet', [
             })
             .then(function (response) {
                 var resourceUrl = response.headers()['x-location'];
-                return $http.get(resourceUrl);
+                return $http.get(resourceUrl);  // retrieve created snippet
+            }, function () {
+                return $q.reject();
             })
             .then(function (response) {
                 var snippet = self.createFromApiData(response.data);
                 deferredPost.resolve(snippet);
+            }, function () {
+                deferredPost.reject();
             });
-
-            // TODO: put error handler(s) somewhere!
-            // .error(function (responseBody) {
-            //     // TODO: this executes? test the chaining!
-            //     deferredPost.reject(responseBody);
-            // })
 
             return deferredPost.promise;
         };

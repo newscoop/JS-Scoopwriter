@@ -1,11 +1,12 @@
 'use strict';
 angular.module('authoringEnvironmentApp').controller('PaneSnippetsCtrl', [
     '$scope',
+    '$q',
     'article',
     'Snippet',
     'SnippetTemplate',
     'modalFactory',
-    function ($scope, article, Snippet, SnippetTemplate, modalFactory) {
+    function ($scope, $q, article, Snippet, SnippetTemplate, modalFactory) {
 
         // TODO: comments
         $scope.toggleEdit = function (snippet, editMode) {
@@ -63,21 +64,18 @@ angular.module('authoringEnvironmentApp').controller('PaneSnippetsCtrl', [
             .then(function (snippet) {
                 newSnippet = snippet;
                 return article.promise;
-            })
+            }, $q.reject)
             .then(function (articleData) {
-                // snippet created, attach it to article
-                console.log('going to attach the snippet');
                 return newSnippet.addToArticle(
                     articleData.number, articleData.language);
-            })
+            }, $q.reject)
             .then(function () {
+                console.log('pushing new snippet');
                 $scope.snippets.push(newSnippet);
             })
             .finally(function () {
                 $scope.addingNewSnippet = false;
             });
-
-            // TODO: error handlers in between! (addingnewSnippet = false)
         };
 
         // TODO: comments
