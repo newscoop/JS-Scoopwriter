@@ -14,15 +14,15 @@
       </button>
     </div>
 
-    <form ng-show="showAddSnippet" class="body">
+    <form name="addSnippet" class="body" ng-show="showAddSnippet">
       <div class="input-name">Title</div>
-      <input required
+      <input name="snippetTitle" required
           class="editor-input"
           placeholder="Title"
           ng-model="newSnippet.title">
 
       <div class="input-name">Snippet Template</div>
-      <select required
+      <select name="snippetTemplate" required
           ng-model="newSnippet.template"
           ng-options="template as template.name for
                       template in snippetTemplates"
@@ -42,10 +42,12 @@
       <div class="template-field"
            ng-switch="field.type" ng-repeat-end>
         <textarea ng-switch-when="textarea"
+                  name="{{field.name}}"
                   ng-required="field.required"
                   ng-model="field.value"></textarea>
         <input ng-switch-default
                type="{{inputFieldTypes[field.type] || 'text'}}"
+               name="{{field.name}}"
                ng-required="field.required"
                ng-model="field.value"/>
       </div>
@@ -54,9 +56,8 @@
         <button
             class="btn btn-primary btn-sm pull-right"
             data-test-button="new"
-            ng-click="addNewSnippetToArticle(newSnippet)"
-            ng-disabled="addingNewSnippet ||
-                         !newSnippet.title || !newSnippet.template"
+            ng-click="addSnippet.$valid && addNewSnippetToArticle(newSnippet)"
+            ng-disabled="addingNewSnippet"
             >Add</button>
         <button
             class="btn btn-default btn-sm pull-right"
