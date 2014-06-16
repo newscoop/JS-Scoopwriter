@@ -28,7 +28,7 @@ describe('Controller: PaneSnippetsCtrl', function () {
             article.promise = articleDeferred.promise;
 
             spyOn(Snippet, 'getAllByArticle').andCallFake(function () {
-                return [{id:1}, {id:2}, {id:3}];
+                return [{id:1}, {id:2}];
             });
 
             spyOn(SnippetTemplate, 'getAll').andCallFake(function () {
@@ -89,7 +89,7 @@ describe('Controller: PaneSnippetsCtrl', function () {
         articleDeferred.resolve({number: 55, language: 'pl'});
         scope.$apply();
         expect(Snippet.getAllByArticle).toHaveBeenCalledWith(55, 'pl');
-        expect(scope.snippets).toEqual([{id:1}, {id:2}, {id:3}]);
+        expect(scope.snippets).toEqual([{id:1}, {id:2}]);
     });
 
     describe('scope\'s clearNewSnippetForm() method', function () {
@@ -133,22 +133,98 @@ describe('Controller: PaneSnippetsCtrl', function () {
     });
 
     describe('scope\'s addNewSnippetToArticle() method', function () {
-        beforeEach(function () {
-            // TODO: mock Snippet.create()
+        var createdSnippet,
+            deferredAdd,
+            deferredCreate,
+            snippetData;
+
+        beforeEach(inject(function ($q) {
+            snippetData = {
+                name: 'my video',
+                template: {
+                    id: 8,
+                    fields: [{
+                        name: 'public_link',
+                        value: 'http://foo.bar/video.avi',
+                        type: 'url'
+                    }]
+                }
+            };
+
+            deferredCreate = $q.defer();
+            spyOn(Snippet, 'create').andCallFake(function () {
+                return deferredCreate.promise;
+            });
+
+            deferredAdd = $q.defer();
+            createdSnippet = {
+                id: 42,
+                addToArticle: function () {
+                    return deferredAdd.promise
+                }
+            };
+        }));
+
+        it('sets addingNewSnippet flag before doing anything', function () {
+            scope.addingNewSnippet = false;
+            scope.addNewSnippetToArticle(snippetData);
+            expect(scope.addingNewSnippet).toBe(true);
         });
 
-        // TODO: sets the addingNewSnippet flag before doing anything
+        it('clears addingNewSnippet flag on successful server response',
+            function () {
+                scope.addNewSnippetToArticle(snippetData);
+                scope.addingNewSnippet = true;
 
-        // TODO: clears scope's addingNewSnippet flag on success
+                deferredCreate.resolve(createdSnippet);
+                articleDeferred.resolve({number: 25, language: 'de'});
+                deferredAdd.resolve();
+                scope.$apply();
 
-        // TODO: clears scope's addingNewSnippet flag on error
+                expect(scope.addingNewSnippet).toBe(false);
+            }
+        );
 
-        // TODO: calls snippet factory method with correct params
-        // (Snippet.create)
+        it('clears addingNewSnippet flag on error server response',
+            function () {
+                scope.addNewSnippetToArticle(snippetData);
+                scope.addingNewSnippet = true;
 
-        // TODO: attaches new snippet to article
+                deferredCreate.reject();
+                scope.$apply();
 
-        // TODO: appends new snippet to snippets list on success
-        // (perhaps also does not append it on attaching error?)
+                expect(scope.addingNewSnippet).toBe(false);
+            }
+        );
+
+        it('calls snippet factory method with correct parameters',
+            function () {
+                scope.addNewSnippetToArticle(snippetData);
+                expect(Snippet.create).toHaveBeenCalledWith(
+                    'my video', 8, {'public_link': 'http://foo.bar/video.avi'}
+                );
+            }
+        );
+
+        it('attaches created snippet to article', function () {
+            spyOn(createdSnippet, 'addToArticle').andCallThrough();
+
+            scope.addNewSnippetToArticle(snippetData);
+            deferredCreate.resolve(createdSnippet);
+            articleDeferred.resolve({number: 25, language: 'de'});
+            scope.$apply();
+
+            expect(createdSnippet.addToArticle).toHaveBeenCalledWith(25, 'de');
+        });
+
+        it('appends new snippet to scope\'s snippets list', function () {
+            scope.addNewSnippetToArticle(snippetData);
+            deferredCreate.resolve(createdSnippet);
+            articleDeferred.resolve({number: 25, language: 'de'});
+            deferredAdd.resolve();
+            scope.$apply();
+
+            expect(scope.snippets).toEqual([{id: 1}, {id: 2}, createdSnippet]);
+        });
     });
 });

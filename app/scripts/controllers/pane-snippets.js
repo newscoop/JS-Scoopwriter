@@ -70,7 +70,6 @@ angular.module('authoringEnvironmentApp').controller('PaneSnippetsCtrl', [
                     articleData.number, articleData.language);
             }, $q.reject)
             .then(function () {
-                console.log('pushing new snippet');
                 $scope.snippets.push(newSnippet);
             })
             .finally(function () {

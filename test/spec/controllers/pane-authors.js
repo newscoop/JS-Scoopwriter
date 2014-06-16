@@ -391,8 +391,9 @@ describe('Controller: PaneAuthorsCtrl', function () {
             }
         );
 
-        it('sets role change watch on new author on sucessful server response',
-            function () {
+        it('sets role change watch on new author on successful ' +
+           'server response',
+           function () {
                 scope.authors = [{id: 1}, {id: 2}];
                 author.articleRole = {id: 13, name: 'Lector'};
                 spyOn(ctrl, 'setRoleChangeWatch');
@@ -408,7 +409,7 @@ describe('Controller: PaneAuthorsCtrl', function () {
             }
         );
 
-        it('clears addingNewAuthor flag on sucessful server response',
+        it('clears addingNewAuthor flag on successful server response',
             function () {
                 scope.addAuthorToArticle();
                 scope.addingNewAuthor = true;
