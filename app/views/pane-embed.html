@@ -91,8 +91,7 @@
           </button>
           <button
               class="btn btn-sf-invisible pull-right"
-              title="Edit"
-              ng-click="toggleEdit(snippet, true)">
+              title="Edit">
               <i class="fa fa-pencil"></i>
             </button>
         </div>
@@ -114,13 +113,9 @@
           </button>
         </div>
         <div class="pull-left title-block">
-          <input
-             class="editable"
-             ng-model="snippet.title"
-             ng-show="snippet.editing">
           <span
             class="title"
-            ng-bind="snippet.title"
+            ng-bind="snippet.name"
             ng-hide="snippet.editing">
           </span>
         </div>
@@ -131,24 +126,8 @@
         <textarea
            rows="3"
            class="code"
-           ng-model="snippet.code"
-           ng-readonly="!snippet.editing"></textarea>
-        <div class="footer" ng-show="snippet.editing">
-          <button
-             class="btn btn-sf-invisible pull-right"
-             title="Save"
-             ng-click="updateSnippet(snippet)"
-             >
-             <i class="fa fa-floppy-o"></i>
-          </button>
-          <button
-             class="btn btn-sf-invisible pull-right"
-             title="Cancel"
-             ng-click="toggleEdit(snippet, false)"
-             >
-            <i class="fa fa-times"></i>
-          </button>
-        </div>
+           ng-model="snippet.render"
+           ng-readonly="true"></textarea>
       </div><!-- end panel body -->
     </div><!-- end panel -->
 

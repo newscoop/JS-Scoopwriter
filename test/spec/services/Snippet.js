@@ -28,7 +28,8 @@ describe('Factory: Snippet', function () {
             ];
 
             $httpBackend.expectGET(
-                rootURI + '/snippets/article/77/pl?items_per_page=99999'
+                rootURI + '/snippets/article/77/pl?' +
+                          'items_per_page=99999&rendered=true'
             )
             .respond(200, JSON.stringify({ items: snippets }));
         });
@@ -68,7 +69,8 @@ describe('Factory: Snippet', function () {
             beforeEach(function () {
                 $httpBackend.resetExpectations();
                 $httpBackend.expectGET(
-                    rootURI + '/snippets/article/77/pl?items_per_page=99999'
+                    rootURI + '/snippets/article/77/pl?' +
+                              'items_per_page=99999&rendered=true'
                 )
                 .respond(500, 'Server error');
             });
@@ -114,7 +116,7 @@ describe('Factory: Snippet', function () {
                 }
             });
 
-            $httpBackend.expectPOST(rootURI + '/snippets',expectedPostData)
+            $httpBackend.expectPOST(rootURI + '/snippets', expectedPostData)
                 .respond(201, '', {'x-location': '/api/snippets/1'});
         });
 
@@ -134,7 +136,7 @@ describe('Factory: Snippet', function () {
         }));
 
         it('requests created snippet\'s data from API', function () {
-            $httpBackend.expectGET('/api/snippets/1')
+            $httpBackend.expectGET('/api/snippets/1?rendered=true')
                 .respond(200, {id: 1});
 
             Snippet.create('foo', 7, templateFields);
@@ -146,7 +148,7 @@ describe('Factory: Snippet', function () {
                 var snippet,
                     successSpy = jasmine.createSpy();
 
-                $httpBackend.expectGET('/api/snippets/1')
+                $httpBackend.expectGET('/api/snippets/1?rendered=true')
                     .respond(200, {id: 1, templateId: 7, name: 'foo'});
 
                 Snippet.create('foo', 7, templateFields).then(successSpy);
