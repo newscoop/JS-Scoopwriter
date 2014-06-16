@@ -227,4 +227,85 @@ describe('Controller: PaneSnippetsCtrl', function () {
             expect(scope.snippets).toEqual([{id: 1}, {id: 2}, createdSnippet]);
         });
     });
+
+
+    describe('scope\'s confirmRemoveSnippet() method', function () {
+        var snippet,
+            snippetRemoveDeferred,
+            modalDeferred,
+            modalFactory;
+
+        beforeEach(inject(function ($q, _modalFactory_) {
+            snippetRemoveDeferred = $q.defer();
+            modalDeferred = $q.defer();
+            modalFactory = _modalFactory_;
+
+            spyOn(modalFactory, 'confirmLight').andCallFake(function () {
+                return {
+                    result: modalDeferred.promise
+                }
+            });
+
+            snippet = {
+                id: 42,
+                removeFromArticle: jasmine.createSpy().andCallFake(
+                    function () {
+                        return snippetRemoveDeferred.promise;
+                    })
+            };
+        }));
+
+        it('opens a "light" confirmation dialog', function () {
+            scope.confirmRemoveSnippet();
+            expect(modalFactory.confirmLight).toHaveBeenCalled();
+        });
+
+        it('removes correct snippet on action confirmation', function () {
+            articleDeferred.resolve({number: 25, language: 'de'});
+            scope.$apply();
+
+            scope.snippets = [{id:123}, snippet, {id:321}];
+
+            scope.confirmRemoveSnippet(snippet);
+            modalDeferred.resolve(true);
+            scope.$apply();
+
+            expect(snippet.removeFromArticle).toHaveBeenCalledWith(25, 'de');
+
+            snippetRemoveDeferred.resolve();
+            scope.$apply();
+
+            expect(scope.snippets).toEqual(
+                [{id:123}, {id:321}]
+            );
+        });
+
+        it('does not remove anything on action cancellation', function () {
+            articleDeferred.resolve({number: 25, language: 'de'});
+            scope.$apply();
+
+            scope.snippets = [{id:123}, snippet, {id:321}];
+
+            scope.confirmRemoveSnippet(snippet);
+            modalDeferred.reject(true);
+            scope.$apply();
+
+            expect(snippet.removeFromArticle).not.toHaveBeenCalled();
+            expect(scope.snippets.length).toEqual(3);
+        });
+
+        it('does not remove snippet on server error response', function () {
+            articleDeferred.resolve({number: 25, language: 'de'});
+            scope.$apply();
+
+            scope.snippets = [{id:123}, snippet, {id:321}];
+
+            scope.confirmRemoveSnippet(snippet);
+            modalDeferred.resolve(true);
+            snippetRemoveDeferred.reject();
+            scope.$apply();
+
+            expect(scope.snippets.length).toEqual(3);
+        });
+    });
 });

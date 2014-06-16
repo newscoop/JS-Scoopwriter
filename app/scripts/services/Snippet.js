@@ -160,6 +160,40 @@ angular.module('authoringEnvironmentApp').factory('Snippet', [
             return deferred.promise;
         };
 
+        /**
+        * Detaches snippet from article.
+        *
+        * @method removeFromArticle
+        * @param number {Number} article ID
+        * @param language {String} article language code (e.g. 'de')
+        * @return {Object} promise object that is resolved on successful server
+        *   response and rejected on server error response
+        */
+        Snippet.prototype.removeFromArticle = function(number, language) {
+            var snippet = this,
+                deferred = $q.defer(),
+                linkHeader,
+                url;
+
+            url = [API_ROOT, 'articles', number, language].join('/');
+
+            linkHeader = '<' + API_ENDPOINT + '/snippets/' + snippet.id +
+                            '; rel="snippet">';
+            $http({
+                url: url,
+                method: 'UNLINK',
+                headers: {link: linkHeader}
+            })
+            .success(function () {
+                deferred.resolve();
+            })
+            .error(function (responseBody) {
+                deferred.reject(responseBody);
+            });
+
+            return deferred.promise;
+        };
+
         return Snippet;
     }
 ]);

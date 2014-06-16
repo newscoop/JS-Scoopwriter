@@ -85,7 +85,13 @@ angular.module('authoringEnvironmentApp').controller('PaneSnippetsCtrl', [
             // otherwise no need to send a request to server)
         };
 
-        // TODO: comments
+        /**
+        * Asks user to confirm detaching a snippet from the article and then
+        * detaches a snippet, if the action is confirmed.
+        *
+        * @method confirmRemoveSnippet
+        * @param snippet {Object} snippet to detach
+        */
         $scope.confirmRemoveSnippet = function (snippet) {
             var modal,
                 title,
@@ -100,8 +106,20 @@ angular.module('authoringEnvironmentApp').controller('PaneSnippetsCtrl', [
 
             modal = modalFactory.confirmLight(title, text);
 
-            modal.result.then(function (data) {
-                console.log('TODO: remove snippet', snippet);
+            modal.result.then(function () {
+                return article.promise;
+            }, $q.reject)
+            .then(function (articleData) {
+                // NOTE: detach snippet from article but don't delete it,
+                // because it might be attached to some other article, too
+                // (in theory at least)
+                return snippet.removeFromArticle(
+                    articleData.number, articleData.language);
+            }, $q.reject)
+            .then(function () {
+                _.remove($scope.snippets, function (item) {
+                    return item === snippet;
+                });
             });
         };
 
