@@ -1,60 +1,76 @@
-<section class="tabcontent embed-panel" ng-controller="SnippetsCtrl">
+<section class="tabcontent embed-panel" ng-controller="PaneSnippetsCtrl">
   <div class="panel-title">
     Embed Code
   </div>
-  <div class="add-element" ng-class="{expanded: adding}">
+
+  <div class="add-element" ng-class="{expanded: showAddSnippet}">
     <div class="heading">
-      <button
-         class="btn btn-sf-invisible"
-         data-test-button="add"
-         ng-click="adding = true"
-         ng-hide="adding"
-         >
-        <span class="glyphicon glyphicon-plus"></span><span class="add-text">ADD A SNIPPET</span>
-      </button>
-      <button
-         class="btn btn-sf-invisible"
-         ng-click="adding = false"
-         ng-show="adding"
-         >
-        <span class="glyphicon glyphicon-minus"></span><span class="add-text">ADD A SNIPPET</span>
+      <button class="btn btn-sf-invisible"
+              ng-click="showAddSnippet = !showAddSnippet">
+        <span class="glyphicon"
+              ng-class="{'glyphicon-plus': !showAddSnippet,
+                         'glyphicon-minus': showAddSnippet}"
+              ></span><span class="add-text">ADD A SNIPPET</span>
       </button>
     </div>
-    <div
-       ng-show="adding"
-       class="body"
-       >
+
+    <form name="addSnippet" class="body" ng-show="showAddSnippet">
       <div class="input-name">Title</div>
-      <input
-         class="editor-input"
-         placeholder="Title"
-         ng-model="create.title"
-         >
-      <div class="input-name">Code</div>
-      <textarea
-         class="editor-input"
-         ng-model="create.code"
-         >
-      </textarea>
+      <input name="snippetTitle" required
+          class="editor-input"
+          placeholder="Title"
+          ng-model="newSnippet.name">
+
+      <div class="input-name">Snippet Template</div>
+      <select name="snippetTemplate" required
+          ng-model="newSnippet.template"
+          ng-options="template as template.name for
+                      template in snippetTemplates"
+          ng-disabled="addingNewSnippet"
+          >
+        <option value="">-- choose a template --</option>
+      </select>
+
+      <label ng-if="newSnippet.template"
+          >(template fields marked with (*) are required)</label>
+
+      <div class="input-name"
+           ng-repeat-start="field in (newSnippet ? newSnippet.template.fields : [])"
+           >{{field.name}}<span ng-if="field.required">*</span>
+            ({{field.type}})
+      </div>
+      <div class="template-field"
+           ng-switch="field.type" ng-repeat-end>
+        <textarea ng-switch-when="textarea"
+                  name="{{field.name}}"
+                  ng-required="field.required"
+                  ng-model="field.value"></textarea>
+        <input ng-switch-default
+               type="{{inputFieldTypes[field.type] || 'text'}}"
+               name="{{field.name}}"
+               ng-required="field.required"
+               ng-model="field.value"/>
+      </div>
+
       <div class="controls">
         <button
-           class="btn btn-primary btn-sm pull-right"
-           data-test-button="new"
-           ng-click="add()"
-           >
-          Save
-        </button>
+            class="btn btn-primary btn-sm pull-right"
+            data-test-button="new"
+            ng-click="addSnippet.$valid && addNewSnippetToArticle(newSnippet)"
+            ng-disabled="addingNewSnippet"
+            >Add</button>
         <button
-           class="btn btn-default btn-sm pull-right"
-           ng-click="cancel()"
-           >
-          Cancel
-        </button>
+            class="btn btn-default btn-sm pull-right"
+            ng-click="clearNewSnippetForm()"
+            ng-disabled="addingNewSnippet ||
+                        (!newSnippet.name && !newSnippet.template)"
+            >Clear</button>
       </div>
-    </div>
+    </form>
   </div>
+
   <div class="attached-title">Attached code snippets</div>
-  <div class="list" ng-class="{low: adding, high: !adding}">
+  <div class="list" ng-class="{low: showAddSnippet, high: !showAddSnippet}">
 
     <div
        ng-repeat="snippet in snippets"
@@ -68,17 +84,17 @@
         <span class="expand"></span>
         <div class="pull-right">
           <button
-             class="btn btn-sf-invisible pull-right"
-             ng-click="remove(snippet.id)"
-             >          
-            <i class="fa fa-trash-o"></i>
+              class="btn btn-sf-invisible pull-right"
+              title="Remove"
+              ng-click="confirmRemoveSnippet(snippet)">
+              <i class="fa fa-trash-o"></i>
           </button>
           <button
-             class="btn btn-sf-invisible pull-right"
-             ng-click="snippet.edit()"
-             >
-            <i class="fa fa-pencil"></i>
-          </button>
+              class="btn btn-sf-invisible pull-right"
+              title="Edit"
+              ng-click="toggleEdit(snippet, true)">
+              <i class="fa fa-pencil"></i>
+            </button>
         </div>
         
         <div class="pull-left">
@@ -101,13 +117,13 @@
           <input
              class="editable"
              ng-model="snippet.title"
-            ng-show="snippet.editing">
+             ng-show="snippet.editing">
           <span
             class="title"
             ng-bind="snippet.title"
             ng-hide="snippet.editing">
           </span>
-        </div>              
+        </div>
 
       </div><!-- end panel heading -->
 
@@ -120,13 +136,15 @@
         <div class="footer" ng-show="snippet.editing">
           <button
              class="btn btn-sf-invisible pull-right"
-             ng-click="snippet.editing = false"
+             title="Save"
+             ng-click="updateSnippet(snippet)"
              >
              <i class="fa fa-floppy-o"></i>
           </button>
           <button
              class="btn btn-sf-invisible pull-right"
-             ng-click="snippet.cancel()"
+             title="Cancel"
+             ng-click="toggleEdit(snippet, false)"
              >
             <i class="fa fa-times"></i>
           </button>

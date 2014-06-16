@@ -110,11 +110,11 @@ describe('Controller: PaneAuthorsCtrl', function () {
     });
 
     it('initializes addingNewAuthor flag to false', function () {
-        expect(scope.addingNewAuthor).toEqual(false);
+        expect(scope.addingNewAuthor).toBe(false);
     });
 
     it('initializes showAddAuthor flag to true', function () {
-        expect(scope.showAddAuthor).toEqual(true);
+        expect(scope.showAddAuthor).toBe(true);
     });
 
     it('sets correct configuration options for select2 widget', function () {
@@ -391,8 +391,9 @@ describe('Controller: PaneAuthorsCtrl', function () {
             }
         );
 
-        it('sets role change watch on new author on sucessful server response',
-            function () {
+        it('sets role change watch on new author on successful ' +
+           'server response',
+           function () {
                 scope.authors = [{id: 1}, {id: 2}];
                 author.articleRole = {id: 13, name: 'Lector'};
                 spyOn(ctrl, 'setRoleChangeWatch');
@@ -408,7 +409,7 @@ describe('Controller: PaneAuthorsCtrl', function () {
             }
         );
 
-        it('clears addingNewAuthor flag on sucessful server response',
+        it('clears addingNewAuthor flag on successful server response',
             function () {
                 scope.addAuthorToArticle();
                 scope.addingNewAuthor = true;
