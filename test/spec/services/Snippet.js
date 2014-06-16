@@ -200,6 +200,75 @@ describe('Factory: Snippet', function () {
         });
     });
 
-    // TODO: addToArticle() method
+    describe('addToArticle() method', function () {
+        var snippet;
+
+        beforeEach(function () {
+            var expectedLinkHeader =
+                '<' + apiEndpoint + '/snippets/1; rel="snippet">';
+
+            snippet = Object.create(Snippet.prototype, {
+                id: {value: 1, writable: true, enumerable: true}
+            });
+
+            $httpBackend.expect(
+                'LINK',
+                rootURI + '/articles/25/de',
+                undefined,
+                function (headers) {
+                    return headers.link === expectedLinkHeader;
+                }
+            ).respond(201, '');
+        });
+
+        afterEach(function () {
+            $httpBackend.verifyNoOutstandingExpectation();
+        });
+
+        it('returns a promise', inject(function ($q) {
+            var deferred = $q.defer(),
+                promise;
+            promise = snippet.addToArticle(25, 'de')
+            expect(promise instanceof deferred.promise.constructor).toBe(true);
+        }));
+
+        it('sends a correct request to API', function () {
+            snippet.addToArticle(25, 'de');
+        });
+
+        it('resolves given promise on successful server response',
+            function () {
+                var promise,
+                    spyHelper = {
+                        callMeOnSuccess: jasmine.createSpy()
+                    };
+
+                snippet.addToArticle(25, 'de')
+                    .then(spyHelper.callMeOnSuccess);
+
+                $httpBackend.flush(1);
+
+                expect(spyHelper.callMeOnSuccess).toHaveBeenCalled();
+            }
+        );
+
+        it('rejects given promise on server error response', function () {
+            var promise,
+                spyHelper = {
+                    callMeOnError: jasmine.createSpy()
+                };
+
+            $httpBackend.resetExpectations();
+            $httpBackend.expect('LINK', rootURI + '/articles/25/de')
+                .respond(500, 'Error :(');
+
+            snippet.addToArticle(25, 'de')
+                .then(null, spyHelper.callMeOnError);
+
+            $httpBackend.flush(1);
+
+            expect(spyHelper.callMeOnError).toHaveBeenCalledWith('Error :(');
+        });
+    });
 
 });
