@@ -97,29 +97,25 @@ describe('Factory: Snippet', function () {
     });
 
     describe('create() method', function () {
-        var reqCheckers = {},  // http request checker functions
+        var expectedPostData,
             templateFields;
 
         beforeEach(function () {
             templateFields = {foo:'bar', baz:42};
 
-            reqCheckers.postDataCheck = function (data) {
-                return true;
-            };
-
-            reqCheckers.headersCheck = function (headers) {
-                return true;
-            };
-
-            $httpBackend.expectPOST(
-                rootURI + '/snippets',
-                function (data) {
-                    return reqCheckers.postDataCheck(data);
-                },
-                function (headers) {
-                    return reqCheckers.headersCheck(headers);
+            expectedPostData = JSON.stringify({
+                template: 7,
+                snippet: {
+                    name: 'foo',
+                    fields: {
+                        'foo': {data: 'bar'},
+                        'baz': {data: 42}
+                    }
                 }
-            ).respond(201, '', {'x-location': '/api/snippets/1'});
+            });
+
+            $httpBackend.expectPOST(rootURI + '/snippets',expectedPostData)
+                .respond(201, '', {'x-location': '/api/snippets/1'});
         });
 
         afterEach(function () {
@@ -127,21 +123,6 @@ describe('Factory: Snippet', function () {
         });
 
         it('sends a correct request to API to create a snippet', function () {
-            reqCheckers.postDataCheck = function (data) {
-                var expected = $.param({
-                    'snippet[name]': 'foo',
-                    'template': 7,
-                    'snippet[fields][foo][data]': 'bar',
-                    'snippet[fields][baz][data]': 42
-                });
-                return data === expected;
-            };
-
-            reqCheckers.headersCheck = function (headers) {
-                return headers['Content-Type'] ===
-                    'application/x-www-form-urlencoded';
-            };
-
             Snippet.create('foo', 7, templateFields);
         });
 

@@ -9,8 +9,7 @@ angular.module('authoringEnvironmentApp').factory('Snippet', [
     '$http',
     '$q',
     'configuration',
-    'transform',
-    function ($http, $q, configuration, transform) {
+    function ($http, $q, configuration) {
         var API_ENDPOINT = configuration.API.endpoint,
             API_ROOT = configuration.API.full,
             self = this,
@@ -90,20 +89,26 @@ angular.module('authoringEnvironmentApp').factory('Snippet', [
         */
         Snippet.create = function (name, templateId, fields) {
             var deferredPost = $q.defer(),
-                postData = {},
+                requestData,
                 url = API_ROOT + '/snippets';
 
-            postData['snippet[name]'] = name;
-            postData.template = templateId;
+            requestData = {
+                template: templateId,
+                snippet: {
+                    name: name,
+                    fields: {}
+                }
+            };
 
             _.forEach(fields, function (fieldValue, fieldName) {
-                var paramName = 'snippet[fields][' + fieldName + '][data]';
-                postData[paramName] = fieldValue;
+                requestData.snippet.fields[fieldName] = {
+                    data: fieldValue
+                };
             });
 
-            $http.post(url, postData, {
-                transformRequest: transform.formEncode
-            })
+            $http.post(
+                url, requestData
+            )
             .then(function (response) {
                 var resourceUrl = response.headers('x-location');
                 return $http.get(resourceUrl);  // retrieve created snippet
