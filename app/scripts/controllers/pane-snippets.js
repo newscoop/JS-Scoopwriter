@@ -8,15 +8,6 @@ angular.module('authoringEnvironmentApp').controller('PaneSnippetsCtrl', [
     'modalFactory',
     function ($scope, $q, article, Snippet, SnippetTemplate, modalFactory) {
 
-        // TODO: comments
-        $scope.toggleEdit = function (snippet, editMode) {
-            snippet.editing = editMode;
-            snippet.expanded = editMode;
-
-            // TODO: copy snippet data and restore if user cancels
-            // editing
-        };
-
         /**
         * Resets all new snippet form fields.
         *
@@ -77,14 +68,6 @@ angular.module('authoringEnvironmentApp').controller('PaneSnippetsCtrl', [
             });
         };
 
-        // TODO: comments
-        $scope.updateSnippet = function (snippet) {
-            console.log('$scope.updateSnippet()', snippet);
-
-            // TODO: save changes (idea: only if there was a change,
-            // otherwise no need to send a request to server)
-        };
-
         /**
         * Asks user to confirm detaching a snippet from the article and then
         * detaches a snippet, if the action is confirmed.
@@ -122,12 +105,6 @@ angular.module('authoringEnvironmentApp').controller('PaneSnippetsCtrl', [
                 });
             });
         };
-
-        // TODO: init UI flags like editing, expanded etc. for
-        // snippets objects? on load and on adding new snippet
-        // (set $watchCollection, just like in authors?)
-        // (idea: perhaps wrap all UI flags into snippet.UI object
-        // snippet.UI.editing, snippet.UI.expanded, snippet.UI.copy)
 
         $scope.showAddSnippet = false;
 

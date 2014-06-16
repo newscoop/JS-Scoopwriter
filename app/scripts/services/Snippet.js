@@ -26,9 +26,11 @@ angular.module('authoringEnvironmentApp').factory('Snippet', [
         self.createFromApiData = function (data) {
             var snippet = Object.create(Snippet.prototype);
 
-            ['id', 'templateId', 'name'].forEach(function (attribute) {
-                snippet[attribute] = data[attribute];
-            });
+            ['id', 'templateId', 'name', 'render'].forEach(
+                function (attribute) {
+                    snippet[attribute] = data[attribute];
+                }
+            );
 
             return snippet;
         };
@@ -58,6 +60,7 @@ angular.module('authoringEnvironmentApp').factory('Snippet', [
 
             $http.get(url, {
                 params: {
+                    rendered: true,
                     items_per_page: 99999  // de facto "all"
                 }
             }).success(function (response) {
@@ -111,7 +114,9 @@ angular.module('authoringEnvironmentApp').factory('Snippet', [
             )
             .then(function (response) {
                 var resourceUrl = response.headers('x-location');
-                return $http.get(resourceUrl);  // retrieve created snippet
+                return $http.get(    // retrieve created snippet
+                    resourceUrl, {params: {rendered: true}}
+                );
             }, function () {
                 return $q.reject();
             })
