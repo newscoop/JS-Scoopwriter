@@ -1,31 +1,24 @@
 'use strict';
-// http://blog.auth0.com/2014/01/07/angularjs-authentication-with-cookies-vs-token/
 angular.module('authoringEnvironmentApp').factory('authInterceptor', [
     '$q',
     '$window',
-    'addToUrl',
-    function ($q, $window, addToUrl) {
+    'configuration',
+    function ($q, $window, configuration) {
         return {
             request: function (config) {
-                if (config.url.indexOf('template/') > -1) {
-                    // don't attach auth token to io.bootstrap template
-                    //requests
+                if (config.url.indexOf(configuration.API.endpoint.substring(1)+'/') === -1) {
+                    // do not modify the headers of anything else but the API
                     return config;
                 }
 
                 config.headers = config.headers || {};
 
                 if ($window.sessionStorage.token) {
-                    config.url = addToUrl.add({ access_token: $window.sessionStorage.token }, config.url);
+                    config.headers.Authorization = 'Bearer ' + $window.sessionStorage.token;
                 }
+
                 return config;
-            }    /*,
-            response: function (response) {
-                if (response.status === 401) {
-                    // handle the case where the user is not authenticated
-                }
-                return response || $q.when(response);
-            }*/
+            }
         };
     }
 ]);
