@@ -181,7 +181,10 @@ angular.module('authoringEnvironmentApp').directive('dragSort', [
 
         // directive's linking function
         var linkFunction = function (scope, element, attrs) {
-            $rootElement = element;
+            // NOTE: we unwrap element and wrap it into a "real jQuery" object
+            // as this prevents some weird behavior in tests (i.e. event
+            // handlers not registered on the $rootElement)
+            $rootElement = $(element[0]);
 
             scope.$watchCollection('items', function (newItems, oldItems) {
                 var children = $rootElement.children(),
