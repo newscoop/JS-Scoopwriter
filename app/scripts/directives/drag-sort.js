@@ -184,9 +184,10 @@ angular.module('authoringEnvironmentApp').directive('dragSort', [
             $rootElement = element;
 
             scope.$watchCollection('items', function (newItems, oldItems) {
-                var diff = _.difference(newItems, oldItems);
+                var children = $rootElement.children(),
+                    diff = _.difference(newItems, oldItems);
 
-                $rootElement.children().each(function (i, el) {
+                angular.forEach(children, function (el, i) {
                     // only set event handlers for new elements in collection
                     if (_.indexOf(diff, newItems[i]) > -1) {
                         setEventHandlers($(el));
