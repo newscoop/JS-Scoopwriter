@@ -80,7 +80,7 @@ angular.module('authoringEnvironmentApp').directive('dragSort', [
 
                 // determine if drop index should be changed
                 // (if it crosses the Y-midpoint of the element)
-                if (e.offsetY === undefined) {  // Firefox
+                if (e.originalEvent.offsetY === undefined) {  // Firefox
                     posY = e.originalEvent.pageY - $element.offset().top;
                 } else {
                     posY = e.originalEvent.offsetY;
