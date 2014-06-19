@@ -1,7 +1,7 @@
 <div ng-controller="SfPanesCtrl">
     <div class="tablist left-tablist">
         <ul class="navigation-tabs">
-            <li ng-repeat="pane in panes|filter:{position:'left', selected:true}" ng-class="{'visible':pane.visible}" ng-click="flipVisible(pane)" tabname="{{pane.id}}">
+            <li ng-repeat="pane in panes|filter:{position:'left', selected:true}" ng-class="{'active':pane.visible}" ng-click="flipVisible(pane)" tabname="{{pane.id}}">
                 <a draggable="true" control="tab" rel="tooltip" data-placement="{{pane.position}}" data-original-title="{{pane.id}}">
                     <i class="big-icon-{{pane.icon}}"></i><span class="badge badge-inverse hide notifications"></span><span class="badge badge-info hide config-notif">!</span>
                 </a>
@@ -10,7 +10,7 @@
     </div>
     <div class="tablist right-tablist">
         <ul class="navigation-tabs">
-            <li ng-repeat="pane in panes|filter:{position:'right', selected:true}" ng-class="{'visible':pane.visible}" ng-click="flipVisible(pane)" tabname="{{pane.id}}">
+            <li ng-repeat="pane in panes|filter:{position:'right', selected:true}" ng-class="{'active':pane.visible}" ng-click="flipVisible(pane)" tabname="{{pane.id}}">
                 <a draggable="true" control="tab" rel="tooltip" data-placement="{{pane.position}}" data-original-title="{{pane.id}}">
                     <i class="big-icon-{{pane.icon}}"></i><span class="badge badge-inverse hide notifications"></span><span class="badge badge-info hide config-notif">!</span>
                 </a>
