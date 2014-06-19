@@ -10,6 +10,7 @@ angular.module('authoringEnvironmentApp').factory('panes', [
                     template: 'views/pane-topics.html',
                     position: 'right',
                     size: 'small',
+                    visible: false,
                     active: false,
                     selected: true
                 },
@@ -20,6 +21,7 @@ angular.module('authoringEnvironmentApp').factory('panes', [
                     template: 'views/pane-authors.html',
                     position: 'right',
                     size: 'small',
+                    visible: false,
                     active: false,
                     selected: true
                 },
@@ -30,6 +32,7 @@ angular.module('authoringEnvironmentApp').factory('panes', [
                     template: 'views/pane-draggable.html',
                     position: 'left',
                     size: 'small',
+                    visible: false,
                     active: false,
                     selected: true
                 },
@@ -40,6 +43,7 @@ angular.module('authoringEnvironmentApp').factory('panes', [
                     template: 'views/pane-embed.html',
                     position: 'left',
                     size: 'small',
+                    visible: false,
                     active: false,
                     selected: true
                 },
@@ -50,6 +54,7 @@ angular.module('authoringEnvironmentApp').factory('panes', [
                     template: 'views/pane-comments.html',
                     position: 'left',
                     size: 'big',
+                    visible: false,
                     active: false,
                     selected: true
                 }
@@ -78,12 +83,12 @@ angular.module('authoringEnvironmentApp').factory('panes', [
             query: function () {
                 return panes;
             },
-            active: function (pane) {
+            visible: function (pane) {
                 $filter('filter')(panes, { position: pane.position }).forEach(function (p) {
                     if (p === pane) {
-                        pane.active = !pane.active;
+                        pane.visible = !pane.visible;
                     } else {
-                        p.active = false;
+                        p.visible = false;
                     }
                 });
                 panes.layout = this.layout(panes);
@@ -95,8 +100,8 @@ angular.module('authoringEnvironmentApp').factory('panes', [
                         right: null
                     };
                 panes.forEach(function (pane) {
-                    if (pane.active) {
-                        // i assume that there is a single active pane for
+                    if (pane.visible) {
+                        // i assume that there is a single visible pane for
                         // side at a time
                         layout[pane.position] = pane.size;
                     }

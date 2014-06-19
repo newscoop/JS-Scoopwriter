@@ -5,10 +5,11 @@ angular.module('authoringEnvironmentApp').controller('SfPanesCtrl', function ($s
         return $filter('filter')($scope.panes, {
             position: side,
             selected: true,
-            active: true
+            visible: true
         }).length > 0;
     };
-    $scope.flipActive = function (pane) {
-        panes.active(pane);
+    $scope.flipVisible = function (pane) {
+        panes.visible(pane);
+        pane.active = true;
     };
 });
