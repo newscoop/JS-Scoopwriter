@@ -58,9 +58,8 @@ describe('Directive: dragSort', function () {
     function createEventMock (eventType) {
         var ev = $.Event(eventType);
         ev.originalEvent = {
-            dataTransfer: {},
-            preventDefault: function () {},
-            stopPropagation: function () {},
+            preventDefault: jasmine.createSpy(),
+            stopPropagation: jasmine.createSpy()
         };
         return ev;
     }
@@ -106,10 +105,10 @@ describe('Directive: dragSort', function () {
 
             beforeEach(function () {
                 ev = createEventMock('dragover');
+                ev.originalEvent.dataTransfer = {};
             });
 
             it('enables drop on the element itself', function () {
-                spyOn(ev.originalEvent, 'preventDefault');
                 $rootNode.trigger(ev);
                 expect(ev.originalEvent.preventDefault).toHaveBeenCalled();
             });
@@ -126,10 +125,13 @@ describe('Directive: dragSort', function () {
 
             beforeEach(function () {
                 ev = createEventMock('dragenter');
+                ev.originalEvent.dataTransfer = {
+                    setData: jasmine.createSpy(),
+                    getData: jasmine.createSpy()
+                };
             });
 
             it('enables drop on the element itself (for IE)', function () {
-                spyOn(ev.originalEvent, 'preventDefault');
                 $rootNode.trigger(ev);
                 expect(ev.originalEvent.preventDefault).toHaveBeenCalled();
             });
