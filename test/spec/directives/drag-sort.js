@@ -144,9 +144,24 @@ describe('Directive: dragSort', function () {
         });
 
         describe('onDrop', function () {
-            // TODO: prevents default browser action (calls preventDefault)
+            var ev;
 
-            // TODO: prevents further event bubbling
+            beforeEach(function () {
+                ev = createEventMock('drop');
+                ev.originalEvent.dataTransfer = {
+                    setData: jasmine.createSpy(),
+                    getData: jasmine.createSpy()
+                };
+                ev.originalEvent.dataTransfer.getData.andReturn(
+                    '{"sortIndex": 1}'
+                );
+            });
+
+            it('prevents browser\'s default behavior', function () {
+                $rootNode.trigger(ev);
+                expect(ev.originalEvent.preventDefault).toHaveBeenCalled();
+                expect(ev.originalEvent.stopPropagation).toHaveBeenCalled();
+            });
 
             // TODO: invokes callback if there is a change etc.
         });
