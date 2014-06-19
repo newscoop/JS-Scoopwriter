@@ -75,6 +75,7 @@ angular.module('authoringEnvironmentApp').directive('dragSort', [
                     sortIdx = parseInt($element.attr('data-sort-index'), 10);
 
                 e.originalEvent.preventDefault();  // allow drop
+                e.originalEvent.stopPropagation();  // no need to propagate
                 e.originalEvent.dataTransfer.dropEffect = 'move';
 
                 // determine if drop index should be changed
