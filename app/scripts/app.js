@@ -19,7 +19,7 @@ angular.module('authoringEnvironmentApp', [
     '$httpProvider',
     '$buttonProvider',
     function ($routeProvider, $httpProvider, $buttonProvider) {
-        $routeProvider.when('/', {
+        $routeProvider.when('/:language/:article', {
             templateUrl: 'views/main.html',
             controller: 'MainCtrl'
         }).otherwise({

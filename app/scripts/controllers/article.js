@@ -1,7 +1,6 @@
 'use strict';
 angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
     '$scope',
-    '$location',
     'article',
     'articleType',
     'panes',
@@ -10,13 +9,11 @@ angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
     'platform',
     'circularBufferFactory',
     '$log',
-    function ($scope, $location, article, articleType, panes, configuration, mode, platform, circularBufferFactory, $log) {
-        var search = $location.search();
-        var n = search.article_number;
-        var l = search.language;
+    '$routeParams',
+    function ($scope, article, articleType, panes, configuration, mode, platform, circularBufferFactory, $log, $routeParams) {
         article.init({
-            articleId: n,
-            language: l
+            articleId: $routeParams.article,
+            language: $routeParams.language
         });
         $scope.mode = mode;
         $scope.status = 'Initialising';
