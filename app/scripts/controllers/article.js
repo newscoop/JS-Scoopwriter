@@ -73,8 +73,8 @@ angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
                 }
             }
             article.resource.save({
-                articleId: n,
-                language: l
+                articleId: $routeParams.article,
+                language: $routeParams.language
             }, $scope.article, function () {
                 $scope.setModified(false);
             }, function () {
