@@ -20,8 +20,13 @@ describe('Directive: dragSort', function () {
 
         scope = $rootScope.$new();
         scope.items = [];
+        scope.orderChanged = jasmine.createSpy('scope.orderChanged');
 
-        html = '<div id="list" drag-sort items="items"></div>';
+        html = [
+            '<div id="list" drag-sort items="items"',
+                'on-order-changed="orderChanged()">',
+            '</div>'
+        ].join('');
 
         $rootNode = $compile(html)(scope);
         $rootNode = $($rootNode[0]);  // make it a "true jQuery" object
@@ -101,7 +106,7 @@ describe('Directive: dragSort', function () {
     describe('root node\'s event handlers', function () {
 
         describe('dragover', function () {
-            var ev;
+            var ev;  // event object mock
 
             beforeEach(function () {
                 ev = createEventMock('dragover');
@@ -121,7 +126,7 @@ describe('Directive: dragSort', function () {
         });
 
         describe('dragenter', function () {
-            var ev;
+            var ev;  // event object mock
 
             beforeEach(function () {
                 ev = createEventMock('dragenter');
@@ -144,27 +149,119 @@ describe('Directive: dragSort', function () {
         });
 
         describe('onDrop', function () {
-            var ev;
+            var evDrop;  // drop event object mock
+
+            /**
+            * Simulates dragover event over an item at the given index.
+            *
+            * @function dragOverItem
+            * @param idx {Number} index of an item to drag over
+            * @param topHalf {Boolean} if true, drag over the top half
+            *   of the item, otherwise over the bottom half of it
+            */
+            function dragOverItem (idx, topHalf) {
+                var evDragover,
+                    offsetY = topHalf ? 10 : 70,
+                    $item = $($rootNode.children()[idx]);
+
+                // simulate dragging over the top half of the item (so that
+                // the new desired postion of the dragged item becomes idx)
+                evDragover = createEventMock('dragover');
+                evDragover.originalEvent.dataTransfer = {};
+                evDragover.originalEvent.offsetY = offsetY;
+
+                $item.css('height', '100px');
+                $item.triggerHandler(evDragover);
+            }
 
             beforeEach(function () {
-                ev = createEventMock('drop');
-                ev.originalEvent.dataTransfer = {
+                var evDragStart,
+                    $item2;
+
+                evDrop = createEventMock('drop');
+                evDrop.originalEvent.dataTransfer = {
+                    effectAllowed: 'move',
                     setData: jasmine.createSpy(),
                     getData: jasmine.createSpy()
                 };
-                ev.originalEvent.dataTransfer.getData.andReturn(
-                    '{"sortIndex": 1}'
+                evDrop.originalEvent.dataTransfer.getData.andReturn(
+                    '{"sortIndex": 2}'  // we drag around item 2
                 );
+
+                [0, 1, 2, 3, 4].forEach(function (id) {
+                    addNewItem(id);
+                });
+                scope.$digest();
+
+                // simulate dragging item id=2
+                evDragStart = createEventMock('dragstart');
+                evDragStart.originalEvent.dataTransfer = {
+                    setData: jasmine.createSpy()
+                };
+                $item2 = $($rootNode.children()[2]);
+                $item2.triggerHandler(evDragStart);
             });
 
             it('prevents browser\'s default behavior', function () {
-                $rootNode.trigger(ev);
-                expect(ev.originalEvent.preventDefault).toHaveBeenCalled();
-                expect(ev.originalEvent.stopPropagation).toHaveBeenCalled();
+                $rootNode.trigger(evDrop);
+                expect(evDrop.originalEvent.preventDefault).toHaveBeenCalled();
+                expect(
+                    evDrop.originalEvent.stopPropagation).toHaveBeenCalled();
             });
 
-            // TODO: invokes callback if there is a change etc.
-        });
+            describe('when items order should change', function () {
+                it('correctly moves dragged item to a higher position',
+                    function () {
+                        // we move the item to a position with lower index
+                        // than its current position
+                        dragOverItem(1, true);  // just before item 1
+                        $rootNode.trigger(evDrop);
+                        expect(scope.items).toEqual([
+                            {id: 0}, {id: 2}, {id: 1}, {id: 3}, {id: 4}
+                        ]);
+                    }
+                );
+
+                it('correctly moves dragged item to a lower position',
+                    function () {
+                        // we move the item to a position with higher index
+                        // than its current position
+                        dragOverItem(3, false);  // behind item 3
+                        $rootNode.trigger(evDrop);
+                        expect(scope.items).toEqual([
+                            {id: 0}, {id: 1}, {id: 3}, {id: 2}, {id: 4}
+                        ]);
+                    }
+                );
+
+                it('invokes provided orderChanged callback', function () {
+                    dragOverItem(4, false);  // behind item 4
+                    $rootNode.trigger(evDrop);
+                    expect(scope.orderChanged).toHaveBeenCalled();
+                });
+            });
+
+            describe('when items order should *not* change', function () {
+                beforeEach(function () {
+                    dragOverItem(2, true);  // drag over itself
+                });
+
+                it('does not change the items list', function () {
+                    $rootNode.trigger(evDrop);
+                    expect(scope.items).toEqual([
+                        {id: 0}, {id: 1}, {id: 2}, {id: 3}, {id: 4}
+                    ]);
+                });
+
+                it('does not invoke provided orderChanged callback',
+                    function () {
+                        $rootNode.trigger(evDrop);
+                        expect(scope.orderChanged).not.toHaveBeenCalled();
+                    }
+                );
+            });
+
+        });  // end describe('onDrop')
     });
 
 });
