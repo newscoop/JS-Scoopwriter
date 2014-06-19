@@ -30,13 +30,9 @@ describe('Controller: ArticleCtrl', function () {
         ArticleCtrl = $controller('ArticleCtrl', {
             $scope: scope,
             $log: log,
-            $location: {
-                search: function() {
-                    return {
-                        article_number: 123,
-                        language: 'de'
-                    };
-                }
+            $routeParams: {
+                'article': 123,
+                'language': 'de'
             }
         });
         spyOn(scope, 'setModified').andCallThrough();
@@ -151,13 +147,9 @@ describe('Controller: ArticleCtrl', function () {
                 .respond({});
             ArticleCtrl = $controller('ArticleCtrl', {
                 $scope: scope,
-                $location: {
-                    search: function() {
-                        return {
-                            article_number: 123,
-                            language: 'de'
-                        };
-                    }
+                $routeParams: {
+                    'article': 123,
+                    'language': 'de'
                 }
             });
         });
@@ -192,13 +184,9 @@ describe('Controller: ArticleCtrl', function () {
                 .respond({});
             ArticleCtrl = $controller('ArticleCtrl', {
                 $scope: scope,
-                $location: {
-                    search: function() {
-                        return {
-                            article_number: 123,
-                            language: 'de'
-                        };
-                    }
+                $routeParams: {
+                    'article': 123,
+                    'language': 'de'
                 }
             });
         });
