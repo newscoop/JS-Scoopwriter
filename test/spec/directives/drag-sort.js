@@ -69,6 +69,29 @@ describe('Directive: dragSort', function () {
         return ev;
     }
 
+    /**
+    * Simulates dragover event over an item at the given index.
+    *
+    * @function dragOverItem
+    * @param idx {Number} index of an item to drag over
+    * @param topHalf {Boolean} if true, drag over the top half
+    *   of the item, otherwise over the bottom half of it
+    */
+    function dragOverItem (idx, topHalf) {
+        var evDragover,
+            offsetY = topHalf ? 10 : 70,
+            $item = $($rootNode.children()[idx]);
+
+        // simulate dragging over the top half of the item (so that
+        // the new desired postion of the dragged item becomes idx)
+        evDragover = createEventMock('dragover');
+        evDragover.originalEvent.dataTransfer = {};
+        evDragover.originalEvent.offsetY = offsetY;
+
+        $item.css('height', '100px');
+        $item.triggerHandler(evDragover);
+    }
+
     it('makes corresponding DOM elements draggable for new collection items',
         function () {
             var children = $rootNode.children();
@@ -138,16 +161,77 @@ describe('Directive: dragSort', function () {
                 ).toEqual('move');
             });
 
-            it('sets the "dragged" CSS class on the element', function () {
+            it('sets "dragged" CSS class on the element', function () {
                 $item.removeClass('dragged');
                 $item.trigger(ev);
                 expect($item.hasClass('dragged')).toBe(true);
             });
         });
 
-        // TODO: dragend
+        describe('onDragEnd', function () {
+            var ev;  // event object mock
 
-        // TODO: dragenter
+            beforeEach(function () {
+                ev = createEventMock('dragend');
+            });
+
+            it('removes "dragged" CSS class from the element', function () {
+                $item.addClass('dragged');
+                $item.trigger(ev);
+                expect($item.hasClass('dragged')).toBe(false);
+            });
+
+            it('removes the new item slot element', function () {
+                var evDragStart = createEventMock('dragstart');
+                evDragStart.originalEvent.dataTransfer = {
+                    setData: function () {}
+                };
+
+                // we first start dragging the item so that the directive
+                // know, which item is being dragged
+                $item.triggerHandler(evDragStart);
+
+                // set first child's sort index and simulate a drag over it
+                // (so that the directive creates the slot element)
+                $($rootNode.children()[0]).attr('data-sort-index', 0);
+                dragOverItem(0, true);
+
+                // now trigger dragEnd event and see what happens
+                $item.trigger(ev);
+                expect($rootNode.children('.new-item-slot').length).toEqual(0);
+            });
+
+            it('removes auxiliary data atribute from all items', function () {
+                angular.forEach($rootNode.children(), function (el, i) {
+                    $(el).attr('data-sort-index', i);
+                });
+                $item.trigger(ev);
+
+                angular.forEach($rootNode.children(), function (el) {
+                    expect($(el).attr('data-sort-index')).toBeUndefined();
+                });
+            });
+        });
+
+        describe('onDragEnter', function () {
+            var ev;  // event object mock
+
+            beforeEach(function () {
+                ev = createEventMock('dragenter');
+                ev.originalEvent.dataTransfer = {};
+            });
+
+            it('enables drop on the element itself (for IE)', function () {
+                $item.trigger(ev);
+                expect(ev.originalEvent.preventDefault).toHaveBeenCalled();
+            });
+
+            it('sets drop effect to "move" (for IE)', function () {
+                $item.trigger(ev);
+                expect(
+                    ev.originalEvent.dataTransfer.dropEffect).toEqual('move');
+            });
+        });
 
         // TODO: dragover
 
@@ -219,29 +303,6 @@ describe('Directive: dragSort', function () {
 
         describe('onDrop', function () {
             var evDrop;  // drop event object mock
-
-            /**
-            * Simulates dragover event over an item at the given index.
-            *
-            * @function dragOverItem
-            * @param idx {Number} index of an item to drag over
-            * @param topHalf {Boolean} if true, drag over the top half
-            *   of the item, otherwise over the bottom half of it
-            */
-            function dragOverItem (idx, topHalf) {
-                var evDragover,
-                    offsetY = topHalf ? 10 : 70,
-                    $item = $($rootNode.children()[idx]);
-
-                // simulate dragging over the top half of the item (so that
-                // the new desired postion of the dragged item becomes idx)
-                evDragover = createEventMock('dragover');
-                evDragover.originalEvent.dataTransfer = {};
-                evDragover.originalEvent.offsetY = offsetY;
-
-                $item.css('height', '100px');
-                $item.triggerHandler(evDragover);
-            }
 
             beforeEach(function () {
                 var evDragStart,
