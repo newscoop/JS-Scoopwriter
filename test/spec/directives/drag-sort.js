@@ -103,9 +103,78 @@ describe('Directive: dragSort', function () {
     );
 
 
+    describe('collection items\' event handlers', function () {
+        var $item;
+
+        beforeEach(function () {
+            [10, 20, 30, 40].forEach(function (id) {
+                addNewItem(id);
+            });
+            scope.$digest();
+
+            $item = $($rootNode.children()[2]);
+        });
+
+        describe('onDragStart', function () {
+            var ev;  // event object mock
+
+            beforeEach(function () {
+                ev = createEventMock('dragstart');
+                ev.originalEvent.dataTransfer = {
+                    setData: jasmine.createSpy('dataTransfer.setData')
+                };
+            });
+
+            it('sets correct event drag data', function () {
+                $item.trigger(ev);
+                expect(ev.originalEvent.dataTransfer.setData)
+                    .toHaveBeenCalledWith('text/plain', '{"sortIndex":2}');
+            });
+
+            it('sets the drag-and-drop operation type to "move"', function () {
+                $item.trigger(ev);
+                expect(
+                    ev.originalEvent.dataTransfer.effectAllowed
+                ).toEqual('move');
+            });
+
+            it('sets the "dragged" CSS class on the element', function () {
+                $item.removeClass('dragged');
+                $item.trigger(ev);
+                expect($item.hasClass('dragged')).toBe(true);
+            });
+        });
+
+        // TODO: dragend
+
+        // TODO: dragenter
+
+        // TODO: dragover
+
+        describe('onDrop', function () {
+            var ev;  // event object mock
+
+            beforeEach(function () {
+                ev = createEventMock('drop');
+            });
+
+            it('prevents browser\'s default behavior', function () {
+                $item.triggerHandler(ev);
+                expect(ev.originalEvent.preventDefault).toHaveBeenCalled();
+            });
+
+            it('lets the event propagate to container', function () {
+                $item.triggerHandler(ev);
+                expect(
+                    ev.originalEvent.stopPropagation).not.toHaveBeenCalled();
+            });
+        });
+    });  // end describe('collection items\' event handlers')
+
+
     describe('root node\'s event handlers', function () {
 
-        describe('dragover', function () {
+        describe('onDragOver', function () {
             var ev;  // event object mock
 
             beforeEach(function () {
@@ -125,7 +194,7 @@ describe('Directive: dragSort', function () {
             });
         });
 
-        describe('dragenter', function () {
+        describe('onDragEnter', function () {
             var ev;  // event object mock
 
             beforeEach(function () {
@@ -205,6 +274,10 @@ describe('Directive: dragSort', function () {
             it('prevents browser\'s default behavior', function () {
                 $rootNode.trigger(evDrop);
                 expect(evDrop.originalEvent.preventDefault).toHaveBeenCalled();
+            });
+
+            it('prevents event propagation', function () {
+                $rootNode.trigger(evDrop);
                 expect(
                     evDrop.originalEvent.stopPropagation).toHaveBeenCalled();
             });
@@ -262,6 +335,6 @@ describe('Directive: dragSort', function () {
             });
 
         });  // end describe('onDrop')
-    });
+    });  // end describe('root node\'s event handlers')
 
 });

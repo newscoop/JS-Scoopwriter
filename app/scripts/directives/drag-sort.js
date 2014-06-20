@@ -126,9 +126,9 @@ angular.module('authoringEnvironmentApp').directive('dragSort', [
             });
 
             $element.on('drop', function (e) {
-                e.preventDefault();
+                e.originalEvent.preventDefault();
                 // let the drop even through to the parent container, thus
-                // don't call e.stopPropagation()
+                // don't call e.originalEvent.stopPropagation()
             });
         };
 
@@ -157,8 +157,8 @@ angular.module('authoringEnvironmentApp').directive('dragSort', [
                     item,      // item that was dragged around
                     oldIndex;  // item's original index in collection
 
-                e.preventDefault();
-                e.stopPropagation();
+                e.originalEvent.preventDefault();
+                e.originalEvent.stopPropagation();
 
                 dragData = e.originalEvent.dataTransfer.getData('text/plain');
                 dragData = JSON.parse(dragData);
