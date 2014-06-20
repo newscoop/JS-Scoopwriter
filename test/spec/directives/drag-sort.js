@@ -41,7 +41,7 @@ describe('Directive: dragSort', function () {
     * @function addNewItem
     * @param id {Number} new item's ID
     */
-    function addNewItem (id) {
+    function addNewItem(id) {
         var newNodeHtml = [
             '<div id="item_', id, '">',
                 'item ', id,
@@ -60,7 +60,7 @@ describe('Directive: dragSort', function () {
     * @param eventType {String} type of event (e.g. 'dragover')
     * @return {Object} new mocked event instance
     */
-    function createEventMock (eventType) {
+    function createEventMock(eventType) {
         var ev = $.Event(eventType);
         ev.originalEvent = {
             preventDefault: jasmine.createSpy(),
@@ -71,16 +71,18 @@ describe('Directive: dragSort', function () {
 
     /**
     * Simulates dragover event over an item at the given index.
+    * (NOTE: only collection items are considered, without the placeholder
+    * slot that might also be the $rootNode's DOM child)
     *
     * @function dragOverItem
     * @param idx {Number} index of an item to drag over
     * @param topHalf {Boolean} if true, drag over the top half
     *   of the item, otherwise over the bottom half of it
     */
-    function dragOverItem (idx, topHalf) {
+    function dragOverItem(idx, topHalf) {
         var evDragover,
             offsetY = topHalf ? 10 : 70,
-            $item = $($rootNode.children()[idx]);
+            $item = $($rootNode.children(':not(.new-item-slot)')[idx]);
 
         // simulate dragging over the top half of the item (so that
         // the new desired postion of the dragged item becomes idx)
@@ -130,7 +132,7 @@ describe('Directive: dragSort', function () {
         var $item;
 
         beforeEach(function () {
-            [10, 20, 30, 40].forEach(function (id) {
+            [10, 20, 30, 40, 50].forEach(function (id) {
                 addNewItem(id);
             });
             scope.$digest();
@@ -233,7 +235,161 @@ describe('Directive: dragSort', function () {
             });
         });
 
-        // TODO: dragover
+        describe('onDragover', function () {
+            var ev;  // event object mock
+
+            /**
+            * Simulates events that, in practice, occur before the actual
+            * dragover event (e.g. dragStart). This allows the directive to
+            * update its internal state to the state we need for the tests.
+            *
+            * In essence it starts dragging the item at index 3 and drags
+            * it over the element directly preceding it.
+            *
+            * @function simulatePreDrag
+            */
+            function simulatePreDrag() {
+                var evDragStart,
+                    $draggedItem = $($rootNode.children()[3]);  // ID = 40
+
+                evDragStart = createEventMock('dragstart');
+                evDragStart.originalEvent.dataTransfer = {
+                    setData: function () {}
+                };
+                // drag over the item immediately preceeding it
+                $draggedItem.triggerHandler(evDragStart);
+                dragOverItem(2, true);
+            }
+
+            beforeEach(function () {
+                ev = createEventMock('dragover');
+                ev.originalEvent.dataTransfer = {};
+                simulatePreDrag();
+                // slot element is now a 3rd child of $rootNode, between the
+                // item id=20 and the item id=30
+            });
+
+            it('enables drop on the element itself', function () {
+                $item.trigger(ev);
+                expect(ev.originalEvent.preventDefault).toHaveBeenCalled();
+            });
+
+            it('prevents the event to propagate', function () {
+                $item.triggerHandler(ev);
+                expect(ev.originalEvent.stopPropagation).toHaveBeenCalled();
+                //console.log($rootNode);
+            });
+
+            it('sets drop effect to "move"', function () {
+                $item.trigger(ev);
+                expect(
+                    ev.originalEvent.dataTransfer.dropEffect).toEqual('move');
+            });
+
+            it('places placeholder slot to just before the item that ' +
+               'the dragover occured over its top half',
+               function () {
+                    var $children;
+
+                    dragOverItem(0, true);
+
+                    // check that slot is at correct position and that the node
+                    // at the old position has indeed been removed
+                    $children = $rootNode.children();
+                    expect(
+                        $($children[0]).hasClass('new-item-slot')).toBe(true);
+                    expect($children.filter('.new-item-slot').length).toBe(1);
+               }
+            );
+
+            it('places placeholder slot just after the item that ' +
+               'the dragover occured over its bottom half',
+               function () {
+                    var $children;
+
+                    dragOverItem(0, false);
+
+                    // check that slot is at correct position and that the node
+                    // at the old position has indeed been removed
+                    $children = $rootNode.children();
+                    expect(
+                        $($children[1]).hasClass('new-item-slot')).toBe(true);
+                    expect($children.filter('.new-item-slot').length).toBe(1);
+               }
+            );
+
+            it('removes placeholder slot if dragging over the bottom half ' +
+               'of the item directly preceding the dragged item',
+               function () {
+                    var $children;
+
+                    dragOverItem(2, false);  // bottom half of the item ID=30
+
+                    // check that slot is at correct position and that the node
+                    // at the old position has indeed been removed
+                    $children = $rootNode.children();
+                    expect($children.filter('.new-item-slot').length).toBe(0);
+               }
+            );
+
+            it('removes placeholder slot if dragging over the top half ' +
+               'of the item directly behind the dragged item',
+               function () {
+                    var $children;
+
+                    dragOverItem(4, true);  // top half of the item ID=50
+
+                    // check that slot is at correct position and that the node
+                    // at the old position has indeed been removed
+                    $children = $rootNode.children();
+                    expect($children.filter('.new-item-slot').length).toBe(0);
+               }
+            );
+
+            it('removes placeholder slot if dragging over the dragged ' +
+               'item itself (top half)',
+               function () {
+                    var $children;
+
+                    dragOverItem(3, true);  // top half of the item ID=40
+
+                    // check that slot is at correct position and that the node
+                    // at the old position has indeed been removed
+                    $children = $rootNode.children();
+                    expect($children.filter('.new-item-slot').length).toBe(0);
+               }
+            );
+
+            it('removes placeholder slot if dragging over the dragged ' +
+               'item itself (bottom half)',
+               function () {
+                    var $children;
+
+                    dragOverItem(3, true);  // bottom half of the item ID=40
+
+                    // check that slot is at correct position and that the node
+                    // at the old position has indeed been removed
+                    $children = $rootNode.children();
+                    expect($children.filter('.new-item-slot').length).toBe(0);
+               }
+            );
+
+            it('does not do unnecessary work if placeholder slot\'s position' +
+               'does not need to be changed',
+               function () {
+                    var slot = $rootNode.children('.new-item-slot')[0],
+                        spy = jasmine.createSpy('DOMNodeRemoved_occured');
+
+                    slot.addEventListener('DOMNodeRemoved', spy);
+
+                    // drag to the same place where the placeholder slot
+                    // is already present (so no change should occur)
+                    dragOverItem(2, true);
+
+                    expect(spy).not.toHaveBeenCalled();
+               }
+            );
+        });
 
         describe('onDrop', function () {
             var ev;  // event object mock
