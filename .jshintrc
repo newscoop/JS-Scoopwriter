@@ -27,6 +27,7 @@
     "_": false,         // Tells JSHint about LoDash
     "$": false,         // jQuery
     "jQuery": false,    // jQuery
-    "Aloha": false      // Aloha
+    "Aloha": false,     // Aloha
+    "alert": false      // alert
   }
 }

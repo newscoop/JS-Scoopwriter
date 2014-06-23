@@ -23,15 +23,13 @@ angular.module('authoringEnvironmentApp', [
         $routeProvider.when('/:language/:article', {
             templateUrl: 'views/main.html',
             controller: 'MainCtrl'
-        }).when('/callback/', {
+        }).when('/:callback*', {
             templateUrl:'views/oAuthCallback.html',
-            controller: ''
+            controller: 'CallbackCtrl'
         }).otherwise({
             redirectTo: '/de/123'
-            //templateUrl: 'views/authentication.html',
-            //controller: 'AuthenticationCtrl'
         });
-        //$httpProvider.interceptors.push('authInterceptor');
+        $httpProvider.interceptors.push('authInterceptor');
         $buttonProvider.defaults.toggleEvent = 'change';
     }
 ])
