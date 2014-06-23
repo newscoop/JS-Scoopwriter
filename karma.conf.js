@@ -31,6 +31,7 @@ module.exports = function(config) {
       'app/bower_components/ng-file-upload/angular-file-upload.js',
       'app/bower_components/select2/select2.js',
       'app/bower_components/angular-ui-select2/src/select2.js',
+      'app/bower_components/angular-oauth/src/js/angularOauth.js',
       'app/scripts/*.js',
       'app/scripts/services/*.js',
       'app/scripts/controllers/*.js',

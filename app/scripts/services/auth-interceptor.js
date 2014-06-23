@@ -3,8 +3,7 @@ angular.module('authoringEnvironmentApp').factory('authInterceptor', [
     '$q',
     '$window',
     'configuration',
-    'Token',
-    function ($q, $window, configuration, Token) {
+    function ($q, $window, configuration) {
         return {
             request: function (config) {
                 if (config.url.indexOf(configuration.API.endpoint.substring(1)+'/') === -1) {
@@ -15,7 +14,7 @@ angular.module('authoringEnvironmentApp').factory('authInterceptor', [
                 config.headers = config.headers || {};
 
                 if ($window.sessionStorage.token) {
-                    config.headers.Authorization = 'Bearer ' + Token.get();
+                    config.headers.Authorization = 'Bearer ' + $window.sessionStorage.token;
                 }
 
                 return config;

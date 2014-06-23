@@ -15,8 +15,7 @@ controller('MainCtrl', [
         'mode',
         'configuration',
         'Token',
-        '$rootScope',
-        function ($scope, $window, mode, configuration, Token, $rootScope) {
+        function ($scope, $window, mode, configuration, Token) {
             if (Token.get() === undefined) {
                 var extraParams = $scope.askApproval ? {approval_prompt: 'force'} : {};
                 Token.getTokenByPopup(extraParams)
@@ -26,10 +25,13 @@ controller('MainCtrl', [
                     $scope.expiresIn = params.expires_in;
 
                     Token.set(params.access_token);
+                    $window.sessionStorage.token = Token.get();
                 }, function() {
                     // Failure getting token from popup.
                     alert('Failed to get token from popup.');
                 });
+            } else {
+                $window.sessionStorage.token = Token.get();
             }
 
             $scope.$on('$viewContentLoaded', function () {
