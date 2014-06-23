@@ -13,7 +13,8 @@ angular.module('authoringEnvironmentApp', [
     'template/modal/window.html',
     'ui.bootstrap.modal',
     'ui.select2',
-    'angularFileUpload'
+    'angularFileUpload',
+    'angularOauth'
 ]).config([
     '$routeProvider',
     '$httpProvider',
@@ -22,9 +23,11 @@ angular.module('authoringEnvironmentApp', [
         $routeProvider.when('/:language/:article', {
             templateUrl: 'views/main.html',
             controller: 'MainCtrl'
+        }).when('/:callback*', {
+            templateUrl:'views/oAuthCallback.html',
+            controller: 'CallbackCtrl'
         }).otherwise({
-            templateUrl: 'views/authentication.html',
-            controller: 'AuthenticationCtrl'
+            redirectTo: '/de/123'
         });
         $httpProvider.interceptors.push('authInterceptor');
         $buttonProvider.defaults.toggleEvent = 'change';

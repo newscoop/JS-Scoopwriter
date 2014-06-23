@@ -27,7 +27,4 @@ describe('Controller: MainCtrl', function () {
     it('exists', function () {
         expect(MainCtrl).toBeDefined();
     });
-    it('redirects the user at the beginning because the token is not there', function() {
-        expect($window.location.href).toBe('http://newscoop.aes.sourcefabric.net/oauth/v2/auth?client_id=7_6203opwgvx8g4skgskksgkws8cs44ks8s4cw4sc8cg4wsk8c40&redirect_uri=http%3A%2F%2Flocalhost%3A9000&response_type=token');
-    });
 });
