@@ -75,11 +75,12 @@ angular.module('authoringEnvironmentApp').directive('dragSort', [
                     sortIdx = parseInt($element.attr('data-sort-index'), 10);
 
                 e.originalEvent.preventDefault();  // allow drop
+                e.originalEvent.stopPropagation();  // no need to propagate
                 e.originalEvent.dataTransfer.dropEffect = 'move';
 
                 // determine if drop index should be changed
                 // (if it crosses the Y-midpoint of the element)
-                if (e.offsetY === undefined) {  // Firefox
+                if (e.originalEvent.offsetY === undefined) {  // Firefox
                     posY = e.originalEvent.pageY - $element.offset().top;
                 } else {
                     posY = e.originalEvent.offsetY;
@@ -125,9 +126,9 @@ angular.module('authoringEnvironmentApp').directive('dragSort', [
             });
 
             $element.on('drop', function (e) {
-                e.preventDefault();
+                e.originalEvent.preventDefault();
                 // let the drop even through to the parent container, thus
-                // don't call e.stopPropagation()
+                // don't call e.originalEvent.stopPropagation()
             });
         };
 
@@ -156,8 +157,8 @@ angular.module('authoringEnvironmentApp').directive('dragSort', [
                     item,      // item that was dragged around
                     oldIndex;  // item's original index in collection
 
-                e.preventDefault();
-                e.stopPropagation();
+                e.originalEvent.preventDefault();
+                e.originalEvent.stopPropagation();
 
                 dragData = e.originalEvent.dataTransfer.getData('text/plain');
                 dragData = JSON.parse(dragData);
@@ -181,12 +182,16 @@ angular.module('authoringEnvironmentApp').directive('dragSort', [
 
         // directive's linking function
         var linkFunction = function (scope, element, attrs) {
-            $rootElement = element;
+            // NOTE: we unwrap element and wrap it into a "real jQuery" object
+            // as this prevents some weird behavior in tests (i.e. event
+            // handlers not registered on the $rootElement)
+            $rootElement = $(element[0]);
 
             scope.$watchCollection('items', function (newItems, oldItems) {
-                var diff = _.difference(newItems, oldItems);
+                var children = $rootElement.children(),
+                    diff = _.difference(newItems, oldItems);
 
-                $rootElement.children().each(function (i, el) {
+                angular.forEach(children, function (el, i) {
                     // only set event handlers for new elements in collection
                     if (_.indexOf(diff, newItems[i]) > -1) {
                         setEventHandlers($(el));

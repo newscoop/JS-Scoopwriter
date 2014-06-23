@@ -8,6 +8,11 @@ angular.module('authoringEnvironmentApp')
                 handler: '&',
             },
             link: function postLink(scope, element, attrs) {
+                // NOTE: unwrap element and wrap it into a "real jQuery" object
+                // as this prevents some weird behavior in tests (i.e. event
+                // handlers not registered on the $rootElement)
+                element = $(element[0]);
+
                 element.on('drop', function (e) {
                     var i,
                         file,
