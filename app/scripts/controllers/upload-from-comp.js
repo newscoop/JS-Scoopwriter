@@ -12,6 +12,7 @@ angular.module('authoringEnvironmentApp').controller('UploadFromCompCtrl', [
     function ($scope, images, $q) {
 
         $scope.images2upload = images.images2upload;
+        $scope.uploading = false;
 
         $scope.$watchCollection(
             'images.images2upload',
@@ -48,7 +49,10 @@ angular.module('authoringEnvironmentApp').controller('UploadFromCompCtrl', [
         * @method uploadStaged
         */
         $scope.uploadStaged = function () {
-            var uploadPromises = images.uploadAll();
+            var uploadPromises;
+
+            $scope.uploading = true;
+            uploadPromises = images.uploadAll();
 
             $q.all(uploadPromises).then(function (data) {
 
@@ -57,6 +61,8 @@ angular.module('authoringEnvironmentApp').controller('UploadFromCompCtrl', [
                 });
 
                 images.clearUploadList();
+            }).finally(function () {
+                $scope.uploading = false;
             });
         };
 

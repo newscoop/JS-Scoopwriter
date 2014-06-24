@@ -29,6 +29,10 @@ describe('Controller: UploadFromCompCtrl', function () {
         expect(scope.images2upload).toBeDefined();
     });
 
+    it('initializes uploading flag in scope to false', function () {
+        expect(scope.uploading).toBe(false);
+    });
+
     describe('scope\'s addToUploadList() method', function () {
         beforeEach(inject(function (_images_) {
             spyOn(images, 'addToUploadList');
@@ -67,6 +71,12 @@ describe('Controller: UploadFromCompCtrl', function () {
             spyOn(images, 'clearUploadList');
         }));
 
+        it('sets uploading flag before doing anything', function () {
+            scope.uploading = false;
+            scope.uploadStaged();
+            expect(scope.uploading).toBe(true);
+        });
+
         it('invokes uploadAll() method of the images service', function () {
             scope.uploadStaged();
             expect(images.uploadAll).toHaveBeenCalled();
@@ -92,6 +102,27 @@ describe('Controller: UploadFromCompCtrl', function () {
                 expect(images.clearUploadList).toHaveBeenCalled();
         });
 
+        it('clears uploading flag after a successful upload', function () {
+            scope.uploadStaged();
+            scope.uploading = true;
+
+            deferred.resolve({id:4});
+            deferred2.resolve({id:17});
+            scope.$apply();
+
+            expect(scope.uploading).toBe(false);
+        });
+
+        it('clears uploading flag after a failed upload', function () {
+            scope.uploadStaged();
+            scope.uploading = true;
+
+            deferred.resolve({id:4});
+            deferred2.reject();  // this upload fails
+            scope.$apply();
+
+            expect(scope.uploading).toBe(false);
+        });
     });
 
     describe('scope\'s clearStaged() method', function () {
