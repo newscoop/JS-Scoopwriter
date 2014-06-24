@@ -73,14 +73,14 @@
     <button
        type="button"
        class="btn btn-primary"
-       ng-disabled="images.images2upload.length < 1"
+       ng-disabled="images.images2upload.length < 1 || uploading"
        ng-click="uploadStaged()">
       Upload
     </button>
     <button
        type="button"
        class="btn btn-default"
-       ng-disabled="images.images2upload.length < 1"
+       ng-disabled="images.images2upload.length < 1 || uploading"
        ng-click="clearStaged()">
       Clear
     </button>
