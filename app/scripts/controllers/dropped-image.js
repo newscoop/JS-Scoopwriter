@@ -4,7 +4,22 @@ angular.module('authoringEnvironmentApp').controller('DroppedImageCtrl', [
     '$scope',
     '$log',
     'configuration',
-    function (images, $scope, $log, configuration) {
+    'NcImage',
+    function (images, $scope, $log, configuration, NcImage) {
+
+        /**
+        * Initializes the controller - it retrieves the specified image from
+        * the server.
+        *
+        * @method init
+        * @param imageId {Number} ID of the image to retrieve
+        */
+        this.init = function (imageId) {
+            NcImage.getById(imageId).then(function (image) {
+                $scope.image = image;
+            });
+        };
+
         /* utility function to help us in case of weird errors,
             * making them more explicit */
         function getIncluded(id) {
@@ -17,6 +32,7 @@ angular.module('authoringEnvironmentApp').controller('DroppedImageCtrl', [
                 return i;
             }
         }
+
         /* ofter used in the following code */
         function getSelected() {
             return getIncluded(images.selected);
