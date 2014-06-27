@@ -25,22 +25,15 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                 imageHeight: '@imageHeight'
             },
             link: function postLink(scope, element, attrs, ctrl) {
-                var imageId = parseInt(element.attr('data-id'), 10);
+                var imageId,
+                    $element = $(element);
+
+                imageId = parseInt(element.attr('data-id'), 10);
                 ctrl.init(imageId);
 
                 // XXX: set event handlers if neccessary
                 // (or have them in the template? think about it...)
 
-                // var includedId = scope.get(id);
-                // // handler for close button
-                // $(element).find('.close').click(function (e) {
-                //     scope.images.exclude(id);
-                //     element.remove();
-                //     e.stopPropagation();
-                // });
-                // $(element).click(function () {
-                //     scope.select(includedId);
-                // });
                 // $popover(element, {
                 //     placement: 'top',
                 //     html: true,
