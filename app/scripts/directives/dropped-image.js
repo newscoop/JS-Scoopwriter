@@ -31,8 +31,12 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                 imageId = parseInt(element.attr('data-id'), 10);
                 ctrl.init(imageId);
 
-                // XXX: set event handlers if neccessary
-                // (or have them in the template? think about it...)
+                // close button's onClick handler
+                $element.find('button.close').click(function (e) {
+                    e.stopPropagation();
+                    $element.remove();
+                    ctrl.imageRemoved(imageId);  // notify controller
+                });
 
                 // $popover(element, {
                 //     placement: 'top',

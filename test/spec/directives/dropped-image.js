@@ -33,11 +33,17 @@ describe('Directive: droppedImage', function () {
             // provide a fake controller to the directive
             directive.controller = function () {
                this.init = jasmine.createSpy();
+               this.imageRemoved = jasmine.createSpy();
                fakeCtrl = this;  // save reference to the fake controller
             };
 
             // compile the directive
-            html = '<div dropped-image data-id="4"></div>';
+            html = [
+                '<div id="wrapper">',
+                  '<div dropped-image data-id="4"></div>',
+                '</div>'
+            ].join('');
+
             scope = $rootScope.$new();
             $element = $compile(html)(scope);
             $element = $($element[0]);  // make it a "true jQuery" object
@@ -47,10 +53,37 @@ describe('Directive: droppedImage', function () {
 
     it('triggers controller initialization with correct image ID',
         function () {
-            console.log('directive trigger test.......');
             expect(fakeCtrl.init.callCount).toEqual(1);
             expect(fakeCtrl.init).toHaveBeenCalledWith(4);
         }
     );
+
+    describe('the Close button\'s onClick handler', function () {
+        var ev,
+            $button;
+
+        beforeEach(function () {
+            $button = $element.find('.close');
+            ev = $.Event('click');
+            spyOn(ev, 'stopPropagation');
+        });
+
+        it('prevents event propagation', function () {
+            $button.triggerHandler(ev);
+            expect(ev.stopPropagation).toHaveBeenCalled();
+        });
+
+        it('removes the element itself', function () {
+            var $node;
+            $button.triggerHandler(ev);
+            $node = $element.find('[dropped-image]');
+            expect($node.length).toEqual(0);
+        });
+
+        it('notifies controller about the element removal', function () {
+            $button.triggerHandler(ev);
+            expect(fakeCtrl.imageRemoved).toHaveBeenCalledWith(4);
+        });
+    });
 
 });

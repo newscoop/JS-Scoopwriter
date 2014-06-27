@@ -20,6 +20,10 @@ angular.module('authoringEnvironmentApp').controller('DroppedImageCtrl', [
             });
         };
 
+        this.imageRemoved = function (imageId) {
+            console.log('Image', imageId, 'removed from article body');
+        };
+
         /* utility function to help us in case of weird errors,
             * making them more explicit */
         function getIncluded(id) {
