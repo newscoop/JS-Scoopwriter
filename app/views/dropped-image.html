@@ -4,7 +4,10 @@
    ng-style="image.style.container"
    >
   <img
+     ng-if="image"
      ng-src="{{root}}/images/{{image.basename}}"
+     alt="{{image.basename}}"
+     title="{{image.description}}"
      class="image"
      ng-style="image.style.image"
      >
