@@ -2504,6 +2504,28 @@ a:hover {
             .body{
                 select {
                     margin-bottom: 10px;
+                    width:100%;
+                    padding:3px 0;
+                    border: 1px solid #d0d0d0;
+                }
+                .template-field {
+                    input {
+                        width:100%;
+                        padding:5px;
+                        margin-bottom: 4px;
+                        border: 1px solid #d0d0d0;
+                        font-size: 90%;
+                    }
+                    textarea {
+                        border: 1px solid #d0d0d0;
+                        font-size: 90%;
+                    }
+                }
+                .controls {
+                    margin-top: 6px;
+                }
+                .input-name {
+                    margin: 0 0 2px 0;
                 }
             }
         }
@@ -2511,6 +2533,7 @@ a:hover {
             right: @pane-padding;
             bottom: @pane-padding;
             left: @pane-padding;
+            top: 148px;
             &::-webkit-scrollbar { width: 14px !important; height: 8px; margin: -1px 0; }
             &::-webkit-scrollbar-thumb { background: #949494; border-left: 6px solid rgba(0,0,0,0) !important; background-clip: padding-box !important; }
             &::-webkit-scrollbar-thumb:hover { background: #6e6e6e; border-left: 6px solid rgba(0,0,0,0);background-clip: padding-box; }
