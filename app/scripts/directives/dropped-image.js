@@ -13,7 +13,6 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
     function (configuration, $log) {
         return {
             restrict: 'A',
-            // XXX: replace: true?
             templateUrl: 'views/dropped-image.html',
             controller: 'DroppedImageCtrl',
             // XXX: what is needed and what not?
@@ -28,13 +27,49 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
             link: function postLink(scope, element, attrs, ctrl) {
                 var imageId,
                     $element = $(element),
+                    $imageBox = $element.find('.dropped-image'),
                     $toolbar;
 
                 imageId = parseInt(element.attr('data-id'), 10);
                 ctrl.init(imageId);
 
                 // TODO: watch scope.image and when initialized,
-                // get $toolbar!
+                function initToolbar() {
+                    // XXX: what about duplicate images? same image in
+                    // article body twice?
+                    if ($toolbar) {
+                        return;
+                    } else {
+                        $toolbar = $('#img-toolbar-' + imageId);
+                    }
+                }
+
+                // TODO: comments
+                // TODO: add watch for image size and position changes
+                function positionToolbar() {
+                    var cssFloat,
+                        left,
+                        top;
+
+                    top = $imageBox.outerHeight() + $toolbar.outerHeight();
+                    top = - Math.round(top);
+
+                    cssFloat = $element.css('float');
+                    if (cssFloat === 'left') {
+                        left = 0;
+                    } else if (cssFloat === 'right') {
+                        left = $imageBox.outerWidth() - $toolbar.outerWidth();
+                        left = Math.round(left);
+                    } else {
+                        left = $imageBox.outerWidth() - $toolbar.outerWidth();
+                        left = Math.round(left / 2);
+                    }
+
+                    $toolbar.css({
+                        top: top,
+                        left: left
+                    });
+                }
 
                 // close button's onClick handler
                 $element.find('button.close').click(function (e) {
@@ -44,19 +79,13 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                     // TODO: also remove toolbar?
                 });
 
+                // clicking the image displays the toolbar
                 $element.click(function (e) {
                     e.stopPropagation();
-
-                    // XXX: what about duplicate images? same image in
-                    // article body twice?
-                    $toolbar = $toolbar || $('#img-toolbar-' + imageId);
-
-                    // XXX: only provisional
-                    $toolbar.css('top', 'auto');
-                    $toolbar.css('left', 'auto');
-
-                    $toolbar.show();
-                    // TODO: calculate abs position (top, left)?
+                    initToolbar();  // TODO: should be somewhere else
+                    positionToolbar();
+                    $toolbar.show();  // TODO: should toggle
+                                // (or hide toolbar on hover)
                 });
 
                 // TODO: comments & tests
@@ -87,8 +116,10 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                         return;
                     }
 
-                    $element.css('float', cssFloat);
-                    $element.css('margin', cssMargin);
+                    $element.css({
+                        'float': cssFloat,
+                        'margin': cssMargin
+                    });
                 };
 
                 // TODO: comments & tests
@@ -107,6 +138,7 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                         // TODO: what is meant to be here??
                         // i.style.image = {};
                     }
+                    positionToolbar();
                 };
 
                 // TODO: comments & tests
