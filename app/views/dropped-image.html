@@ -15,4 +15,67 @@
     <span class="glyphicon glyphicon-remove"></span>
   </button>
   <div class="caption" ng-bind="image.description"></div>
+
 </div>
+
+<!-- POPOVER BAR USED FOR IMAGE EDITING -->
+<div class="popover no-arrow" id="img-toolbar-{{image.id}}"
+     >  <!-- ng-mouseleave="$hide()" -->
+  <div class="arrow"></div>
+  <h3 class="popover-title" ng-bind="title" ng-show="title"></h3>
+  <div class="popover-content">
+    <div
+       class="popover-markup"
+       >
+      <button
+         class="btn btn-default btn-xs small"
+         ng-click="setSize('small')"
+         >
+        <span class="glyphicon glyphicon-stop"></span> small
+      </button><button
+                  class="btn btn-default btn-xs medium"
+                  ng-click="setSize('medium')"
+                  >
+        <span class="glyphicon glyphicon-stop"></span> medium
+      </button><button
+                  class="btn btn-default btn-xs"
+                  ng-click="setSize('big')"
+                  >
+        <span class="glyphicon glyphicon-stop"></span> big
+      </button><button
+                  class="btn btn-default btn-xs"
+                  data-id="original"
+                  ng-click="setSize('original')"
+                  >
+        original
+      </button>
+      <span class="pixels"><input
+                              class="pixels"
+                              ng-model="widthPx"
+                              ng-change="changePixelSize(widthPx)"
+                              type="number"
+                              onclick="event.stopPropagation()"
+                              /> px</span>
+      <button
+         class="btn btn-default btn-xs"
+         data-id="left"
+         ng-click="align('left')"
+         >
+        <span class="glyphicon glyphicon-align-left"></span>
+      </button><button
+                  class="btn btn-default btn-xs"
+                  data-id="center"
+                  ng-click="align('center')"
+                  >
+        <span class="glyphicon glyphicon-align-center"></span>
+      </button><button
+                  class="btn btn-default btn-xs"
+                  data-id="right"
+                  ng-click="align('right')"
+                  >
+        <span class="glyphicon glyphicon-align-right"></span>
+      </button>
+    </div>
+  </div>
+</div>
+<!-- END POPOVER BAR USED FOR IMAGE EDITING -->
