@@ -29,7 +29,6 @@ build:
 build-newscoop:
  - 'pre-build'
  - 'devcode:newscoop'
- - 'rev'
  - 'usemin'
  - 'copy:newscoop'
  - 'rename:newscoop'
