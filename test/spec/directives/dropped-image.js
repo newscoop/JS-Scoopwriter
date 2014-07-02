@@ -1,83 +1,89 @@
 'use strict';
 
-describe('Directive: droppedImage', function () {
+/**
+* Module with tests for the droppedImage directive.
+*
+* @module droppedImage directive tests
+*/
 
-    // load the directive's module
+describe('Directive: droppedImage', function () {
+    var fakeCtrl,  // mocked directive's controller
+        $element,
+        scope,
+        templates;
+
     beforeEach(module(
-        'authoringEnvironmentApp',
-        'app/views/dropped-image.html',
-        'app/views/popover-image.html'
+        'authoringEnvironmentApp', 'app/views/dropped-image.html'
     ));
 
-    var element,
-    scope,
-    templates;
+    beforeEach(inject(
+        function (
+            $rootScope, $templateCache, $compile, droppedImageDirective
+        ) {
+            var directive = droppedImageDirective[0],
+                html;
 
-    beforeEach(inject(function ($rootScope, $templateCache, $compile) {
-        // assign the template to the expected url called by the
-        // directive and put it in the cache
-        templates = {
-            dropped: $templateCache.get('app/views/dropped-image.html'),
-            popover: $templateCache.get('app/views/popover-image.html')
-        };
-        $templateCache.put('views/dropped-image.html', templates.dropped);
-        $templateCache.put('views/popover-image.html', templates.popover);
-
-        scope = $rootScope.$new();
-        scope.get = function() {
-            scope.basename = 'image.jpg';
-            scope.style = {
-                width: '200px'
+            // assign the template to the expected url called by the
+            // directive (so that the directive can find it upon reques)
+            templates = {
+                dropped: $templateCache.get('app/views/dropped-image.html')
             };
-            return 64;
-        };
-        scope.images = {
-            include: function() {},
-            exclude: jasmine.createSpy('images exclude')
-        };
-        scope.select = jasmine.createSpy();
-        spyOn(scope, 'get').andCallThrough();
-        element = angular
-            .element('<div dropped-image ng-style="style.container" data-id="4"></div>');
-        element = $compile(element)(scope);
-        scope.$digest();
-    }));
+            $templateCache.put('views/dropped-image.html', templates.dropped);
 
-    it('finds valid popover template in the cache', function() {
-        expect(templates.popover).toBeTruthy();
+            // provide a fake controller to the directive
+            directive.controller = function () {
+               this.init = jasmine.createSpy();
+               this.imageRemoved = jasmine.createSpy();
+               fakeCtrl = this;  // save reference to the fake controller
+            };
+
+            // compile the directive
+            html = [
+                '<div id="wrapper">',
+                  '<div dropped-image data-id="4"></div>',
+                '</div>'
+            ].join('');
+
+            scope = $rootScope.$new();
+            $element = $compile(html)(scope);
+            $element = $($element[0]);  // make it a "true jQuery" object
+            scope.$digest();
+        }
+    ));
+
+    it('triggers controller initialization with correct image ID',
+        function () {
+            expect(fakeCtrl.init.callCount).toEqual(1);
+            expect(fakeCtrl.init).toHaveBeenCalledWith(4);
+        }
+    );
+
+    describe('the Close button\'s onClick handler', function () {
+        var ev,
+            $button;
+
+        beforeEach(function () {
+            $button = $element.find('.close');
+            ev = $.Event('click');
+            spyOn(ev, 'stopPropagation');
+        });
+
+        it('prevents event propagation', function () {
+            $button.triggerHandler(ev);
+            expect(ev.stopPropagation).toHaveBeenCalled();
+        });
+
+        it('removes the element itself', function () {
+            var $node;
+            $button.triggerHandler(ev);
+            $node = $element.find('[dropped-image]');
+            expect($node.length).toEqual(0);
+        });
+
+        it('notifies controller about the element removal', function () {
+            $button.triggerHandler(ev);
+            expect(fakeCtrl.imageRemoved).toHaveBeenCalledWith(4);
+        });
     });
-    it('finds valid dropped template in the cache', function() {
-        expect(templates.dropped).toBeTruthy();
-    });
-    xit('gets the image', inject(function($compile) {
-        expect(scope.get).toHaveBeenCalledWith('4');
-    }));
-    describe('the image element', function() {
-        var $i;
-        beforeEach(function() {
-            $i = $(element).find('img');
-        });
-        it('is one', function() {
-            expect($i.size()).toBe(1);
-        });
-        it('has the right src', function() {
-            expect($i.attr('src')).toBe('/images/');
-        });
-    });
-    describe('on click', function() {
-        beforeEach(function() {
-            $(element).click();
-        });
-        xit('shows the popover', function() {
-            expect(scope.select).toHaveBeenCalledWith(64);
-        });
-    });
-    describe('on remove', function() {
-        beforeEach(function() {
-            $(element).find('.close').click();
-        });
-        xit('excludes the image from the article', function() {
-            expect(scope.images.exclude).toHaveBeenCalledWith('4');
-        });
-    });
+
 });

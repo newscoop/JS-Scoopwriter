@@ -1,14 +1,18 @@
 <div
-   class="dropped-image"
+   class="dropped-image clearfix"
    ng-click="selectThis"
    ng-style="image.style.container"
    >
   <img
+     ng-if="image"
      ng-src="{{root}}/images/{{image.basename}}"
+     alt="{{image.basename}}"
+     title="{{image.description}}"
      class="image"
      ng-style="image.style.image"
      >
-  <div class="close"><span class="glyphicon glyphicon-remove"></span></div>
+  <button class="close" title="Remove">
+    <span class="glyphicon glyphicon-remove"></span>
+  </button>
   <div class="caption" ng-bind="image.description"></div>
-  <div style="clear:both;"></div>
 </div>
