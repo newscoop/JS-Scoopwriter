@@ -18,8 +18,6 @@ angular.module('authoringEnvironmentApp').controller('DroppedImageCtrl', [
             NcImage.getById(imageId).then(function (image) {
                 $scope.image = image;
             });
-            // self.imageId = imageId;  // TODO: store somewhere else? no, you
-            //have image... delete this, it's just for debug
         };
 
         this.imageRemoved = function (imageId) {

@@ -33,23 +33,22 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                 imageId = parseInt(element.attr('data-id'), 10);
                 ctrl.init(imageId);
 
-                // TODO: watch scope.image and when initialized,
-                function initToolbar() {
-                    // XXX: what about duplicate images? same image in
-                    // article body twice?
-                    if ($toolbar) {
-                        return;
-                    } else {
-                        $toolbar = $('#img-toolbar-' + imageId);
-                    }
-                }
-
-                // TODO: comments
-                // TODO: add watch for image size and position changes
+                /**
+                * Places the toolbar directly above the image and horizontally
+                * aligns it based on the image alignment.
+                * NOTE: If the toolbar handle is not yet available (i.e. it
+                * has not been displayed yet), it does not do anything.
+                *
+                * @function positionToolbar
+                */
                 function positionToolbar() {
                     var cssFloat,
                         left,
                         top;
+
+                    if (!$toolbar) {
+                        return;
+                    }
 
                     top = $imageBox.outerHeight() + $toolbar.outerHeight();
                     top = - Math.round(top);
@@ -71,21 +70,28 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                     });
                 }
 
+                // Reposition the toolbar on image dimension changes.
+                //
+                // NOTE: setting a $watch on image width and height does not
+                // work immediately on resizing changes caused by external
+                // actions (e.g. opening a pane which shrinks the article
+                // editor), because $digest cycle is not always triggered
+                $element.mutate('height width', function (element,info) {
+                    positionToolbar();
+                });
+
                 // close button's onClick handler
                 $element.find('button.close').click(function (e) {
                     e.stopPropagation();
                     $element.remove();
                     ctrl.imageRemoved(imageId);  // notify controller
-                    // TODO: also remove toolbar?
                 });
 
                 // clicking the image displays the toolbar
                 $element.click(function (e) {
                     e.stopPropagation();
-                    initToolbar();  // TODO: should be somewhere else
-                    positionToolbar();
+                    $toolbar = $toolbar || $('#img-toolbar-' + imageId);
                     $toolbar.show();  // TODO: should toggle
-                                // (or hide toolbar on hover)
                 });
 
                 // TODO: comments & tests
@@ -120,6 +126,8 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                         'float': cssFloat,
                         'margin': cssMargin
                     });
+
+                    positionToolbar();
                 };
 
                 // TODO: comments & tests
@@ -138,7 +146,6 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                         // TODO: what is meant to be here??
                         // i.style.image = {};
                     }
-                    positionToolbar();
                 };
 
                 // TODO: comments & tests

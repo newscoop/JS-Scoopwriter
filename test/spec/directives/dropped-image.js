@@ -23,6 +23,12 @@ describe('Directive: droppedImage', function () {
             var directive = droppedImageDirective[0],
                 html;
 
+            // for some reason jQuery in test does not have this extension,
+            // thus we have to mock it here
+            $.fn.extend({
+                mutate: jasmine.createSpy()
+            });
+
             // assign the template to the expected url called by the
             // directive (so that the directive can find it upon reques)
             templates = {
