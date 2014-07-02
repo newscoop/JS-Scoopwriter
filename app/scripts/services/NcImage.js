@@ -29,13 +29,20 @@ angular.module('authoringEnvironmentApp').factory('NcImage', [
 
             relevantKeys  = [
                 'id', 'basename', 'thumbnailPath', 'description',
-                'width', 'height', 'photographer', 'photographerUrl'
+                'photographer', 'photographerUrl'
             ];
 
             data = data || {};
             relevantKeys.forEach(function (key) {
                 that[key] = data[key];
             });
+
+            // API data contains the width and the height as strings
+            that.width = ('width' in data) ?
+                parseInt(data.width, 10) : undefined;
+
+            that.height = ('height' in data) ?
+                parseInt(data.height, 10) : undefined;
         };
 
         /**

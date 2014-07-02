@@ -30,9 +30,6 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                     $imageBox = $element.find('.dropped-image'),
                     $toolbar;
 
-                imageId = parseInt(element.attr('data-id'), 10);
-                ctrl.init(imageId);
-
                 /**
                 * Places the toolbar directly above the image and horizontally
                 * aligns it based on the image alignment.
@@ -97,25 +94,20 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                 // TODO: comments & tests
                 scope.align = function (position) {
                     var cssFloat,
-                        cssMargin,
-                        img = scope.image;
+                        cssMargin;
 
                     switch (position) {
                     case 'left':
                         cssFloat = 'left';
-                        if (img.size !== 'big') {
-                            cssMargin = '0 2% 0 0';
-                        }
+                        cssMargin = '2% 2% 2% 0';
                         break;
                     case 'right':
                         cssFloat = 'right';
-                        if (img.size !== 'big') {
-                            cssMargin = '0 0 0 2%';
-                        }
+                        cssMargin = '2% 0 2% 2%';
                         break;
                     case 'center':
                         cssFloat = 'none';
-                        cssMargin = '0 auto';
+                        cssMargin = '2% auto';
                         break;
                     default:
                         $log.warn('unknown image alignment:', position);
@@ -133,31 +125,29 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                 // TODO: comments & tests
                 // sizes: small, medium, big, original
                 scope.setSize = function (size) {
-                    // var img = scope.image;
-                    // img.size = size;  // TODO: later
-                    $element.width(configuration.image.width[size]);
+                    var width;
 
-                    if (size === 'big') {
-                        $element.css('margin', '0');
-                    } else if (size === 'original') {
-                        $element.css('width', 'auto');
-                        // i.style.image.width = 'auto';
+                    // img.size = size;  // TODO: this is not set anywhere
+                    if (size in configuration.image.width) {
+                        width = configuration.image.width[size];
                     } else {
-                        // TODO: what is meant to be here??
-                        // i.style.image = {};
+                        // set to original image size
+                        width = scope.image.width;
                     }
+
+                    $element.width(width);
                 };
 
                 // TODO: comments & tests
                 scope.changePixelSize = function (width) {
-                    var newWidth;
-
-                    if (angular.isNumber(scope.pixels)) {
-                        newWidth = scope.pixels + 'px';
-                        // TODO: set this
-                        // i.style.image.width = p;
+                    if (angular.isNumber(width)) {
+                        $element.width(width);
                     }
                 };
+
+                imageId = parseInt($element.attr('data-id'), 10);
+                ctrl.init(imageId);
+
             }  // end postLink function
         };
     }
