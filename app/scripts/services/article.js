@@ -1,12 +1,10 @@
 'use strict';
 angular.module('authoringEnvironmentApp').service('article', [
     '$resource',
-    'configuration',
     '$q',
-    function article($resource, configuration, $q) {
+    function article($resource, $q) {
 
         var commenting, deferred = $q.defer(), langMap, resource;
-
         langMap = {
             1: [
                 'English',
@@ -139,7 +137,7 @@ angular.module('authoringEnvironmentApp').service('article', [
             DISABLED: 1,
             LOCKED: 2
         });
-        resource = $resource(configuration.API.full + '/articles/:articleId?language=:language', {
+        resource = $resource(Routing.generate('newscoop_gimme_articles_getarticle', {}, true) + '/:articleId?language=:language', {
             articleId: '',
             language: 'en'
         }, {
@@ -148,7 +146,7 @@ angular.module('authoringEnvironmentApp').service('article', [
                 isArray: true
             },
             save: {
-                url: configuration.API.full + '/articles/:articleId/:language',
+                url: Routing.generate('newscoop_gimme_articles_getarticle', {}, true) + '/:articleId/:language',
                 method: 'PATCH'
             }
         });
