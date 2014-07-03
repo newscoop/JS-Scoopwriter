@@ -1,4 +1,8 @@
-<section class="tabcontent embed-panel" ng-controller="PaneSnippetsCtrl">
+<section
+  class="tabcontent embed-panel"
+  ng-controller="PaneSnippetsCtrl"
+  auto-list-offset>
+
   <div class="panel-title">
     Embed Code
   </div>
@@ -70,7 +74,7 @@
   </div>
 
   <div class="attached-title">Attached code snippets</div>
-  <div class="list" ng-class="{low: showAddSnippet, high: !showAddSnippet}">
+  <div class="list">
 
     <div
        ng-repeat="snippet in snippets"
