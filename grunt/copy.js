@@ -10,8 +10,10 @@ module.exports = {
                 src: [
                     '*.{ico,png,txt}',
                     '.htaccess',
+                    'css/plugin.css',
                     'bower_components/**/*',
                     'scripts/aloha/plugins/aes/**/*',
+                    'scripts/routing/*',
                     'images/{,*/}*',
                     'fonts/*'
                 ]
@@ -37,6 +39,7 @@ module.exports = {
                 dest: '<%= plugin %>/Resources/public/',
                 src: [
                     'index.html',
+                    'css/plugin.css',
                     'bower_components/**/*',
                     'fonts/{,*/}*',
                     'images/{,*/}*',

@@ -7,11 +7,15 @@
     <!-- devcode: newscoop -->
     <base href="/bundles/newscoopeditor/">
     <link rel="stylesheet" href="css/plugin.css">
+    <script src="{{ asset('bundles/fosjsrouting/js/router.js') }}"></script>
+    <script src="{{ path('fos_js_routing_js', {'callback': 'fos.Router.setData'}) }}"></script>
     <!-- endcode -->
     <!-- devcode: !newscoop -->
     <script type="text/javascript">
       var CSBaseUrl = '';
     </script>
+    <script src="scripts/routing/router.js"></script>
+    <script src="scripts/routing/fos_js_routes.js"></script>
     <!-- endcode -->
     <!-- devcode: newscoop -->
     <script type="text/javascript">
