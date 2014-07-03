@@ -2,3 +2,4 @@ app/scripts/bootstrap.min.js
 app/scripts/aloha/
 app/scripts/httpBackendStub.js
 app/scripts/mutate*.js
+app/scripts/routing/*

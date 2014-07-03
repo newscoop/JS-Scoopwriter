@@ -37,6 +37,8 @@ module.exports = function(config) {
       'app/scripts/controllers/*.js',
       'app/scripts/directives/*.js',
       'app/scripts/filters/*.js',
+      'app/scripts/routing/router.js',
+      'app/scripts/routing/fos_js_routes.js',
       'test/globals.js',
       'test/spec/**/*.js',
       'app/bower_components/ng-aloha-editor/libs/alohaeditor-0.23.26/aloha/lib/require.js',
