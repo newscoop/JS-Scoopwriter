@@ -28,7 +28,7 @@
     "$": false,         // jQuery
     "jQuery": false,    // jQuery
     "Aloha": false,     // Aloha
-    "Routing": false,     // Aloha
+    "Routing": false,   // FOSJsRoutingBundle
     "alert": false      // alert
   }
 }
