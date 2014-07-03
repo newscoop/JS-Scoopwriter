@@ -85,13 +85,21 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                 });
 
                 // clicking the image displays the toolbar
-                $element.click(function (e) {
+                $imageBox.click(function (e) {
                     e.stopPropagation();
                     $toolbar = $toolbar || $('#img-toolbar-' + imageId);
-                    $toolbar.show();  // TODO: should toggle
+                    $toolbar.toggle();
                 });
 
-                // TODO: comments & tests
+
+                /**
+                * Sets the image alignment and adjusts its margings depending
+                * on the image position.
+                *
+                * @method align
+                * @param position {String} new image alignment (should be one
+                *   of the 'left', 'right' or 'center')
+                */
                 scope.align = function (position) {
                     var cssFloat,
                         cssMargin;
@@ -122,12 +130,18 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                     positionToolbar();
                 };
 
-                // TODO: comments & tests
-                // sizes: small, medium, big, original
+                /**
+                * Sets the size of the image to one of the predifined sizes
+                * (e.g. 'big'). If the given size is unknown, it sets the size
+                * to the original size of the image.
+                *
+                * @method setSize
+                * @param size {String} image size (e.g. 'small', 'medium',
+                * 'big')
+                */
                 scope.setSize = function (size) {
                     var width;
 
-                    // img.size = size;  // TODO: this is not set anywhere
                     if (size in configuration.image.width) {
                         width = configuration.image.width[size];
                     } else {
@@ -138,10 +152,17 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                     $element.width(width);
                 };
 
-                // TODO: comments & tests
+                /**
+                * Sets the width of the image to the specified number of
+                * pixels. Image height is left intact (to let the browser
+                * automatically adjust it).
+                *
+                * @method changePixelSize
+                * @param width {Number} image width in pixels
+                */
                 scope.changePixelSize = function (width) {
-                    if (angular.isNumber(width)) {
-                        $element.width(width);
+                    if (angular.isNumber(width) && width > 0) {
+                        $element.width(Math.round(width));
                     }
                 };
 

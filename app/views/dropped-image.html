@@ -18,8 +18,8 @@
 </div>
 
 <!-- POPOVER BAR USED FOR IMAGE EDITING -->
-<div class="popover no-arrow" id="img-toolbar-{{image.id}}"
-     >  <!-- ng-mouseleave="$hide()" -->
+<div class="popover no-arrow"
+     id="img-toolbar-{{image.id}}">
   <div class="arrow"></div>
   <h3 class="popover-title" ng-bind="title" ng-show="title"></h3>
   <div class="popover-content">
@@ -50,10 +50,9 @@
       </button>
       <span class="pixels"><input
                               class="pixels"
+                              type="number" min="1" step="1" pattern="\d+"
                               ng-model="widthPx"
                               ng-change="changePixelSize(widthPx)"
-                              type="number"
-                              onclick="event.stopPropagation()"
                               /> px</span>
       <button
          class="btn btn-default btn-xs"
