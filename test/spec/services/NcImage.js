@@ -74,6 +74,21 @@ describe('Factory: NcImage', function () {
                 expect(instance.irrelevantValue).toBeUndefined();
             }
         );
+
+        it('converts width and height values to integers', function () {
+                var data,
+                    instance;
+
+                data = {
+                    width: '25',
+                    height: '75'
+                };
+                instance = new NcImage(data);
+
+                expect(instance.width).toBe(25);
+                expect(instance.height).toBe(75);
+            }
+        );
     });
 
     describe('getById() method', function () {

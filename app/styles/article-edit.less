@@ -1690,7 +1690,13 @@ a:hover {
         border-bottom: 1px solid #d5d5d5;
     }
     .popover {
+        position: relative;
+        width: 405px;
         max-width: none;
+        font-size: 16px;
+        input.pixels {
+            width: 55px;
+        }
         .small .glyphicon-stop {
             font-size: xx-small;
         }
@@ -2769,12 +2775,13 @@ a:hover {
     }
 
     [dropped-image] {
-        margin: 0 15px;
+        float: none;
+        margin: 0px auto;
         
         .dropped-image {
             position: relative;
             text-align: center; /* to align the image within */
-            
+
             .image {
                 width: 100%;
             }
