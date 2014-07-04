@@ -25,8 +25,7 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                 imageHeight: '@imageHeight'
             },
             link: function postLink(scope, element, attrs, ctrl) {
-                var imageId,
-                    $element = $(element),
+                var $element = $(element),
                     $imageBox = $element.find('.dropped-image'),
                     $toolbar;
 
@@ -81,13 +80,13 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                 $element.find('button.close').click(function (e) {
                     e.stopPropagation();
                     $element.remove();
-                    ctrl.imageRemoved(imageId);  // notify controller
+                    ctrl.imageRemoved(scope.imageId);  // notify controller
                 });
 
                 // clicking the image displays the toolbar
                 $imageBox.click(function (e) {
                     e.stopPropagation();
-                    $toolbar = $toolbar || $('#img-toolbar-' + imageId);
+                    $toolbar = $toolbar || $('#img-toolbar-' + scope.imageId);
                     $toolbar.toggle();
                 });
 
@@ -166,8 +165,7 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                     }
                 };
 
-                imageId = parseInt($element.attr('data-id'), 10);
-                ctrl.init(imageId);
+                ctrl.init(scope.imageId);
 
             }  // end postLink function
         };
