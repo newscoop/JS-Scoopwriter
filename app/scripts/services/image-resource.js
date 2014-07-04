@@ -2,11 +2,10 @@
 
 angular.module('authoringEnvironmentApp').service('imageResource', [
     '$resource',
-    'configuration',
     'transform',
-    function imageResource($resource, configuration, transform) {
+    function imageResource($resource, transform) {
         return $resource(
-            configuration.API.full + '/images/:id',
+            Routing.generate('newscoop_gimme_images_getimage', {}, true) + '/:id',
             {},
             {
                 'modify': {
