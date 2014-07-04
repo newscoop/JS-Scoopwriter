@@ -2,11 +2,12 @@
 angular.module('authoringEnvironmentApp').factory('authInterceptor', [
     '$q',
     '$window',
-    'configuration',
-    function ($q, $window, configuration) {
+    function ($q, $window) {
         return {
             request: function (config) {
-                if (config.url.indexOf(configuration.API.endpoint.substring(1)+'/') === -1) {
+                var endpoint = Routing.generate('newscoop_gimme_articles_getarticles');
+                endpoint = endpoint.substring(1, endpoint.lastIndexOf('/'));
+                if (config.url.indexOf(endpoint + '/') === -1) {
                     // do not modify the headers of anything else but the API
                     return config;
                 }
