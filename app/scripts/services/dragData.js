@@ -48,11 +48,9 @@ angular.module('authoringEnvironmentApp').service('Dragdata', [
             case 'test':
                 return $('<div>').text('test dropped');
             case 'image':
-                return $('<div dropped-image>').attr({
-                    'data-id': data.id,
-                    'ng-controller': 'DroppedImageCtrl',
-                    'ng-style': 'style.container'
-                });
+                return Aloha.jQuery('<div>')
+                .data({'id': data.id})
+                .alohaBlock({'aloha-block-type': 'ImageBlock'});
             case 'embed':
                 return Aloha.jQuery('<div>').append($('<dropped-snippet>').attr({
                     'snippet': 'byId(' + data.id + ')',
