@@ -89,7 +89,10 @@ module.exports = function(config) {
         // change the following in order to change which files are
         // included in the coverage reports. refer to
         // http://karma-runner.github.io/0.8/config/coverage.html
-        'app/scripts/*/*.js': 'coverage'
+        'app/scripts/controllers/*.js': 'coverage',
+        'app/scripts/directives/*.js': 'coverage',
+        'app/scripts/filters/*.js': 'coverage',
+        'app/scripts/services/*.js': 'coverage'
     }
     /* uncomment the following to get coverage reports *
     ,

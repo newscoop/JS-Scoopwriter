@@ -2,9 +2,17 @@
 angular.module('authoringEnvironmentApp').service('article', [
     '$resource',
     '$q',
-    function article($resource, $q) {
+    '$http',
+    'configuration',
+    function article($resource, $q, $http, configuration) {
 
-        var commenting, deferred = $q.defer(), langMap, resource;
+        var API_ROOT = configuration.API.full,
+            commenting,
+            deferred = $q.defer(),
+            langMap,
+            resource,
+            wfStatus;
+
         langMap = {
             1: [
                 'English',
@@ -131,12 +139,22 @@ angular.module('authoringEnvironmentApp').service('article', [
                 'de_AT'
             ]
         };
+
         // all possible values for the commenting setting
         commenting = Object.freeze({
             ENABLED: 0,
             DISABLED: 1,
             LOCKED: 2
         });
+
+        // all possible values for the article workflow status
+        wfStatus = Object.freeze({
+            NEW: 'N',
+            SUBMITTED: 'S',
+            PUBLISHED: 'Y',
+            PUBLISHED_W_ISS: 'M'
+        });
+
         resource = $resource(Routing.generate('newscoop_gimme_articles_getarticle', {}, true) + '/:articleId?language=:language', {
             articleId: '',
             language: 'en'
@@ -153,6 +171,7 @@ angular.module('authoringEnvironmentApp').service('article', [
 
         return {
             commenting: commenting,
+            wfStatus: wfStatus,
             modified: false,
             resource: resource,
             promise: deferred.promise,
@@ -187,6 +206,28 @@ angular.module('authoringEnvironmentApp').service('article', [
                     articleId: service.articleId,
                     language: service.language
                 }, apiParams).$promise;
+            },
+
+            /**
+            * Updates article's workflow status on the server.
+            *
+            * @method setWorkflowStatus
+            * @param status {String} article's new workflow status
+            * @return {Object} the underlying $http object's promise
+            */
+            setWorkflowStatus: function (status) {
+                var promise,
+                    url;
+
+                url = [
+                    API_ROOT, 'articles', this.articleId, this.language, status
+                ].join('/');
+
+                promise = $http({
+                    method: 'PATCH',
+                    url: url
+                });
+                return promise;
             }
         };
     }

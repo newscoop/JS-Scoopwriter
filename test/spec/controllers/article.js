@@ -33,7 +33,8 @@ describe('Controller: ArticleCtrl', function () {
             $routeParams: {
                 'article': 123,
                 'language': 'de'
-            }
+            },
+            article: articleService
         });
         spyOn(scope, 'setModified').andCallThrough();
         spyOn(scope, 'watchCallback').andCallThrough();
@@ -59,6 +60,125 @@ describe('Controller: ArticleCtrl', function () {
     it('is not modified', function() {
         expect(scope.status).toBe('Initialising');
     });
+
+    it('initializes article workflow status options in scope', function () {
+        var expected = [
+            {value: 'N', text: 'New'},
+            {value: 'S', text: 'Submitted'},
+            {value: 'Y', text: 'Published'},
+            {value: 'M', text: 'Published with issue'}
+        ];
+        expect(scope.workflowStatuses).toEqual(expected);
+    });
+
+    it('sets the selected article workflow status option to NEW by default',
+        function () {
+            expect(scope.wfStatus).toEqual('N');
+        }
+    );
+
+    it('sets scope\'s changingWfStatus flag to false by default', function () {
+        expect(scope.changingWfStatus).toBe(false);
+    });
+
+    it ('sets workflow status in scope to the actual article status ' +
+        'when the article is retrieved',
+        inject(function ($q) {
+            var deferred = $q.defer();
+
+            ArticleCtrl = $controller('ArticleCtrl', {
+                $scope: scope,
+                article: {
+                    init: function () {},
+                    promise: deferred.promise,
+                    wfStatus: {}
+                },
+                articleType: {
+                    get: function () {}
+                }
+            });
+
+            scope.wfStatus = 'S';
+            deferred.resolve({id: 123, status: 'M'});
+            scope.$apply();
+
+            expect(scope.wfStatus).toEqual('M');
+        }
+    ));
+
+
+    describe('scope\'s workflowStatusChanged() method', function () {
+        var deferredArticle,
+            deferredStatus,
+            $q;
+
+        beforeEach(inject(function (_$q_) {
+            $q = _$q_;
+            deferredArticle = $q.defer(),
+            deferredStatus = $q.defer();
+
+            ArticleCtrl = $controller('ArticleCtrl', {
+                $scope: scope,
+                article: {
+                    init: function () {},
+                    promise: deferredArticle.promise,
+                    setWorkflowStatus: function () {
+                        return deferredStatus.promise
+                    },
+                    wfStatus: {}
+                },
+                articleType: {
+                    get: function () {}
+                }
+            });
+
+            // simulate article retrieval
+            deferredArticle.resolve({id: 123, status: 'S'});
+            scope.$apply();
+
+            // simulate changing the workflow status from S to M
+            scope.wfStatus = 'M';
+        }));
+
+        it('sets changingWfStatus flag before sending a request', function () {
+            scope.changingWfStatus = false;
+            scope.workflowStatusChanged();
+            expect(scope.changingWfStatus).toBe(true);
+        });
+
+        it('clears changingWfStatus flag on success', function () {
+            scope.workflowStatusChanged();
+            scope.changingWfStatus = true;
+
+            deferredStatus.resolve();
+            scope.$apply();
+
+            expect(scope.changingWfStatus).toBe(false);
+        });
+
+        it('clears changingWfStatus flag on error', function () {
+            scope.workflowStatusChanged();
+            scope.changingWfStatus = true;
+
+            deferredStatus.reject('server timeout');
+            scope.$apply();
+
+            expect(scope.changingWfStatus).toBe(false);
+        });
+
+        it('restores selected workflow status back to original value on error',
+            function () {
+                scope.workflowStatusChanged();
+
+                deferredStatus.reject('server timeout');
+                scope.$apply();
+
+                expect(scope.wfStatus).toEqual('S');
+            }
+        );
+    });
+
+
     describe('backend answers', function() {
         beforeEach(function() {
             $httpBackend.flush();

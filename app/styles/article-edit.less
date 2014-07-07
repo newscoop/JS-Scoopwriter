@@ -50,16 +50,24 @@ a:hover {
         float: right;
         margin: 0 20px 0 0;
     }
-    .save-status {
+    .article-status {
         float: right;
-        color: rgb(179, 179, 179);
         margin: 0 20px;
         line-height: 2em;
-        &.attention {
-            color: gray;
+        &.new {
+            background-color: white;
         }
-        &.error {
-            color: darkred;
+        &.submitted {
+            background-color: blue;
+        }
+        &.published {
+            background-color: green;
+        }
+        &.published_w_iss {
+            background-color: orange;
+        }
+        &.disabled {
+            background-color: gray;
         }
     }
     .navbar {
