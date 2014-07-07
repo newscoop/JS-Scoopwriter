@@ -1,9 +1,27 @@
 <div
    ng-controller="ArticleCtrl"
    >
-  <div
-     class="controls"
-     >
+
+  <div class="article-status"
+      ng-class="{
+          disabled: changingWfStatus,
+          new: !changingWfStatus && wfStatus === articleService.wfStatus.NEW,
+          submitted: !changingWfStatus &&
+              wfStatus === articleService.wfStatus.SUBMITTED,
+          published: !changingWfStatus &&
+              wfStatus === articleService.wfStatus.PUBLISHED,
+          published_w_iss: !changingWfStatus &&
+              wfStatus === articleService.wfStatus.PUBLISHED_W_ISS
+        }">
+    <select
+        ng-model="wfStatus"
+        ng-options="status.value as status.text for status in workflowStatuses"
+        ng-disabled="changingWfStatus"
+        ng-change="workflowStatusChanged()"
+        ></select>
+  </div>
+
+  <div class="controls">
     <a
        class="btn btn-default btn-sm"
        href="#"
@@ -16,21 +34,17 @@
   </div>
   <button
      class="btn btn-primary btn-sm save-button"
-     ng-disabled="!articleService.modified"
+     ng-disabled="!article.modified"
      ng-click="save()"
      >
     Save
   </button>
-  <div
-     class="save-status"
-     ng-bind="status"
-     ng-class="{attention: status == 'Modified', error: status == 'Error saving'}"
-     >
-  </div>
+
   <div
      class="main-article-title aloha-editable"
      id="article-title-fixed"
      >
     Article Editing Environment
   </div>
+
 </div>
