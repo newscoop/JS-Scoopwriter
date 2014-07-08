@@ -33,9 +33,55 @@ describe('Service: article', function () {
         expect(options.LOCKED).toBe(2);
     });
 
+    it('should define correct options for the article workflow status',
+        function () {
+            var options = article.wfStatus;
+            expect(options).toBeDefined();
+            expect(_.size(options)).toEqual(4);
+            expect('NEW' in options).toBe(true);
+            expect(options.NEW).toEqual('N');
+            expect('SUBMITTED' in options).toBe(true);
+            expect(options.SUBMITTED).toEqual('S');
+            expect('PUBLISHED' in options).toBe(true);
+            expect(options.PUBLISHED).toEqual('Y');
+            expect('PUBLISHED_W_ISS' in options).toBe(true);
+            expect(options.PUBLISHED_W_ISS).toEqual('M');
+        }
+    );
+
     it('is not modified', function() {
         expect(article.modified).toBe(false);
     });
+
+    describe('setWorkflowStatus() method', function () {
+        var $httpBackend;
+
+        beforeEach(inject(function (_$httpBackend_) {
+            $httpBackend = _$httpBackend_;
+
+            article.articleId = 25;
+            article.language = 'de';
+
+            $httpBackend.expect(
+                'PATCH',
+                rootURI + '/articles/25/de/Y'
+            ).respond(201, '');
+        }));
+
+        it ('sends a correct request to API', function () {
+            article.setWorkflowStatus('Y');
+        });
+
+        it ('returns $http promise', function () {
+            var returned = article.setWorkflowStatus('Y');
+
+            // if it looks like a promise, then it probably is a promise
+            ['then', 'success', 'error', 'finally'].forEach(function (key) {
+                expect(typeof returned[key]).toEqual('function');
+            });
+        });
+    });
+
     describe('initialised', function() {
         var earlyPromise = jasmine.createSpy('earlyPromise');
         beforeEach(function() {
