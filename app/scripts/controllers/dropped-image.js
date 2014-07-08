@@ -5,7 +5,6 @@ angular.module('authoringEnvironmentApp').controller('DroppedImageCtrl', [
     'configuration',
     'NcImage',
     function (images, $scope, configuration, NcImage) {
-        var self = this;
 
         /**
         * Initializes the controller - it retrieves the specified image from
@@ -21,7 +20,7 @@ angular.module('authoringEnvironmentApp').controller('DroppedImageCtrl', [
         };
 
         this.imageRemoved = function (imageId) {
-            console.log('Image', self.imageId, 'removed from article body');
+            console.log('Image', imageId, 'removed from article body');
         };
 
         $scope.root = configuration.API.rootURI;
