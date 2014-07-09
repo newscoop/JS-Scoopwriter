@@ -8,11 +8,8 @@
 angular.module('authoringEnvironmentApp').factory('Snippet', [
     '$http',
     '$q',
-    'configuration',
-    function ($http, $q, configuration) {
-        var API_ENDPOINT = configuration.API.endpoint,
-            API_ROOT = configuration.API.full,
-            self = this,
+    function ($http, $q) {
+        var self = this,
             Snippet = function () {};  // snippet constructor function
 
         /**
@@ -49,16 +46,12 @@ angular.module('authoringEnvironmentApp').factory('Snippet', [
         */
         Snippet.getAllByArticle = function (number, language) {
             var deferredGet = $q.defer(),
-                snippets = [],
-                url;
+                snippets = [];
 
-            url = [
-                API_ROOT, 'snippets', 'article', number, language
-            ].join('/');
 
             snippets.$promise = deferredGet.promise;
 
-            $http.get(url, {
+            $http.get(Routing.generate('newscoop_gimme_snippets_getsnippetsforarticle_1', {'number': number, 'language': language}, true), {
                 params: {
                     rendered: true,
                     items_per_page: 99999  // de facto "all"
@@ -118,8 +111,7 @@ angular.module('authoringEnvironmentApp').factory('Snippet', [
         */
         Snippet.create = function (name, templateId, fields) {
             var deferredPost = $q.defer(),
-                requestData,
-                url = API_ROOT + '/snippets';
+                requestData;
 
             requestData = {
                 template: templateId,
@@ -136,7 +128,7 @@ angular.module('authoringEnvironmentApp').factory('Snippet', [
             });
 
             $http.post(
-                url, requestData
+                Routing.generate('newscoop_gimme_snippets_createsnippet', {}, true), requestData
             )
             .then(function (response) {
                 var resourceUrl = response.headers('x-location');
@@ -168,16 +160,13 @@ angular.module('authoringEnvironmentApp').factory('Snippet', [
         Snippet.prototype.addToArticle = function (number, language) {
             var snippet = this,
                 deferred = $q.defer(),
-                linkHeader,
-                url;
+                linkHeader;
 
-            url = [API_ROOT, 'articles', number, language].join('/');
-
-            linkHeader = '<' + API_ENDPOINT + '/snippets/' + snippet.id +
+            linkHeader = '<' + Routing.generate('newscoop_gimme_snippets_getsnippet', {'snippetId': snippet.id}, true) +
                             '; rel="snippet">';
 
             $http({
-                url: url,
+                url: Routing.generate('newscoop_gimme_articles_linkarticle', {'number': number, 'language':language}, true),
                 method: 'LINK',
                 headers: {link: linkHeader}
             })
@@ -203,15 +192,12 @@ angular.module('authoringEnvironmentApp').factory('Snippet', [
         Snippet.prototype.removeFromArticle = function(number, language) {
             var snippet = this,
                 deferred = $q.defer(),
-                linkHeader,
-                url;
+                linkHeader;
 
-            url = [API_ROOT, 'articles', number, language].join('/');
-
-            linkHeader = '<' + API_ENDPOINT + '/snippets/' + snippet.id +
+            linkHeader = '<' + Routing.generate('newscoop_gimme_snippets_getsnippet', {'snippetId': snippet.id}, true) +
                             '; rel="snippet">';
             $http({
-                url: url,
+                url: Routing.generate('newscoop_gimme_articles_unlinkarticle', {'number': number, 'language':language}, true),
                 method: 'UNLINK',
                 headers: {link: linkHeader}
             })
