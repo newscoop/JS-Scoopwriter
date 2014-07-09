@@ -5,20 +5,28 @@
   <div class="article-status"
       ng-class="{
           disabled: changingWfStatus,
-          new: !changingWfStatus && wfStatus === articleService.wfStatus.NEW,
+          new: !changingWfStatus && wfStatus.value === articleService.wfStatus.NEW,
           submitted: !changingWfStatus &&
-              wfStatus === articleService.wfStatus.SUBMITTED,
+              wfStatus.value === articleService.wfStatus.SUBMITTED,
           published: !changingWfStatus &&
-              wfStatus === articleService.wfStatus.PUBLISHED,
+              wfStatus.value === articleService.wfStatus.PUBLISHED,
           published_w_iss: !changingWfStatus &&
-              wfStatus === articleService.wfStatus.PUBLISHED_W_ISS
+              wfStatus.value === articleService.wfStatus.PUBLISHED_W_ISS
         }">
-    <select
-        ng-model="wfStatus"
-        ng-options="status.value as status.text for status in workflowStatuses"
-        ng-disabled="changingWfStatus"
-        ng-change="workflowStatusChanged()"
-        ></select>
+    <div class="btn-group" dropdown>
+      <button
+          type="button"
+          class="btn btn-primary dropdown-toggle"
+          ng-disabled="changingWfStatus">
+        {{wfStatus.text}} <span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu" role="menu">
+        <li ng-repeat="status in workflowStatuses"
+            ng-click="setWorkflowStatus(status.value)">
+            {{status.text}}
+        </li>
+      </ul>
+    </div>
   </div>
 
   <div class="controls">
