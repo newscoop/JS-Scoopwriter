@@ -76,6 +76,32 @@ angular.module('authoringEnvironmentApp').factory('Snippet', [
             return snippets;
         };
 
+
+        /**
+        * Retrieves a specific snippet from the server.
+        *
+        * @method getById
+        * @param snippetId {Number} ID of the snippet to retrieve
+        * @return {Object} retrieved Snippet instance
+        */
+        Snippet.getById = function (snippetId) {
+            var deferredGet = $q.defer(),
+                url = API_ROOT + '/snippets/' + snippetId;
+
+            $http.get(url, {
+                params: {
+                    rendered: true
+                }
+            })
+            .success(function (response) {
+                deferredGet.resolve(self.createFromApiData(response));
+            }).error(function (responseBody) {
+                deferredGet.reject(responseBody);
+            });
+
+            return deferredGet.promise;
+        };
+
         /**
         * Creates a new snippet on the server and returns a Snippet instance
         * representing it.

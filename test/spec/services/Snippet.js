@@ -98,6 +98,62 @@ describe('Factory: Snippet', function () {
         });
     });
 
+
+    describe('getById() method', function () {
+        var snippetData;
+
+        beforeEach(function () {
+            snippetData = {id:42};  // TODO: set
+
+            $httpBackend.expectGET(rootURI + '/snippets/42?rendered=true')
+                .respond(200, JSON.stringify(snippetData));
+        });
+
+        afterEach(function () {
+            $httpBackend.verifyNoOutstandingExpectation();
+        });
+
+        it('sends a correct request to API', function () {
+            Snippet.getById(42);
+        });
+
+        it('resolves given promise on successful server response',
+            function () {
+                var expectedArg,
+                    spyHelper = {
+                        onSuccess: jasmine.createSpy()
+                    };
+
+                Snippet.getById(42)
+                    .then(spyHelper.onSuccess);
+                $httpBackend.flush(1);
+
+                expect(spyHelper.onSuccess).toHaveBeenCalled();
+                expectedArg = spyHelper.onSuccess.mostRecentCall.args[0];
+                expect(expectedArg instanceof Snippet).toBe(true);
+                expect(expectedArg.id).toEqual(42);
+            }
+        );
+
+        it('rejects given promise on server error response', function () {
+            var expectedArg,
+                spyHelper = {
+                    errorCallback: jasmine.createSpy()
+                };
+
+            $httpBackend.resetExpectations();
+            $httpBackend.expectGET(rootURI + '/snippets/42?rendered=true')
+                .respond(500, 'Error :(');
+
+            Snippet.getById(42)
+                .catch(spyHelper.errorCallback);
+            $httpBackend.flush(1);
+
+            expect(spyHelper.errorCallback).toHaveBeenCalledWith('Error :(');
+        });
+    });
+
+
     describe('create() method', function () {
         var expectedPostData,
             templateFields;
