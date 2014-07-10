@@ -153,7 +153,7 @@ angular.module('authoringEnvironmentApp').factory('Author', [
                 return;  // search term changed, skip this obsolete call
             }
 
-            $http.get(Routing.generate('newscoop_gimme_articles_getarticle', {'query':options.term, 'page':options.page, 'items_per_page':10}, true)
+            $http.get(Routing.generate('newscoop_gimme_authors_searchauthors', { 'items_per_page':10, 'page':options.page, 'query':options.term}, true)
             ).success(function (response) {
                 var author,
                     authorList = [];
@@ -209,9 +209,9 @@ angular.module('authoringEnvironmentApp').factory('Author', [
                 deferred = $q.defer(),
                 linkHeader;
 
-            linkHeader = '<' + Routing.generate('newscoop_gimme_authors_getauthorbyid', {'id':author.id}, true) +
+            linkHeader = '<' + Routing.generate('newscoop_gimme_authors_getauthorbyid', {'id':author.id}, false) +
                             '; rel="author">,' +
-                         '<' + Routing.generate('newscoop_gimme_authors_getauthortype', {'id':roleId}, true) +
+                         '<' + Routing.generate('newscoop_gimme_authors_getauthortype', {'id':roleId}, false) +
                             '; rel="author-type">';
             $http({
                 url: Routing.generate('newscoop_gimme_articles_linkarticle', {'number': number, 'language':language}, true),
@@ -249,9 +249,9 @@ angular.module('authoringEnvironmentApp').factory('Author', [
                 deferred = $q.defer(),
                 linkHeader;
 
-            linkHeader = '<' + Routing.generate('newscoop_gimme_authors_getauthorbyid', {'id':author.id}, true) +
+            linkHeader = '<' + Routing.generate('newscoop_gimme_authors_getauthorbyid', {'id':author.id}, false) +
                             '; rel="author">,' +
-                         '<' + Routing.generate('newscoop_gimme_authors_getauthortype', {'id':roleId}, true) +
+                         '<' + Routing.generate('newscoop_gimme_authors_getauthortype', {'id':roleId}, false) +
                             '; rel="author-type">';
             $http({
                 url: Routing.generate('newscoop_gimme_articles_unlinkarticle', {'number': number, 'language':language}, true),
@@ -283,12 +283,12 @@ angular.module('authoringEnvironmentApp').factory('Author', [
             var linkHeader,
                 promise;
 
-            linkHeader = '<' + Routing.generate('newscoop_gimme_authors_getauthortype', {'id':params.oldRoleId}, true) +
+            linkHeader = '<' + Routing.generate('newscoop_gimme_authors_getauthortype', {'id':params.oldRoleId}, false) +
                              '; rel="old-author-type">,' +
-                         '<' + Routing.generate('newscoop_gimme_authors_getauthortype', {'id':params.newRoleId}, true) +
+                         '<' + Routing.generate('newscoop_gimme_authors_getauthortype', {'id':params.newRoleId}, false) +
                              '; rel="new-author-type">';
 
-            promise = $http.post(Routing.generate('newscoop_gimme_authors_getauthorstypes', {'number':params.number, 'language':params.language, 'authorId':this.id}, true), {}, {
+            promise = $http.post(Routing.generate('newscoop_gimme_authors_updatearticleauthor', {'number':params.number, 'language':params.language, 'authorId':this.id}, true), {}, {
                 headers: {
                     link: linkHeader
                 }

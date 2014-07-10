@@ -189,7 +189,7 @@ angular.module('authoringEnvironmentApp').service('comments', [
                 } else {
                     sortingPart = '';
                 }
-                var url = Routing.generate('newscoop_gimme_comments_getcommentsforarticle', {'number':article.number, 'language':article.language, 'order': sortingPart, 'items_per_page': itemsPerPage, 'page': page}, true);
+                var url = Routing.generate('newscoop_gimme_comments_getcommentsforarticle_1', {'number':article.number, 'language':article.language, 'order': sortingPart, 'items_per_page': itemsPerPage, 'page': page}, true);
                 $http.get(url).success(function (data) {
                     deferred.resolve(data);
                     if (pageTracker.isLastPage(data.pagination)) {
