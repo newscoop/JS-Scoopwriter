@@ -186,14 +186,13 @@ angular.module('authoringEnvironmentApp').controller('PaneAuthorsCtrl', [
 
         // retrieve all article auhors from server
         article.promise.then(function (articleData) {
-            return Author.getAll({
-                number: articleData.number,
-                language: articleData.language
-            }).$promise;
+            $scope.authors = Author.getAllByArticle(
+                articleData.number, articleData.language
+            );
+            return $scope.authors.$promise;
         })
-        .then(function (authors) {
-            $scope.authors = authors;
-            authors.forEach(function (author) {
+        .then(function () {
+            $scope.authors.forEach(function (author) {
                 self.setRoleChangeWatch(author);
             });
         });
