@@ -116,11 +116,11 @@ describe('Factory: Author', function () {
         );
     });
 
-    describe('getAll() method', function () {
+    describe('getAllByArticle() method', function () {
         beforeEach(function () {
             $httpBackend.expectGET(
                 rootURI + '/articles/64/de/authors?items_per_page=99999'
-            ).respond(JSON.stringify(authorsResponse));
+            ).respond(authorsResponse);
         });
 
         afterEach(function () {
@@ -128,7 +128,7 @@ describe('Factory: Author', function () {
         });
 
         it('sends a correct request to API', function () {
-            Author.getAll({number: 64, language: 'de'});
+            Author.getAllByArticle(64, 'de');
             $httpBackend.flush(1);
         });
 
@@ -136,7 +136,7 @@ describe('Factory: Author', function () {
             var authors,
                 expectedItemData;
 
-            authors = Author.getAll({number: 64, language: 'de'})
+            authors = Author.getAllByArticle(64, 'de');
 
             // array is empty until the server responds
             expect(_.difference(authors, [])).toEqual([]);
@@ -162,6 +162,24 @@ describe('Factory: Author', function () {
             expectedItemData.forEach(function (data) {
                 expect(_.findIndex(authors, data)).toBeGreaterThan(-1);
             });
+        });
+
+        it('rejects given promise on server error', function () {
+            var errorSpy,
+                authors;
+
+            errorSpy = jasmine.createSpy();
+
+            $httpBackend.resetExpectations();
+            $httpBackend.expectGET(
+                rootURI + '/articles/64/de/authors?items_per_page=99999'
+            ).respond(500, 'Error :(');
+
+            authors = Author.getAllByArticle(64, 'de');
+            authors.$promise.catch(errorSpy);
+
+            $httpBackend.flush(1);
+            expect(errorSpy).toHaveBeenCalledWith('Error :(');
         });
     });
 
@@ -356,9 +374,13 @@ describe('Factory: Author', function () {
     });
 
     describe('addToArticle() method', function () {
-        var expectedLinkHeader;
+        var author,
+            expectedLinkHeader;
 
         beforeEach(function () {
+            author = new Author();
+            author.id = 22;
+
             expectedLinkHeader =
                 '<' + apiEndpoint + '/authors/22; rel="author">,' +
                 '<' + apiEndpoint + '/authors/types/7; rel="author-type">';
@@ -374,25 +396,21 @@ describe('Factory: Author', function () {
         });
 
         it('sends a correct request to API', function () {
-            var author = new Author({id: 22});
             author.addToArticle(64, 'de', 7);
             $httpBackend.verifyNoOutstandingExpectation();
         });
 
         it('updates author\'s role ID on successful server response',
             function () {
-                var author = new Author({id: 22});
                 author.addToArticle(64, 'de', 7);
                 $httpBackend.flush(1);
-
                 expect(author.articleRole.id).toEqual(7);
             }
         );
 
         it('resolves given promise on successful server response',
             function () {
-                var author = new Author({id: 22}),
-                    promise,
+                var promise,
                     spyHelper = {
                         callMeOnSuccess: jasmine.createSpy()
                     };
@@ -407,8 +425,7 @@ describe('Factory: Author', function () {
         );
 
         it('rejects given promise on server error response', function () {
-            var author = new Author({id: 22}),
-                promise,
+            var promise,
                 spyHelper = {
                     callMeOnError: jasmine.createSpy()
                 };
@@ -445,18 +462,22 @@ describe('Factory: Author', function () {
         });
 
         it('sends a correct request to API', function () {
-            var author = new Author({id: 22});
+            var author = new Author();
+            author.id = 22;
             author.removeFromArticle(64, 'de', 7);
             $httpBackend.verifyNoOutstandingExpectation();
         });
 
         it('resolves given promise on successful server response',
             function () {
-                var author = new Author({id: 22}),
+                var author,
                     promise,
                     spyHelper = {
                         callMeOnSuccess: jasmine.createSpy()
                     };
+
+                author = new Author();
+                author.id = 22;
 
                 author.removeFromArticle(64, 'de', 7)
                     .then(spyHelper.callMeOnSuccess);
@@ -491,7 +512,7 @@ describe('Factory: Author', function () {
         beforeEach(function () {
             $httpBackend.expectGET(
                 rootURI + '/authors/types?items_per_page=99999'
-            ).respond(JSON.stringify(rolesResponse));
+            ).respond(rolesResponse);
         });
 
         afterEach(function () {
@@ -512,10 +533,6 @@ describe('Factory: Author', function () {
 
             $httpBackend.flush(1);
 
-            roles.forEach(function (item) {
-                expect(item instanceof Author).toEqual(true);
-            });
-
             expectedItemData = [
                 {id: 1, name: 'Writer'},
                 {id: 4, name: 'Photographer'},
@@ -525,6 +542,24 @@ describe('Factory: Author', function () {
                 expect(_.findIndex(roles, data)).toBeGreaterThan(-1);
             });
         });
+
+        it('rejects given promise on server error', function () {
+            var errorSpy,
+                roles;
+
+            errorSpy = jasmine.createSpy();
+
+            $httpBackend.resetExpectations();
+            $httpBackend.expectGET(
+                rootURI + '/authors/types?items_per_page=99999'
+            ).respond(500, 'Error :(');
+
+            roles = Author.getRoleList();
+            roles.$promise.catch(errorSpy);
+
+            $httpBackend.flush(1);
+            expect(errorSpy).toHaveBeenCalledWith('Error :(');
+        });
     });
 
     describe('updateRole() method', function () {
@@ -532,15 +567,15 @@ describe('Factory: Author', function () {
             var author,
                 expectedLinkHeader;
 
-            author = new Author({
-                id: 22,
-                firstName: 'John',
-                lastName: 'Doe',
-                articleRole: {
-                    id: 4,
-                    name: 'Photographer'
-                }
-            });
+            author = new Author();
+            author.id = 22;
+            author.firstName = 'John';
+            author.lastName = 'Doe';
+            author.articleRole = {
+                id: 4,
+                name: 'Photographer'
+            };
+
             expectedLinkHeader =
                 '</content-api/authors/types/1; rel="old-author-type">,' +
                 '</content-api/authors/types/4; rel="new-author-type">';

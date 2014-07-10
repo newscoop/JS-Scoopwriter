@@ -46,7 +46,7 @@ describe('Directive: droppedImage', function () {
             // compile the directive
             html = [
                 '<div id="wrapper">',
-                  '<div dropped-image data-id="4"></div>',
+                  '<div dropped-image data-image-id="4"></div>',
                 '</div>'
             ].join('');
 

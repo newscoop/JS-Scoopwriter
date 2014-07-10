@@ -80,7 +80,9 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                 $element.find('button.close').click(function (e) {
                     e.stopPropagation();
                     $element.remove();
-                    ctrl.imageRemoved(scope.imageId);  // notify controller
+
+                    // notify controller about the removal
+                    ctrl.imageRemoved(parseInt(scope.imageId, 10));
                 });
 
                 // clicking the image displays the toolbar
@@ -165,7 +167,7 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                     }
                 };
 
-                ctrl.init(scope.imageId);
+                ctrl.init(parseInt(scope.imageId, 10));
 
             }  // end postLink function
         };
