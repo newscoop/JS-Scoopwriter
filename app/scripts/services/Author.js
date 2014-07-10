@@ -66,18 +66,12 @@ angular.module('authoringEnvironmentApp').factory('Author', [
         */
         Author.getAllByArticle = function (number, language) {
             var deferredGet = $q.defer(),
-                authors = [],
-                url = [
-                    API_ROOT, 'articles', number, language, 'authors'
-                ].join('/');
+                authors = [];
 
             authors.$promise = deferredGet.promise;
 
-            $http.get(url, {
-                params: {
-                    items_per_page: 99999  // de facto "all"
-                }
-            }).success(function (response) {
+            $http.get(Routing.generate('newscoop_gimme_authors_getarticleauthors', {'number':number, 'language':language, 'items_per_page':99999}, true)
+            ).success(function (response) {
                 response.items.forEach(function (item) {
                     item = Author.createFromApiData(item);
                     authors.push(item);
@@ -98,16 +92,12 @@ angular.module('authoringEnvironmentApp').factory('Author', [
         */
         Author.getRoleList = function () {
             var deferredGet = $q.defer(),
-                roles = [],
-                url = API_ROOT + '/authors/types';
+                roles = [];
 
             roles.$promise = deferredGet.promise;
 
-            $http.get(url, {
-                params: {
-                    items_per_page: 99999  // de facto "all"
-                }
-            }).success(function (response) {
+            $http.get(Routing.generate('newscoop_gimme_authors_getauthorstypes', {'items_per_page':99999}, true)
+            ).success(function (response) {
                 response.items.forEach(function (item) {
                     // "name" is more informative attribute name
                     item.name = item.type;
