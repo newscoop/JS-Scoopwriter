@@ -81,10 +81,10 @@ describe('Controller: PaneAuthorsCtrl', function () {
     });
 
     it('initializes a list of article authors in scope', function () {
-        var authorsDeferred = $q.defer();
+        var authorsDeferred = $q.defer(),
+            result = angular.copy(authors);
 
-        spyOn(Author, 'getAll').andCallFake(function () {
-            var result = angular.copy(authors);
+        spyOn(Author, 'getAllByArticle').andCallFake(function () {
             result.$promise = authorsDeferred.promise;
             return result;
         });
@@ -93,12 +93,11 @@ describe('Controller: PaneAuthorsCtrl', function () {
         expect(_.difference(scope.authors, [])).toEqual([]);
 
         articleDeferred.resolve({number: 64, language: 'de'});
-        authorsDeferred.resolve(authors);
+        authorsDeferred.resolve();
         scope.$apply();
 
-        expect(Author.getAll)
-            .toHaveBeenCalledWith({number: 64, language: 'de'});
-        expect(scope.authors).toEqual(authors);
+        expect(Author.getAllByArticle).toHaveBeenCalledWith(64, 'de');
+        expect(scope.authors).toEqual(result);
     });
 
     it('initializes new author to null', function () {
@@ -128,7 +127,7 @@ describe('Controller: PaneAuthorsCtrl', function () {
         var authorsDeferred = $q.defer();
 
         // first we need some to have some authors in scope
-        spyOn(Author, 'getAll').andCallFake(function () {
+        spyOn(Author, 'getAllByArticle').andCallFake(function () {
             var result = angular.copy(authors);
             result.$promise = authorsDeferred.promise;
             return result;
@@ -148,14 +147,14 @@ describe('Controller: PaneAuthorsCtrl', function () {
         scope.$apply();
 
         expect(ctrl.authorRoleChanged).toHaveBeenCalledWith(
-            roles[1], roles[0], authors[0]);
+            roles[1], roles[0], scope.authors[0]);
     });
 
     it('adds stopRoleChangeWatch method to author objects', function () {
         var authorsDeferred = $q.defer();
 
         // first we need some to have some authors in scope
-        spyOn(Author, 'getAll').andCallFake(function () {
+        spyOn(Author, 'getAllByArticle').andCallFake(function () {
             var result = angular.copy(authors);
             result.$promise = authorsDeferred.promise;
             return result;
@@ -199,7 +198,7 @@ describe('Controller: PaneAuthorsCtrl', function () {
             })
 
             // prevent firing of controller init code
-            spyOn(Author, 'getAll').andCallFake(function () {
+            spyOn(Author, 'getAllByArticle').andCallFake(function () {
                 return {
                     $promise: {
                         then: function () {}
@@ -346,12 +345,12 @@ describe('Controller: PaneAuthorsCtrl', function () {
             });
 
             // prevent firing of controller init code
-            spyOn(Author, 'getAll').andCallFake(function () {
-                return {
-                    $promise: {
-                        then: function () {}
-                    }
-                }
+            spyOn(Author, 'getAllByArticle').andCallFake(function () {
+                var retVal = [];
+                retVal.$promise = {
+                    then: function () {}
+                };
+                return retVal;
             });
         }));
 
@@ -371,15 +370,16 @@ describe('Controller: PaneAuthorsCtrl', function () {
             }
         );
 
-        it('appends new author to the list of article authors' +
+        it('appends new author to the list of article authors ' +
            'on sucessful server response',
             function () {
                 var appendedAuthor;
 
-                scope.authors = [{id: 1}, {id: 2}];
-
-                scope.addAuthorToArticle();
                 articleDeferred.resolve({number: 75, language: 'en'});
+                scope.$apply();
+
+                scope.authors = [{id: 1}, {id: 2}];
+                scope.addAuthorToArticle();
                 deferredAddToArticle.resolve();
                 author.articleRole = {id: 13, name: 'Lector'};
                 scope.$apply();
@@ -463,12 +463,12 @@ describe('Controller: PaneAuthorsCtrl', function () {
             };
 
             // prevent firing of controller init code
-            spyOn(Author, 'getAll').andCallFake(function () {
-                return {
-                    $promise: {
-                        then: function () {}
-                    }
-                }
+            spyOn(Author, 'getAllByArticle').andCallFake(function () {
+               var retVal = [];
+                retVal.$promise = {
+                    then: function () {}
+                };
+                return retVal;
             });
         }));
 
@@ -478,6 +478,9 @@ describe('Controller: PaneAuthorsCtrl', function () {
         });
 
         it('removes correct author on action confirmation', function () {
+            articleDeferred.resolve({number: 75, language: 'en'});
+            scope.$apply();
+
             scope.authors = [{id:123}, author, {id:321}];
 
             scope.confirmRemoveAuthor(author);
@@ -507,11 +510,13 @@ describe('Controller: PaneAuthorsCtrl', function () {
         });
 
         it('does not remove author on server error response', function () {
+            articleDeferred.resolve({number: 75, language: 'en'});
+            scope.$apply();
+
             scope.authors = [{id:123}, author, {id:321}];
 
             scope.confirmRemoveAuthor(author);
             modalDeferred.resolve(true);
-            articleDeferred.resolve({number: 75, language: 'en'});
             authorRemoveDeferred.reject();
             scope.$apply();
 
@@ -522,21 +527,23 @@ describe('Controller: PaneAuthorsCtrl', function () {
     describe('scope\'s orderChanged() method', function () {
         beforeEach(inject(function ($q) {
             // prevent firing of controller init code
-            spyOn(Author, 'getAll').andCallFake(function () {
-                return {
-                    $promise: {
-                        then: function () {}
-                    }
-                }
+            spyOn(Author, 'getAllByArticle').andCallFake(function () {
+               var retVal = [];
+                retVal.$promise = {
+                    then: function () {}
+                };
+                return retVal;
             });
             spyOn(Author, 'setOrderOnArticle');
         }));
 
         it('correctly delegates work to Author service', function () {
+            articleDeferred.resolve({number: 64, language: 'de'});
+            scope.$apply();
+
             scope.authors = authors;
 
             scope.orderChanged();
-            articleDeferred.resolve({number: 64, language: 'de'});
             scope.$apply();
 
             expect(Author.setOrderOnArticle).toHaveBeenCalledWith(
