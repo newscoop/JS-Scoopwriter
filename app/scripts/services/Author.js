@@ -11,9 +11,7 @@ angular.module('authoringEnvironmentApp').factory('Author', [
     '$timeout',
     'dateFactory',
     'pageTracker',
-    function (
-        $http, $q, $timeout, configuration, dateFactory, pageTracker
-    ) {
+    function ($http, $q, $timeout, dateFactory, pageTracker) {
         var SEARCH_DELAY_MS = 250,  // after the last search term change
             lastContext = null,  // most recent live search context
             lastTermChange = 0,  // time of the most recent search term change
