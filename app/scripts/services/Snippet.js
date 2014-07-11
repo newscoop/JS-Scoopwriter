@@ -79,7 +79,10 @@ angular.module('authoringEnvironmentApp').factory('Snippet', [
         */
         Snippet.getById = function (snippetId) {
             var deferredGet = $q.defer(),
-                url = API_ROOT + '/snippets/' + snippetId;
+                url = Routing.generate(
+                    'newscoop_gimme_snippets_getsnippet',
+                    {snippetId: snippetId}, true
+                );
 
             $http.get(url, {
                 params: {

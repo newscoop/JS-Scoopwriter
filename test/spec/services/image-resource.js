@@ -14,33 +14,44 @@ describe('Service: ImageResource', function () {
 
     xit('creates an image', function () {
         // This will be handled by ng-file-upload
-        var success = jasmine.createSpy('success');
-        $httpBackend.expect(
-            'POST',
-            rootURI + '/images',
-            'image[image]=what'
-        ).respond(200, '');
+        var success = jasmine.createSpy('success'),
+            url;
+
+        url = Routing.generate('newscoop_gimme_images_createimage', {}, true);
+
+        $httpBackend.expect('POST', url, 'image[image]=what').respond(200, '');
         imageResource.create({}, {image:{image:'what'}}, success);
         $httpBackend.flush();
         expect(success).toHaveBeenCalled();
     });
     it('sets an image parameter', function () {
-        var success = jasmine.createSpy('success');
+        var success = jasmine.createSpy('success'),
+            url;
+
+        url = Routing.generate(
+            'newscoop_gimme_images_updateimage', {number: 64}, true
+        );
+
         $httpBackend.expect(
             'PATCH',
-            rootURI + '/images/64',
+            url,
             'image%5Bdescription%5D=desc'
         ).respond(200, '');
+
         imageResource.modify({id:64}, {image:{description:'desc'}}, success);
         $httpBackend.flush();
         expect(success).toHaveBeenCalled();
     });
     it('removes an image', function() {
-        var success = jasmine.createSpy('success');
-        $httpBackend.expect(
-            'DELETE',
-            rootURI + '/images/64'
-        ).respond(200, '');
+        var success = jasmine.createSpy('success'),
+            url;
+
+        url = Routing.generate(
+            'newscoop_gimme_images_deleteimage', {number: 64}, true
+        );
+
+        $httpBackend.expect('DELETE', url).respond(200, '');
+
         imageResource.delete({id:64}, success);
         $httpBackend.flush();
         expect(success).toHaveBeenCalled();

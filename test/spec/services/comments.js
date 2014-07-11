@@ -66,11 +66,15 @@ describe('Service: Comments', function () {
             $httpBackend.verifyNoOutstandingExpectation();
         });
         it('deletes a comment', function() {
-            var spy = jasmine.createSpy('spy');
-            $httpBackend.expect(
-                'DELETE',
-                rootURI + '/comments/article/64/de/12'
-            ).respond(200, '');
+            var spy = jasmine.createSpy('spy'),
+                url;
+
+            url= Routing.generate(
+                'newscoop_gimme_comments_deletecomment_1',
+                {articleNumber: 64, languageCode: 'de', commentId: 12}, true
+            );
+
+            $httpBackend.expect('DELETE', url).respond(200, '');
             comments.resource.delete({
                 articleNumber: 64,
                 languageCode: 'de',
@@ -81,10 +85,17 @@ describe('Service: Comments', function () {
         });
 
         it('saves a comment', function() {
-            var success = jasmine.createSpy('success');
+            var success = jasmine.createSpy('success'),
+                url;
+
+            url= Routing.generate(
+                'newscoop_gimme_comments_createcomment',
+                {articleNumber: 64, languageCode: 'de'}, true
+            );
+
             $httpBackend.expect(
                 'POST',
-                rootURI + '/comments/article/64/de',
+                url,
                 'message=hey%2C+Joe%2C+let+us+go!'
             ).respond(200, '');
             comments.resource.save({
@@ -99,6 +110,10 @@ describe('Service: Comments', function () {
 
         describe('toggleRecommended action', function () {
             it('invokes correct API method', function () {
+                var url= Routing.generate(
+                    'newscoop_gimme_comments_updatecomment',
+                    {commentId: 1234}, true
+                );
                 $httpBackend.expect(
                     'PATCH',
                     rootURI + '/comments/1234.json'
@@ -249,7 +264,13 @@ describe('Service: Comments', function () {
 
 
     describe('not paginated', function() {
-        var comments, $httpBackend, response, $q, $log;
+        var comments,
+            getAllUrl,
+            response,
+            $httpBackend,
+            $log,
+            $q;
+
         beforeEach(inject(function (_comments_, _$httpBackend_, _article_, _$q_, _$log_) {
             $q = _$q_;
             $log = _$log_;
@@ -257,10 +278,16 @@ describe('Service: Comments', function () {
                 items: angular.copy(items)
             };
             $httpBackend = _$httpBackend_;
-            $httpBackend.expect(
-                'GET',
-                rootURI + '/comments/article/64/de/nested?items_per_page=50&page=1'
-            ).respond(response);
+
+            getAllUrl = Routing.generate(
+                'newscoop_gimme_comments_getcommentsforarticle_1',
+                {
+                    number: 64, language: 'de', order: 'nested',
+                    items_per_page: 50, page: 1
+                }, true
+            );
+
+            $httpBackend.expect('GET', getAllUrl).respond(response);
             comments = _comments_;
             _article_.promise = {
                 then: function(f) {
@@ -322,13 +349,13 @@ describe('Service: Comments', function () {
                         .toEqual({ comment : { subject : 'subj', message : 'message', author : 'sancio' } });
                 });
                 it('adds the comment on success', function() {
-                    var location = rootURI + '/comments/26996';
+                    var location = Routing.generate(
+                        'newscoop_gimme_comments_getcomment',
+                        {id: 26996}, true
+                    );
 
                     comments.add(p);
-                    $httpBackend.expect(
-                        'GET',
-                        location
-                    ).respond({});
+                    $httpBackend.expect('GET', location).respond({});
                     comments.resource.create
                         .mostRecentCall.args[2]({}, function() {
                             return location;
@@ -646,10 +673,16 @@ describe('Service: Comments', function () {
                         });
                         describe('saved', function() {
                             beforeEach(function() {
-                                $httpBackend.expect(
-                                    'POST',
-                                    rootURI + '/comments/article/64/de/24'
-                                ).respond(200, '');
+                                var url = Routing.generate(
+                                    'newscoop_gimme_comments_updatecomment_1',
+                                    {
+                                        article: 64, language: 'de',
+                                        commentId: 24
+                                    }, true
+                                );
+
+                                $httpBackend.expect('POST', url)
+                                    .respond(200, '');
                                 comment.save();
                                 $httpBackend.flush();
                             });
@@ -666,6 +699,23 @@ describe('Service: Comments', function () {
             });
 
             describe('with selected comments', function() {
+                /**
+                * Generates API URL for patching a particular comment.
+                *
+                * @method getPatchUrl
+                * @param commentId {Number} ID of the comment to generate
+                *   the URL for
+                * @return {String} generated URL
+                */
+                function getPatchUrl(commentId) {
+                    var url = Routing.generate(
+                        'newscoop_gimme_comments_updatecomment_1',
+                        {article: 64, language: 'de', commentId: commentId},
+                        true
+                    );
+                    return url;
+                }
+
                 beforeEach(function() {
                     expect(comments.displayed.length).toBe(3);
                     comments.displayed[0].selected = true;
@@ -681,12 +731,12 @@ describe('Service: Comments', function () {
                         beforeEach(function() {
                             $httpBackend.expect(
                                 'PATCH',
-                                rootURI + '/comments/article/64/de/24',
+                                getPatchUrl(24),
                                 'comment%5Bstatus%5D=hidden'
                             ).respond(200, '');
                             $httpBackend.expect(
                                 'PATCH',
-                                rootURI + '/comments/article/64/de/25',
+                                getPatchUrl(25),
                                 'comment%5Bstatus%5D=hidden'
                             ).respond(200, '');
                             $httpBackend.flush();
@@ -704,12 +754,12 @@ describe('Service: Comments', function () {
                         beforeEach(function() {
                             $httpBackend.expect(
                                 'PATCH',
-                                rootURI + '/comments/article/64/de/24',
+                                getPatchUrl(24),
                                 'comment%5Bstatus%5D=hidden'
                             ).respond(200, '');
                             $httpBackend.expect(
                                 'PATCH',
-                                rootURI + '/comments/article/64/de/25',
+                                getPatchUrl(25),
                                 'comment%5Bstatus%5D=hidden'
                             ).respond(500, '');
                             $httpBackend.flush();
@@ -729,6 +779,36 @@ describe('Service: Comments', function () {
     });
 
     describe('paginated', function() {
+
+        /**
+        * Generates API URL for retrieving a particular result page of
+        * article comments.
+        *
+        * @method createUrl
+        * @param page {Number} number of the results page to request
+        * @param [chronological=false] {Boolean} if true, the 'order' URL
+        *   parameter is omitted (meaning default 'chronological' order),
+        *   otherwise 'nested' ordering is assumed
+        * @return {String} generated URL
+        */
+        function createUrl(page, chronological) {
+            var config = {
+                number: 64,
+                language: 'de',
+                order: 'nested',
+                items_per_page: 50,
+                page: page
+            };
+
+            if (chronological) {
+                delete config.order;
+            }
+
+            return Routing.generate(
+                'newscoop_gimme_comments_getcommentsforarticle_1', config, true
+            );
+        }
+
         var response, comments, $httpBackend;
         beforeEach(inject(function (_comments_, _$httpBackend_, _article_) {
             response = {
@@ -740,12 +820,8 @@ describe('Service: Comments', function () {
                 }
             };
             $httpBackend = _$httpBackend_;
-            $httpBackend.expectGET(
-                rootURI + '/comments/article/64/de/nested?items_per_page=50&page=1'
-            ).respond(response);
-            $httpBackend.expectGET(
-                rootURI + '/comments/article/64/de/nested?items_per_page=50&page=2'
-            ).respond(response);
+            $httpBackend.expectGET(createUrl(1)).respond(response);
+            $httpBackend.expectGET(createUrl(2)).respond(response);
             comments = _comments_;
             _article_.promise = {
                 then: function(f) {
@@ -772,9 +848,7 @@ describe('Service: Comments', function () {
         });
         describe('if a different sorting is specified', function() {
             beforeEach(function() {
-                $httpBackend
-                    .expectGET(rootURI + '/comments/article/64/de?items_per_page=50&page=1')
-                    .respond({})
+                $httpBackend.expectGET(createUrl(1, true)).respond({});
                 comments.init({
                     sorting: 'chronological'
                 });
@@ -784,9 +858,7 @@ describe('Service: Comments', function () {
             });
             describe('if a different sorting is specified again', function() {
                 beforeEach(function() {
-                    $httpBackend
-                        .expectGET(rootURI + '/comments/article/64/de/nested?items_per_page=50&page=1')
-                        .respond({})
+                    $httpBackend.expectGET(createUrl(1)).respond({});
                     comments.init({
                         sorting: 'nested'
                     });
@@ -801,8 +873,7 @@ describe('Service: Comments', function () {
             var location;
 
             beforeEach(function() {
-                location = rootURI +
-                    '/comments/article/64/de/nested?items_per_page=50&page=3';
+                location = createUrl(3);
                 $httpBackend.expectGET(location).respond(response);
             });
 

@@ -68,6 +68,8 @@ describe('Factory: SnippetTemplate', function () {
     });
 
     describe('getAll() method', function () {
+        var url;
+
         beforeEach(function () {
             templates = [
                 {id: 10, name: 'tpl 1', fields: {}},
@@ -75,10 +77,13 @@ describe('Factory: SnippetTemplate', function () {
                 {id: 30, name: 'tpl 3', fields: {}},
             ];
 
-            $httpBackend.expectGET(
-                rootURI + '/snippetTemplates?items_per_page=99999'
-            )
-            .respond(200, JSON.stringify({ items: templates }));
+            url = Routing.generate(
+                'newscoop_gimme_snippettemplates_getsnippettemplates',
+                {items_per_page: 99999}, true
+            );
+
+            $httpBackend.expectGET(url)
+                .respond(200, JSON.stringify({ items: templates }));
         });
 
         afterEach(function () {
@@ -115,10 +120,7 @@ describe('Factory: SnippetTemplate', function () {
         describe('on server error response', function () {
             beforeEach(function () {
                 $httpBackend.resetExpectations();
-                $httpBackend.expectGET(
-                    rootURI + '/snippetTemplates?items_per_page=99999'
-                )
-                .respond(500, 'Server error');
+                $httpBackend.expectGET(url).respond(500, 'Server error');
             });
 
             it('returned array is not populated', function () {

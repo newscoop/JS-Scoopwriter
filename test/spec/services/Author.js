@@ -117,10 +117,14 @@ describe('Factory: Author', function () {
     });
 
     describe('getAllByArticle() method', function () {
+        var url;
+
         beforeEach(function () {
-            $httpBackend.expectGET(
-                rootURI + '/articles/64/de/authors?items_per_page=99999'
-            ).respond(authorsResponse);
+            url =  Routing.generate(
+                'newscoop_gimme_authors_getarticleauthors',
+                {number: 64, language: 'de', items_per_page: 99999}, true
+            );
+            $httpBackend.expectGET(url).respond(authorsResponse);
         });
 
         afterEach(function () {
@@ -171,9 +175,7 @@ describe('Factory: Author', function () {
             errorSpy = jasmine.createSpy();
 
             $httpBackend.resetExpectations();
-            $httpBackend.expectGET(
-                rootURI + '/articles/64/de/authors?items_per_page=99999'
-            ).respond(500, 'Error :(');
+            $httpBackend.expectGET(url).respond(500, 'Error :(');
 
             authors = Author.getAllByArticle(64, 'de');
             authors.$promise.catch(errorSpy);
@@ -203,6 +205,20 @@ describe('Factory: Author', function () {
             };
         }
 
+        /**
+        * Helper function which creates an API request URL.
+        *
+        * @method createUrl
+        * @param page {Number} number of the results page to request
+        */
+        function createUrl(page) {
+            var url =  Routing.generate(
+                'newscoop_gimme_authors_searchauthors',
+                {items_per_page: 10, page: page, query: 'hans'}, true
+            );
+            return url;
+        }
+
         beforeEach(inject(function (_$timeout_, _dateFactory_) {
             $timeout = _$timeout_;
             dateFactory = _dateFactory_;
@@ -223,9 +239,7 @@ describe('Factory: Author', function () {
 
 
         it('delays non-callback non-pagination calls for 250ms', function () {
-            $httpBackend.expectGET(
-                rootURI + '/search/authors?items_per_page=10&page=1&query=hans'
-            ).respond(200, response);
+            $httpBackend.expectGET(createUrl(1)).respond(200, response);
 
             Author.liveSearchQuery(options);
 
@@ -246,9 +260,7 @@ describe('Factory: Author', function () {
         });
 
         it('executes non-callback pagination calls w/o delay', function () {
-            $httpBackend.expectGET(
-                rootURI + '/search/authors?items_per_page=10&page=7&query=hans'
-            ).respond(200, response);
+            $httpBackend.expectGET(createUrl(7)).respond(200, response);
 
             options.page = 7;
             options.context = {
@@ -264,9 +276,7 @@ describe('Factory: Author', function () {
         });
 
         it ('ignores duplicate pagination calls', function () {
-            $httpBackend.expectGET(
-                rootURI + '/search/authors?items_per_page=10&page=7&query=hans'
-            ).respond(200, response);
+            $httpBackend.expectGET(createUrl(7)).respond(200, response);
 
             options.page = 7;
             options.context = {
@@ -291,9 +301,7 @@ describe('Factory: Author', function () {
         });
 
         it('correctly invokes API for up-to-date search terms', function () {
-            $httpBackend.expectGET(
-                rootURI + '/search/authors?items_per_page=10&page=1&query=hans'
-            ).respond(200, response);
+            $httpBackend.expectGET(createUrl(1)).respond(200, response);
 
             options.page = 1;
             setCurrentMockedTime(1500);
@@ -310,10 +318,7 @@ describe('Factory: Author', function () {
                     resultItem;
 
                 // test fixtures
-                $httpBackend.expectGET(
-                    rootURI + '/search/authors?items_per_page=10' +
-                              '&page=1&query=hans'
-                ).respond(200, response);
+                $httpBackend.expectGET(createUrl(1)).respond(200, response);
 
                 response.items = [{
                     id: 66, firstName: 'Hans', lastName: 'Doe',
@@ -356,15 +361,22 @@ describe('Factory: Author', function () {
 
     describe('setOrderOnArticle() method', function () {
         it('sends a correct request to API', function () {
-            var authors = [
+            var authors,
+                url;
+
+            authors = [
                 {id: 7, articleRole: {id: 11}},
                 {id: 2, articleRole: {id: 6}},
                 {id: 11, articleRole: {id: 7}}
             ];
 
+            url =  Routing.generate(
+                'newscoop_gimme_authors_setarticleauthorsorder',
+                {number: 82, language: 'it'}, true
+            );
+
             $httpBackend.expectPOST(
-                rootURI + '/articles/82/it/authors/order',
-                {order: '7-11,2-6,11-7'}
+                url, {order: '7-11,2-6,11-7'}
             ).respond(204);
 
             Author.setOrderOnArticle(82, 'it', authors);
@@ -374,20 +386,38 @@ describe('Factory: Author', function () {
     });
 
     describe('addToArticle() method', function () {
-        var author,
+        var articleUrl,
+            author,
             expectedLinkHeader;
 
         beforeEach(function () {
+            var authorUri,
+                authorTypeUri;
+
             author = new Author();
             author.id = 22;
 
-            expectedLinkHeader =
-                '<' + apiEndpoint + '/authors/22; rel="author">,' +
-                '<' + apiEndpoint + '/authors/types/7; rel="author-type">';
+            articleUrl = Routing.generate(
+                'newscoop_gimme_articles_linkarticle',
+                {number: 64, language: 'de'}, true
+            );
+
+            authorUri = Routing.generate(
+                'newscoop_gimme_authors_getauthorbyid',
+                {id: 22}, false
+            );
+            authorTypeUri = Routing.generate(
+                'newscoop_gimme_authors_getauthortype',
+                {id: 7}, false
+            );
+            expectedLinkHeader = [
+                '<', authorUri, '; rel="author">,',
+                '<', authorTypeUri, '; rel="author-type">'
+            ].join('');
 
             $httpBackend.expect(
                 'LINK',
-                rootURI + '/articles/64/de',
+                articleUrl,
                 undefined,
                 function (headers) {
                     return headers.link === expectedLinkHeader;
@@ -431,8 +461,7 @@ describe('Factory: Author', function () {
                 };
 
             $httpBackend.resetExpectations();
-            $httpBackend.expect('LINK', rootURI + '/articles/64/de')
-                .respond(500, 'Error :(');
+            $httpBackend.expect('LINK', articleUrl).respond(500, 'Error :(');
 
             author.addToArticle(64, 'de', 7)
                 .then(null, spyHelper.callMeOnError);
@@ -444,16 +473,39 @@ describe('Factory: Author', function () {
     });
 
     describe('removeFromArticle() method', function () {
-        var expectedLinkHeader;
+        var articleUrl,
+            expectedLinkHeader;
 
         beforeEach(function () {
-            expectedLinkHeader =
-                '<' + apiEndpoint + '/authors/22; rel="author">,' +
-                '<' + apiEndpoint + '/authors/types/7; rel="author-type">';
+            var authorUri,
+                authorTypeUri;
+
+            articleUrl = Routing.generate(
+                'newscoop_gimme_articles_linkarticle',
+                {number: 64, language: 'de'}, true
+            );
+
+            authorUri = Routing.generate(
+                'newscoop_gimme_authors_getauthorbyid',
+                {id: 22}, false
+            );
+            authorTypeUri = Routing.generate(
+                'newscoop_gimme_authors_getauthortype',
+                {id: 7}, false
+            );
+            expectedLinkHeader = [
+                '<', authorUri, '; rel="author">,',
+                '<', authorTypeUri, '; rel="author-type">'
+            ].join('');
+
+            expectedLinkHeader = [
+                '<', authorUri, '; rel="author">,',
+                '<', authorTypeUri, '; rel="author-type">'
+            ].join('');
 
             $httpBackend.expect(
                 'UNLINK',
-                rootURI + '/articles/64/de',
+                articleUrl,
                 undefined,
                 function (headers) {
                     return headers.link === expectedLinkHeader;
@@ -496,8 +548,7 @@ describe('Factory: Author', function () {
                 };
 
             $httpBackend.resetExpectations();
-            $httpBackend.expect('UNLINK', rootURI + '/articles/64/de')
-                .respond(500, 'Error :(');
+            $httpBackend.expect('UNLINK', articleUrl).respond(500, 'Error :(');
 
             author.removeFromArticle(64, 'de', 7)
                 .catch(spyHelper.callMeOnError);
@@ -509,10 +560,15 @@ describe('Factory: Author', function () {
     });
 
     describe('getRoleList() method', function () {
+        var url;
+
         beforeEach(function () {
-            $httpBackend.expectGET(
-                rootURI + '/authors/types?items_per_page=99999'
-            ).respond(rolesResponse);
+            url = Routing.generate(
+                'newscoop_gimme_authors_getauthorstypes',
+                {items_per_page: 99999}, true
+            );
+
+            $httpBackend.expectGET(url).respond(rolesResponse);
         });
 
         afterEach(function () {
@@ -550,9 +606,7 @@ describe('Factory: Author', function () {
             errorSpy = jasmine.createSpy();
 
             $httpBackend.resetExpectations();
-            $httpBackend.expectGET(
-                rootURI + '/authors/types?items_per_page=99999'
-            ).respond(500, 'Error :(');
+            $httpBackend.expectGET(url).respond(500, 'Error :(');
 
             roles = Author.getRoleList();
             roles.$promise.catch(errorSpy);
@@ -565,7 +619,10 @@ describe('Factory: Author', function () {
     describe('updateRole() method', function () {
         it('sends a correct request to API', function () {
             var author,
-                expectedLinkHeader;
+                oldTypeUri,
+                newTypeUri,
+                expectedLinkHeader,
+                url;
 
             author = new Author();
             author.id = 22;
@@ -576,12 +633,24 @@ describe('Factory: Author', function () {
                 name: 'Photographer'
             };
 
-            expectedLinkHeader =
-                '</content-api/authors/types/1; rel="old-author-type">,' +
-                '</content-api/authors/types/4; rel="new-author-type">';
+            url = Routing.generate(
+                'newscoop_gimme_authors_updatearticleauthor',
+                {number: 64, language: 'de', authorId: 22}, true
+            );
+
+            oldTypeUri = Routing.generate(
+                'newscoop_gimme_authors_getauthortype', {id: 1}, false
+            );
+            newTypeUri = Routing.generate(
+                'newscoop_gimme_authors_getauthortype', {id: 4}, false
+            );
+            expectedLinkHeader = [
+                '<', oldTypeUri, '; rel="old-author-type">,',
+                '<', newTypeUri, '; rel="new-author-type">'
+            ].join('');
 
             $httpBackend.expectPOST(
-                rootURI + '/articles/64/de/authors/22',
+                url,
                 {},
                 function (headers) {
                     return headers.link === expectedLinkHeader;

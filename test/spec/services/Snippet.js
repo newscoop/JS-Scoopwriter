@@ -20,6 +20,8 @@ describe('Factory: Snippet', function () {
     }));
 
     describe('getAllByArticle() method', function () {
+        var url;
+
         beforeEach(function () {
             snippets = [
                 {id: 1, name: 'foo 1', code: '<bar 1>'},
@@ -27,11 +29,17 @@ describe('Factory: Snippet', function () {
                 {id: 3, name: 'foo 3', code: '<bar 3>'},
             ];
 
-            $httpBackend.expectGET(
-                rootURI + '/snippets/article/77/pl?' +
-                          'items_per_page=99999&rendered=true'
-            )
-            .respond(200, JSON.stringify({ items: snippets }));
+            url = Routing.generate(
+                'newscoop_gimme_snippets_getsnippetsforarticle_1',
+                {
+                    number: 77, language: 'pl',
+                    items_per_page: 99999, rendered: 'true'
+                },
+                true
+            );
+
+            $httpBackend.expectGET(url)
+                .respond(200, JSON.stringify({ items: snippets }));
         });
 
         afterEach(function () {
@@ -68,11 +76,7 @@ describe('Factory: Snippet', function () {
         describe('on server error response', function () {
             beforeEach(function () {
                 $httpBackend.resetExpectations();
-                $httpBackend.expectGET(
-                    rootURI + '/snippets/article/77/pl?' +
-                              'items_per_page=99999&rendered=true'
-                )
-                .respond(500, 'Server error');
+                $httpBackend.expectGET(url).respond(500, 'Server error');
             });
 
             it('returned array is not populated', function () {
@@ -103,9 +107,12 @@ describe('Factory: Snippet', function () {
         var snippetData;
 
         beforeEach(function () {
-            snippetData = {id:42};  // TODO: set
-
-            $httpBackend.expectGET(rootURI + '/snippets/42?rendered=true')
+            var url = Routing.generate(
+                'newscoop_gimme_snippets_getsnippet',
+                {snippetId: 42, rendered: true}, true
+            );
+            snippetData = {id:42};
+            $httpBackend.expectGET(url)
                 .respond(200, JSON.stringify(snippetData));
         });
 
@@ -156,10 +163,18 @@ describe('Factory: Snippet', function () {
 
     describe('create() method', function () {
         var expectedPostData,
-            templateFields;
+            templateFields,
+            urlCreate,
+            urlGet;  // contents of the x-location header
 
         beforeEach(function () {
             templateFields = {foo:'bar', baz:42};
+
+            urlCreate = Routing.generate(
+                'newscoop_gimme_snippets_createsnippet', {}, true
+            );
+
+            urlGet = 'http://foo.bar/api/snippets/1';
 
             expectedPostData = JSON.stringify({
                 template: 7,
@@ -172,8 +187,8 @@ describe('Factory: Snippet', function () {
                 }
             });
 
-            $httpBackend.expectPOST(rootURI + '/snippets', expectedPostData)
-                .respond(201, '', {'x-location': '/api/snippets/1'});
+            $httpBackend.expectPOST(urlCreate, expectedPostData)
+                .respond(201, '', {'x-location': urlGet});
         });
 
         afterEach(function () {
@@ -192,7 +207,7 @@ describe('Factory: Snippet', function () {
         }));
 
         it('requests created snippet\'s data from API', function () {
-            $httpBackend.expectGET('/api/snippets/1?rendered=true')
+            $httpBackend.expectGET(urlGet + '?rendered=true')
                 .respond(200, {id: 1});
 
             Snippet.create('foo', 7, templateFields);
@@ -204,7 +219,7 @@ describe('Factory: Snippet', function () {
                 var snippet,
                     successSpy = jasmine.createSpy();
 
-                $httpBackend.expectGET('/api/snippets/1?rendered=true')
+                $httpBackend.expectGET(urlGet + '?rendered=true')
                     .respond(200, {id: 1, templateId: 7, name: 'foo'});
 
                 Snippet.create('foo', 7, templateFields).then(successSpy);
@@ -228,8 +243,7 @@ describe('Factory: Snippet', function () {
             errorSpy = jasmine.createSpy();
 
             $httpBackend.resetExpectations();
-            $httpBackend.expectPOST(rootURI + '/snippets')
-                .respond(500, 'Server error');
+            $httpBackend.expectPOST(urlCreate).respond(500, 'Server error');
 
             promise = Snippet.create('foo', 7, templateFields);
             promise.catch(errorSpy);
@@ -241,19 +255,30 @@ describe('Factory: Snippet', function () {
 
 
     describe('addToArticle() method', function () {
-        var snippet;
+        var snippet,
+            url;
 
         beforeEach(function () {
-            var expectedLinkHeader =
-                '<' + apiEndpoint + '/snippets/1; rel="snippet">';
+            var expectedLinkHeader,
+                snippetUri;
+
+            snippetUri = Routing.generate(
+                'newscoop_gimme_snippets_getsnippet', {snippetId: 1}, false
+            );
+            expectedLinkHeader = '<' + snippetUri + '; rel="snippet">';
 
             snippet = Object.create(Snippet.prototype, {
                 id: {value: 1, writable: true, enumerable: true}
             });
 
+            url = Routing.generate(
+                'newscoop_gimme_articles_linkarticle',
+                {number: 25, language: 'de'}, true
+            );
+
             $httpBackend.expect(
                 'LINK',
-                rootURI + '/articles/25/de',
+                url,
                 undefined,
                 function (headers) {
                     return headers.link === expectedLinkHeader;
@@ -299,8 +324,7 @@ describe('Factory: Snippet', function () {
                 };
 
             $httpBackend.resetExpectations();
-            $httpBackend.expect('LINK', rootURI + '/articles/25/de')
-                .respond(500, 'Error :(');
+            $httpBackend.expect('LINK', url).respond(500, 'Error :(');
 
             snippet.addToArticle(25, 'de')
                 .then(null, spyHelper.callMeOnError);
@@ -313,20 +337,30 @@ describe('Factory: Snippet', function () {
 
 
     describe('removeFromArticle() method', function () {
-        var expectedLinkHeader,
-            snippet;
+        var snippet,
+            url;
 
         beforeEach(function () {
-            expectedLinkHeader =
-                '<' + apiEndpoint + '/snippets/1; rel="snippet">';
+            var expectedLinkHeader,
+                snippetUri;
+
+            snippetUri = Routing.generate(
+                'newscoop_gimme_snippets_getsnippet', {snippetId: 1}, false
+            );
+            expectedLinkHeader = '<' + snippetUri + '; rel="snippet">';
 
             snippet = Object.create(Snippet.prototype, {
                 id: {value: 1, writable: true, enumerable: true}
             });
 
+            url = Routing.generate(
+                'newscoop_gimme_articles_linkarticle',
+                {number: 25, language: 'en'}, true
+            );
+
             $httpBackend.expect(
                 'UNLINK',
-                rootURI + '/articles/25/en',
+                url,
                 undefined,
                 function (headers) {
                     return headers.link === expectedLinkHeader;
@@ -368,8 +402,7 @@ describe('Factory: Snippet', function () {
                 };
 
             $httpBackend.resetExpectations();
-            $httpBackend.expect('UNLINK', rootURI + '/articles/25/en')
-                .respond(500, 'Error :(');
+            $httpBackend.expect('UNLINK', url).respond(500, 'Error :(');
 
             snippet.removeFromArticle(25, 'en')
                 .catch(spyHelper.callMeOnError);

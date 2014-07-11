@@ -20,13 +20,32 @@ describe('Controller: ArticleCtrl', function () {
     var articleTypeNews = {    "name":"news",    "fields":[        {            "name":"body",            "type":"body",            "fieldWeight":3,            "isHidden":0,            "commentsEnabled":0,            "fieldTypeParam":"editor_size=750",            "isContentField":1        },        {            "name":"highlight",            "type":"switch",            "fieldWeight":1,            "isHidden":0,            "commentsEnabled":0,            "isContentField":0        },        {            "name":"iPad_prominent",            "type":"switch",            "fieldWeight":6,            "isHidden":0,            "commentsEnabled":0,            "isContentField":0        },        {            "name":"lede",            "type":"longtext",            "fieldWeight":2,            "isHidden":0,            "commentsEnabled":0,            "fieldTypeParam":"editor_size=250",            "isContentField":0        },        {            "name":"printsection",            "length":0,            "type":"text",            "fieldWeight":4,            "isHidden":0,            "commentsEnabled":0,            "isContentField":0        },        {            "name":"printstory",            "length":0,            "type":"text",            "fieldWeight":5,            "isHidden":0,            "commentsEnabled":0,            "isContentField":0        }    ]};
     // Initialize the controller and a mock scope
     beforeEach(inject(function (_$controller_, _$rootScope_, _$httpBackend_, _article_) {
+
+        var urlArticleGet,
+            urlArticleTypeGet;
+
+        urlArticleGet =  Routing.generate(
+            'newscoop_gimme_articles_getarticle',
+            {number: 123}, true
+        );
+
+        urlArticleTypeGet =  Routing.generate(
+            'newscoop_gimme_articletypes_getarticletype',
+            {name: 'news'}, true
+        );
+
         $rootScope = _$rootScope_;
         scope = $rootScope.$new();
         $httpBackend = _$httpBackend_;
         articleService = _article_;
         $controller = _$controller_;
-        $httpBackend.expectGET(/\/content-api\/articles\/[\d]/).respond(article);
-        $httpBackend.expectGET(/\/content-api\/articleTypes\/.*/).respond(articleTypeNews);
+
+        $httpBackend.expectGET(
+            new RegExp('^' + urlArticleGet)
+        ).respond(article);
+
+        $httpBackend.expectGET(urlArticleTypeGet).respond(articleTypeNews);
+
         ArticleCtrl = $controller('ArticleCtrl', {
             $scope: scope,
             $log: log,
@@ -216,9 +235,11 @@ describe('Controller: ArticleCtrl', function () {
             });
             describe('save triggered', function() {
                 beforeEach(function() {
-                    $httpBackend
-                        .expect('PATCH', rootURI + '/articles/123/de')
-                        .respond({});
+                    var url =  Routing.generate(
+                        'newscoop_gimme_articles_changearticlestatus',
+                        {number: 123, language: 'de'}, true
+                    );
+                    $httpBackend.expect('PATCH', url).respond({});
                     scope.save();
                 });
                 describe('response received', function() {
@@ -236,9 +257,11 @@ describe('Controller: ArticleCtrl', function () {
             });
             describe('save triggered with error response', function() {
                 beforeEach(function() {
-                    $httpBackend
-                        .expect('PATCH', rootURI + '/articles/123/de')
-                        .respond(500, 'error');
+                    var url =  Routing.generate(
+                        'newscoop_gimme_articles_changearticlestatus',
+                        {number: 123, language: 'de'}, true
+                    );
+                    $httpBackend.expect('PATCH', url).respond(500, 'error');
                     scope.save();
                 });
                 describe('response received', function() {
@@ -259,11 +282,16 @@ describe('Controller: ArticleCtrl', function () {
     });
     describe('initialised again on an already modified article', function() {
         beforeEach(function() {
+            var url =  Routing.generate(
+                'newscoop_gimme_articletypes_getarticletype',
+                {name: 'news'}, true
+            );
+
             $httpBackend.flush(2);
             scope = $rootScope.$new();
             articleService.modified = true;
             $httpBackend
-                .expectGET(rootURI + '/articleTypes/news')
+                .expectGET(url)
                 .respond({});
             ArticleCtrl = $controller('ArticleCtrl', {
                 $scope: scope,
@@ -296,11 +324,16 @@ describe('Controller: ArticleCtrl', function () {
     });
     describe('initialised again on a saved article', function() {
         beforeEach(function() {
+            var url =  Routing.generate(
+                'newscoop_gimme_articletypes_getarticletype',
+                {name: 'news'}, true
+            );
+
             $httpBackend.flush(2);
             scope = $rootScope.$new();
             articleService.modified = false;
             $httpBackend
-                .expectGET(rootURI + '/articleTypes/news')
+                .expectGET(url)
                 .respond({});
             ArticleCtrl = $controller('ArticleCtrl', {
                 $scope: scope,
