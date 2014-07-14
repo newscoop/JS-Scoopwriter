@@ -1,8 +1,17 @@
+<!-- devcode: newscoop -->
 <div
    class="authoring-environment"
    ng-class="{'zen-mode': mode.zen}"
    ng-controller="MainCtrl"
    >
+<!-- endcode -->
+<!-- devcode: !newscoop -->
+<div
+   class="authoring-environment"
+   ng-class="{'zen-mode': mode.zen}"
+   ng-controller="MainWithTokenCtrl"
+   >
+<!-- endcode -->
     <div ng-include src="'views/toolbar.html'"></div>
     <div ng-include src="'views/panes.html'"></div>
     <div ng-include src="'views/article.html'"

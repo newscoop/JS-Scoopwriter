@@ -9,17 +9,16 @@
     <link rel="stylesheet" href="css/plugin.css">
     <script src="{{ asset('bundles/fosjsrouting/js/router.js') }}"></script>
     <script src="{{ path('fos_js_routing_js', {'callback': 'fos.Router.setData'}) }}"></script>
+    <script type="text/javascript">
+      var CSClientId = '{{ clientId }}';
+      var CSBaseUrl = '/bundles/newscoopeditor/';
+    </script>
     <!-- endcode -->
     <!-- devcode: !newscoop -->
-    <script type="text/javascript">
-      var CSBaseUrl = '';
-    </script>
     <script src="scripts/routing/router.js"></script>
     <script src="scripts/routing/fos_js_routes.js"></script>
-    <!-- endcode -->
-    <!-- devcode: newscoop -->
     <script type="text/javascript">
-    CSBaseUrl = '/bundles/newscoopeditor/';
+      var CSBaseUrl = '';
     </script>
     <!-- endcode -->
     <meta charset="utf-8">
@@ -108,7 +107,9 @@
         <script src="bower_components/angular-route/angular-route.js"></script>
         <script src="bower_components/angular-animate/angular-animate.js"></script>
         <script src="bower_components/angular-mocks/angular-mocks.js"></script>
+        <!-- devcode: !newscoop -->
         <script src="bower_components/angular-oauth/src/js/angularOauth.js"></script>
+        <!-- endcode -->
         <script src="bower_components/angular-strap/dist/modules/dimensions.js"></script>
         <script src="bower_components/angular-strap/dist/modules/tooltip.js"></script>
         <script src="bower_components/angular-strap/dist/modules/popover.js"></script>
@@ -124,7 +125,13 @@
         <script src="scripts/services/modalFactory.js"></script>
         <script src="scripts/httpBackendStub.js"></script>
         <script src="scripts/filters/availableRoles.js"></script>
+        <!-- devcode: newscoop -->
         <script src="scripts/controllers/main.js"></script>
+        <script src="scripts/services/UserAuth.js"></script>
+        <!-- endcode -->
+        <!-- devcode: !newscoop -->
+        <script src="scripts/controllers/main-with-token.js"></script>
+        <!-- endcode -->
         <script src="scripts/controllers/sf-panes.js"></script>
         <script src="scripts/controllers/pane-authors.js"></script>
         <script src="scripts/controllers/pane-topics.js"></script>

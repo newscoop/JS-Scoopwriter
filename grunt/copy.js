@@ -41,6 +41,7 @@ module.exports = {
                     'index.html',
                     'css/plugin.css',
                     'bower_components/**/*',
+                    'scripts/aloha/plugins/aes/**/*',
                     'fonts/{,*/}*',
                     'images/{,*/}*',
                     'scripts/{,*/}*',
