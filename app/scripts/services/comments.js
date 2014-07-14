@@ -5,7 +5,6 @@
 * @class comments
 */
 angular.module('authoringEnvironmentApp').service('comments', [
-    'configuration',
     'article',
     '$http',
     '$q',
@@ -14,11 +13,9 @@ angular.module('authoringEnvironmentApp').service('comments', [
     'pageTracker',
     '$log',
     'nestedSort',
-    function comments(configuration, article, $http, $q, $resource, transform, pageTracker, $log, nestedSort) {
+    function comments(article, $http, $q, $resource, transform, pageTracker, $log, nestedSort) {
         var service = this;
         // alias for the comments service itself
-        var f = configuration.API.full;
-        // base API URL
         /* max number of comments per page, decrease it in order to
          * test pagination, and sorting change with paginated
          * comments */
@@ -56,28 +53,28 @@ angular.module('authoringEnvironmentApp').service('comments', [
         * @property tracker
         * @type Object (as created by Angular's $resource factory)
         */
-        this.resource = $resource(f + '/comments/article/:articleNumber/:languageCode', {}, {
+        this.resource = $resource(Routing.generate('newscoop_gimme_comments_getcommentsforarticle_1', {}, true) + '/:articleNumber/:languageCode', {}, {
             create: {
                 method: 'POST',
                 transformRequest: transform.formEncode
             },
             patch: {
                 method: 'PATCH',
-                url: f + '/comments/article/:articleNumber/:languageCode/:commentId',
+                url: Routing.generate('newscoop_gimme_comments_updatecomment_1', {}, true) + '/:articleNumber/:languageCode/:commentId',
                 transformRequest: transform.formEncode
             },
             save: {
                 method: 'POST',
-                url: f + '/comments/article/:articleNumber/:languageCode/:commentId',
+                url: Routing.generate('newscoop_gimme_comments_createcomment', {}, true) + '/:articleNumber/:languageCode/:commentId',
                 transformRequest: transform.formEncode
             },
             delete: {
                 method: 'DELETE',
-                url: f + '/comments/article/:articleNumber/:languageCode/:commentId'
+                url: Routing.generate('newscoop_gimme_comments_deletecomment_1', {}, true) + '/:articleNumber/:languageCode/:commentId'
             },
             toggleRecommended: {
                 method: 'PATCH',
-                url: f + '/comments/:commentId.json'
+                url: Routing.generate('newscoop_gimme_comments_updatecomment', {}, true) + '/:commentId.json'
             }
         });
         /**
@@ -188,22 +185,11 @@ angular.module('authoringEnvironmentApp').service('comments', [
             article.promise.then(function (article) {
                 var sortingPart;
                 if (sorting === 'nested') {
-                    sortingPart = '/nested';
+                    sortingPart = 'nested';
                 } else {
                     sortingPart = '';
                 }
-                var url = [
-                        configuration.API.full,
-                        '/comments/article/',
-                        article.number,
-                        '/',
-                        article.language,
-                        sortingPart,
-                        '?items_per_page=',
-                        itemsPerPage,
-                        '&page=',
-                        page
-                    ].join('');
+                var url = Routing.generate('newscoop_gimme_comments_getcommentsforarticle_1', {'number':article.number, 'language':article.language, 'order': sortingPart, 'items_per_page': itemsPerPage, 'page': page}, true);
                 $http.get(url).success(function (data) {
                     deferred.resolve(data);
                     if (pageTracker.isLastPage(data.pagination)) {

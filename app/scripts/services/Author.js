@@ -1,27 +1,21 @@
 'use strict';
 
 /**
-* A factory which creates article author resource object.
+* A factory which creates article author model.
 *
 * @class Author
 */
 angular.module('authoringEnvironmentApp').factory('Author', [
     '$http',
-    '$resource',
     '$q',
     '$timeout',
-    'configuration',
     'dateFactory',
     'pageTracker',
-    function (
-        $http, $resource, $q, $timeout, configuration, dateFactory, pageTracker
-    ) {
-        var API_ENDPOINT = configuration.API.endpoint,
-            API_ROOT = configuration.API.full,
-            SEARCH_DELAY_MS = 250,  // after the last search term change
+    function ($http, $q, $timeout, dateFactory, pageTracker) {
+        var SEARCH_DELAY_MS = 250,  // after the last search term change
             lastContext = null,  // most recent live search context
             lastTermChange = 0,  // time of the most recent search term change
-            self = this;
+            Author = function () {};  // author constructor function;
 
         /**
         * Converts author data object to an Author resource object with
@@ -31,8 +25,8 @@ angular.module('authoringEnvironmentApp').factory('Author', [
         * @param data {Object} object containing author data as returned by API
         * @return {Object} author resource object
         */
-        self.createFromApiData = function (data) {
-            var author = new self.authorResource();
+        Author.createFromApiData = function (data) {
+            var author = new Author();
 
             author.id = data.author.id;
             author.firstName = data.author.firstName;
@@ -65,25 +59,57 @@ angular.module('authoringEnvironmentApp').factory('Author', [
         /**
         * Retrieves a list of all article authors for the given article.
         *
-        * @method getAll
-        * @param params {Object} object containing search parameters
-        *   @param params.number {Number} article ID
-        *   @param params.language {String} article language code, e.g. 'de'
+        * @method getAllByArticle
+        * @param number {Number} article ID
+        * @param language {String} article language code, e.g. 'de'
         * @return {Object} array of article authors
         */
-        self.getAll = {
-            method: 'GET',
-            isArray: true,
-            transformResponse: function (data, headersGetter) {
-                var authors = [],
-                    authorsData = JSON.parse(data).items;
+        Author.getAllByArticle = function (number, language) {
+            var deferredGet = $q.defer(),
+                authors = [];
 
-                authorsData.forEach(function (item) {
-                    var author = self.createFromApiData(item);
-                    authors.push(author);
+            authors.$promise = deferredGet.promise;
+
+            $http.get(Routing.generate('newscoop_gimme_authors_getarticleauthors', {'number':number, 'language':language, 'items_per_page':99999}, true)
+            ).success(function (response) {
+                response.items.forEach(function (item) {
+                    item = Author.createFromApiData(item);
+                    authors.push(item);
                 });
-                return authors;
-            }
+                deferredGet.resolve();
+            }).error(function (responseBody) {
+                deferredGet.reject(responseBody);
+            });
+
+            return authors;
+        };
+
+        /**
+        * Retrieves a list of all defined author roles from the server.
+        *
+        * @method getRoleList
+        * @return {Object} array of article roles
+        */
+        Author.getRoleList = function () {
+            var deferredGet = $q.defer(),
+                roles = [];
+
+            roles.$promise = deferredGet.promise;
+
+            $http.get(Routing.generate('newscoop_gimme_authors_getauthorstypes', {'items_per_page':99999}, true)
+            ).success(function (response) {
+                response.items.forEach(function (item) {
+                    // "name" is more informative attribute name
+                    item.name = item.type;
+                    delete item.type;
+                    roles.push(item);
+                });
+                deferredGet.resolve();
+            }).error(function (responseBody) {
+                deferredGet.reject(responseBody);
+            });
+
+            return roles;
         };
 
         /**
@@ -97,7 +123,7 @@ angular.module('authoringEnvironmentApp').factory('Author', [
         *   invoked (i.e. not by the select2 machinery), this flag should be
         *   set so that the method is aware of this fact
         */
-        self.liveSearchQuery = function (options, isCallback) {
+        Author.liveSearchQuery = function (options, isCallback) {
             var now = dateFactory.makeInstance(),
                 isPaginationCall = (options.page > 1);
 
@@ -110,7 +136,7 @@ angular.module('authoringEnvironmentApp').factory('Author', [
                         // NOTE: tests spy on self.authorResource object, thus
                         // we don't call self.liveSearchQuery() but instead
                         // invoke the method through self.authorResource object
-                        self.authorResource.liveSearchQuery(options, true);
+                        Author.liveSearchQuery(options, true);
                     }, SEARCH_DELAY_MS);
                     return;
                 } else {
@@ -127,18 +153,13 @@ angular.module('authoringEnvironmentApp').factory('Author', [
                 return;  // search term changed, skip this obsolete call
             }
 
-            $http.get(API_ROOT + '/search/authors', {
-                params: {
-                    query: options.term,
-                    page: options.page,
-                    items_per_page: 10
-                }
-            }).success(function (response) {
+            $http.get(Routing.generate('newscoop_gimme_authors_searchauthors', { 'items_per_page':10, 'page':options.page, 'query':options.term}, true)
+            ).success(function (response) {
                 var author,
                     authorList = [];
 
                 response.items.forEach(function (item) {
-                    author = self.createFromApiData({author: item});
+                    author = Author.createFromApiData({author: item});
                     authorList.push(author);
                 });
 
@@ -158,21 +179,16 @@ angular.module('authoringEnvironmentApp').factory('Author', [
         * @param language {String} article language code (e.g. 'de')
         * @param authors {Object} array with author object(s) in desired order
         */
-        self.setOrderOnArticle = function (number, language, authors) {
-            var order = [],
-                url;
+        Author.setOrderOnArticle = function (number, language, authors) {
+            var order = [];
 
             authors.forEach(function (item) {
                 order.push(item.id + '-' + item.articleRole.id);
             });
             order = order.join();
 
-            url = [
-                API_ROOT, 'articles', number, language, 'authors', 'order'
-            ].join('/');
-
             $http.post(
-                url,
+                Routing.generate('newscoop_gimme_authors_setarticleauthorsorder', {'number':number, 'language':language}, true),
                 {order: order}
             );
         };
@@ -188,20 +204,17 @@ angular.module('authoringEnvironmentApp').factory('Author', [
         * @return {Object} promise object that is resolved on successful server
         *   response and rejected on server error response
         */
-        self.addToArticle = function(number, language, roleId) {
+        Author.prototype.addToArticle = function (number, language, roleId) {
             var author = this,
                 deferred = $q.defer(),
-                linkHeader,
-                url;
+                linkHeader;
 
-            url = [API_ROOT, 'articles', number, language].join('/');
-
-            linkHeader = '<' + API_ENDPOINT + '/authors/' + author.id +
+            linkHeader = '<' + Routing.generate('newscoop_gimme_authors_getauthorbyid', {'id':author.id}, false) +
                             '; rel="author">,' +
-                         '<' + API_ENDPOINT + '/authors/types/' +
-                            roleId + '; rel="author-type">';
+                         '<' + Routing.generate('newscoop_gimme_authors_getauthortype', {'id':roleId}, false) +
+                            '; rel="author-type">';
             $http({
-                url: url,
+                url: Routing.generate('newscoop_gimme_articles_linkarticle', {'number': number, 'language':language}, true),
                 method: 'LINK',
                 headers: {link: linkHeader}
             })
@@ -229,20 +242,19 @@ angular.module('authoringEnvironmentApp').factory('Author', [
         * @return {Object} promise object that is resolved on successful server
         *   response and rejected on server error response
         */
-        self.removeFromArticle = function(number, language, roleId) {
+        Author.prototype.removeFromArticle = function (
+            number, language, roleId
+        ) {
             var author = this,
                 deferred = $q.defer(),
-                linkHeader,
-                url;
+                linkHeader;
 
-            url = [API_ROOT, 'articles', number, language].join('/');
-
-            linkHeader = '<' + API_ENDPOINT + '/authors/' + author.id +
+            linkHeader = '<' + Routing.generate('newscoop_gimme_authors_getauthorbyid', {'id':author.id}, false) +
                             '; rel="author">,' +
-                         '<' + API_ENDPOINT + '/authors/types/' +
-                            roleId + '; rel="author-type">';
+                         '<' + Routing.generate('newscoop_gimme_authors_getauthortype', {'id':roleId}, false) +
+                            '; rel="author-type">';
             $http({
-                url: url,
+                url: Routing.generate('newscoop_gimme_articles_unlinkarticle', {'number': number, 'language':language}, true),
                 method: 'UNLINK',
                 headers: {link: linkHeader}
             })
@@ -257,28 +269,6 @@ angular.module('authoringEnvironmentApp').factory('Author', [
         };
 
         /**
-        * Retrieves a list of all defined author roles from the server.
-        *
-        * @method getRoleList
-        * @return {Object} array of article roles
-        */
-        self.getRoleList = {
-            method: 'GET',
-            url: API_ROOT + '/authors/types',
-            isArray: true,
-            transformResponse: function (data, headersGetter) {
-                var rolesData = JSON.parse(data).items;
-
-                rolesData.forEach(function (item) {
-                    // "name" is more informative attribute name
-                    item.name = item.type;
-                    delete item.type;
-                });
-                return rolesData;
-            }
-        };
-
-        /**
         * Updates author's role on a specific article on the server.
         *
         * @method updateRole
@@ -289,22 +279,16 @@ angular.module('authoringEnvironmentApp').factory('Author', [
         *   @param params.newRoleId {Number} author's new role ID
         * @return {Object} $http promise
         */
-        self.updateRole = function (params) {
+        Author.prototype.updateRole = function (params) {
             var linkHeader,
-                promise,
-                url;
+                promise;
 
-            url = [API_ROOT,
-                  'articles', params.number, params.language,
-                  'authors', this.id  // this refers to the author obj. itself
-                  ].join('/');
+            linkHeader = '<' + Routing.generate('newscoop_gimme_authors_getauthortype', {'id':params.oldRoleId}, false) +
+                             '; rel="old-author-type">,' +
+                         '<' + Routing.generate('newscoop_gimme_authors_getauthortype', {'id':params.newRoleId}, false) +
+                             '; rel="new-author-type">';
 
-            linkHeader = '<' + API_ENDPOINT + '/authors/types/' +
-                             params.oldRoleId + '; rel="old-author-type">,' +
-                         '<' + API_ENDPOINT + '/authors/types/' +
-                             params.newRoleId + '; rel="new-author-type">';
-
-            promise = $http.post(url, {}, {
+            promise = $http.post(Routing.generate('newscoop_gimme_authors_updatearticleauthor', {'number':params.number, 'language':params.language, 'authorId':this.id}, true), {}, {
                 headers: {
                     link: linkHeader
                 }
@@ -312,29 +296,7 @@ angular.module('authoringEnvironmentApp').factory('Author', [
             return promise;
         };
 
-        // th actual object representing the Author resource on the server
-        self.authorResource = $resource(
-            API_ROOT + '/articles/:number/:language/authors/:authorId', {
-                authorId: '@id',
-                items_per_page: 99999  // de facto "all"
-            }, {
-                getAll: self.getAll,
-                getRoleList:  self.getRoleList
-            }
-        );
-
-        // instance methods
-        self.authorResource.prototype.addToArticle = self.addToArticle;
-        self.authorResource.prototype.removeFromArticle =
-            self.removeFromArticle;
-        self.authorResource.prototype.updateRole = self.updateRole;
-
-        // "class" methods
-        self.authorResource.createFromApiData = self.createFromApiData;
-        self.authorResource.liveSearchQuery = self.liveSearchQuery;
-        self.authorResource.setOrderOnArticle = self.setOrderOnArticle;
-
-        return self.authorResource;
+        return Author;
     }
 ]);
 

@@ -16,8 +16,7 @@ angular.module('authoringEnvironmentApp').service('images', [
         getFileReader, formDataFactory, imageFactory, $upload, $rootScope, $q
     ) {
         /* more info about the page tracker in its tests */
-        var apiRoot = configuration.API.full,
-            service = this,
+        var service = this,
             ITEMS_PER_PAGE_DEFAULT = 50;
 
         article.promise.then(function (article) {
@@ -130,10 +129,10 @@ angular.module('authoringEnvironmentApp').service('images', [
             };
 
             if (searchString) {
-                url = apiRoot + '/search/images';
+                url = Routing.generate('newscoop_gimme_images_searchimages', {}, true);
                 getParams.query = searchString;
             } else {
-                url = apiRoot + '/images';
+                url = Routing.generate('newscoop_gimme_images_getimages', {}, true);
             }
 
             promise = $http.get(url, {params: getParams});
@@ -152,12 +151,9 @@ angular.module('authoringEnvironmentApp').service('images', [
         *     attached images.
         */
         this.loadAttached = function (article) {
-            var url = [
-                    apiRoot, 'articles',
-                    article.number, article.language,
-                    'images?items_per_page=99999&expand=true'
-                ].join('/');
-
+            var url = Routing.generate('newscoop_gimme_images_getimagesforarticle',
+                                       {'number':article.number, 'language':article.language, 'items_per_page':99999, 'expand':'true'},
+                                       true);
             $http.get(url).then(function (result) {
                 service.attached = result.data.items;
             });
@@ -211,7 +207,7 @@ angular.module('authoringEnvironmentApp').service('images', [
                     service.collected.push(image);
                 }
             } else {
-                url = apiRoot + '/images/' + id;
+                url = Routing.generate('newscoop_gimme_images_getimage', {'number':id}, true);
                 $http.get(url).then(function (result) {
                     service.collected.push(result.data);
                 });
@@ -251,8 +247,7 @@ angular.module('authoringEnvironmentApp').service('images', [
         */
         this.attachAllCollected = function () {
             var notYetAttached = [],
-                resourceLinks = [],
-                url;
+                resourceLinks = [];
 
             // skip already attached images (this should generally not happen,
             // but if it does, it might be some bug in the basket logic)
@@ -266,17 +261,14 @@ angular.module('authoringEnvironmentApp').service('images', [
                 return;  // nothing to do
             }
 
-            url = apiRoot + '/articles/' + service.article.number +
-                '/' + service.article.language;
-
             notYetAttached.forEach(function (image) {
                 resourceLinks.push(
-                    '<' + apiRoot + '/images/' + image.id + '>');
+                    '<' + Routing.generate('newscoop_gimme_images_getimage', {'number':image.id}, true) + '>');
             });
             resourceLinks = resourceLinks.join();
 
             $http({
-                url: url,
+                url: Routing.generate('newscoop_gimme_articles_linkarticle', {'number':service.article.number, 'language':service.article.language}, true),
                 method: 'LINK',
                 headers: { Link: resourceLinks }
             }).success(function () {
@@ -311,10 +303,9 @@ angular.module('authoringEnvironmentApp').service('images', [
                 return;
             }
 
-            url = apiRoot + '/articles/' + service.article.number +
-                '/' + service.article.language;
+            url = Routing.generate('newscoop_gimme_articles_linkarticle', {'number':service.article.number, 'language':service.article.language}, true);
 
-            link = '<' + apiRoot + '/images/' + id + '>';
+            link = '<' + Routing.generate('newscoop_gimme_images_getimage', {'number':id}, true) + '>';
 
             /* this could cause some trouble depending on the
              * setting of the server (OPTIONS request), thus debug
@@ -333,7 +324,7 @@ angular.module('authoringEnvironmentApp').service('images', [
                     // uploaded images need to be retrieved from server
                     // to get all image metadata
                     $http.get(
-                        apiRoot + '/images/' + id
+                        Routing.generate('newscoop_gimme_images_getimage', {'number':id}, true)
                     )
                     .success(function (data) {
                         service.attached.push(data);
@@ -355,8 +346,8 @@ angular.module('authoringEnvironmentApp').service('images', [
         this.detach = function (id) {
             var match = this.matchMaker(id);
             if (_.find(this.attached, match)) {
-                var url = apiRoot + '/articles/' + service.article.number + '/' + service.article.language;
-                var link = '<' + apiRoot + '/images/' + id + '>';
+                var url = Routing.generate('newscoop_gimme_articles_unlinkarticle', {'number':service.article.number, 'language':service.article.language}, true);
+                var link = '<' + Routing.generate('newscoop_gimme_images_getimage', {'number':id}, true) + '>';
                 /* this could cause some troubles depending on the
                  * setting of the server (OPTIONS request), thus debug
                  * log may be useful to reproduce the original
@@ -662,7 +653,7 @@ angular.module('authoringEnvironmentApp').service('images', [
 
                 $upload.http({
                     method: 'POST',
-                    url: apiRoot + '/images',
+                    url: Routing.generate('newscoop_gimme_images_createimage', {}, true),
                     data: fd,
                     headers: {'Content-Type': undefined},
                     transformRequest: angular.identity

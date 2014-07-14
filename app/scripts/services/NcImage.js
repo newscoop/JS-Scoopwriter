@@ -11,10 +11,8 @@
 angular.module('authoringEnvironmentApp').factory('NcImage', [
     '$http',
     '$q',
-    'configuration',
-    function ($http, $q, configuration) {
-        var API_ROOT = configuration.API.full,
-            NcImage;
+    function ($http, $q) {
+        var NcImage;
 
         /**
         * NcImage constructor function.
@@ -55,10 +53,9 @@ angular.module('authoringEnvironmentApp').factory('NcImage', [
         *   failure
         */
         NcImage.getById = function (id) {
-            var deferredGet = $q.defer(),
-                url = API_ROOT + '/images/' + id;
+            var deferredGet = $q.defer();
 
-            $http.get(url)
+            $http.get(Routing.generate('newscoop_gimme_images_getimage', {'number': id}, true))
             .success(function (response) {
                 deferredGet.resolve(new NcImage(response));
             }).error(function (responseBody) {

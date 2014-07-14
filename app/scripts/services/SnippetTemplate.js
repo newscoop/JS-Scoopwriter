@@ -8,10 +8,8 @@
 angular.module('authoringEnvironmentApp').factory('SnippetTemplate', [
     '$http',
     '$q',
-    'configuration',
-    function ($http, $q, configuration) {
-        var API_ROOT = configuration.API.full,
-            self = this,
+    function ($http, $q) {
+        var self = this,
             SnippetTemplate = function () {};  // snippet template constructor
 
         /**
@@ -54,12 +52,11 @@ angular.module('authoringEnvironmentApp').factory('SnippetTemplate', [
         */
         SnippetTemplate.getAll = function () {
             var deferredGet = $q.defer(),
-                templates = [],
-                url = API_ROOT + '/snippetTemplates';
+                templates = [];
 
             templates.$promise = deferredGet.promise;
 
-            $http.get(url, {
+            $http.get(Routing.generate('newscoop_gimme_snippettemplates_getsnippettemplates', {}, true), {
                 params: {
                     items_per_page: 99999  // de facto "all"
                 }
