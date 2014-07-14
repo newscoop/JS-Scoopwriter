@@ -92,10 +92,14 @@ describe('Factory: NcImage', function () {
     });
 
     describe('getById() method', function () {
+        var url;
+
         beforeEach(function () {
             imgData = {id:42};
-            $httpBackend.expectGET(rootURI + '/images/42')
-                .respond(200, JSON.stringify(imgData));
+            url = Routing.generate(
+                'newscoop_gimme_images_getimage', {number: 42}, true
+            );
+            $httpBackend.expectGET(url).respond(200, JSON.stringify(imgData));
         });
 
         afterEach(function () {
@@ -131,8 +135,7 @@ describe('Factory: NcImage', function () {
                 };
 
             $httpBackend.resetExpectations();
-            $httpBackend.expectGET(rootURI + '/images/42')
-                .respond(500, 'Error :(');
+            $httpBackend.expectGET(url).respond(500, 'Error :(');
 
             NcImage.getById(42)
                 .catch(spyHelper.errorCallback);

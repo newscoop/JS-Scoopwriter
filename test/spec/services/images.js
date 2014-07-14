@@ -55,7 +55,10 @@ describe('Service: Images', function () {
             "itemsPerPage":50,
             "currentPage":1,
             "itemsCount":149735,
-            "nextPageLink":"https:\/\/newscoop.aes.sourcefabric.net\/content-api\/images?page=2&items_per_page=10"
+            nextPageLink: Routing.generate(
+                'newscoop_gimme_images_getimages',
+                {page: 2, items_per_page: 10}, true
+            )
         }
     };
     var mockSingle = {
@@ -379,11 +382,37 @@ describe('Service: Images', function () {
     });
 
     describe('load() method', function () {
+        /**
+        * Generates API URL for searching the images.
+        *
+        * @function createUrl
+        * @param page {Number} number of the results page to request
+        * @param [query] {String} images search string
+        * @return {String} generated URL
+        */
+        function createUrl(page, query) {
+            var config,
+                routeName;
+
+            config = {
+                expand: true,
+                items_per_page: 50,
+                page: page
+            };
+
+            if (query) {
+                config.query = query;
+                routeName = 'newscoop_gimme_images_searchimages';
+            } else {
+                routeName = 'newscoop_gimme_images_getimages';
+            }
+
+            return Routing.generate(routeName, config, true);
+        }
+
         it('issues a correct API call (search filter not set)', function () {
             images.searchFilter = '';
-            $httpBackend.expectGET(
-                rootURI + '/images?expand=true&items_per_page=50&page=4'
-            ).respond(mock);
+            $httpBackend.expectGET(createUrl(4)).respond(mock);
 
             images.load(4);
             $httpBackend.flush(1);
@@ -392,10 +421,7 @@ describe('Service: Images', function () {
 
         it('issues a correct API call (search filter set)', function () {
             images.searchFilter = 'fish'
-            $httpBackend.expectGET(
-                rootURI + '/search/images?expand=true&items_per_page=50' +
-                '&page=4&query=fish'
-            ).respond(mock);
+            $httpBackend.expectGET(createUrl(4, 'fish')).respond(mock);
 
             images.load(4, 'fish');
             $httpBackend.flush(1);
@@ -405,9 +431,8 @@ describe('Service: Images', function () {
         it('removes a page of images on API error', function () {
             spyOn(images.tracker, 'remove');
 
-            $httpBackend.expectGET(
-                rootURI + '/images?expand=true&items_per_page=50&page=4'
-            ).respond(500, 'Internal Server Error');
+            $httpBackend.expectGET(createUrl(4))
+                .respond(500, 'Internal Server Error');
 
             images.load(4);
             $httpBackend.flush(1);
@@ -418,11 +443,15 @@ describe('Service: Images', function () {
 
     describe('loadAttached() method', function () {
         beforeEach(function () {
-            $httpBackend
-                .expectGET(
-                    rootURI + '/articles/64/de/images?' +
-                    'items_per_page=99999&expand=true'
-                ).respond(mock);
+            var url = Routing.generate(
+                'newscoop_gimme_images_getimagesforarticle',
+                {
+                    number: 64, language: 'de',
+                    items_per_page: 99999, expand: true
+                },
+                true
+            );
+            $httpBackend.expectGET(url).respond(mock);
         });
 
         afterEach(function () {
@@ -469,10 +498,12 @@ describe('Service: Images', function () {
             var httpBackend;
 
             beforeEach(inject(function (_$httpBackend_) {
+                var url = Routing.generate(
+                    'newscoop_gimme_images_getimage',
+                    {number: 1}, true
+                );
                 httpBackend = _$httpBackend_;
-                httpBackend
-                    .expectGET(rootURI + '/images/1')
-                    .respond(200, mockSingle);
+                httpBackend.expectGET(url).respond(200, mockSingle);
             }));
 
             afterEach(function () {
@@ -564,11 +595,30 @@ describe('Service: Images', function () {
             }
         };
 
+        /**
+        * Generates API URL for retrieving a particular image.
+        *
+        * @function imageGetUrl
+        * @param imageId {Number} ID of the image to retrieve
+        * @return {String} generated URL
+        */
+        function imageGetUrl(imageId) {
+            return Routing.generate(
+                'newscoop_gimme_images_getimage',
+                {'number': imageId}, true
+            );
+        }
+
         beforeEach(function () {
+            var url = Routing.generate(
+                'newscoop_gimme_articles_linkarticle',
+                {number: 64, language: 'de'}, true
+            );
+
             linkHeaderSpy = spyOn(headerCheckers, 'Link').andCallThrough();
             $httpBackend.expect(
                 'LINK',
-                rootURI + '/articles/64/de',
+                url,
                 undefined,
                 headerCheckers.Link
             ).respond(201, '');
@@ -591,9 +641,9 @@ describe('Service: Images', function () {
             $httpBackend.flush();
 
             expect(linkHeaderSpy.mostRecentCall.args[0].Link).toEqual(
-                ['<', rootURI, '/images/2>,',
-                 '<', rootURI, '/images/5>,',
-                 '<', rootURI, '/images/6>'].join('')
+                ['<', imageGetUrl(2), '>,',
+                 '<', imageGetUrl(5), '>,',
+                 '<', imageGetUrl(6), '>'].join('')
             );
         });
 
@@ -607,8 +657,8 @@ describe('Service: Images', function () {
             $httpBackend.flush();
 
             expect(linkHeaderSpy.mostRecentCall.args[0].Link).toEqual(
-                ['<', rootURI, '/images/2>,',
-                 '<', rootURI, '/images/6>'].join('')
+                ['<', imageGetUrl(2), '>,',
+                 '<', imageGetUrl(6), '>'].join('')
             );
         });
 
@@ -648,6 +698,20 @@ describe('Service: Images', function () {
         var headerCheckers,
             linkHeaderSpy;
 
+        /**
+        * Generates API URL for retrieving a particular image.
+        *
+        * @function imageGetUrl
+        * @param imageId {Number} ID of the image to retrieve
+        * @return {String} generated URL
+        */
+        function imageGetUrl(imageId) {
+            return Routing.generate(
+                'newscoop_gimme_images_getimage',
+                {'number': imageId}, true
+            );
+        }
+
         headerCheckers = {
             Link: function (headers) {
                 return 'Link' in headers;
@@ -658,7 +722,10 @@ describe('Service: Images', function () {
             linkHeaderSpy = spyOn(headerCheckers, 'Link').andCallThrough();
             $httpBackend.expect(
                 'LINK',
-                rootURI + '/articles/64/de',
+                Routing.generate(
+                    'newscoop_gimme_articles_linkarticle',
+                    {number: 64, language: 'de'}, true
+                ),
                 undefined,
                 headerCheckers.Link
             ).respond(201, '');
@@ -678,7 +745,7 @@ describe('Service: Images', function () {
             $httpBackend.flush();
 
             expect(linkHeaderSpy.mostRecentCall.args[0].Link).toEqual(
-                '<' + rootURI + '/images/5>'
+                '<' + imageGetUrl(5) + '>'
             );
         });
 
@@ -712,7 +779,7 @@ describe('Service: Images', function () {
         it('retrieves uploaded image\'s info if necessary', function () {
             images.attached = [];
 
-            $httpBackend.expectGET(rootURI + '/images/6').respond(200, {});
+            $httpBackend.expectGET(imageGetUrl(6)).respond(200, {});
 
             images.attach(6, true);
             $httpBackend.flush();
@@ -741,11 +808,16 @@ describe('Service: Images', function () {
         });
 
         it('correctly invokes backend API', function () {
+            var expectedHeader;
+
             images.attached = [mock.items[4], mock.items[7]];
 
             $httpBackend.expect(
                 'UNLINK',
-                rootURI + '/articles/64/de',
+                Routing.generate(
+                    'newscoop_gimme_articles_unlinkarticle',
+                    {number: 64, language: 'de'}, true
+                ),
                 undefined,
                 headerCheckers.Link
             ).respond(204, '');
@@ -753,9 +825,15 @@ describe('Service: Images', function () {
             images.detach(5);
             $httpBackend.flush();
 
-            expect(linkHeaderSpy.mostRecentCall.args[0].Link).toEqual(
-                '<' + rootURI + '/images/5>'
-            );
+            expectedHeader = [
+                '<',
+                Routing.generate(
+                    'newscoop_gimme_images_getimage', {number: 5}, true
+                ),
+                '>'
+            ].join('');
+            expect(linkHeaderSpy.mostRecentCall.args[0].Link)
+                .toEqual(expectedHeader);
         });
 
         it('updates attached images list on positive server response',
@@ -764,7 +842,10 @@ describe('Service: Images', function () {
 
                 $httpBackend.expect(
                     'UNLINK',
-                    rootURI + '/articles/64/de',
+                    Routing.generate(
+                        'newscoop_gimme_articles_unlinkarticle',
+                        {number: 64, language: 'de'}, true
+                    ),
                     undefined,
                     headerCheckers.Link
                 ).respond(204, '');
@@ -1269,8 +1350,12 @@ describe('Service: Images', function () {
             it('rejects given upload promise if API' +
                'returns no x-location header in response',
                 function () {
+                    var url = Routing.generate(
+                        'newscoop_gimme_images_createimage', {}, true
+                    );
+
                     $httpBackend.resetExpectations();
-                    $httpBackend.expectPOST(rootURI + '/images')
+                    $httpBackend.expectPOST(url)
                         .respond(201, null, {}, 'Created');
 
                     decoratedImg.startUpload().then(function () {
@@ -1285,9 +1370,12 @@ describe('Service: Images', function () {
             });
 
             it('rejects given upload promise on API error', function () {
+                var url = Routing.generate(
+                    'newscoop_gimme_images_createimage', {}, true
+                );
+
                 $httpBackend.resetExpectations();
-                $httpBackend.expectPOST(rootURI + '/images')
-                    .respond(500);
+                $httpBackend.expectPOST(url).respond(500);
 
                 decoratedImg.startUpload().then(function () {
                     // success should not happen, fail the test

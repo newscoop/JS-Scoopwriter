@@ -57,15 +57,19 @@ describe('Service: article', function () {
         var $httpBackend;
 
         beforeEach(inject(function (_$httpBackend_) {
+            var url;
+
             $httpBackend = _$httpBackend_;
 
             article.articleId = 25;
             article.language = 'de';
 
-            $httpBackend.expect(
-                'PATCH',
-                rootURI + '/articles/25/de/Y'
-            ).respond(201, '');
+            url = Routing.generate(
+                'newscoop_gimme_articles_changearticlestatus',
+                {number: 25, language: 'de', status: 'Y'}, true
+            );
+
+            $httpBackend.expect('PATCH', url).respond(201, '');
         }));
 
         it ('sends a correct request to API', function () {
@@ -84,10 +88,15 @@ describe('Service: article', function () {
 
     describe('initialised', function() {
         var earlyPromise = jasmine.createSpy('earlyPromise');
+
         beforeEach(function() {
-            $httpBackend
-                .expect('GET', rootURI + '/articles/64?language=de')
-                .respond({});
+            var url = Routing.generate(
+                'newscoop_gimme_articles_getarticle',
+                {number: 64, language: 'de'}, true
+            );
+
+            $httpBackend.expect('GET', url).respond({});
+
             article.promise.then(function() {
                 earlyPromise();
             });
