@@ -73,7 +73,7 @@ describe('Controller: ArticleCtrl', function () {
 
     it('sets the selected article workflow status option to NEW by default',
         function () {
-            expect(scope.wfStatus).toEqual('N');
+            expect(scope.wfStatus).toEqual({value: 'N', text: 'New'});
         }
     );
 
@@ -98,23 +98,31 @@ describe('Controller: ArticleCtrl', function () {
                 }
             });
 
-            scope.wfStatus = 'S';
+            scope.workflowStatuses = [
+                {value: 'N', text: 'New'},
+                {value: 'S', text: 'Submitted'},
+                {value: 'Y', text: 'Published'},
+                {value: 'M', text: 'Published with issue'}
+            ];
+
+            scope.wfStatus = {value: 'S', text: 'Submitted'};
             deferred.resolve({id: 123, status: 'M'});
             scope.$apply();
 
-            expect(scope.wfStatus).toEqual('M');
+            expect(scope.wfStatus).toEqual(
+                {value: 'M', text: 'Published with issue'});
         }
     ));
 
 
-    describe('scope\'s workflowStatusChanged() method', function () {
+    describe('scope\'s setWorkflowStatus() method', function () {
         var deferredArticle,
             deferredStatus,
             $q;
 
         beforeEach(inject(function (_$q_) {
             $q = _$q_;
-            deferredArticle = $q.defer(),
+            deferredArticle = $q.defer();
             deferredStatus = $q.defer();
 
             ArticleCtrl = $controller('ArticleCtrl', {
@@ -126,28 +134,27 @@ describe('Controller: ArticleCtrl', function () {
                         return deferredStatus.promise
                     },
                     wfStatus: {}
-                },
-                articleType: {
-                    get: function () {}
                 }
             });
 
-            // simulate article retrieval
-            deferredArticle.resolve({id: 123, status: 'S'});
-            scope.$apply();
+            scope.workflowStatuses = [
+                {value: 'N', text: 'New'},
+                {value: 'S', text: 'Submitted'},
+                {value: 'Y', text: 'Published'},
+                {value: 'M', text: 'Published with issue'}
+            ];
 
-            // simulate changing the workflow status from S to M
-            scope.wfStatus = 'M';
+            scope.wfStatus = {value: 'S', text: 'Submitted'};
         }));
 
         it('sets changingWfStatus flag before sending a request', function () {
             scope.changingWfStatus = false;
-            scope.workflowStatusChanged();
+            scope.setWorkflowStatus('M');
             expect(scope.changingWfStatus).toBe(true);
         });
 
         it('clears changingWfStatus flag on success', function () {
-            scope.workflowStatusChanged();
+            scope.setWorkflowStatus('M');
             scope.changingWfStatus = true;
 
             deferredStatus.resolve();
@@ -157,7 +164,7 @@ describe('Controller: ArticleCtrl', function () {
         });
 
         it('clears changingWfStatus flag on error', function () {
-            scope.workflowStatusChanged();
+            scope.setWorkflowStatus('M');
             scope.changingWfStatus = true;
 
             deferredStatus.reject('server timeout');
@@ -166,16 +173,15 @@ describe('Controller: ArticleCtrl', function () {
             expect(scope.changingWfStatus).toBe(false);
         });
 
-        it('restores selected workflow status back to original value on error',
-            function () {
-                scope.workflowStatusChanged();
+        it('updates workflow status in scope on success', function () {
+            scope.setWorkflowStatus('M');
 
-                deferredStatus.reject('server timeout');
-                scope.$apply();
+            deferredStatus.resolve();
+            scope.$apply();
 
-                expect(scope.wfStatus).toEqual('S');
-            }
-        );
+            expect(scope.wfStatus).toEqual(
+                {value: 'M', text: 'Published with issue'});
+        });
     });
 
 
