@@ -567,7 +567,6 @@ describe('Factory: Author', function () {
                 'newscoop_gimme_authors_getauthorstypes',
                 {items_per_page: 99999}, true
             );
-
             $httpBackend.expectGET(url).respond(rolesResponse);
         });
 

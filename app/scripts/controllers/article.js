@@ -11,7 +11,6 @@ angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
     '$log',
     '$routeParams',
     function ($scope, article, articleType, panes, configuration, mode, platform, circularBufferFactory, $log, $routeParams) {
-        var wfStatusServer = null;  // article's workflow status in server DB
 
         article.init({
             articleId: $routeParams.article,
@@ -42,35 +41,33 @@ angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
             }
         ];
 
-        $scope.wfStatus = article.wfStatus.NEW;  // default value in dropdown
+        $scope.wfStatus = $scope.workflowStatuses[0];  // default value is new
         $scope.changingWfStatus = false;
 
         article.promise.then(function (article) {
-            wfStatusServer = article.status;
-            $scope.wfStatus = article.status;
+            var statusObj = _.find(
+                $scope.workflowStatuses, {value: article.status}
+            );
+            $scope.wfStatus = statusObj;
         });
 
         /**
         * Changes article's workflow status. It also disables the corresponding
-        * dropdown menu until the API request is completed. If the server
-        * responds with an error, it restores the dropdown back to the
-        * previously selected option.
+        * dropdown menu until the API request is completed.
         *
-        * @method workflowStatusChanged
+        * @method setWorkflowStatus
+        * @param newStatus {String} new article workflow status
         */
-        $scope.workflowStatusChanged = function () {
-            var newValue = $scope.wfStatus,
-                origValue = wfStatusServer;
+        $scope.setWorkflowStatus = function (newStatus) {
 
             $scope.changingWfStatus = true;
 
-            article.setWorkflowStatus(newValue)
+            article.setWorkflowStatus(newStatus)
                 .then(function () {
-                    // value on the server successfully changed
-                    wfStatusServer = newValue;
-                }, function () {
-                    // server error, revert to previous dropdown selection
-                    $scope.wfStatus = origValue;
+                    var statusObj = _.find(
+                        $scope.workflowStatuses, {value: newStatus}
+                    );
+                    $scope.wfStatus = statusObj;
                 })
                 .finally(function () {
                     $scope.changingWfStatus = false;
