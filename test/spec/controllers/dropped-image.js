@@ -50,7 +50,7 @@ describe('Controller: DroppedImageCtrl', function () {
             expect(NcImage.getById).toHaveBeenCalledWith(5);
         });
 
-        it('tries to retrieve correct image', function () {
+        it('initializes the image object in scope', function () {
             scope.image = null;
 
             DroppedImageCtrl.init(5);

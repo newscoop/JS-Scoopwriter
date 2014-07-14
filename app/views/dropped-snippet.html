@@ -10,11 +10,11 @@
        ng-click="collapse()"
        ng-show="expanded">
     </span>
-    <span class="title">{{snippet.title}}</span>
+    <span class="title">{{snippet.name}}</span>
     <span>|</span>
     <span class="remove glyphicon glyphicon-remove clickable"></span>
   </div>
-  <div class="render-area" ng-show="expanded">
-    <span class="preview"></span>
-  </div>
+  <div class="render-area"
+      ng-show="expanded"
+      ng-bind-html="snippetHtml"></div>
 </div>
