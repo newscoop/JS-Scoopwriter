@@ -4,11 +4,12 @@ angular.module('authoringEnvironmentApp').controller('DroppedImageCtrl', [
     '$scope',
     'configuration',
     'NcImage',
-    function (images, $scope, configuration, NcImage) {
+    '$rootScope',
+    function (images, $scope, configuration, NcImage, $rootScope) {
 
         /**
         * Initializes the controller - it retrieves the specified image from
-        * the server.
+        * the server and adds it to the images-in-article list.
         *
         * @method init
         * @param imageId {Number} ID of the image to retrieve
@@ -16,11 +17,19 @@ angular.module('authoringEnvironmentApp').controller('DroppedImageCtrl', [
         this.init = function (imageId) {
             NcImage.getById(imageId).then(function (image) {
                 $scope.image = image;
+                images.addToIncluded(image.id);
             });
         };
 
+        /**
+        * Removes an image from the images-in-article list.
+        *
+        * @method imageRemoved
+        * @param imageId {Number} ID of the image to retrieve
+        */
         this.imageRemoved = function (imageId) {
-            console.log('Image', imageId, 'removed from article body');
+            images.removeFromIncluded(imageId);
+            $rootScope.$apply(images.inArticleBody);
         };
 
         $scope.root = configuration.API.rootURI;

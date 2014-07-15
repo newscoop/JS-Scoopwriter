@@ -7,23 +7,16 @@ describe('Controller: DroppedImageCtrl', function () {
 
     var DroppedImageCtrl,
         NcImage,
-    scope,
-    $log,
-    image = {
-        basename: '/test.jpg',
-    },
-    images = {
-        selected: null,
-        included: {
-            3: image
+        scope,
+        $log,
+        image = {
+            basename: '/test.jpg',
         },
-        include: function() { return 3; },
-        byId: function(id) {
-            return {
-                basename: '/test-2.jpg',
-            };
-        }
-    };
+        images = {
+            addToIncluded: jasmine.createSpy(),
+            removeFromIncluded: jasmine.createSpy(),
+            inArticleBody: {}
+        };
 
     // Initialize the controller and a mock scope
     beforeEach(inject(function ($controller, $rootScope, _NcImage_, _$log_) {
@@ -59,6 +52,27 @@ describe('Controller: DroppedImageCtrl', function () {
 
             expect(scope.image).toEqual({id: 5, basename: 'foo.jpg'});
         });
+
+        it('adds ID of the retrieved image to the list of images ' +
+            'in article body',
+            function () {
+                DroppedImageCtrl.init(5);
+                deferredGet.resolve({id: 5, basename: 'foo.jpg'});
+                scope.$apply();
+
+                expect(images.addToIncluded).toHaveBeenCalledWith(5);
+            }
+        );
+    });
+
+    describe('imageRemoved() method', function () {
+        it('removes ID of the deleted image from the list of images ' +
+            'in article body',
+            function () {
+                DroppedImageCtrl.imageRemoved(5);
+                expect(images.removeFromIncluded).toHaveBeenCalledWith(5);
+            }
+        );
     });
 
     it('proxies images', function () {

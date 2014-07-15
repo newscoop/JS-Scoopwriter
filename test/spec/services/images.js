@@ -865,74 +865,21 @@ describe('Service: Images', function () {
         });
     });
 
-    describe('include() method', function () {
-        beforeEach(function () {
-            images.attached = [
-                angular.copy(mock.items[4]),
-                angular.copy(mock.items[7]),  // id === 8
-                angular.copy(mock.items[1])
-            ];
-            images.attached.forEach(function (item) {
-                item.included = false;
+    describe('addToIncluded() method', function () {
+        it('adds image ID to the inArticleBody list', function () {
+            images.inArticleBody = {2: true, 15: true, 99: true};
+            images.addToIncluded(77);
+            expect(images.inArticleBody).toEqual({
+                2: true, 15: true, 77: true, 99: true
             });
-        });
-
-        it('sets included flag for the given image ID', function () {
-            images.include(8);
-            expect(images.attached[0].included).toEqual(false);
-            expect(images.attached[1].included).toEqual(true);
-            expect(images.attached[2].included).toEqual(false);
-        });
-
-        it('retuns image\'s index in the included list', function () {
-            var index;
-            images.included = [mock.items[4], mock.items[1]];
-            images.included[0].included = true;
-            images.included[1].included = true;
-            images.includedIndex = 1;
-
-            index = images.include(8);
-            expect(index).toEqual(2);
-        });
-
-        it('updates included images list', function () {
-            var index;
-            images.included = [mock.items[4], mock.items[1]];
-            images.included[0].included = true;
-            images.included[1].included = true;
-            images.includedIndex = 1;
-
-            index = images.include(8);
-            expect(images.included.length).toEqual(3);
-            expect(images.included[index].id).toEqual(8);
-        });
-
-        it('raises an error if given image ID is not found', function () {
-            expect(function () { images.include(42); }).toThrow();
         });
     });
 
-    describe('exclude() method', function () {
-        beforeEach(function () {
-            images.attached = [
-                angular.copy(mock.items[4]),
-                angular.copy(mock.items[7]),  // id === 8
-                angular.copy(mock.items[1])
-            ];
-            images.attached.forEach(function (item) {
-                item.included = true;
-            });
-        });
-
-        it('clears included flag for the given image ID', function () {
-            images.exclude(8);
-            expect(images.attached[0].included).toEqual(true);
-            expect(images.attached[1].included).toEqual(false);
-            expect(images.attached[2].included).toEqual(true);
-        });
-
-        it('raises an error if given image ID is not found', function () {
-            expect(function () { images.exclude(42); }).toThrow();
+    describe('removeFromIncluded() method', function () {
+        it('removes image ID from the inArticleBody list', function () {
+            images.inArticleBody = {2: true, 15: true, 99: true};
+            images.removeFromIncluded(15);
+            expect(images.inArticleBody).toEqual({2: true, 99: true});
         });
     });
 
