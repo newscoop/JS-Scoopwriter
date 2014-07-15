@@ -1,7 +1,17 @@
+<!-- devcode: newscoop -->
 <div
+   ng-controller="MainCtrl"
+   >
+<!-- endcode -->
+<!-- devcode: !newscoop -->
+<div
+   ng-controller="MainWithTokenCtrl"
+   >
+<!-- endcode -->
+<div 
    class="authoring-environment"
    ng-class="{'zen-mode': mode.zen}"
-   ng-controller="MainCtrl"
+   ng-if="auth"
    >
     <div ng-include src="'views/toolbar.html'"></div>
     <div ng-include src="'views/panes.html'"></div>
@@ -9,4 +19,10 @@
          class="main-article-container-container"
          ></div>
     <div ng-include src="'views/modal.html'"></div>
+</div>
+<div
+    class="auth"
+    ng-if="!auth">
+    Authenticating
+</div>
 </div>
