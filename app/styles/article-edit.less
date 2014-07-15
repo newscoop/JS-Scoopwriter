@@ -48,40 +48,61 @@ a:hover {
     }
     .save-button {
         float: right;
-        margin: 0 20px 0 0;
+        margin: 4px 12px 0 0;
     }
     .article-status {
         float: right;
-        margin: 0 20px;
+        margin: 4px 12px 0 12px;
         line-height: 2em;
-        &.new {
-            background-color: white;
+
+        .btn-primary {
+            .btn-styles(#ccc);
         }
-        &.submitted {
-            background-color: blue;
+        &.new .btn-primary {
+            .btn-styles(@btn-default-bg);
+            text-shadow: 0 1px 0 #fff;
+            border-color: #cecece;
+            color:(@grayDark);
         }
-        &.published {
-            background-color: green;
+        &.submitted .btn-primary {
+            .btn-styles(@btn-primary-bg);
         }
-        &.published_w_iss {
-            background-color: orange;
+        &.published .btn-primary {
+            .btn-styles(#88af4a);
+        }
+        &.published_w_iss .btn-primary {
+            .btn-styles(#e5a141);
         }
         &.disabled {
-            background-color: gray;
+            background-color: #ccc;
         }
 
         li {
             cursor: pointer;
-            padding: 0px 10px;
+            padding: 2px 16px;
+            font-size: 13px;
+            line-height: 1.8em;
             &:hover {
-                background-color: black;
-                color: white;
+                background-color: #eee;
             };
+        }
+        .btn-primary {
+            .caret {
+                margin-left:4px;
+            }
+            &.dropdown-toggle {
+                padding: 4px 8px 5px 12px;
+            }
+        }
+        .dropdown-menu {
+            left:auto;
+            right:0;
         }
     }
     .navbar {
         .controls {
             float: right;
+            margin-top: 4px;
         }
     }
     /* following styles have been copied from Tageswoche frontend */
