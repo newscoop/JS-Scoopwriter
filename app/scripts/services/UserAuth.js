@@ -8,7 +8,8 @@
 angular.module('authoringEnvironmentApp').factory('UserAuth', [
     '$http',
     '$q',
-    function ($http, $q) {
+    '$window',
+    function ($http, $q, $window) {
         var self = this,
             UserAuth = function () {};  // userAuth constructor function
 

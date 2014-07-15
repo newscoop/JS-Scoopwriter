@@ -16,6 +16,7 @@ controller('MainWithTokenCtrl', [
         'Token',
         function ($scope, $window, mode, Token) {
             if (Token.get() === undefined) {
+                $scope.auth = false;
                 var extraParams = $scope.askApproval ? {approval_prompt: 'force'} : {};
                 Token.getTokenByPopup(extraParams)
                 .then(function(params) {
@@ -25,12 +26,14 @@ controller('MainWithTokenCtrl', [
 
                     Token.set(params.access_token);
                     $window.sessionStorage.token = Token.get();
+                    $scope.auth = true;
                 }, function() {
                     // Failure getting token from popup.
                     alert('Failed to get token from popup.');
                 });
             } else {
                 $window.sessionStorage.token = Token.get();
+                $scope.auth = true;
             }
 
             $scope.$on('$viewContentLoaded', function () {
