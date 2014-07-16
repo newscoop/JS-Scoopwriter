@@ -32,11 +32,12 @@
            >
            <div class="drag-bar"></div>
           <div class="detach"
+               ng-if="detachingAllowed(image.id)"
                ng-click="detachImage(image.id)"
                >
             <span class="glyphicon glyphicon-remove"></span>
           </div>
-          <div ng-if="image.included" class="attached">
+          <div ng-if="!detachingAllowed(image.id)" class="attached">
             <span class="glyphicon glyphicon-ok"></span>
           </div>
           <figure>

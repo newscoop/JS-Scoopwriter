@@ -51,6 +51,26 @@ describe('Controller: ImagepaneCtrl', function () {
         });
     });
 
+    describe('scope\'s detachingAllowed() method', function () {
+        beforeEach(inject(function ($controller) {
+            var imagesService = {
+                inArticleBody: {2: true, 15: true, 99: true}
+            };
+            ImagepaneCtrl = $controller('ImagePaneCtrl', {
+                $scope: scope,
+                images: imagesService
+            });
+        }));
+
+        it('returns false for images in article body', function () {
+            expect(scope.detachingAllowed(15)).toBe(false);
+        });
+
+        it('returns true for images not in article body', function () {
+            expect(scope.detachingAllowed(1)).toBe(true);
+        });
+    });
+
     describe('scope\'s detachImage() method', function () {
         var deferred,
             images,

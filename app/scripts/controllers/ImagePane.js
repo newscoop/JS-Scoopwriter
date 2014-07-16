@@ -38,6 +38,19 @@ angular.module('authoringEnvironmentApp').controller('ImagePaneCtrl', [
         };
 
         /**
+        * Determines whether a particular image can be detached from the
+        * article. Images can be detached if they are not used in the article
+        * body.
+        *
+        * @method detachingAllowed
+        * @param imageId {Number} ID of the image to check
+        * @return {Boolean}
+        */
+        $scope.detachingAllowed = function (imageId) {
+            return !images.inArticleBody[imageId];
+        }
+
+        /**
         * Asks user to confirm detaching an image from the article (by
         * displaying a modal) and then, if the action is confirmed,
         * detaches the image.

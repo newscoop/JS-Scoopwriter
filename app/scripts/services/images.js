@@ -31,7 +31,7 @@ angular.module('authoringEnvironmentApp').service('images', [
         this.attached = [];  // list of images attached to the article
         this.images2upload = [];  // list of images to upload
         this.includedIndex = -1;
-        this.included = {};
+        this.inArticleBody = {};  // list of img IDs in article body
         this.itemsPerPage = ITEMS_PER_PAGE_DEFAULT;
 
         this.itemsFound = 0;
@@ -368,52 +368,25 @@ angular.module('authoringEnvironmentApp').service('images', [
         };
 
         /**
-        * Adds an image to the list of images included in article content and
-        * returns image's index in that list. If the image is not found,
-        * an error is raised.
+        * Adds a particular image to the list of images included in article
+        * body.
         *
-        * @method include
-        * @param id {Number} ID of the image
-        * @return {Number} image's index in the list of included images
+        * @method addToIncluded
+        * @param imageId {Number} ID of the image
         */
-        this.include = function (id) {
-            var match = this.matchMaker(id);
-            var index = _.findIndex(this.attached, match);
-            if (index < 0) {
-                // this should be impossible, where is the user dragging from?
-                throw new Error('trying to include a not attached image');
-            } else {
-                this.attached[index].included = true;
-                this.includedIndex++;
-                var image = _.cloneDeep(this.attached[index]);
-                var defaultSize = 'big';
-                image.size = defaultSize;
-                image.style = {
-                    container: { width: configuration.image.width[defaultSize] },
-                    image: {}
-                };
-                this.included[this.includedIndex] = image;
-                return this.includedIndex;
-            }
+        this.addToIncluded = function (imageId) {
+            this.inArticleBody[imageId] = true;
         };
 
         /**
-        * Removes an image from the list of images included in article
-        * content. If the image is not found, an error is raised.
+        * Removes a particular image from the list of images included in
+        * article body.
         *
-        * @method exclude
-        * @param id {Number} ID of the image
+        * @method removeFromIncluded
+        * @param imageId {Number} ID of the image
         */
-        this.exclude = function (id) {
-            var match = this.matchMaker(id);
-            var index = _.findIndex(this.attached, match);
-            if (index < 0) {
-                // this should be impossible, included images should
-                // always be attached
-                throw new Error('trying to exclude a not attached image');
-            } else {
-                this.attached[index].included = false;
-            }
+        this.removeFromIncluded = function (imageId) {
+            delete this.inArticleBody[imageId];
         };
 
         /**
