@@ -3,17 +3,17 @@ angular.module('authoringEnvironmentApp').factory('panes', [
     '$filter',
     function ($filter) {
         var panes = [
-                {
-                    name: 'Topics',
-                    id: 'topics',
-                    icon: 'topics',
-                    template: 'views/pane-topics.html',
-                    position: 'right',
-                    size: 'small',
-                    visible: false,
-                    active: false,
-                    selected: true
-                },
+                // {
+                //     name: 'Topics',
+                //     id: 'topics',
+                //     icon: 'topics',
+                //     template: 'views/pane-topics.html',
+                //     position: 'right',
+                //     size: 'small',
+                //     visible: false,
+                //     active: false,
+                //     selected: true
+                // },
                 {
                     name: 'Authors',
                     id: 'authors',
