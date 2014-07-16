@@ -1,4 +1,6 @@
 'use strict';
+/* global CSClientId */
+
 angular.module('authoringEnvironmentApp').
 
 controller('MainCtrl', [

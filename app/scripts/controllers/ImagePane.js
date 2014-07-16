@@ -48,7 +48,7 @@ angular.module('authoringEnvironmentApp').controller('ImagePaneCtrl', [
         */
         $scope.detachingAllowed = function (imageId) {
             return !images.inArticleBody[imageId];
-        }
+        };
 
         /**
         * Asks user to confirm detaching an image from the article (by
