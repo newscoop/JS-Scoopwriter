@@ -14,7 +14,7 @@ angular.module('authoringEnvironmentApp').directive('sfDroppable', [
                 $(element).on('dragover', sel, function (e) {
                     var target = $(e.target);
                     if (!target.next().is(place)) {
-                        target.after($('<div>').addClass(placeholderClass));
+                        target.after($('<div>&nbsp;</div>').addClass(placeholderClass));
                     }
                 }).on('dragleave', sel, function (e) {
                     if ($(e.target).next().is(place)) {
