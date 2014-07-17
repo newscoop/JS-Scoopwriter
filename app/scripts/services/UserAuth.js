@@ -10,8 +10,7 @@ angular.module('authoringEnvironmentApp').factory('UserAuth', [
     '$q',
     '$window',
     function ($http, $q, $window) {
-        var self = this,
-            UserAuth = function () {};  // userAuth constructor function
+        var UserAuth = function () {};  // userAuth constructor function
 
         /**
         * Converts plain userAuth data object to a new UserAuth instance.
@@ -21,14 +20,14 @@ angular.module('authoringEnvironmentApp').factory('UserAuth', [
         *   (as returned by API)
         * @return {Object} new UserAuth instance
         */
-        self.createFromApiData = function (data) {
-            var userAuth = Object.create(UserAuth.prototype);
+        UserAuth.createFromApiData = function (data) {
+            var userAuth = new UserAuth();
 
-            ['access_token', 'expires_in', 'token_type', 'refresh_token'].forEach(
-                function (attribute) {
-                    userAuth[attribute] = data[attribute];
-                }
-            );
+            [
+                'access_token', 'expires_in', 'token_type', 'refresh_token'
+            ].forEach(function (attribute) {
+                userAuth[attribute] = data[attribute];
+            });
 
             return userAuth;
         };
@@ -46,9 +45,11 @@ angular.module('authoringEnvironmentApp').factory('UserAuth', [
             var deferredGet = $q.defer(),
                 userAuth;
 
-            $http.get(Routing.generate('newscoop_gimme_users_getuseraccesstoken', {'clientId': clientId}, true)
-            ).success(function (response) {
-                userAuth = self.createFromApiData(response);
+            $http.get(Routing.generate(
+                'newscoop_gimme_users_getuseraccesstoken',
+                {'clientId': clientId}, true
+            )).success(function (response) {
+                userAuth = UserAuth.createFromApiData(response);
                 deferredGet.resolve(userAuth);
             }).error(function (responseBody) {
                 deferredGet.reject(responseBody);
