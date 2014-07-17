@@ -1735,8 +1735,10 @@ a:hover {
         border-bottom: 1px solid #d5d5d5;
     }
     .popover {
-        position: relative;
-        width: 405px;
+        position: absolute;
+        top: -55px;
+        left: 30px;  /* some space for Aloha block dragging tab */
+        width: 407px;
         max-width: none;
         font-size: 16px;
         input.pixels {
@@ -2859,10 +2861,14 @@ a:hover {
                 right: 5%;
                 cursor: pointer;
                 background: white;
+                border: 1px solid black;
                 opacity: 1;
                 padding: 0.5%;
                 font-size: 120%;
                 visibility: hidden;
+                &:hover {
+                    background-color: red;
+                }
             }
             .caption {
                 text-align: center;

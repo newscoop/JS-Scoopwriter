@@ -26,7 +26,8 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
             },
             link: function postLink(scope, element, attrs, ctrl) {
                 var $element = $(element),
-                    $imageBox = $element.find('.dropped-image'),
+                    $imageBox = $element.find('.dropped-image'),  // XXX: needed?
+                    $parent = $element.parent(),  // Aloha block container
                     $toolbar;
 
                 /**
@@ -37,31 +38,26 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                 *
                 * @function positionToolbar
                 */
-                function positionToolbar() {
+                function positionToolbar() {  // TODO: update comments
                     var cssFloat,
-                        left,
-                        top;
+                        left;
 
                     if (!$toolbar) {
                         return;
                     }
 
-                    top = $imageBox.outerHeight() + $toolbar.outerHeight();
-                    top = - Math.round(top);
-
-                    cssFloat = $element.css('float');
+                    cssFloat = $parent.css('float');
                     if (cssFloat === 'left') {
-                        left = 0;
+                        left = 30;  // some space for Aloha block dragging tab
                     } else if (cssFloat === 'right') {
-                        left = $imageBox.outerWidth() - $toolbar.outerWidth();
+                        left = ($parent.outerWidth() - 30) - $toolbar.outerWidth();
                         left = Math.round(left);
                     } else {
-                        left = $imageBox.outerWidth() - $toolbar.outerWidth();
+                        left = ($imageBox.outerWidth() - 30) - $toolbar.outerWidth();
                         left = Math.round(left / 2);
                     }
 
                     $toolbar.css({
-                        top: top,
                         left: left
                     });
                 }
@@ -73,13 +69,13 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                 // actions (e.g. opening a pane which shrinks the article
                 // editor), because $digest cycle is not always triggered
                 $element.mutate('height width', function (element,info) {
-                    positionToolbar();
+                    // positionToolbar();
                 });
 
                 // close button's onClick handler
                 $element.find('button.close').click(function (e) {
                     e.stopPropagation();
-                    $element.remove();
+                    $parent.remove();
 
                     // notify controller about the removal
                     ctrl.imageRemoved(parseInt(scope.imageId, 10));
@@ -88,7 +84,13 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                 // clicking the image displays the toolbar
                 $imageBox.click(function (e) {
                     e.stopPropagation();
-                    $toolbar = $toolbar || $('#img-toolbar-' + scope.imageId);
+                    // if not toolbar, init it - move to parent
+                    if (!$toolbar) {
+                        $toolbar = $('#img-toolbar-' + scope.imageId);
+                        var element = $toolbar.detach();
+                        $parent.append(element);
+                    }
+
                     $toolbar.toggle();
                 });
 
@@ -128,6 +130,14 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                         'margin': cssMargin
                     });
 
+                    $parent.css({
+                        'float': cssFloat
+                    });  // TODO: also margins ... for container
+
+                    if (position === 'center') {
+                        $parent.css({margin: 'auto'});
+                    }
+
                     positionToolbar();
                 };
 
@@ -150,7 +160,10 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                         width = scope.image.width;
                     }
 
-                    $element.width(width);
+
+                    // $element.width(width);
+                    $parent.width(width);
+                    $element.css('width', '100%');
                 };
 
                 /**
@@ -168,6 +181,10 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                 };
 
                 ctrl.init(parseInt(scope.imageId, 10));
+
+                // TODO: when init complete (= image loaded),
+                // init $toolbar - more clean than conditionally
+                // initing it in click() handler
 
             }  // end postLink function
         };
