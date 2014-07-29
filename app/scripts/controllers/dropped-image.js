@@ -19,8 +19,6 @@ angular.module('authoringEnvironmentApp').controller('DroppedImageCtrl', [
                 $scope.image = image;
                 images.addToIncluded(image.id);
             });
-
-            // TODO: return init promise (directive needs it)
         };
 
         /**

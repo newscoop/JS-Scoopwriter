@@ -26,9 +26,31 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
             },
             link: function postLink(scope, element, attrs, ctrl) {
                 var $element = $(element),
-                    $imageBox = $element.find('.dropped-image'),  // XXX: needed?
+                    $imageBox = $element.find('.dropped-image'),
                     $parent = $element.parent(),  // Aloha block container
                     $toolbar;
+
+                /**
+                * Retrieves a jQuery reference to the image toolbar node. It
+                * also makes sure that the toolbar is a direct child of the
+                * Aloha block node.
+                *
+                * The function contains additional check if $toolbar reference
+                * has not been obtained yet (useful for cases when DOM node
+                * might not yet exist).
+                *
+                * @function toolbarNode
+                * @return {Object}
+                */
+                function toolbarNode() {
+                    var element;
+                    if (!$toolbar || $toolbar.length < 1) {
+                        $toolbar = $('#img-toolbar-' + scope.imageId);
+                        element = $toolbar.detach();
+                        $parent.append(element);
+                    }
+                    return $toolbar;
+                }
 
                 /**
                 * Places the toolbar directly above the image and horizontally
@@ -39,12 +61,9 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                 * @function positionToolbar
                 */
                 function positionToolbar() {  // TODO: update comments
+                        // TODO: remove mutate library of not needed anymore
                     var cssFloat,
                         left;
-
-                    if (!$toolbar) {
-                        return;
-                    }
 
                     cssFloat = $parent.css('float');
                     if (cssFloat === 'left') {
@@ -57,20 +76,11 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                         left = Math.round(left / 2);
                     }
 
-                    $toolbar.css({
+                    toolbarNode().css({
                         left: left
                     });
                 }
 
-                // Reposition the toolbar on image dimension changes.
-                //
-                // NOTE: setting a $watch on image width and height does not
-                // work immediately on resizing changes caused by external
-                // actions (e.g. opening a pane which shrinks the article
-                // editor), because $digest cycle is not always triggered
-                $element.mutate('height width', function (element,info) {
-                    // positionToolbar();
-                });
 
                 // close button's onClick handler
                 $element.find('button.close').click(function (e) {
@@ -84,14 +94,7 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                 // clicking the image displays the toolbar
                 $imageBox.click(function (e) {
                     e.stopPropagation();
-                    // if not toolbar, init it - move to parent
-                    if (!$toolbar) {
-                        $toolbar = $('#img-toolbar-' + scope.imageId);
-                        var element = $toolbar.detach();
-                        $parent.append(element);
-                    }
-
-                    $toolbar.toggle();
+                    toolbarNode().toggle();
                 });
 
 
@@ -126,19 +129,20 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                     }
 
                     $element.css({
-                        'float': cssFloat,
-                        'margin': cssMargin
+                        'float': cssFloat
                     });
 
                     $parent.css({
-                        'float': cssFloat
-                    });  // TODO: also margins ... for container
+                        'float': cssFloat,
+                        'margin': cssMargin
+                    });
 
                     if (position === 'center') {
                         $parent.css({margin: 'auto'});
                     }
 
-                    positionToolbar();
+                    // positionToolbar();  // TODO: set this (horizontal alignment)
+                    // and on size change, too?
                 };
 
                 /**
@@ -160,8 +164,6 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                         width = scope.image.width;
                     }
 
-
-                    // $element.width(width);
                     $parent.width(width);
                     $element.css('width', '100%');
                 };
@@ -180,11 +182,10 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                     }
                 };
 
-                ctrl.init(parseInt(scope.imageId, 10));
+                scope.align('center');
+                scope.setSize('medium');
 
-                // TODO: when init complete (= image loaded),
-                // init $toolbar - more clean than conditionally
-                // initing it in click() handler
+                ctrl.init(parseInt(scope.imageId, 10));
 
             }  // end postLink function
         };
