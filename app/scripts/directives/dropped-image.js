@@ -53,32 +53,32 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                 }
 
                 /**
-                * Places the toolbar directly above the image and horizontally
+                * Places the toolbar above the image and horizontally
                 * aligns it based on the image alignment.
-                * NOTE: If the toolbar handle is not yet available (i.e. it
-                * has not been displayed yet), it does not do anything.
                 *
                 * @function positionToolbar
                 */
-                function positionToolbar() {  // TODO: update comments
-                        // TODO: remove mutate library of not needed anymore
+                function positionToolbar() {
                     var cssFloat,
-                        left;
+                        left,
+                        top,
+                        $bar = toolbarNode();
 
                     cssFloat = $parent.css('float');
                     if (cssFloat === 'left') {
-                        left = 30;  // some space for Aloha block dragging tab
+                        left = 0;
                     } else if (cssFloat === 'right') {
-                        left = ($parent.outerWidth() - 30) - $toolbar.outerWidth();
+                        left = $parent.outerWidth() - $bar.outerWidth();
                         left = Math.round(left);
                     } else {
-                        left = ($imageBox.outerWidth() - 30) - $toolbar.outerWidth();
+                        left = $imageBox.outerWidth() - $bar.outerWidth();
                         left = Math.round(left / 2);
                     }
 
-                    toolbarNode().css({
-                        left: left
-                    });
+                    // leave some space for Aloha block drag tab
+                    top = -($bar.outerHeight() + 15);
+
+                    toolbarNode().css({left: left, top: top});
                 }
 
 
@@ -141,8 +141,7 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                         $parent.css({margin: 'auto'});
                     }
 
-                    // positionToolbar();  // TODO: set this (horizontal alignment)
-                    // and on size change, too?
+                    positionToolbar();
                 };
 
                 /**
@@ -166,6 +165,8 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
 
                     $parent.width(width);
                     $element.css('width', '100%');
+
+                    positionToolbar();
                 };
 
                 /**
