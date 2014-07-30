@@ -27,59 +27,65 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
             link: function postLink(scope, element, attrs, ctrl) {
                 var $element = $(element),
                     $imageBox = $element.find('.dropped-image'),
+                    $parent = $element.parent(),  // Aloha block container
                     $toolbar;
 
                 /**
-                * Places the toolbar directly above the image and horizontally
+                * Retrieves a jQuery reference to the image toolbar node. It
+                * also makes sure that the toolbar is a direct child of the
+                * Aloha block node.
+                *
+                * The function contains additional check if $toolbar reference
+                * has not been obtained yet (useful for cases when DOM node
+                * might not yet exist).
+                *
+                * @function toolbarNode
+                * @return {Object}
+                */
+                function toolbarNode() {
+                    var element;
+                    if (!$toolbar || $toolbar.length < 1) {
+                        $toolbar = $('#img-toolbar-' + scope.imageId);
+                        element = $toolbar.detach();
+                        $parent.append(element);
+                    }
+                    return $toolbar;
+                }
+
+                /**
+                * Places the toolbar above the image and horizontally
                 * aligns it based on the image alignment.
-                * NOTE: If the toolbar handle is not yet available (i.e. it
-                * has not been displayed yet), it does not do anything.
                 *
                 * @function positionToolbar
                 */
                 function positionToolbar() {
                     var cssFloat,
                         left,
-                        top;
+                        top,
+                        $bar = toolbarNode();
 
-                    if (!$toolbar) {
-                        return;
-                    }
-
-                    top = $imageBox.outerHeight() + $toolbar.outerHeight();
-                    top = - Math.round(top);
-
-                    cssFloat = $element.css('float');
+                    cssFloat = $parent.css('float');
                     if (cssFloat === 'left') {
                         left = 0;
                     } else if (cssFloat === 'right') {
-                        left = $imageBox.outerWidth() - $toolbar.outerWidth();
+                        left = $parent.outerWidth() - $bar.outerWidth();
                         left = Math.round(left);
                     } else {
-                        left = $imageBox.outerWidth() - $toolbar.outerWidth();
+                        left = $imageBox.outerWidth() - $bar.outerWidth();
                         left = Math.round(left / 2);
                     }
 
-                    $toolbar.css({
-                        top: top,
-                        left: left
-                    });
+                    // leave some space for Aloha block drag tab
+                    top = -($bar.outerHeight() + 15);
+
+                    toolbarNode().css({left: left, top: top});
                 }
 
-                // Reposition the toolbar on image dimension changes.
-                //
-                // NOTE: setting a $watch on image width and height does not
-                // work immediately on resizing changes caused by external
-                // actions (e.g. opening a pane which shrinks the article
-                // editor), because $digest cycle is not always triggered
-                $element.mutate('height width', function (element,info) {
-                    positionToolbar();
-                });
 
                 // close button's onClick handler
                 $element.find('button.close').click(function (e) {
                     e.stopPropagation();
-                    $element.remove();
+                    $parent.remove();
 
                     // notify controller about the removal
                     ctrl.imageRemoved(parseInt(scope.imageId, 10));
@@ -88,8 +94,7 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                 // clicking the image displays the toolbar
                 $imageBox.click(function (e) {
                     e.stopPropagation();
-                    $toolbar = $toolbar || $('#img-toolbar-' + scope.imageId);
-                    $toolbar.toggle();
+                    toolbarNode().toggle();
                 });
 
 
@@ -124,9 +129,17 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                     }
 
                     $element.css({
+                        'float': cssFloat
+                    });
+
+                    $parent.css({
                         'float': cssFloat,
                         'margin': cssMargin
                     });
+
+                    if (position === 'center') {
+                        $parent.css({margin: 'auto'});
+                    }
 
                     positionToolbar();
                 };
@@ -150,7 +163,10 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                         width = scope.image.width;
                     }
 
-                    $element.width(width);
+                    $parent.width(width);
+                    $element.css('width', '100%');
+
+                    positionToolbar();
                 };
 
                 /**
@@ -166,6 +182,9 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                         $element.width(Math.round(width));
                     }
                 };
+
+                scope.align('center');
+                scope.setSize('medium');
 
                 ctrl.init(parseInt(scope.imageId, 10));
 

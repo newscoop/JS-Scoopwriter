@@ -8,7 +8,7 @@
 
 (function ($) {
     var mutate = {
-        speed: 1,
+        speed: 50,
         event_stack: mutate_event_stack,
         stack: [],
         events: {},

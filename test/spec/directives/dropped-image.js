@@ -9,6 +9,7 @@
 describe('Directive: droppedImage', function () {
     var fakeCtrl,  // mocked directive's controller
         $element,
+        $root,
         scope,
         templates;
 
@@ -44,15 +45,24 @@ describe('Directive: droppedImage', function () {
             };
 
             // compile the directive
+            // NOTE: aloha-block needs to be wrapped into extra wrapper, so
+            // that it can be actually removed from DOM - if it is root node,
+            // the .remove() call on it does not work for some reason, causing
+            // the corresponding test to fail
             html = [
                 '<div id="wrapper">',
-                  '<div dropped-image data-image-id="4"></div>',
+                  '<div id="aloha-block">',
+                    '<div dropped-image data-image-id="4"></div>',
+                  '</div>',
                 '</div>'
             ].join('');
 
             scope = $rootScope.$new();
-            $element = $compile(html)(scope);
-            $element = $($element[0]);  // make it a "true jQuery" object
+            $root = $compile(html)(scope);
+
+            $root = $($root[0]);  // make it a "true jQuery" object
+            $element = $root.find('[dropped-image]');
+
             scope.$digest();
         }
     ));
@@ -82,7 +92,7 @@ describe('Directive: droppedImage', function () {
         it('removes the element itself', function () {
             var $node;
             $button.triggerHandler(ev);
-            $node = $element.find('[dropped-image]');
+            $node = $root.find('[dropped-image]');
             expect($node.length).toEqual(0);
         });
 
