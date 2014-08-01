@@ -16,8 +16,9 @@ angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
             articleId: $routeParams.article,
             language: $routeParams.language
         });
+
         $scope.mode = mode;
-        $scope.status = 'Initialising';
+        $scope.status = 'Initializing';
         $scope.history = circularBufferFactory.create({ size: 5 });
         $scope.articleService = article;
 
@@ -44,7 +45,7 @@ angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
         $scope.wfStatus = $scope.workflowStatuses[0];  // default value is new
         $scope.changingWfStatus = false;
 
-        article.promise.then(function (article) {
+        $scope.articleService.promise.then(function (article) {
             var statusObj = _.find(
                 $scope.workflowStatuses, {value: article.status}
             );
@@ -99,12 +100,17 @@ angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
         $scope.setModified = function (value) {
             article.modified = value;
         };
+
         $scope.save = function () {
+            // converts images' and snippets' HTML in text to special
+            // placeholder comments
             function divsToCommentsFor(type, text) {
-                if (type === 'snippet' || type === 'image') {return text;}
-                if (text === null) {return text;}
-                var sep = {'snippet': '--', 'image': '**'};
+                if ((type !== 'snippet' && type !== 'image') || text === null) {
+                    return text;
+                }
+                var sep = {snippet: '--', image: '**'};
                 var content = $('<div/>').html(text);
+
                 content.contents().filter('div.'+type)
                     .replaceWith(function() {
                         var contents = '<'+sep[type] +' '+ type[0].toUpperCase() + type.slice(1) +' '+parseInt($(this).data('id'));
@@ -115,27 +121,35 @@ angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
                         });
                         return contents += ' '+sep[type]+'>';
                     });
-
                 return content.html()
                     .replace(/\&lt\;\*\*/g,'<**')   // replace &lt;** with <**
                     .replace(/\*\*\&gt\;/g, '**>')  // replace **&gt; with **>
                     .replace(/\&lt\;\-\-/g,'<--')   // replace &lt;-- with <--
                     .replace(/\-\-\&gt\;/g, '-->'); // replace --&gt; with -->
             }
-            for (var key in $scope.article.fields) {
-                if($scope.article.fields.hasOwnProperty(key)) {
-                    $scope.article.fields[key] = divsToCommentsFor('snippet', divsToCommentsFor('image', $scope.article.fields[key]));
+
+            var postData = angular.copy($scope.article);
+
+            // serialize objects (images, snippets) in all article fields
+            for (var key in postData.fields) {
+                if (postData.fields.hasOwnProperty(key)) {
+                    postData.fields[key] = divsToCommentsFor(
+                        'snippet',
+                        divsToCommentsFor('image', postData.fields[key])
+                    );
                 }
             }
+
             article.resource.save({
                 articleId: $routeParams.article,
                 language: $routeParams.language
-            }, $scope.article, function () {
+            }, postData, function () {
                 $scope.setModified(false);
             }, function () {
                 $scope.status = 'Error saving';
             });
-        };
+        };  // end $scope.save function
+
         $scope.$watch('article', $scope.watchCallback, true);
         $scope.$watch('articleService.modified', function (newValue) {
             if (newValue) {
@@ -144,12 +158,16 @@ angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
                 $scope.status = 'Saved';
             }
         });
-        article.promise.then(function (article) {
+
+        $scope.articleService.promise.then(function (article) {
+
             // Convert the Snippet comments into divs so that Aloha can process them
             function snippetCommentsToDivs(text) {
-                if (text === null) {return text;}
+                if (text === null) {
+                    return text;
+                }
                                                 // the extra backward slash (\) is because of Javascript being picky
-                var snippetRegex  = '<!--';     // exact match
+                var snippetRegex  = '<--';     // exact match
                 snippetRegex     += '\\s';      // single whitespace
                 snippetRegex     += 'Snippet';  // exact match
                 snippetRegex     += '\\s';      // single whitespace
@@ -179,10 +197,11 @@ angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
                 });
             }
             // Convert the Image comments into divs for Aloha
+            // example: <** Image 1234 align=left size=small **>
             function imageCommentsToDivs(text) {
                 if (text === null) {return text;}
                                                                // the extra backward slash (\) is because of Javascript being picky
-                var imageReg  = '<!';                          // exact match
+                var imageReg  = '<';                          // exact match
                 imageReg     += '\\*\\*';                      // exact match on **
                 imageReg     += '[\\s]*';                      // match whitespace 0 to unlimited
                 imageReg     += 'Image';                       // exact match
@@ -204,27 +223,39 @@ angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
                 imageReg     +=     ')*';                      // end capture group 3, 0 to unlimited
                 imageReg     += ')';                           // end capture group 2
                 imageReg     += '[\\s]*';                      // match whitespace 0 to unlimited
+                imageReg     += '\\*\\*';                      // exact match on **
                 imageReg     += '>';                           // exact match
                 var imagePattern = new RegExp(imageReg, 'ig');
-                return text.replace(imagePattern, function(whole, imageId, imageAttributes) {
-                    var imageDiv = '<div class="image" data-id="'+imageId+'"';
-                    var tmpElement = document.createElement('div');
-                    tmpElement.innerHTML = '<div '+imageAttributes+'></div>';
-                    var attributes = tmpElement.childNodes[0].attributes;
 
-                    for (var i = 0; i < attributes.length; i++) {
-                        imageDiv += ' data-'+attributes[i].name+'="'+attributes[i].value+'"';
+                var converted = text.replace(
+                    imagePattern,
+                    function(whole, imageId, imageAttributes) {
+                        var imageDiv = '<div class="image" dropped-image ' +
+                            'data-id="' + imageId + '"';
+                        var tmpElement = document.createElement('div');
+                        tmpElement.innerHTML = '<div '+imageAttributes+'></div>';
+                        var attributes = tmpElement.childNodes[0].attributes;
+
+                        for (var i = 0; i < attributes.length; i++) {
+                            imageDiv += ' data-' + attributes[i].name +
+                                '="'+attributes[i].value + '"';
+                        }
+
+                        imageDiv += '></div>';
+
+                        return imageDiv;
                     }
+                );
+                return converted;
+            }  // end function imageCommentsToDivs
 
-                    imageDiv += '></div>';
-
-                    return imageDiv;
-                });
-            }
             $scope.article = article;
+
             for (var key in article.fields) {
                 if(article.fields.hasOwnProperty(key)) {
-                    article.fields[key] = imageCommentsToDivs(snippetCommentsToDivs(article.fields[key]));
+                    article.fields[key] = imageCommentsToDivs(
+                        snippetCommentsToDivs(article.fields[key])
+                    );
                 }
             }
             if (typeof $scope.type === 'undefined') {
@@ -236,6 +267,7 @@ angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
                 });
             }
         });
+
         $scope.panes = panes.query();
         $scope.platform = platform;
         // used to filter

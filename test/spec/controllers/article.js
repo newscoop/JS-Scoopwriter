@@ -77,7 +77,7 @@ describe('Controller: ArticleCtrl', function () {
         expect(scope.history.used()).toBe(0);
     });
     it('is not modified', function() {
-        expect(scope.status).toBe('Initialising');
+        expect(scope.status).toBe('Initializing');
     });
 
     it('initializes article workflow status options in scope', function () {
