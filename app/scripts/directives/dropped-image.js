@@ -15,14 +15,10 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
             restrict: 'A',
             templateUrl: 'views/dropped-image.html',
             controller: 'DroppedImageCtrl',
-            // XXX: what is needed and what not?
             scope: {
                 imageId: '@imageId',
-                imageAlign: '@imageAlign',
-                imageAlt: '@imageAlt',
-                imageSub: '@imageSub',
-                imageWidth: '@imageWidth',
-                imageHeight: '@imageHeight'
+                alignment: '@imageAlign',
+                size: '@imageSize'
             },
             link: function postLink(scope, element, attrs, ctrl) {
                 var $element = $(element),
@@ -102,11 +98,11 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                 * Sets the image alignment and adjusts its margings depending
                 * on the image position.
                 *
-                * @method align
+                * @method setAlignment
                 * @param position {String} new image alignment (should be one
                 *   of the 'left', 'right' or 'center')
                 */
-                scope.align = function (position) {
+                scope.setAlignment = function (position) {
                     var cssFloat,
                         cssMargin;
 
@@ -183,8 +179,12 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                     }
                 };
 
-                scope.align('center');
-                scope.setSize('medium');
+                // set default values if needed and set image properties
+                scope.alignment = scope.alignment || 'center';
+                scope.size = scope.size || 'medium';
+
+                scope.setAlignment(scope.alignment);
+                scope.setSize(scope.size);
 
                 ctrl.init(parseInt(scope.imageId, 10));
 
