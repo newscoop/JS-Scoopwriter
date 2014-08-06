@@ -8,6 +8,8 @@ body {
   font-weight: @baseFontWeight;
   color: @textColor;
   background-color: @bodyBackground;
+  height:100%;
+  width:100%;
 }
 
 html, body.article-edit {
@@ -41,6 +43,11 @@ a:hover {
 
 
 .authoring-environment {
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
 
     /* there is also a not editable one, probably it will be removed */
     .article-editable-title {
@@ -476,7 +483,6 @@ a:hover {
     }
 
     .main-article-container {
-        display: inline-block; /* to center with text-align on parent */
         text-align: start; /* to cancel effects of parent align */
         width:auto;
         background:@main-article-color;
@@ -486,7 +492,7 @@ a:hover {
         position:relative;
         z-index:1;
         padding: @hostTop + @subnav-height + @editor-toolbar + 20 @main-article-padding-side 40px;
-        margin: 0 @main-article-margin-side;
+        margin: 0 auto;
         min-height:100%;
         .box-sizing(border-box);
         .transition( all @duration ease);
@@ -654,15 +660,19 @@ a:hover {
         }
         &.shrink-left {
             margin-left: @main-article-margin-side-shrinked;
+            margin-right: 110px;
         }
         &.shrink-right {
             margin-right: @main-article-margin-side-shrinked;
+            margin-left: 110px;
         }
         &.shrink-left-more {
             margin-left: @main-article-margin-side-shrinked + @small-big-pane-delta;
+            margin-right: 110px;
         }
         &.shrink-right-more {
             margin-right: @main-article-margin-side-shrinked + @small-big-pane-delta;
+            margin-left: 110px;
         }
     }
 
@@ -1628,8 +1638,38 @@ a:hover {
         display:block !important;
     }
 
+    @media only screen and (min-width: 1500px) {
+        .main-article-container {
+            &.shrink-left {
+                margin:0 auto;
+            }
+            &.shrink-right {
+                margin:0 auto;
+            }
+            &.shrink-left-more {
+                margin:0 auto;
+            }
+            &.shrink-right-more {
+                margin:0 auto;
+            }
+        }
+    }
+
+    @media only screen and (max-width: 1200px) {
+        .main-article-container {
+            &.desktop {
+                max-width: 80% !important;
+            }
+        }        
+    }
+
     @media (max-width: 1024px) {
 
+        .main-article-container {
+            &.desktop {
+                max-width: 70% !important;
+            }
+        }        
         .ipad-show {
             display:block !important;
         }
@@ -1722,8 +1762,6 @@ a:hover {
     @hostTop: 0px; /* The system hosting the editor will need some room at the top for its own toolbar */
     @bigButtonSidePadding: 20px; /* Side padding for some buttons in the toolbars */
 
-
-    background: #f8f8f8;
 
     section {
         height: 100%; /* for scrolling in child panes */
