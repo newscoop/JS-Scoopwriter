@@ -115,6 +115,7 @@ angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
 
             sep = {snippet: '--', image: '**'};
             content = $('<div/>').html(text);
+
             matches = content.contents().filter('div.' + type);
 
             // replace each matching div with its serialized version
@@ -190,34 +191,38 @@ angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
                     return text;
                 }
                                                 // the extra backward slash (\) is because of Javascript being picky
-                var snippetRegex  = '<--';     // exact match
-                snippetRegex     += '\\s';      // single whitespace
-                snippetRegex     += 'Snippet';  // exact match
-                snippetRegex     += '\\s';      // single whitespace
-                snippetRegex     += '([\\d]+)'; // capture group 1, match 1 or more digits (\d)
-                                                // OPTIONAL for align only
-                snippetRegex     += '(?:';      // start of non-capture group
-                snippetRegex     += '\\s';      // single whitespace
-                snippetRegex     += 'align="';  // exact match
-                snippetRegex     += '([^"]+)';  // capture group 2, match 1 or more characters (^) not equal to "
-                snippetRegex     += '"';        // exact match
-                snippetRegex     += ')?';       // end of non-capture group
-                                                // END OPTIONAL
-                snippetRegex     += '\\s';      // single whitespace
-                snippetRegex     += '-->';      // exact match
-                var snippetPattern = new RegExp(snippetRegex, 'ig');
-                return text.replace(snippetPattern, function(whole, ID, align) {
+                var snippetRex  = '<--';     // exact match
+                snippetRex     += '\\s';      // single whitespace
+                snippetRex     += 'Snippet';  // exact match
+                snippetRex     += '\\s';      // single whitespace
+                snippetRex     += '([\\d]+)'; // capture group 1, match 1 or more digits (\d)
+                snippetRex     += '(';                           // capture group 2
+                snippetRex     +=     '(';                       // capture group 3, 0 to unlimited
+                snippetRex     +=         '[\\s]+';              // match whitespace 1 to unlimited
+                snippetRex     +=         '(align';              // alternating capture group
+                snippetRex     +=         '|\\w+)';              // or any word longer then 1 to unlimited, end of alternating
+                snippetRex     +=         '\\s*';                // match whitespace 0 to unlimited
+                snippetRex     +=         '=';                   // exact match
+                snippetRex     +=         '\\s*';                // match whitespace 0 to unlimited
+                snippetRex     +=         '(';                   // capture group 4
+                snippetRex     +=             '"[^"]*"';         // capture anything except ", 0 to unlimited characters
+                snippetRex     +=             '|[^\\s]*';        // capture anything except whitespace, 0 to unlimited
+                snippetRex     +=         ')';                   // end capture group 4
+                snippetRex     +=     ')*';                      // end capture group 3, 0 to unlimited
+                snippetRex     += ')';                           // end capture group 2
+                snippetRex     += '[\\s]*';                      // match whitespace 0 to unlimited
+                snippetRex     += '-->';      // exact match
+                var snippetPattern = new RegExp(snippetRex, 'ig');
+
+                var converted = text.replace(snippetPattern, function(whole, id) {
                     var output = '';
-                    if (ID !== undefined) {
-                        output += '<div class="snippet" data-id="'+parseInt(ID)+'"';
-                        if (align !== undefined) {
-                            output += ' data-align="'+align+'"';
-                        }
+                    if (id !== undefined) {
+                        output += '<div class="snippet" data-id="'+parseInt(id)+'"';
                         output += '></div>';
                     }
-
                     return output;
                 });
+                return converted;
             }
             // Convert the Image comments into divs for Aloha
             // example: <** Image 1234 float="left" size="small" **>
@@ -267,7 +272,6 @@ angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
                         }
 
                         imageDiv += '></div>';
-
                         return imageDiv;
                     }
                 );
