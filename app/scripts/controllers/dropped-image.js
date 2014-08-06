@@ -15,10 +15,14 @@ angular.module('authoringEnvironmentApp').controller('DroppedImageCtrl', [
         * @param imageId {Number} ID of the image to retrieve
         */
         this.init = function (imageId) {
-            NcImage.getById(imageId).then(function (image) {
+            var promise = NcImage.getById(imageId);
+
+            promise.then(function (image) {
                 $scope.image = image;
                 images.addToIncluded(image.id);
             });
+
+            return promise;
         };
 
         /**

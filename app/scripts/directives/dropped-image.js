@@ -17,11 +17,12 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
             controller: 'DroppedImageCtrl',
             scope: {
                 imageId: '@imageId',
-                alignment: '@imageAlign',
+                alignment: '@imageAlignment',
                 size: '@imageSize'
             },
             link: function postLink(scope, element, attrs, ctrl) {
-                var $element = $(element),
+                var imgConfig = {},
+                    $element = $(element),
                     $imageBox = $element.find('.dropped-image'),
                     $parent = $element.parent(),  // Aloha block container
                     $toolbar;
@@ -80,7 +81,6 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
 
                 // close button's onClick handler
                 $element.find('button.close').click(function (e) {
-                    e.stopPropagation();
                     $parent.remove();
 
                     // notify controller about the removal
@@ -89,10 +89,8 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
 
                 // clicking the image displays the toolbar
                 $imageBox.click(function (e) {
-                    e.stopPropagation();
                     toolbarNode().toggle();
                 });
-
 
                 /**
                 * Sets the image alignment and adjusts its margings depending
@@ -137,6 +135,8 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                         $parent.css({margin: 'auto'});
                     }
 
+                    $parent.attr('data-alignment', position);
+
                     positionToolbar();
                 };
 
@@ -161,6 +161,7 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
 
                     $parent.width(width);
                     $element.css('width', '100%');
+                    $parent.attr('data-size', size);
 
                     positionToolbar();
                 };
@@ -180,13 +181,17 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                 };
 
                 // set default values if needed and set image properties
-                scope.alignment = scope.alignment || 'center';
-                scope.size = scope.size || 'medium';
+                // XXX: for some reason the directive is sometimes fired twice
+                // and values in scope (except for imageId) get lost. We thus
+                // copy image properties to imgConfig object to preserve them.
+                imgConfig.alignment = scope.alignment || 'center';
+                imgConfig.size = scope.size || 'medium';
 
-                scope.setAlignment(scope.alignment);
-                scope.setSize(scope.size);
-
-                ctrl.init(parseInt(scope.imageId, 10));
+                ctrl.init(parseInt(scope.imageId, 10))
+                .then(function () {
+                    scope.setAlignment(imgConfig.alignment);
+                    scope.setSize(imgConfig.size);
+                });
 
             }  // end postLink function
         };

@@ -47,7 +47,7 @@
       <div
          ng-switch-when="title"
          data-aloha-content="article.title"
-         class="article-editable-title"
+         class="article-editable-title clearfix"
          aloha
          >
       </div>
@@ -58,6 +58,7 @@
       </fixed-image-placeholder>
       <div
          ng-switch-default
+         class="clearfix"
          data-aloha-content='article.fields[field.name]'
          aloha
          sf-droppable

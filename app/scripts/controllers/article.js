@@ -101,41 +101,63 @@ angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
             article.modified = value;
         };
 
-        $scope.save = function () {
-            // converts images' and snippets' HTML in text to special
-            // placeholder comments
-            function divsToCommentsFor(type, text) {
-                if ((type !== 'snippet' && type !== 'image') || text === null) {
-                    return text;
-                }
-                var sep = {snippet: '--', image: '**'};
-                var content = $('<div/>').html(text);
+        // converts images' and snippets' HTML in text to special
+        // placeholder comments
+        // TODO: tests, comments, moving this to Article model?
+        function serializeAlohaBlocks(type, text) {
+            var content,
+                matches,
+                sep;
 
-                content.contents().filter('div.'+type)
-                    .replaceWith(function() {
-                        var contents = '<'+sep[type] +' '+ type[0].toUpperCase() + type.slice(1) +' '+parseInt($(this).data('id'));
-                        $.each( $(this).data(),function(name, value) {
-                            if (name !== 'id') {
-                                contents += ' '+name+'="'+value+'"';
-                            }
-                        });
-                        return contents += ' '+sep[type]+'>';
-                    });
-                return content.html()
-                    .replace(/\&lt\;\*\*/g,'<**')   // replace &lt;** with <**
-                    .replace(/\*\*\&gt\;/g, '**>')  // replace **&gt; with **>
-                    .replace(/\&lt\;\-\-/g,'<--')   // replace &lt;-- with <--
-                    .replace(/\-\-\&gt\;/g, '-->'); // replace --&gt; with -->
+            if ((type !== 'snippet' && type !== 'image') || text === null) {
+                return text;
             }
 
-            var postData = angular.copy($scope.article);
+            sep = {snippet: '--', image: '**'};
+            content = $('<div/>').html(text);
+            matches = content.contents().filter('div.' + type);
+
+            // replace each matching div with its serialized version
+            matches.replaceWith(function() {
+                var serialized,
+                    $match = $(this);
+
+                serialized = [
+                    '<', sep[type], ' ',
+                    type.charAt(0).toUpperCase(), type.slice(1), ' ',
+                    parseInt($match.data('id'), 10)
+                ];
+
+                $.each($match.data(), function (name, value) {
+                    if (name !== 'id') {
+                        serialized.push(' ', name, '="', value, '"');
+                    }
+                });
+
+                serialized.push(' ', sep[type], '>');
+                return serialized.join('');
+            });
+
+            return content.html()
+                .replace(/\&lt\;\*\*/g,'<**')   // replace &lt;** with <**
+                .replace(/\*\*\&gt\;/g, '**>')  // replace **&gt; with **>
+                .replace(/\&lt\;\-\-/g,'<--')   // replace &lt;-- with <--
+                .replace(/\-\-\&gt\;/g, '-->'); // replace --&gt; with -->
+        }
+
+        $scope.save = function () {
+            var key,
+                postData = angular.copy($scope.article),
+                serialized;
 
             // serialize objects (images, snippets) in all article fields
-            for (var key in postData.fields) {
+            for (key in postData.fields) {
                 if (postData.fields.hasOwnProperty(key)) {
-                    postData.fields[key] = divsToCommentsFor(
-                        'snippet',
-                        divsToCommentsFor('image', postData.fields[key])
+                    serialized = serializeAlohaBlocks(
+                        'image', postData.fields[key]
+                    );
+                    postData.fields[key] = serializeAlohaBlocks(
+                        'snippet', serialized
                     );
                 }
             }
@@ -143,12 +165,13 @@ angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
             article.resource.save({
                 articleId: $routeParams.article,
                 language: $routeParams.language
-            }, postData, function () {
+            }, postData,
+            function () {
                 $scope.setModified(false);
             }, function () {
                 $scope.status = 'Error saving';
             });
-        };  // end $scope.save function
+        };
 
         $scope.$watch('article', $scope.watchCallback, true);
         $scope.$watch('articleService.modified', function (newValue) {
@@ -197,9 +220,11 @@ angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
                 });
             }
             // Convert the Image comments into divs for Aloha
-            // example: <** Image 1234 align=left size=small **>
+            // example: <** Image 1234 float="left" size="small" **>
             function imageCommentsToDivs(text) {
-                if (text === null) {return text;}
+                if (text === null) {
+                    return text;
+                }
                                                                // the extra backward slash (\) is because of Javascript being picky
                 var imageReg  = '<';                          // exact match
                 imageReg     += '\\*\\*';                      // exact match on **

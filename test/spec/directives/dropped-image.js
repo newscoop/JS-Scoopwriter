@@ -8,6 +8,7 @@
 
 describe('Directive: droppedImage', function () {
     var fakeCtrl,  // mocked directive's controller
+        initDeferred,
         $element,
         $root,
         scope,
@@ -19,10 +20,11 @@ describe('Directive: droppedImage', function () {
 
     beforeEach(inject(
         function (
-            $rootScope, $templateCache, $compile, droppedImageDirective
+            $rootScope, $templateCache, $compile, $q, droppedImageDirective
         ) {
             var directive = droppedImageDirective[0],
-                html;
+                html,
+                initDeferred = $q.defer();
 
             // for some reason jQuery in test does not have this extension,
             // thus we have to mock it here
@@ -39,7 +41,7 @@ describe('Directive: droppedImage', function () {
 
             // provide a fake controller to the directive
             directive.controller = function () {
-               this.init = jasmine.createSpy();
+               this.init = jasmine.createSpy().andReturn(initDeferred.promise);
                this.imageRemoved = jasmine.createSpy();
                fakeCtrl = this;  // save reference to the fake controller
             };
@@ -82,11 +84,6 @@ describe('Directive: droppedImage', function () {
             $button = $element.find('.close');
             ev = $.Event('click');
             spyOn(ev, 'stopPropagation');
-        });
-
-        it('prevents event propagation', function () {
-            $button.triggerHandler(ev);
-            expect(ev.stopPropagation).toHaveBeenCalled();
         });
 
         it('removes the element itself', function () {
