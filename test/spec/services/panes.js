@@ -38,12 +38,11 @@ describe('Service: panes', function () {
             it('should tell the layout', function() {
                 expect(p.layout).toEqual({
                     right: 'small',
-                    left: 'small'
+                    left: null
                 });
             });
             it('should tell the article class', function() {
                 expect(p.articleClass).toMatch('shrink-right');
-                expect(p.articleClass).toMatch('shrink-left');
             });
             describe('activated a wider pane', function() {
                 beforeEach(function() {
@@ -51,12 +50,11 @@ describe('Service: panes', function () {
                 });
                 it('should tell the layout', function() {
                     expect(p.layout).toEqual({
-                        right: 'small',
+                        right: null,
                         left: 'big'
                     });
                 });
                 it('should tell the article class', function() {
-                    expect(p.articleClass).toMatch('shrink-right');
                     expect(p.articleClass).toMatch('shrink-left-more');
                     expect(p.articleClass).not.toMatch('shrink-left\b');
                 });
