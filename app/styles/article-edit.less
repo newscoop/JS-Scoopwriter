@@ -494,8 +494,7 @@ a:hover {
         padding: @hostTop + @subnav-height + @editor-toolbar + 20 @main-article-padding-side 40px;
         margin: 0 auto;
         min-height:100%;
-        .box-sizing(border-box);
-        .transition( all @duration ease);
+        .box-sizing(border-box);        
 
         max-width: 960px;
 
@@ -661,10 +660,23 @@ a:hover {
         &.shrink-left {
             margin-left: @main-article-margin-side-shrinked;
             margin-right: 110px;
+            &.tablet {
+            }
+            &.mobile {
+                margin-left: auto;
+                margin-right: auto;
+            }
         }
         &.shrink-right {
             margin-right: @main-article-margin-side-shrinked;
             margin-left: 110px;
+            &.tablet {
+                margin-left: auto;
+            }
+            &.mobile {
+                margin-left: auto;
+                margin-right: auto;
+            }
         }
         &.shrink-left-more {
             margin-left: @main-article-margin-side-shrinked + @small-big-pane-delta;
@@ -1643,24 +1655,70 @@ a:hover {
             &.shrink-left {
                 margin-right: auto;
                 margin-left: 438px;
+                &.tablet {
+                    margin-left: auto;
+                }
+                &.mobile {
+                    margin-left: auto;
+                    margin-right: auto;
+                }
             }
             &.shrink-right {
                 margin-left: auto;
                 margin-right: 438px;
+                &.tablet {
+                    margin-right: auto;
+                }
+                &.mobile {
+                    margin-right: auto;
+                    margin-left: auto;
+                }
             }
             &.shrink-left-more {
-                margin:0 auto;
+                &.tablet {
+                    margin-left: auto;
+                }
+                &.mobile {
+                    margin-left: auto;
+                    margin-right: auto;
+                }
             }
             &.shrink-right-more {
-                margin:0 auto;
+                &.tablet {
+                    margin-right: auto;
+                }
+                &.mobile {
+                    margin-right: auto;
+                    margin-left: auto;
+                }
             }
         }
     }
 
-    @media only screen and (max-width: 1200px) {
+    @media only screen and (max-width: 1230px) {
         .main-article-container {
+            padding-left: 20px;
+            padding-right: 20px;
             &.desktop {
                 max-width: 80% !important;
+            }
+            &.shrink-left {
+                &.tablet {
+                    margin-right: 110px;
+                }
+                &.mobile {
+                    margin-right: auto;
+                    margin-left: 438px;
+                }
+            }
+            &.shrink-right {
+               &.tablet {
+                   margin-left: 110px;
+               }
+               &.mobile {
+                    margin-left: auto;
+                    margin-right: 438px;
+               }               
             }
         }        
     }
@@ -1670,6 +1728,9 @@ a:hover {
         .main-article-container {
             &.desktop {
                 max-width: 70% !important;
+            }
+            &.tablet {
+                max-width: 65% !important;
             }
         }        
         .ipad-show {
@@ -1694,9 +1755,6 @@ a:hover {
             padding-left:20px;
             padding-right:20px;
         }
-        .tabpane {
-            width:@tabpane-width - 30;
-        }
 
         .main-article-title {
             overflow: hidden;
@@ -1707,8 +1765,6 @@ a:hover {
         }
 
     }
-
-
 
     @media (max-width: 768px) {
         .main-article-title {
@@ -1773,6 +1829,7 @@ a:hover {
     .navbar-fixed-top.navbar.navbar-default {
         top: @hostTop;
         border-bottom: 1px solid #d5d5d5;
+        background: rgba(248,248,248,.96);
     }
     .popover {
         position: absolute;
