@@ -15,17 +15,14 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
             restrict: 'A',
             templateUrl: 'views/dropped-image.html',
             controller: 'DroppedImageCtrl',
-            // XXX: what is needed and what not?
             scope: {
                 imageId: '@imageId',
-                imageAlign: '@imageAlign',
-                imageAlt: '@imageAlt',
-                imageSub: '@imageSub',
-                imageWidth: '@imageWidth',
-                imageHeight: '@imageHeight'
+                alignment: '@imageAlignment',
+                size: '@imageSize'
             },
             link: function postLink(scope, element, attrs, ctrl) {
-                var $element = $(element),
+                var imgConfig = {},
+                    $element = $(element),
                     $imageBox = $element.find('.dropped-image'),
                     $parent = $element.parent(),  // Aloha block container
                     $toolbar;
@@ -84,7 +81,6 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
 
                 // close button's onClick handler
                 $element.find('button.close').click(function (e) {
-                    e.stopPropagation();
                     $parent.remove();
 
                     // notify controller about the removal
@@ -93,20 +89,18 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
 
                 // clicking the image displays the toolbar
                 $imageBox.click(function (e) {
-                    e.stopPropagation();
                     toolbarNode().toggle();
                 });
-
 
                 /**
                 * Sets the image alignment and adjusts its margings depending
                 * on the image position.
                 *
-                * @method align
+                * @method setAlignment
                 * @param position {String} new image alignment (should be one
                 *   of the 'left', 'right' or 'center')
                 */
-                scope.align = function (position) {
+                scope.setAlignment = function (position) {
                     var cssFloat,
                         cssMargin;
 
@@ -141,6 +135,8 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                         $parent.css({margin: 'auto'});
                     }
 
+                    $parent.attr('data-alignment', position);
+
                     positionToolbar();
                 };
 
@@ -165,6 +161,7 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
 
                     $parent.width(width);
                     $element.css('width', '100%');
+                    $parent.attr('data-size', size);
 
                     positionToolbar();
                 };
@@ -183,10 +180,18 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                     }
                 };
 
-                scope.align('center');
-                scope.setSize('medium');
+                // set default values if needed and set image properties
+                // XXX: for some reason the directive is sometimes fired twice
+                // and values in scope (except for imageId) get lost. We thus
+                // copy image properties to imgConfig object to preserve them.
+                imgConfig.alignment = scope.alignment || 'center';
+                imgConfig.size = scope.size || 'medium';
 
-                ctrl.init(parseInt(scope.imageId, 10));
+                ctrl.init(parseInt(scope.imageId, 10))
+                .then(function () {
+                    scope.setAlignment(imgConfig.alignment);
+                    scope.setSize(imgConfig.size);
+                });
 
             }  // end postLink function
         };

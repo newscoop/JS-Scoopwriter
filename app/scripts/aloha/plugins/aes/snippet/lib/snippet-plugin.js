@@ -15,7 +15,9 @@ define(['aloha', 'aloha/plugin', 'jquery',  'aloha/console', 'block/block', 'blo
                     var $injector = angular.element($('body')).injector();
                     $injector.invoke(function($rootScope, $compile) {
                         // finally place the element and $compile it into AngularJS
-                        $element.empty().append($compile('<dropped-snippet snippet="byId('+snippetId+')"></dropped-snippet>')($rootScope));
+                        $element.empty().append($compile(
+                            '<dropped-snippet data-snippet-id="'+snippetId+'"></dropped-snippet>'
+                          )($rootScope));
                     });
                     return postProcessFn();
                 },
