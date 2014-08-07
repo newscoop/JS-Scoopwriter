@@ -84,7 +84,7 @@ angular.module('authoringEnvironmentApp').factory('panes', [
                 return panes;
             },
             visible: function (pane) {
-                $filter('filter')(panes, { position: pane.position }).forEach(function (p) {
+                panes.forEach(function (p) {
                     if (p === pane) {
                         pane.visible = !pane.visible;
                     } else {
