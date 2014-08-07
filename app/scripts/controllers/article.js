@@ -16,8 +16,9 @@ angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
             articleId: $routeParams.article,
             language: $routeParams.language
         });
+
         $scope.mode = mode;
-        $scope.status = 'Initialising';
+        $scope.status = 'Initializing';
         $scope.history = circularBufferFactory.create({ size: 5 });
         $scope.articleService = article;
 
@@ -44,7 +45,7 @@ angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
         $scope.wfStatus = $scope.workflowStatuses[0];  // default value is new
         $scope.changingWfStatus = false;
 
-        article.promise.then(function (article) {
+        $scope.articleService.promise.then(function (article) {
             var statusObj = _.find(
                 $scope.workflowStatuses, {value: article.status}
             );
@@ -99,43 +100,80 @@ angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
         $scope.setModified = function (value) {
             article.modified = value;
         };
-        $scope.save = function () {
-            function divsToCommentsFor(type, text) {
-                if (type === 'snippet' || type === 'image') {return text;}
-                if (text === null) {return text;}
-                var sep = {'snippet': '--', 'image': '**'};
-                var content = $('<div/>').html(text);
-                content.contents().filter('div.'+type)
-                    .replaceWith(function() {
-                        var contents = '<'+sep[type] +' '+ type[0].toUpperCase() + type.slice(1) +' '+parseInt($(this).data('id'));
-                        $.each( $(this).data(),function(name, value) {
-                            if (name !== 'id') {
-                                contents += ' '+name+'="'+value+'"';
-                            }
-                        });
-                        return contents += ' '+sep[type]+'>';
-                    });
 
-                return content.html()
-                    .replace(/\&lt\;\*\*/g,'<**')   // replace &lt;** with <**
-                    .replace(/\*\*\&gt\;/g, '**>')  // replace **&gt; with **>
-                    .replace(/\&lt\;\-\-/g,'<--')   // replace &lt;-- with <--
-                    .replace(/\-\-\&gt\;/g, '-->'); // replace --&gt; with -->
+        // converts images' and snippets' HTML in text to special
+        // placeholder comments
+        // TODO: tests, comments, moving this to Article model?
+        function serializeAlohaBlocks(type, text) {
+            var content,
+                matches,
+                sep;
+
+            if ((type !== 'snippet' && type !== 'image') || text === null) {
+                return text;
             }
-            for (var key in $scope.article.fields) {
-                if($scope.article.fields.hasOwnProperty(key)) {
-                    $scope.article.fields[key] = divsToCommentsFor('snippet', divsToCommentsFor('image', $scope.article.fields[key]));
+
+            sep = {snippet: '--', image: '**'};
+            content = $('<div/>').html(text);
+
+            matches = content.contents().filter('div.' + type);
+
+            // replace each matching div with its serialized version
+            matches.replaceWith(function() {
+                var serialized,
+                    $match = $(this);
+
+                serialized = [
+                    '<', sep[type], ' ',
+                    type.charAt(0).toUpperCase(), type.slice(1), ' ',
+                    parseInt($match.data('id'), 10)
+                ];
+
+                $.each($match.data(), function (name, value) {
+                    if (name !== 'id') {
+                        serialized.push(' ', name, '="', value, '"');
+                    }
+                });
+
+                serialized.push(' ', sep[type], '>');
+                return serialized.join('');
+            });
+
+            return content.html()
+                .replace(/\&lt\;\*\*/g,'<**')   // replace &lt;** with <**
+                .replace(/\*\*\&gt\;/g, '**>')  // replace **&gt; with **>
+                .replace(/\&lt\;\-\-/g,'<--')   // replace &lt;-- with <--
+                .replace(/\-\-\&gt\;/g, '-->'); // replace --&gt; with -->
+        }
+
+        $scope.save = function () {
+            var key,
+                postData = angular.copy($scope.article),
+                serialized;
+
+            // serialize objects (images, snippets) in all article fields
+            for (key in postData.fields) {
+                if (postData.fields.hasOwnProperty(key)) {
+                    serialized = serializeAlohaBlocks(
+                        'image', postData.fields[key]
+                    );
+                    postData.fields[key] = serializeAlohaBlocks(
+                        'snippet', serialized
+                    );
                 }
             }
+
             article.resource.save({
                 articleId: $routeParams.article,
                 language: $routeParams.language
-            }, $scope.article, function () {
+            }, postData,
+            function () {
                 $scope.setModified(false);
             }, function () {
                 $scope.status = 'Error saving';
             });
         };
+
         $scope.$watch('article', $scope.watchCallback, true);
         $scope.$watch('articleService.modified', function (newValue) {
             if (newValue) {
@@ -144,45 +182,56 @@ angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
                 $scope.status = 'Saved';
             }
         });
-        article.promise.then(function (article) {
+
+        $scope.articleService.promise.then(function (article) {
+
             // Convert the Snippet comments into divs so that Aloha can process them
             function snippetCommentsToDivs(text) {
-                if (text === null) {return text;}
+                if (text === null) {
+                    return text;
+                }
                                                 // the extra backward slash (\) is because of Javascript being picky
-                var snippetRegex  = '<!--';     // exact match
-                snippetRegex     += '\\s';      // single whitespace
-                snippetRegex     += 'Snippet';  // exact match
-                snippetRegex     += '\\s';      // single whitespace
-                snippetRegex     += '([\\d]+)'; // capture group 1, match 1 or more digits (\d)
-                                                // OPTIONAL for align only
-                snippetRegex     += '(?:';      // start of non-capture group
-                snippetRegex     += '\\s';      // single whitespace
-                snippetRegex     += 'align="';  // exact match
-                snippetRegex     += '([^"]+)';  // capture group 2, match 1 or more characters (^) not equal to "
-                snippetRegex     += '"';        // exact match
-                snippetRegex     += ')?';       // end of non-capture group
-                                                // END OPTIONAL
-                snippetRegex     += '\\s';      // single whitespace
-                snippetRegex     += '-->';      // exact match
-                var snippetPattern = new RegExp(snippetRegex, 'ig');
-                return text.replace(snippetPattern, function(whole, ID, align) {
+                var snippetRex  = '<--';     // exact match
+                snippetRex     += '\\s';      // single whitespace
+                snippetRex     += 'Snippet';  // exact match
+                snippetRex     += '\\s';      // single whitespace
+                snippetRex     += '([\\d]+)'; // capture group 1, match 1 or more digits (\d)
+                snippetRex     += '(';                           // capture group 2
+                snippetRex     +=     '(';                       // capture group 3, 0 to unlimited
+                snippetRex     +=         '[\\s]+';              // match whitespace 1 to unlimited
+                snippetRex     +=         '(align';              // alternating capture group
+                snippetRex     +=         '|\\w+)';              // or any word longer then 1 to unlimited, end of alternating
+                snippetRex     +=         '\\s*';                // match whitespace 0 to unlimited
+                snippetRex     +=         '=';                   // exact match
+                snippetRex     +=         '\\s*';                // match whitespace 0 to unlimited
+                snippetRex     +=         '(';                   // capture group 4
+                snippetRex     +=             '"[^"]*"';         // capture anything except ", 0 to unlimited characters
+                snippetRex     +=             '|[^\\s]*';        // capture anything except whitespace, 0 to unlimited
+                snippetRex     +=         ')';                   // end capture group 4
+                snippetRex     +=     ')*';                      // end capture group 3, 0 to unlimited
+                snippetRex     += ')';                           // end capture group 2
+                snippetRex     += '[\\s]*';                      // match whitespace 0 to unlimited
+                snippetRex     += '-->';      // exact match
+                var snippetPattern = new RegExp(snippetRex, 'ig');
+
+                var converted = text.replace(snippetPattern, function(whole, id) {
                     var output = '';
-                    if (ID !== undefined) {
-                        output += '<div class="snippet" data-id="'+parseInt(ID)+'"';
-                        if (align !== undefined) {
-                            output += ' data-align="'+align+'"';
-                        }
+                    if (id !== undefined) {
+                        output += '<div class="snippet" data-id="'+parseInt(id)+'"';
                         output += '></div>';
                     }
-
                     return output;
                 });
+                return converted;
             }
             // Convert the Image comments into divs for Aloha
+            // example: <** Image 1234 float="left" size="small" **>
             function imageCommentsToDivs(text) {
-                if (text === null) {return text;}
+                if (text === null) {
+                    return text;
+                }
                                                                // the extra backward slash (\) is because of Javascript being picky
-                var imageReg  = '<!';                          // exact match
+                var imageReg  = '<';                          // exact match
                 imageReg     += '\\*\\*';                      // exact match on **
                 imageReg     += '[\\s]*';                      // match whitespace 0 to unlimited
                 imageReg     += 'Image';                       // exact match
@@ -204,27 +253,38 @@ angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
                 imageReg     +=     ')*';                      // end capture group 3, 0 to unlimited
                 imageReg     += ')';                           // end capture group 2
                 imageReg     += '[\\s]*';                      // match whitespace 0 to unlimited
+                imageReg     += '\\*\\*';                      // exact match on **
                 imageReg     += '>';                           // exact match
                 var imagePattern = new RegExp(imageReg, 'ig');
-                return text.replace(imagePattern, function(whole, imageId, imageAttributes) {
-                    var imageDiv = '<div class="image" data-id="'+imageId+'"';
-                    var tmpElement = document.createElement('div');
-                    tmpElement.innerHTML = '<div '+imageAttributes+'></div>';
-                    var attributes = tmpElement.childNodes[0].attributes;
 
-                    for (var i = 0; i < attributes.length; i++) {
-                        imageDiv += ' data-'+attributes[i].name+'="'+attributes[i].value+'"';
+                var converted = text.replace(
+                    imagePattern,
+                    function(whole, imageId, imageAttributes) {
+                        var imageDiv = '<div class="image" dropped-image ' +
+                            'data-id="' + imageId + '"';
+                        var tmpElement = document.createElement('div');
+                        tmpElement.innerHTML = '<div '+imageAttributes+'></div>';
+                        var attributes = tmpElement.childNodes[0].attributes;
+
+                        for (var i = 0; i < attributes.length; i++) {
+                            imageDiv += ' data-' + attributes[i].name +
+                                '="'+attributes[i].value + '"';
+                        }
+
+                        imageDiv += '></div>';
+                        return imageDiv;
                     }
+                );
+                return converted;
+            }  // end function imageCommentsToDivs
 
-                    imageDiv += '></div>';
-
-                    return imageDiv;
-                });
-            }
             $scope.article = article;
+
             for (var key in article.fields) {
                 if(article.fields.hasOwnProperty(key)) {
-                    article.fields[key] = imageCommentsToDivs(snippetCommentsToDivs(article.fields[key]));
+                    article.fields[key] = imageCommentsToDivs(
+                        snippetCommentsToDivs(article.fields[key])
+                    );
                 }
             }
             if (typeof $scope.type === 'undefined') {
@@ -236,6 +296,7 @@ angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
                 });
             }
         });
+
         $scope.panes = panes.query();
         $scope.platform = platform;
         // used to filter

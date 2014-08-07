@@ -52,10 +52,15 @@ angular.module('authoringEnvironmentApp').service('Dragdata', [
                 .data({'id': data.id})
                 .alohaBlock({'aloha-block-type': 'ImageBlock'});
             case 'embed':
-                return Aloha.jQuery('<div>').append(
+                return Aloha.jQuery('<div>')
+                .addClass('snippet')
+                .data({'id': data.id})
+                .append(
                     $('<dropped-snippet>').attr(
                         {'data-snippet-id': data.id}
-                    )).addClass('dropped-snippet').alohaBlock();
+                    )
+                )
+                .alohaBlock();
             default:
                 $log.debug('getDropped function called on a malformed data object, no known type into it');
             }
