@@ -9,135 +9,43 @@ angular.module('authoringEnvironmentApp').service('article', [
         var API_ROOT = configuration.API.full,
             commenting,
             deferred = $q.defer(),
+            issueWfStatus,
             langMap,
             resource,
             wfStatus;
 
         langMap = {
-            1: [
-                'English',
-                'en'
-            ],
-            2: [
-                'Romanian',
-                'ro'
-            ],
-            5: [
-                'German',
-                'de'
-            ],
-            7: [
-                'Croatian',
-                'hr'
-            ],
-            9: [
-                'Portuguese Portugal',
-                'pt'
-            ],
-            10: [
-                'Serbian Cyrillic',
-                'sr'
-            ],
-            11: [
-                'Serbian Latin',
-                'sh'
-            ],
-            12: [
-                'French',
-                'fr'
-            ],
-            13: [
-                'Spanish',
-                'es'
-            ],
-            15: [
-                'Russian',
-                'ru'
-            ],
-            16: [
-                'Chinese Simplified',
-                'zh'
-            ],
-            17: [
-                'Arabic',
-                'ar'
-            ],
-            18: [
-                'Swedish',
-                'sv'
-            ],
-            19: [
-                'Korean',
-                'ko'
-            ],
-            20: [
-                'Dutch',
-                'nl'
-            ],
-            22: [
-                'Belarus',
-                'be'
-            ],
-            23: [
-                'Georgian',
-                'ka'
-            ],
-            24: [
-                'Chinese Traditional',
-                'zh_TW'
-            ],
-            25: [
-                'Polish',
-                'pl'
-            ],
-            26: [
-                'Greek',
-                'el'
-            ],
-            27: [
-                'Hebrew',
-                'he'
-            ],
-            28: [
-                'Bangla',
-                'bn'
-            ],
-            29: [
-                'Czech',
-                'cs'
-            ],
-            30: [
-                'Italian',
-                'it'
-            ],
-            31: [
-                'Portuguese Brazil',
-                'pt_BR'
-            ],
-            32: [
-                'Albanian',
-                'sq'
-            ],
-            33: [
-                'Turkish',
-                'tr'
-            ],
-            34: [
-                'Ukrainian',
-                'uk'
-            ],
-            35: [
-                'English Britain',
-                'en_GB'
-            ],
-            36: [
-                'Kurdish',
-                'ku'
-            ],
-            37: [
-                'German Austria',
-                'de_AT'
-            ]
+            1: ['English', 'en'],
+            2: ['Romanian', 'ro'],
+            5: ['German', 'de'],
+            7: ['Croatian', 'hr'],
+            9: ['Portuguese Portugal', 'pt'],
+            10: ['Serbian Cyrillic', 'sr'],
+            11: ['Serbian Latin', 'sh'],
+            12: ['French', 'fr'],
+            13: ['Spanish', 'es'],
+            15: ['Russian', 'ru'],
+            16: ['Chinese Simplified', 'zh'],
+            17: ['Arabic', 'ar'],
+            18: ['Swedish', 'sv'],
+            19: ['Korean', 'ko'],
+            20: ['Dutch', 'nl'],
+            22: ['Belarus', 'be'],
+            23: ['Georgian', 'ka'],
+            24: ['Chinese Traditional', 'zh_TW'],
+            25: ['Polish', 'pl'],
+            26: ['Greek', 'el'],
+            27: ['Hebrew', 'he'],
+            28: ['Bangla', 'bn'],
+            29: ['Czech', 'cs'],
+            30: ['Italian', 'it'],
+            31: ['Portuguese Brazil', 'pt_BR'],
+            32: ['Albanian', 'sq'],
+            33: ['Turkish', 'tr'],
+            34: ['Ukrainian', 'uk'],
+            35: ['English Britain', 'en_GB'],
+            36: ['Kurdish', 'ku'],
+            37: ['German Austria', 'de_AT']
         };
 
         // all possible values for the commenting setting
@@ -155,23 +63,34 @@ angular.module('authoringEnvironmentApp').service('article', [
             PUBLISHED_W_ISS: 'M'
         });
 
-        resource = $resource(Routing.generate('newscoop_gimme_articles_getarticle', {}, true) + '/:articleId?language=:language', {
-            articleId: '',
-            language: 'en'
-        }, {
-            query: {
-                method: 'GET',
-                isArray: true
-            },
-            save: {
-                url: Routing.generate('newscoop_gimme_articles_getarticle', {}, true) + '/:articleId/:language',
-                method: 'PATCH'
-            }
+        // all possible values for the article issue workflow status
+        issueWfStatus = Object.freeze({
+            NOT_PUBLISHED: 'N',
+            PUBLISHED: 'Y'
         });
+
+        resource = $resource(
+            Routing.generate('newscoop_gimme_articles_getarticle', {}, true) +
+                '/:articleId?language=:language',
+            {articleId: '', language: 'en'},
+            {
+                query: {
+                    method: 'GET',
+                    isArray: true
+                },
+                save: {
+                    url: Routing.generate(
+                        'newscoop_gimme_articles_getarticle', {}, true
+                    ) + '/:articleId/:language',
+                    method: 'PATCH'
+                }
+            }
+        );
 
         return {
             commenting: commenting,
             wfStatus: wfStatus,
+            issueWfStatus: issueWfStatus,
             modified: false,
             resource: resource,
             promise: deferred.promise,
@@ -192,8 +111,9 @@ angular.module('authoringEnvironmentApp').service('article', [
             * it on the server.
             *
             * @method changeCommentingSetting
-            * @param newValue {Number} New value of the article commenting setting.
-            *       Should be one of the values from article.commenting object.
+            * @param newValue {Number} New value of the article commenting
+            *   setting. Should be one of the values from article.commenting
+            *   object.
             * @return {Object} promise object.
             */
             changeCommentingSetting: function (newValue) {

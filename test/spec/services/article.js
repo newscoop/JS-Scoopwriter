@@ -49,6 +49,18 @@ describe('Service: article', function () {
         }
     );
 
+    it('should define correct options for the article issue workflow status',
+        function () {
+            var options = article.issueWfStatus;
+            expect(options).toBeDefined();
+            expect(_.size(options)).toEqual(2);
+            expect('NOT_PUBLISHED' in options).toBe(true);
+            expect(options.NOT_PUBLISHED).toEqual('N');
+            expect('PUBLISHED' in options).toBe(true);
+            expect(options.PUBLISHED).toEqual('Y');
+        }
+    );
+
     it('is not modified', function() {
         expect(article.modified).toBe(false);
     });

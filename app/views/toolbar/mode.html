@@ -21,7 +21,9 @@
         {{wfStatus.text}} <span class="caret"></span>
       </button>
       <ul class="dropdown-menu" role="menu">
-        <li ng-repeat="status in workflowStatuses"
+        <li ng-repeat="status in
+            (workflowStatuses |
+             allowedWfStatuses : article.status : article.issue.workflowStatus)"
             ng-click="setWorkflowStatus(status.value)">
             {{status.text}}
         </li>
