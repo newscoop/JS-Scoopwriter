@@ -1,5 +1,5 @@
 'use strict';
-angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
+angular.module('authoringEnvironmentApp').controller('ArticleModeCtrl', [
     '$scope',
     'article',
     'articleType',
@@ -12,15 +12,72 @@ angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
     '$routeParams',
     function ($scope, article, articleType, panes, configuration, mode, platform, circularBufferFactory, $log, $routeParams) {
 
+        console.log('ArticleModeCtrl');
+        return;
+
         article.init({
             articleId: $routeParams.article,
             language: $routeParams.language
         });
 
+
         $scope.mode = mode;
         $scope.status = 'Initializing';
         $scope.history = circularBufferFactory.create({ size: 5 });
         $scope.articleService = article;
+
+        // list of possible article workflow status options to choose from
+        $scope.workflowStatuses = [
+            {
+                value: article.wfStatus.NEW,
+                text: 'New'
+            },
+            {
+                value: article.wfStatus.SUBMITTED,
+                text: 'Submitted'
+            },
+            {
+                value: article.wfStatus.PUBLISHED,
+                text: 'Published'
+            },
+            {
+                value: article.wfStatus.PUBLISHED_W_ISS,
+                text: 'Published with issue'
+            }
+        ];
+
+        $scope.wfStatus = $scope.workflowStatuses[0];  // default value is new
+        $scope.changingWfStatus = false;
+
+        $scope.articleService.promise.then(function (article) {
+            var statusObj = _.find(
+                $scope.workflowStatuses, {value: article.status}
+            );
+            $scope.wfStatus = statusObj;
+        });
+
+        /**
+        * Changes article's workflow status. It also disables the corresponding
+        * dropdown menu until the API request is completed.
+        *
+        * @method setWorkflowStatus
+        * @param newStatus {String} new article workflow status
+        */
+        $scope.setWorkflowStatus = function (newStatus) {
+
+            $scope.changingWfStatus = true;
+
+            article.setWorkflowStatus(newStatus)
+                .then(function () {
+                    var statusObj = _.find(
+                        $scope.workflowStatuses, {value: newStatus}
+                    );
+                    $scope.wfStatus = statusObj;
+                })
+                .finally(function () {
+                    $scope.changingWfStatus = false;
+                });
+        };
 
         $scope.watchCallback = function (newValue, oldValue) {
             if (angular.equals(newValue, oldValue)) {
@@ -121,7 +178,7 @@ angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
             });
         };
 
-        $scope.$watch('article', $scope.watchCallback, true);
+        // $scope.$watch('article', $scope.watchCallback, true);
         $scope.$watch('articleService.modified', function (newValue) {
             if (newValue) {
                 $scope.status = 'Modified';

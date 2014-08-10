@@ -97,6 +97,7 @@ angular.module('authoringEnvironmentApp').service('article', [
             init: function (par) {
                 var service = this;
                 resource.get(par).$promise.then(function (data) {
+                    console.log('article.init() called, article retrieved'); // TODO: remove
                     service.articleId = data.number;
                     service.language = data.language;
                     service.init = function () {
