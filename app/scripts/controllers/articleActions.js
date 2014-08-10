@@ -1,5 +1,5 @@
 'use strict';
-angular.module('authoringEnvironmentApp').controller('ArticleModeCtrl', [
+angular.module('authoringEnvironmentApp').controller('ArticleActionsCtrl', [
     '$scope',
     'article',
     'mode',

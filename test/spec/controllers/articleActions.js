@@ -1,11 +1,11 @@
 'use strict';
 
-describe('Controller: ArticleModeCtrl', function () {
+describe('Controller: ArticleActionsCtrl', function () {
 
     // load the controller's module
     beforeEach(module('authoringEnvironmentApp'));
 
-    var ArticleModeCtrl,
+    var ArticleActionsCtrl,
     scope,
     $httpBackend,
     $timeout,
@@ -46,7 +46,7 @@ describe('Controller: ArticleModeCtrl', function () {
 
         $httpBackend.expectGET(urlArticleTypeGet).respond(articleTypeNews);
 
-        ArticleModeCtrl = $controller('ArticleModeCtrl', {
+        ArticleActionsCtrl = $controller('ArticleActionsCtrl', {
             $scope: scope,
             $log: log,
             $routeParams: {
@@ -62,7 +62,7 @@ describe('Controller: ArticleModeCtrl', function () {
         $httpBackend.verifyNoOutstandingRequest();
     });
     it('initialises', function () {
-        expect(!!ArticleModeCtrl).toBe(true);
+        expect(!!ArticleActionsCtrl).toBe(true);
     });
     it('proxies platform', function() {
         expect(scope.platform).toBeDefined();
@@ -105,7 +105,7 @@ describe('Controller: ArticleModeCtrl', function () {
         inject(function ($q) {
             var deferred = $q.defer();
 
-            ArticleModeCtrl = $controller('ArticleModeCtrl', {
+            ArticleActionsCtrl = $controller('ArticleActionsCtrl', {
                 $scope: scope,
                 article: {
                     init: function () {},
@@ -144,7 +144,7 @@ describe('Controller: ArticleModeCtrl', function () {
             deferredArticle = $q.defer();
             deferredStatus = $q.defer();
 
-            ArticleModeCtrl = $controller('ArticleModeCtrl', {
+            ArticleActionsCtrl = $controller('ArticleActionsCtrl', {
                 $scope: scope,
                 article: {
                     init: function () {},
@@ -299,7 +299,7 @@ describe('Controller: ArticleModeCtrl', function () {
             $httpBackend
                 .expectGET(url)
                 .respond({});
-            ArticleModeCtrl = $controller('ArticleModeCtrl', {
+            ArticleActionsCtrl = $controller('ArticleActionsCtrl', {
                 $scope: scope,
                 $routeParams: {
                     'article': 123,
@@ -341,7 +341,7 @@ describe('Controller: ArticleModeCtrl', function () {
             $httpBackend
                 .expectGET(url)
                 .respond({});
-            ArticleModeCtrl = $controller('ArticleModeCtrl', {
+            ArticleActionsCtrl = $controller('ArticleActionsCtrl', {
                 $scope: scope,
                 $routeParams: {
                     'article': 123,
