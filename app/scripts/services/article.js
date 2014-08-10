@@ -87,6 +87,187 @@ angular.module('authoringEnvironmentApp').service('article', [
             }
         );
 
+        // helper function:
+        // Convert the Snippet comments into divs so that Aloha can process them
+        function snippetCommentsToDivs(text) {
+            if (text === null) {
+                return text;
+            }
+                                            // the extra backward slash (\) is because of Javascript being picky
+            var snippetRex  = '<--';     // exact match
+            snippetRex     += '\\s';      // single whitespace
+            snippetRex     += 'Snippet';  // exact match
+            snippetRex     += '\\s';      // single whitespace
+            snippetRex     += '([\\d]+)'; // capture group 1, match 1 or more digits (\d)
+            snippetRex     += '(';                           // capture group 2
+            snippetRex     +=     '(';                       // capture group 3, 0 to unlimited
+            snippetRex     +=         '[\\s]+';              // match whitespace 1 to unlimited
+            snippetRex     +=         '(align';              // alternating capture group
+            snippetRex     +=         '|\\w+)';              // or any word longer then 1 to unlimited, end of alternating
+            snippetRex     +=         '\\s*';                // match whitespace 0 to unlimited
+            snippetRex     +=         '=';                   // exact match
+            snippetRex     +=         '\\s*';                // match whitespace 0 to unlimited
+            snippetRex     +=         '(';                   // capture group 4
+            snippetRex     +=             '"[^"]*"';         // capture anything except ", 0 to unlimited characters
+            snippetRex     +=             '|[^\\s]*';        // capture anything except whitespace, 0 to unlimited
+            snippetRex     +=         ')';                   // end capture group 4
+            snippetRex     +=     ')*';                      // end capture group 3, 0 to unlimited
+            snippetRex     += ')';                           // end capture group 2
+            snippetRex     += '[\\s]*';                      // match whitespace 0 to unlimited
+            snippetRex     += '-->';      // exact match
+            var snippetPattern = new RegExp(snippetRex, 'ig');
+
+            var converted = text.replace(snippetPattern, function(whole, id) {
+                var output = '';
+                if (id !== undefined) {
+                    output += '<div class="snippet" data-id="'+parseInt(id)+'"';
+                    output += '></div>';
+                }
+                return output;
+            });
+            return converted;
+        }
+
+        // helper function:
+        // Convert the Image comments into divs for Aloha
+        // example: <** Image 1234 float="left" size="small" **>
+        function imageCommentsToDivs(text) {
+            if (text === null) {
+                return text;
+            }
+                                                           // the extra backward slash (\) is because of Javascript being picky
+            var imageReg  = '<';                          // exact match
+            imageReg     += '\\*\\*';                      // exact match on **
+            imageReg     += '[\\s]*';                      // match whitespace 0 to unlimited
+            imageReg     += 'Image';                       // exact match
+            imageReg     += '[\\s]+';                      // match whitespace 1 to unlimited
+            imageReg     += '([\\d]+)';                    // capture digit 1 to unlimited
+            imageReg     += '(';                           // capture group 2
+            imageReg     +=     '(';                       // capture group 3, 0 to unlimited
+            imageReg     +=         '[\\s]+';              // match whitespace 1 to unlimited
+            imageReg     +=         '(align|alt|sub';      // alternating capture group
+            imageReg     +=         '|width|height|ratio';
+            imageReg     +=         '|\\w+)';              // or any word longer then 1 to unlimited, end of alternating
+            imageReg     +=         '\\s*';                // match whitespace 0 to unlimited
+            imageReg     +=         '=';                   // exact match
+            imageReg     +=         '\\s*';                // match whitespace 0 to unlimited
+            imageReg     +=         '(';                   // capture group 4
+            imageReg     +=             '"[^"]*"';         // capture anything except ", 0 to unlimited characters
+            imageReg     +=             '|[^\\s]*';        // capture anything except whitespace, 0 to unlimited
+            imageReg     +=         ')';                   // end capture group 4
+            imageReg     +=     ')*';                      // end capture group 3, 0 to unlimited
+            imageReg     += ')';                           // end capture group 2
+            imageReg     += '[\\s]*';                      // match whitespace 0 to unlimited
+            imageReg     += '\\*\\*';                      // exact match on **
+            imageReg     += '>';                           // exact match
+            var imagePattern = new RegExp(imageReg, 'ig');
+
+            var converted = text.replace(
+                imagePattern,
+                function(whole, imageId, imageAttributes) {
+                    var imageDiv = '<div class="image" dropped-image ' +
+                        'data-id="' + imageId + '"';
+                    var tmpElement = document.createElement('div');
+                    tmpElement.innerHTML = '<div '+imageAttributes+'></div>';
+                    var attributes = tmpElement.childNodes[0].attributes;
+
+                    for (var i = 0; i < attributes.length; i++) {
+                        imageDiv += ' data-' + attributes[i].name +
+                            '="'+attributes[i].value + '"';
+                    }
+
+                    imageDiv += '></div>';
+                    return imageDiv;
+                }
+            );
+            return converted;
+        }  // end function imageCommentsToDivs
+
+        // TODO: tests, better comments etc.
+        // deserialize placeholders in article text to snippets and images divs
+        function deserializeAlohaBlocks(text) {
+            return imageCommentsToDivs(snippetCommentsToDivs(text));
+        }
+
+        // converts images' and snippets' HTML in text to special
+        // placeholder comments
+        // TODO: tests, comments
+        function serializeAlohaBlocks(type, text) {
+            var content,
+                matches,
+                sep;
+
+            if ((type !== 'snippet' && type !== 'image') || text === null) {
+                return text;
+            }
+
+            sep = {snippet: '--', image: '**'};
+            content = $('<div/>').html(text);
+
+            matches = content.contents().filter('div.' + type);
+
+            // replace each matching div with its serialized version
+            matches.replaceWith(function() {
+                var serialized,
+                    $match = $(this);
+
+                serialized = [
+                    '<', sep[type], ' ',
+                    type.charAt(0).toUpperCase(), type.slice(1), ' ',
+                    parseInt($match.data('id'), 10)
+                ];
+
+                $.each($match.data(), function (name, value) {
+                    if (name !== 'id') {
+                        serialized.push(' ', name, '="', value, '"');
+                    }
+                });
+
+                serialized.push(' ', sep[type], '>');
+                return serialized.join('');
+            });
+
+            return content.html()
+                .replace(/\&lt\;\*\*/g,'<**')   // replace &lt;** with <**
+                .replace(/\*\*\&gt\;/g, '**>')  // replace **&gt; with **>
+                .replace(/\&lt\;\-\-/g,'<--')   // replace &lt;-- with <--
+                .replace(/\-\-\&gt\;/g, '-->'); // replace --&gt; with -->
+        }
+
+        // TODO: comments & tests
+        // XXX: get rid of explicitly passing the articleObj
+        function save(articleObj) {
+            var deferred = $q.defer(),
+                key,
+                postData = angular.copy(articleObj),
+                serialized;
+
+            // serialize objects (images, snippets) in all article fields
+            for (key in postData.fields) {
+                if (postData.fields.hasOwnProperty(key)) {
+                    serialized = serializeAlohaBlocks(
+                        'image', postData.fields[key]
+                    );
+                    postData.fields[key] = serializeAlohaBlocks(
+                        'snippet', serialized
+                    );
+                }
+            }
+
+            resource.save({
+                articleId: articleObj.number,
+                language: articleObj.language
+            }, postData,
+            function () {
+                deferred.resolve();
+            }, function () {
+                deferred.reject();
+            });
+
+            return deferred.promise;
+        }
+
+
         return {
             commenting: commenting,
             wfStatus: wfStatus,
@@ -94,10 +275,13 @@ angular.module('authoringEnvironmentApp').service('article', [
             modified: false,
             resource: resource,
             promise: deferred.promise,
+            save: save,
+            // XXX: this deserialization shouldn't be public...?
+            deserializeAlohaBlocks: deserializeAlohaBlocks,
+
             init: function (par) {
                 var service = this;
                 resource.get(par).$promise.then(function (data) {
-                    console.log('article.init() called, article retrieved'); // TODO: remove
                     service.articleId = data.number;
                     service.language = data.language;
                     service.init = function () {
