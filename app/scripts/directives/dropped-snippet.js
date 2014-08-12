@@ -21,6 +21,9 @@ angular.module('authoringEnvironmentApp').directive('droppedSnippet', [
                 element.find('.remove').on('click', function () {
                     // the parent is the actual Aloha block
                     element.parent().remove();
+
+                    // notify controller about the removal
+                    ctrl.snippetRemoved(parseInt(scope.snippetId, 10));
                 });
 
                 ctrl.init(snippetId);
