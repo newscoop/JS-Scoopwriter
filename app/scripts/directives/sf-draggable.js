@@ -32,7 +32,6 @@ angular.module('authoringEnvironmentApp').directive('sfDraggable', [
                 scope.$watch(function () {
                     return scope.allowDrag;
                 }, function (newVal) {
-                    console.log(newVal);
                     if (!!newVal) {
                         enableDrag(element);
                     } else {

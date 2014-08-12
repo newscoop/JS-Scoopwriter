@@ -1,11 +1,11 @@
 'use strict';
 
-describe('Controller: ArticleCtrl', function () {
+describe('Controller: ArticleActionsCtrl', function () {
 
     // load the controller's module
     beforeEach(module('authoringEnvironmentApp'));
 
-    var ArticleCtrl,
+    var ArticleActionsCtrl,
     scope,
     $httpBackend,
     $timeout,
@@ -46,7 +46,7 @@ describe('Controller: ArticleCtrl', function () {
 
         $httpBackend.expectGET(urlArticleTypeGet).respond(articleTypeNews);
 
-        ArticleCtrl = $controller('ArticleCtrl', {
+        ArticleActionsCtrl = $controller('ArticleActionsCtrl', {
             $scope: scope,
             $log: log,
             $routeParams: {
@@ -62,118 +62,145 @@ describe('Controller: ArticleCtrl', function () {
         $httpBackend.verifyNoOutstandingRequest();
     });
     it('initialises', function () {
-        expect(!!ArticleCtrl).toBe(true);
+        expect(!!ArticleActionsCtrl).toBe(true);
     });
-    it('proxies platform', function() {
-        expect(scope.platform).toBeDefined();
-    });
-    it('proxies panes', function() {
-        expect(scope.panes).toBeDefined();
-    });
+    // it('proxies platform', function() {
+    //     expect(scope.platform).toBeDefined();
+    // });
+    // it('proxies panes', function() {
+    //     expect(scope.panes).toBeDefined();
+    // });
     it('has no article', function() {
         expect(scope.article).toBeUndefined();
     });
+    // it('has empty history', function() {
+    //     expect(scope.history.used()).toBe(0);
+    // });
+    // it('is not modified', function() {
+    //     expect(scope.status).toBe('Initializing');
+    // });
 
-    describe('backend answers', function() {
-        beforeEach(function() {
-            $httpBackend.flush();
-        });
-        afterEach(function() {
-            $httpBackend.verifyNoOutstandingRequest();
-        });
-        it('proxies the article', function() {
-            expect(scope.article).toBeDefined();
-        });
-        it('reacts well to weird events', function() {
-            /* in the angular doc i found no mention of the previous
-             * value being undefined during initialisation, but this
-             * is what we get, so i added some checks for that */
-            expect(log.debug.calls[0].args).toEqual([ 'the old article value is', undefined ]);
-            expect(log.debug.calls[1].args).toEqual([ 'the old article value is', undefined ]);
-        });
-        it('is not modified', function() {
-            expect(scope.modified).toBe(false);
-            expect(scope.status).toBe('Saved');
-        });
-        describe('with a changed field', function() {
-            beforeEach(function() {
-                scope.$apply(function() {
-                    scope.article.fields.lede = 'changed';
-                });
-            });
-            it('knows something changed', function() {
-                expect(scope.setModified).toHaveBeenCalledWith(true);
-                expect(scope.articleService.modified).toBe(true);
-                expect(scope.status).toBe('Modified');
-            });
-        });
+    it('initializes article workflow status options in scope', function () {
+        var expected = [
+            {value: 'N', text: 'New'},
+            {value: 'S', text: 'Submitted'},
+            {value: 'Y', text: 'Published'},
+            {value: 'M', text: 'Published with issue'}
+        ];
+        expect(scope.workflowStatuses).toEqual(expected);
     });
-    describe('initialised again on an already modified article', function() {
-        beforeEach(function() {
-            var url =  Routing.generate(
-                'newscoop_gimme_articletypes_getarticletype',
-                {name: 'news'}, true
-            );
 
-            $httpBackend.flush(2);
-            scope = $rootScope.$new();
-            articleService.modified = true;
-            $httpBackend
-                .expectGET(url)
-                .respond({});
-            ArticleCtrl = $controller('ArticleCtrl', {
+    it('sets the selected article workflow status option to NEW by default',
+        function () {
+            expect(scope.wfStatus).toEqual({value: 'N', text: 'New'});
+        }
+    );
+
+    it('sets scope\'s changingWfStatus flag to false by default', function () {
+        expect(scope.changingWfStatus).toBe(false);
+    });
+
+    it ('sets workflow status in scope to the actual article status ' +
+        'when the article is retrieved',
+        inject(function ($q) {
+            var deferred = $q.defer();
+
+            ArticleActionsCtrl = $controller('ArticleActionsCtrl', {
                 $scope: scope,
-                $routeParams: {
-                    'article': 123,
-                    'language': 'de'
+                article: {
+                    init: function () {},
+                    promise: deferred.promise,
+                    wfStatus: {}
+                },
+                articleType: {
+                    get: function () {}
                 }
             });
-        });
-        it('finds the article promise already resolved', function(done) {
-            var spy = jasmine.createSpy('spy');
-            articleService.promise.then(function() {
-                spy();
-            });
-            $rootScope.$apply();
-            expect(spy).toHaveBeenCalled();
-        });
-        it('gets the article', function() {
-            $rootScope.$apply();
-            expect(scope.article).toBeDefined();
-        });
-        it('finds a modified article', function() {
-            $rootScope.$apply();
-            expect(scope.articleService.modified).toBe(true);
-        });
-        it('is modified', function() {
-            $rootScope.$apply();
-            expect(scope.status).toBe('Modified');
-        });
-    });
-    describe('initialised again on a saved article', function() {
-        beforeEach(function() {
-            var url =  Routing.generate(
-                'newscoop_gimme_articletypes_getarticletype',
-                {name: 'news'}, true
-            );
 
-            $httpBackend.flush(2);
-            scope = $rootScope.$new();
-            articleService.modified = false;
-            $httpBackend
-                .expectGET(url)
-                .respond({});
-            ArticleCtrl = $controller('ArticleCtrl', {
+            scope.workflowStatuses = [
+                {value: 'N', text: 'New'},
+                {value: 'S', text: 'Submitted'},
+                {value: 'Y', text: 'Published'},
+                {value: 'M', text: 'Published with issue'}
+            ];
+
+            scope.wfStatus = {value: 'S', text: 'Submitted'};
+            deferred.resolve({id: 123, status: 'M'});
+            scope.$apply();
+
+            expect(scope.wfStatus).toEqual(
+                {value: 'M', text: 'Published with issue'});
+        }
+    ));
+
+
+    describe('scope\'s setWorkflowStatus() method', function () {
+        var deferredArticle,
+            deferredStatus,
+            $q;
+
+        beforeEach(inject(function (_$q_) {
+            $q = _$q_;
+            deferredArticle = $q.defer();
+            deferredStatus = $q.defer();
+
+            ArticleActionsCtrl = $controller('ArticleActionsCtrl', {
                 $scope: scope,
-                $routeParams: {
-                    'article': 123,
-                    'language': 'de'
+                article: {
+                    init: function () {},
+                    promise: deferredArticle.promise,
+                    setWorkflowStatus: function () {
+                        return deferredStatus.promise
+                    },
+                    wfStatus: {}
                 }
             });
+
+            scope.workflowStatuses = [
+                {value: 'N', text: 'New'},
+                {value: 'S', text: 'Submitted'},
+                {value: 'Y', text: 'Published'},
+                {value: 'M', text: 'Published with issue'}
+            ];
+
+            scope.wfStatus = {value: 'S', text: 'Submitted'};
+        }));
+
+        it('sets changingWfStatus flag before sending a request', function () {
+            scope.changingWfStatus = false;
+            scope.setWorkflowStatus('M');
+            expect(scope.changingWfStatus).toBe(true);
         });
-        it('is shows the correct status', function() {
-            $rootScope.$apply();
-            expect(scope.status).toBe('Saved');
+
+        it('clears changingWfStatus flag on success', function () {
+            scope.setWorkflowStatus('M');
+            scope.changingWfStatus = true;
+
+            deferredStatus.resolve();
+            scope.$apply();
+
+            expect(scope.changingWfStatus).toBe(false);
+        });
+
+        it('clears changingWfStatus flag on error', function () {
+            scope.setWorkflowStatus('M');
+            scope.changingWfStatus = true;
+
+            deferredStatus.reject('server timeout');
+            scope.$apply();
+
+            expect(scope.changingWfStatus).toBe(false);
+        });
+
+        it('updates workflow status in scope on success', function () {
+            scope.setWorkflowStatus('M');
+
+            deferredStatus.resolve();
+            scope.$apply();
+
+            expect(scope.wfStatus).toEqual(
+                {value: 'M', text: 'Published with issue'});
         });
     });
+
 });
