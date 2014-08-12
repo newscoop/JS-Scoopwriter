@@ -82,11 +82,14 @@
        class="panel panel-default"
        data-draggable-type="embed"
        data-id="{{snippet.id}}"
-       sf-draggable="true || snippet.is"
+       sf-draggable="!inArticleBody(snippet.id)"
        >
-      <div class="panel-heading draggable-panel-heading">
+      <div class="panel-heading draggable-panel-heading"
+            ng-class="{'used-in-content': inArticleBody(snippet.id)}">
         <span class="expand"></span>
-        <div class="pull-right">
+
+        <div ng-if="!inArticleBody(snippet.id)"
+            class="pull-right">
           <button
               class="btn btn-sf-invisible pull-right"
               title="Remove"
@@ -98,6 +101,10 @@
               title="Edit">
               <i class="fa fa-pencil"></i>
             </button>
+        </div>
+        <div ng-if="inArticleBody(snippet.id)"
+            class="pull-right in-content-marker">
+          <span class="glyphicon glyphicon-ok"></span>
         </div>
         
         <div class="pull-left">

@@ -5,8 +5,11 @@ angular.module('authoringEnvironmentApp').controller('PaneSnippetsCtrl', [
     'article',
     'Snippet',
     'SnippetTemplate',
+    'snippets',
     'modalFactory',
-    function ($scope, $q, article, Snippet, SnippetTemplate, modalFactory) {
+    function (
+        $scope, $q, article, Snippet, SnippetTemplate, snippets, modalFactory
+    ) {
 
         /**
         * Resets all new snippet form fields.
@@ -104,6 +107,19 @@ angular.module('authoringEnvironmentApp').controller('PaneSnippetsCtrl', [
                     return item === snippet;
                 });
             });
+        };
+
+        /**
+        * Determines whether a particular snippet is currently included in
+        * article body or not.
+        *
+        * @method inArticleBody
+        * @param snippetId {Number} ID of the snippet to check
+        * @return {Boolean}
+        */
+        // TODO: tests
+        $scope.inArticleBody = function (snippetId) {
+            return snippets.inArticleBody[snippetId];
         };
 
         $scope.showAddSnippet = false;
