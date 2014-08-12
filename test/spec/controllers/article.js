@@ -73,12 +73,6 @@ describe('Controller: ArticleCtrl', function () {
     it('has no article', function() {
         expect(scope.article).toBeUndefined();
     });
-    it('has empty history', function() {
-        expect(scope.history.used()).toBe(0);
-    });
-    it('is not modified', function() {
-        expect(scope.status).toBe('Initializing');
-    });
 
     describe('backend answers', function() {
         beforeEach(function() {
@@ -97,9 +91,6 @@ describe('Controller: ArticleCtrl', function () {
             expect(log.debug.calls[0].args).toEqual([ 'the old article value is', undefined ]);
             expect(log.debug.calls[1].args).toEqual([ 'the old article value is', undefined ]);
         });
-        it('changed the article once', function() {
-            expect(scope.history.used()).toBe(0);
-        });
         it('is not modified', function() {
             expect(scope.modified).toBe(false);
             expect(scope.status).toBe('Saved');
@@ -114,51 +105,6 @@ describe('Controller: ArticleCtrl', function () {
                 expect(scope.setModified).toHaveBeenCalledWith(true);
                 expect(scope.articleService.modified).toBe(true);
                 expect(scope.status).toBe('Modified');
-            });
-            describe('save triggered', function() {
-                beforeEach(function() {
-                    var url =  Routing.generate(
-                        'newscoop_gimme_articles_changearticlestatus',
-                        {number: 123, language: 'de'}, true
-                    );
-                    $httpBackend.expect('PATCH', url).respond({});
-                    scope.save();
-                });
-                describe('response received', function() {
-                    beforeEach(function() {
-                        $httpBackend.flush();
-                    });
-                    it('sends the update request', function() {
-                        $httpBackend.verifyNoOutstandingRequest();
-                    });
-                    it('does not feel different anymore', function() {
-                        expect(scope.setModified).toHaveBeenCalledWith(false);
-                        expect(scope.status).toBe('Saved');
-                    });
-                });
-            });
-            describe('save triggered with error response', function() {
-                beforeEach(function() {
-                    var url =  Routing.generate(
-                        'newscoop_gimme_articles_changearticlestatus',
-                        {number: 123, language: 'de'}, true
-                    );
-                    $httpBackend.expect('PATCH', url).respond(500, 'error');
-                    scope.save();
-                });
-                describe('response received', function() {
-                    beforeEach(function() {
-                        $httpBackend.flush();
-                    });
-                    it('sends the update request', function() {
-                        $httpBackend.verifyNoOutstandingRequest();
-                    });
-                    it('tells the user', function() {
-                        /* Attention: if you change this, change also the
-                         * corresponding styling in the view */
-                        expect(scope.status).toBe('Error saving');
-                    });
-                });
             });
         });
     });

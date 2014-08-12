@@ -64,21 +64,21 @@ describe('Controller: ArticleActionsCtrl', function () {
     it('initialises', function () {
         expect(!!ArticleActionsCtrl).toBe(true);
     });
-    it('proxies platform', function() {
-        expect(scope.platform).toBeDefined();
-    });
-    it('proxies panes', function() {
-        expect(scope.panes).toBeDefined();
-    });
+    // it('proxies platform', function() {
+    //     expect(scope.platform).toBeDefined();
+    // });
+    // it('proxies panes', function() {
+    //     expect(scope.panes).toBeDefined();
+    // });
     it('has no article', function() {
         expect(scope.article).toBeUndefined();
     });
-    it('has empty history', function() {
-        expect(scope.history.used()).toBe(0);
-    });
-    it('is not modified', function() {
-        expect(scope.status).toBe('Initializing');
-    });
+    // it('has empty history', function() {
+    //     expect(scope.history.used()).toBe(0);
+    // });
+    // it('is not modified', function() {
+    //     expect(scope.status).toBe('Initializing');
+    // });
 
     it('initializes article workflow status options in scope', function () {
         var expected = [
@@ -203,155 +203,4 @@ describe('Controller: ArticleActionsCtrl', function () {
         });
     });
 
-
-    describe('backend answers', function() {
-        beforeEach(function() {
-            $httpBackend.flush();
-        });
-        afterEach(function() {
-            $httpBackend.verifyNoOutstandingRequest();
-        });
-        it('proxies the article', function() {
-            expect(scope.article).toBeDefined();
-        });
-        it('reacts well to weird events', function() {
-            /* in the angular doc i found no mention of the previous
-             * value being undefined during initialisation, but this
-             * is what we get, so i added some checks for that */
-            expect(log.debug.calls[0].args).toEqual([ 'the old article value is', undefined ]);
-            expect(log.debug.calls[1].args).toEqual([ 'the old article value is', undefined ]);
-        });
-        it('changed the article once', function() {
-            expect(scope.history.used()).toBe(0);
-        });
-        it('is not modified', function() {
-            expect(scope.modified).toBe(false);
-            expect(scope.status).toBe('Saved');
-        });
-        describe('with a changed field', function() {
-            beforeEach(function() {
-                scope.$apply(function() {
-                    scope.article.fields.lede = 'changed';
-                });
-            });
-            it('knows something changed', function() {
-                expect(scope.setModified).toHaveBeenCalledWith(true);
-                expect(scope.articleService.modified).toBe(true);
-                expect(scope.status).toBe('Modified');
-            });
-            describe('save triggered', function() {
-                beforeEach(function() {
-                    var url =  Routing.generate(
-                        'newscoop_gimme_articles_changearticlestatus',
-                        {number: 123, language: 'de'}, true
-                    );
-                    $httpBackend.expect('PATCH', url).respond({});
-                    scope.save();
-                });
-                describe('response received', function() {
-                    beforeEach(function() {
-                        $httpBackend.flush();
-                    });
-                    it('sends the update request', function() {
-                        $httpBackend.verifyNoOutstandingRequest();
-                    });
-                    it('does not feel different anymore', function() {
-                        expect(scope.setModified).toHaveBeenCalledWith(false);
-                        expect(scope.status).toBe('Saved');
-                    });
-                });
-            });
-            describe('save triggered with error response', function() {
-                beforeEach(function() {
-                    var url =  Routing.generate(
-                        'newscoop_gimme_articles_changearticlestatus',
-                        {number: 123, language: 'de'}, true
-                    );
-                    $httpBackend.expect('PATCH', url).respond(500, 'error');
-                    scope.save();
-                });
-                describe('response received', function() {
-                    beforeEach(function() {
-                        $httpBackend.flush();
-                    });
-                    it('sends the update request', function() {
-                        $httpBackend.verifyNoOutstandingRequest();
-                    });
-                    it('tells the user', function() {
-                        /* Attention: if you change this, change also the
-                         * corresponding styling in the view */
-                        expect(scope.status).toBe('Error saving');
-                    });
-                });
-            });
-        });
-    });
-    describe('initialised again on an already modified article', function() {
-        beforeEach(function() {
-            var url =  Routing.generate(
-                'newscoop_gimme_articletypes_getarticletype',
-                {name: 'news'}, true
-            );
-
-            $httpBackend.flush(2);
-            scope = $rootScope.$new();
-            articleService.modified = true;
-            $httpBackend
-                .expectGET(url)
-                .respond({});
-            ArticleActionsCtrl = $controller('ArticleActionsCtrl', {
-                $scope: scope,
-                $routeParams: {
-                    'article': 123,
-                    'language': 'de'
-                }
-            });
-        });
-        it('finds the article promise already resolved', function(done) {
-            var spy = jasmine.createSpy('spy');
-            articleService.promise.then(function() {
-                spy();
-            });
-            $rootScope.$apply();
-            expect(spy).toHaveBeenCalled();
-        });
-        it('gets the article', function() {
-            $rootScope.$apply();
-            expect(scope.article).toBeDefined();
-        });
-        it('finds a modified article', function() {
-            $rootScope.$apply();
-            expect(scope.articleService.modified).toBe(true);
-        });
-        it('is modified', function() {
-            $rootScope.$apply();
-            expect(scope.status).toBe('Modified');
-        });
-    });
-    describe('initialised again on a saved article', function() {
-        beforeEach(function() {
-            var url =  Routing.generate(
-                'newscoop_gimme_articletypes_getarticletype',
-                {name: 'news'}, true
-            );
-
-            $httpBackend.flush(2);
-            scope = $rootScope.$new();
-            articleService.modified = false;
-            $httpBackend
-                .expectGET(url)
-                .respond({});
-            ArticleActionsCtrl = $controller('ArticleActionsCtrl', {
-                $scope: scope,
-                $routeParams: {
-                    'article': 123,
-                    'language': 'de'
-                }
-            });
-        });
-        it('is shows the correct status', function() {
-            $rootScope.$apply();
-            expect(scope.status).toBe('Saved');
-        });
-    });
 });
