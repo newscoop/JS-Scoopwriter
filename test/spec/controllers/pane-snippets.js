@@ -10,6 +10,7 @@ describe('Controller: PaneSnippetsCtrl', function () {
         Snippet,
         SnippetTemplate,
         SnippetsCtrl,
+        snippetsService,
         scope,
         $q;
 
@@ -17,12 +18,13 @@ describe('Controller: PaneSnippetsCtrl', function () {
     beforeEach(inject(
         function (
             $controller, $rootScope, _$q_, _article_, _Snippet_,
-            _SnippetTemplate_
+            _SnippetTemplate_, snippets
         ) {
             $q = _$q_;
             article = _article_;
             Snippet = _Snippet_;
             SnippetTemplate = _SnippetTemplate_;
+            snippetsService = snippets;
 
             articleDeferred = $q.defer();
             article.promise = articleDeferred.promise;
@@ -44,7 +46,8 @@ describe('Controller: PaneSnippetsCtrl', function () {
                 $scope: scope,
                 article: article,
                 Snippet: Snippet,
-                SnippetTemplate: SnippetTemplate
+                SnippetTemplate: SnippetTemplate,
+                snippets: snippetsService
             });
         }
     ));
@@ -306,6 +309,21 @@ describe('Controller: PaneSnippetsCtrl', function () {
             scope.$apply();
 
             expect(scope.snippets.length).toEqual(3);
+        });
+    });
+
+
+    describe('scope\'s inArticleBody() method', function () {
+        beforeEach(function () {
+            snippetsService.inArticleBody = {2: true, 4: true, 11: true};
+        });
+
+        it('returns true for image present in article body', function () {
+            expect(scope.inArticleBody(4)).toBe(true);
+        });
+
+        it('returns false for image NOT present in article body', function () {
+            expect(scope.inArticleBody(1)).toBe(false);
         });
     });
 });

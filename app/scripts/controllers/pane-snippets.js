@@ -117,9 +117,8 @@ angular.module('authoringEnvironmentApp').controller('PaneSnippetsCtrl', [
         * @param snippetId {Number} ID of the snippet to check
         * @return {Boolean}
         */
-        // TODO: tests
         $scope.inArticleBody = function (snippetId) {
-            return snippets.inArticleBody[snippetId];
+            return !!snippets.inArticleBody[snippetId];
         };
 
         $scope.showAddSnippet = false;
