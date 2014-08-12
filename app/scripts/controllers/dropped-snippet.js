@@ -8,6 +8,7 @@ angular.module('authoringEnvironmentApp').controller('DroppedSnippetCtrl', [
     function ($scope, $sce, $rootScope, Snippet, snippets) {
 
         $scope.expanded = false;
+        $scope.snippets = snippets;
 
         /**
         * Initializes the controller - it retrieves the specified snippet from
@@ -22,7 +23,7 @@ angular.module('authoringEnvironmentApp').controller('DroppedSnippetCtrl', [
                 // <iframe> and similar tags are not filtered out)
                 $scope.snippetHtml = $sce.trustAsHtml(snippet.render);
                 $scope.snippet = snippet;
-                snippets.addToIncluded(snippet.id);  // TODO: tests
+                snippets.addToIncluded(snippet.id);
             });
         };
 
@@ -33,13 +34,10 @@ angular.module('authoringEnvironmentApp').controller('DroppedSnippetCtrl', [
         * @method snippetRemoved
         * @param snippetId {Number} ID of the removed snippet
         */
-        // TODO: tests
         this.snippetRemoved = function (snippetId) {
             snippets.removeFromIncluded(snippetId);
             $rootScope.$apply(snippets.inArticleBody);
         };
-
-        $scope.snippets = snippets;  // TODO: test this
 
         /**
         * Sets the snippet display mode to expanded.
