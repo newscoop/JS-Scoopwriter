@@ -1,67 +1,26 @@
 'use strict';
 
 // TODO: comment ... service for keeping  track of article snippets
+// attached to the article
 angular.module('authoringEnvironmentApp').service('snippets', [
     '$http',
-    'pageTracker',
-    'configuration',
     '$log',
-    'article',
-    'getFileReader',
-    'formDataFactory',
-    'imageFactory',
-    '$upload',
     '$rootScope',
-    '$q',
-    function (
-        $http, pageTracker, configuration, $log, article,
-        getFileReader, formDataFactory, imageFactory, $upload, $rootScope, $q
-    ) {
+    'pageTracker',
+    'article',
+    'Snippet',
+    function ($http, $log, $rootScope, pageTracker, article, Snippet) {
         /* more info about the page tracker in its tests */
-        var self = this,
-            ITEMS_PER_PAGE_DEFAULT = 50;
+        var self = this;
 
         article.promise.then(function (article) {
             self.article = article;
-            self.loadAttached(article);
+            self.attached = Snippet.getAllByArticle(
+                article.number, article.language);
         });
 
-        this.tracker = pageTracker.getTracker({ max: 100 });
-        this.loaded = [];
-        this.displayed = [];  // XXX: needed?
-
-
-        this.attached = [];  // list of snippets attached to the article
-        this.inArticleBody = {};  // list of snippet IDs in article body
-
-        this.includedIndex = -1;
-        // this.itemsPerPage = ITEMS_PER_PAGE_DEFAULT;
-
-
-        // TODO: for this we have Snippet.getAllByArticle()
-        /**
-        * Loads snippet objects attached to the article and initializes
-        *  the `attached` array (NOTE: any existing items are discarded).
-        *
-        * @method loadAttached
-        * @param article {Object} article object for which to load the
-        *     attached snippets.
-        */
-        this.loadAttached = function (article) {
-            var url = Routing.generate(
-                'newscoop_gimme_snippets_getsnippetsforarticle',
-                {
-                    'number': article.number, 'language': article.language,
-                    'items_per_page': 99999, 'expand': true
-                },
-                true
-            );
-            $http.get(url).then(function (result) {
-                // TODO: convert to snippet objects?
-                self.attached = result.data.items;
-                console.log('attached snippets:', self.attached); //TODO: delete
-            });
-        };
+        self.attached = [];  // list of snippets attached to the article
+        self.inArticleBody = {};  // list of snippet IDs in article body
 
 
         // TODO: this.attach could be used for attaching... we already have
@@ -183,6 +142,7 @@ angular.module('authoringEnvironmentApp').service('snippets', [
         */
         this.detach = function (id) {
             var match = this.matchMaker(id);
+            console.log('detaching..');
             if (_.find(this.attached, match)) {
                 var url = Routing.generate('newscoop_gimme_articles_unlinkarticle', {'number':service.article.number, 'language':service.article.language}, true);
                 var link = '<' + Routing.generate('newscoop_gimme_images_getimage', {'number':id}, true) + '>';

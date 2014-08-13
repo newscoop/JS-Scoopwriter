@@ -42,6 +42,7 @@ angular.module('authoringEnvironmentApp').controller('PaneSnippetsCtrl', [
         *       have a "name" property and a "fromValue" property (value of
         *       the field as entered by user).
         */
+        // TODO: this will probably be refactored to use the snippets service
         $scope.addNewSnippetToArticle = function (snippetData) {
             var fields = {},
                 newSnippet;
@@ -52,6 +53,7 @@ angular.module('authoringEnvironmentApp').controller('PaneSnippetsCtrl', [
                 fields[field.name] = field.value;
             });
 
+            // TODO: go through the snippets service
             Snippet.create(
                 snippetData.name, snippetData.template.id, fields
             )
@@ -99,6 +101,9 @@ angular.module('authoringEnvironmentApp').controller('PaneSnippetsCtrl', [
                 // NOTE: detach snippet from article but don't delete it,
                 // because it might be attached to some other article, too
                 // (in theory at least)
+                // TODO: go through snippets service! so that machinery
+                // is notified ... adn $scope.snippets is loaded
+                // through the snippets service!
                 return snippet.removeFromArticle(
                     articleData.number, articleData.language);
             }, $q.reject)
@@ -136,11 +141,6 @@ angular.module('authoringEnvironmentApp').controller('PaneSnippetsCtrl', [
         });
 
         $scope.snippetTemplates = SnippetTemplate.getAll();
-
-        // initialization: retrieve all article snippets from server
-        article.promise.then(function (articleData) {
-            $scope.snippets = Snippet.getAllByArticle(
-                articleData.number, articleData.language);
-        });
+        $scope.snippets = snippets.attached;
     }
 ]);
