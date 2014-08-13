@@ -5,8 +5,11 @@ angular.module('authoringEnvironmentApp').controller('PaneSnippetsCtrl', [
     'article',
     'Snippet',
     'SnippetTemplate',
+    'snippets',
     'modalFactory',
-    function ($scope, $q, article, Snippet, SnippetTemplate, modalFactory) {
+    function (
+        $scope, $q, article, Snippet, SnippetTemplate, snippets, modalFactory
+    ) {
 
         /**
         * Resets all new snippet form fields.
@@ -57,11 +60,7 @@ angular.module('authoringEnvironmentApp').controller('PaneSnippetsCtrl', [
                 return article.promise;
             }, $q.reject)
             .then(function (articleData) {
-                return newSnippet.addToArticle(
-                    articleData.number, articleData.language);
-            }, $q.reject)
-            .then(function () {
-                $scope.snippets.push(newSnippet);
+                snippets.addToArticle(newSnippet, articleData);
             })
             .finally(function () {
                 $scope.addingNewSnippet = false;
@@ -96,14 +95,20 @@ angular.module('authoringEnvironmentApp').controller('PaneSnippetsCtrl', [
                 // NOTE: detach snippet from article but don't delete it,
                 // because it might be attached to some other article, too
                 // (in theory at least)
-                return snippet.removeFromArticle(
-                    articleData.number, articleData.language);
-            }, $q.reject)
-            .then(function () {
-                _.remove($scope.snippets, function (item) {
-                    return item === snippet;
-                });
+                snippets.removeFromArticle(snippet, articleData);
             });
+        };
+
+        /**
+        * Determines whether a particular snippet is currently included in
+        * article body or not.
+        *
+        * @method inArticleBody
+        * @param snippetId {Number} ID of the snippet to check
+        * @return {Boolean}
+        */
+        $scope.inArticleBody = function (snippetId) {
+            return !!snippets.inArticleBody[snippetId];
         };
 
         $scope.showAddSnippet = false;
@@ -121,11 +126,6 @@ angular.module('authoringEnvironmentApp').controller('PaneSnippetsCtrl', [
         });
 
         $scope.snippetTemplates = SnippetTemplate.getAll();
-
-        // initialization: retrieve all article snippets from server
-        article.promise.then(function (articleData) {
-            $scope.snippets = Snippet.getAllByArticle(
-                articleData.number, articleData.language);
-        });
+        $scope.snippets = snippets.attached;
     }
 ]);

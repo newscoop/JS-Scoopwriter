@@ -2,10 +2,13 @@
 angular.module('authoringEnvironmentApp').controller('DroppedSnippetCtrl', [
     '$scope',
     '$sce',
+    '$rootScope',
     'Snippet',
-    function ($scope, $sce, Snippet) {
+    'snippets',
+    function ($scope, $sce, $rootScope, Snippet, snippets) {
 
         $scope.expanded = false;
+        $scope.snippets = snippets;
 
         /**
         * Initializes the controller - it retrieves the specified snippet from
@@ -20,7 +23,20 @@ angular.module('authoringEnvironmentApp').controller('DroppedSnippetCtrl', [
                 // <iframe> and similar tags are not filtered out)
                 $scope.snippetHtml = $sce.trustAsHtml(snippet.render);
                 $scope.snippet = snippet;
+                snippets.addToIncluded(snippet.id);
             });
+        };
+
+        /**
+        * A handler for event when snippet has been removed from the
+        * snippets-in-article list.
+        *
+        * @method snippetRemoved
+        * @param snippetId {Number} ID of the removed snippet
+        */
+        this.snippetRemoved = function (snippetId) {
+            snippets.removeFromIncluded(snippetId);
+            $rootScope.$apply(snippets.inArticleBody);
         };
 
         /**

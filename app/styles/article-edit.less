@@ -2690,7 +2690,29 @@ a:hover {
             }
             &.low {
                 top: 392px;
-            }            
+            }
+
+            .used-in-content {
+                cursor: default;
+                &.draggable-panel-heading {
+                    position: relative;
+                    overflow: hidden !important;
+                    .in-content-marker {
+                       border-radius: 35px;
+                       display: inline;
+                       position: absolute;
+                       right: -9px;
+                       top: -12px;
+                       color: white;
+                       background: #489729;
+                       padding: 14px 8px;
+                       line-height: 0;
+                       width: 35px;
+                       height: 35px;
+                    }
+                }
+            }
+
         }
         .attached-title {
                 position:relative;

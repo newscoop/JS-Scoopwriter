@@ -10,6 +10,7 @@ describe('Controller: PaneSnippetsCtrl', function () {
         Snippet,
         SnippetTemplate,
         SnippetsCtrl,
+        snippetsService,
         scope,
         $q;
 
@@ -17,12 +18,13 @@ describe('Controller: PaneSnippetsCtrl', function () {
     beforeEach(inject(
         function (
             $controller, $rootScope, _$q_, _article_, _Snippet_,
-            _SnippetTemplate_
+            _SnippetTemplate_, snippets
         ) {
             $q = _$q_;
             article = _article_;
             Snippet = _Snippet_;
             SnippetTemplate = _SnippetTemplate_;
+            snippetsService = snippets;
 
             articleDeferred = $q.defer();
             article.promise = articleDeferred.promise;
@@ -39,12 +41,15 @@ describe('Controller: PaneSnippetsCtrl', function () {
                 ];
             });
 
+            snippetsService.attached = [{id: 1}, {id: 8}];
+
             scope = $rootScope.$new();
             SnippetsCtrl = $controller('PaneSnippetsCtrl', {
                 $scope: scope,
                 article: article,
                 Snippet: Snippet,
-                SnippetTemplate: SnippetTemplate
+                SnippetTemplate: SnippetTemplate,
+                snippets: snippetsService
             });
         }
     ));
@@ -86,10 +91,7 @@ describe('Controller: PaneSnippetsCtrl', function () {
     });
 
     it('initializes a list of article snippets in scope', function () {
-        articleDeferred.resolve({number: 55, language: 'pl'});
-        scope.$apply();
-        expect(Snippet.getAllByArticle).toHaveBeenCalledWith(55, 'pl');
-        expect(scope.snippets).toEqual([{id:1}, {id:2}]);
+        expect(scope.snippets).toEqual([{id:1}, {id:8}]);
     });
 
     describe('scope\'s clearNewSnippetForm() method', function () {
@@ -134,7 +136,6 @@ describe('Controller: PaneSnippetsCtrl', function () {
 
     describe('scope\'s addNewSnippetToArticle() method', function () {
         var createdSnippet,
-            deferredAdd,
             deferredCreate,
             snippetData;
 
@@ -155,14 +156,9 @@ describe('Controller: PaneSnippetsCtrl', function () {
             spyOn(Snippet, 'create').andCallFake(function () {
                 return deferredCreate.promise;
             });
+            createdSnippet = {id: 42};
 
-            deferredAdd = $q.defer();
-            createdSnippet = {
-                id: 42,
-                addToArticle: function () {
-                    return deferredAdd.promise
-                }
-            };
+            spyOn(snippetsService, 'addToArticle');
         }));
 
         it('sets addingNewSnippet flag before doing anything', function () {
@@ -178,7 +174,6 @@ describe('Controller: PaneSnippetsCtrl', function () {
 
                 deferredCreate.resolve(createdSnippet);
                 articleDeferred.resolve({number: 25, language: 'de'});
-                deferredAdd.resolve();
                 scope.$apply();
 
                 expect(scope.addingNewSnippet).toBe(false);
@@ -207,36 +202,25 @@ describe('Controller: PaneSnippetsCtrl', function () {
         );
 
         it('attaches created snippet to article', function () {
-            spyOn(createdSnippet, 'addToArticle').andCallThrough();
-
             scope.addNewSnippetToArticle(snippetData);
             deferredCreate.resolve(createdSnippet);
             articleDeferred.resolve({number: 25, language: 'de'});
             scope.$apply();
 
-            expect(createdSnippet.addToArticle).toHaveBeenCalledWith(25, 'de');
-        });
-
-        it('appends new snippet to scope\'s snippets list', function () {
-            scope.addNewSnippetToArticle(snippetData);
-            deferredCreate.resolve(createdSnippet);
-            articleDeferred.resolve({number: 25, language: 'de'});
-            deferredAdd.resolve();
-            scope.$apply();
-
-            expect(scope.snippets).toEqual([{id: 1}, {id: 2}, createdSnippet]);
+            expect(snippetsService.addToArticle).toHaveBeenCalledWith(
+                createdSnippet,
+                {number: 25, language: 'de'}
+            );
         });
     });
 
 
     describe('scope\'s confirmRemoveSnippet() method', function () {
         var snippet,
-            snippetRemoveDeferred,
             modalDeferred,
             modalFactory;
 
         beforeEach(inject(function ($q, _modalFactory_) {
-            snippetRemoveDeferred = $q.defer();
             modalDeferred = $q.defer();
             modalFactory = _modalFactory_;
 
@@ -245,14 +229,9 @@ describe('Controller: PaneSnippetsCtrl', function () {
                     result: modalDeferred.promise
                 }
             });
+            snippet = {id: 42};
 
-            snippet = {
-                id: 42,
-                removeFromArticle: jasmine.createSpy().andCallFake(
-                    function () {
-                        return snippetRemoveDeferred.promise;
-                    })
-            };
+            spyOn(snippetsService, 'removeFromArticle');
         }));
 
         it('opens a "light" confirmation dialog', function () {
@@ -260,52 +239,44 @@ describe('Controller: PaneSnippetsCtrl', function () {
             expect(modalFactory.confirmLight).toHaveBeenCalled();
         });
 
-        it('removes correct snippet on action confirmation', function () {
-            articleDeferred.resolve({number: 25, language: 'de'});
-            scope.$apply();
+        it('invokes snippets service\'s removeFromArticle() method ' +
+           'with correct parameters on action confirmation',
+           function () {
+                articleDeferred.resolve({number: 25, language: 'de'});
+                scope.$apply();
 
-            scope.snippets = [{id:123}, snippet, {id:321}];
+                scope.confirmRemoveSnippet(snippet);
+                modalDeferred.resolve(true);
+                scope.$apply();
 
-            scope.confirmRemoveSnippet(snippet);
-            modalDeferred.resolve(true);
-            scope.$apply();
-
-            expect(snippet.removeFromArticle).toHaveBeenCalledWith(25, 'de');
-
-            snippetRemoveDeferred.resolve();
-            scope.$apply();
-
-            expect(scope.snippets).toEqual(
-                [{id:123}, {id:321}]
-            );
-        });
+                expect(snippetsService.removeFromArticle).toHaveBeenCalledWith(
+                    snippet, {number: 25, language: 'de'});
+            }
+        );
 
         it('does not remove anything on action cancellation', function () {
             articleDeferred.resolve({number: 25, language: 'de'});
             scope.$apply();
 
-            scope.snippets = [{id:123}, snippet, {id:321}];
-
             scope.confirmRemoveSnippet(snippet);
             modalDeferred.reject(true);
             scope.$apply();
 
-            expect(snippet.removeFromArticle).not.toHaveBeenCalled();
-            expect(scope.snippets.length).toEqual(3);
+            expect(snippetsService.removeFromArticle).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('scope\'s inArticleBody() method', function () {
+        beforeEach(function () {
+            snippetsService.inArticleBody = {2: true, 4: true, 11: true};
         });
 
-        it('does not remove snippet on server error response', function () {
-            articleDeferred.resolve({number: 25, language: 'de'});
-            scope.$apply();
+        it('returns true for image present in article body', function () {
+            expect(scope.inArticleBody(4)).toBe(true);
+        });
 
-            scope.snippets = [{id:123}, snippet, {id:321}];
-
-            scope.confirmRemoveSnippet(snippet);
-            modalDeferred.resolve(true);
-            snippetRemoveDeferred.reject();
-            scope.$apply();
-
-            expect(scope.snippets.length).toEqual(3);
+        it('returns false for image NOT present in article body', function () {
+            expect(scope.inArticleBody(1)).toBe(false);
         });
     });
 });
