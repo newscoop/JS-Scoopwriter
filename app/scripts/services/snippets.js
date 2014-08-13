@@ -3,13 +3,10 @@
 // TODO: comment ... service for keeping  track of article snippets
 // attached to the article
 angular.module('authoringEnvironmentApp').service('snippets', [
-    '$http',
     '$log',
-    '$rootScope',
-    'pageTracker',
     'article',
     'Snippet',
-    function ($http, $log, $rootScope, pageTracker, article, Snippet) {
+    function ($log, article, Snippet) {
         /* more info about the page tracker in its tests */
         var self = this;
 
@@ -22,15 +19,6 @@ angular.module('authoringEnvironmentApp').service('snippets', [
         self.attached = [];  // list of snippets attached to the article
         self.inArticleBody = {};  // list of snippet IDs in article body
 
-
-        // TODO: this.attach could be used for attaching... we already have
-        // Snippet.attach(), now we need to add an API for notifying this
-        // service that some snippet has been added / removed from article body
-        // TODO: how to do that? check images service!
-        // we have addToIncluded and removeFromIncluded... this must be called
-        // from somewhere... in dropped snippet directive
-
-
         /**
         * Adds a particular snippet to the list of snippets included in
         * article body.
@@ -38,9 +26,8 @@ angular.module('authoringEnvironmentApp').service('snippets', [
         * @method addToIncluded
         * @param snippetId {Number} ID of the snippet
         */
-        this.addToIncluded = function (snippetId) {
-            this.inArticleBody[snippetId] = true;
-            console.log('snippets in artcile body:', self.inArticleBody);
+        self.addToIncluded = function (snippetId) {
+            self.inArticleBody[snippetId] = true;
         };
 
         /**
@@ -50,9 +37,8 @@ angular.module('authoringEnvironmentApp').service('snippets', [
         * @method removeFromIncluded
         * @param snippetId {Number} ID of the snippet
         */
-        this.removeFromIncluded = function (snippetId) {
-            delete this.inArticleBody[snippetId];
-            console.log('snippets in artcile body:', self.inArticleBody);
+        self.removeFromIncluded = function (snippetId) {
+            delete self.inArticleBody[snippetId];
         };
 
 
@@ -70,67 +56,38 @@ angular.module('authoringEnvironmentApp').service('snippets', [
         *
         * @return {Function} Generated comparison function.
         */
-        this.matchMaker = function (id) {
+        self.matchMaker = function (id) {
             return function (needle) {
                 return parseInt(needle.id) === parseInt(id);
             };
         };
 
-
-
         /**
-        * Attaches a single image to the article (using HTTP LINK). If the
-        * image is already attached, it does not do anything.
-        * If loadFromServer flag is set, it also retrieves detailed image info
-        * after successfully attaching it to the article.
+        * Attaches a single snippet to the article. If the snippet image is
+        * already attached, it does not do anything. On a successful server
+        * response it also updates the list of attached snippets.
         *
-        * @method attach
-        * @param id {Number} ID of an image to attach
-        * @param [loadFromServer=false] {Boolean} whether or not to retrieve
-        *     image info from the server after attaching (useful if the image
-        *     is uploaded from a computer)
+        * @method addToArticle
+        * @param snippet {Object} Snippet instance to attach
+        * @param article {Object} article to which the snippet should
+        *   be attached.
+        *   @param article.number {Number} ID of the article
+        *   @param article.language {String} article language code (e.g. 'de')
         */
-        this.attach = function (id, loadFromServer) {
-            var link,
-                match = this.matchMaker(id),
-                url;
+        self.addToArticle = function (snippet, article) {
+            var match = self.matchMaker(snippet.id),
+                promise;
 
-            if (_.find(this.attached, match)) {
-                $log.debug('image already attached, ignoring attach request');
+            if (_.find(self.attached, match)) {
+                $log.warn('Snippet', snippet.id, 'is already attached.');
                 return;
             }
 
-            url = Routing.generate('newscoop_gimme_articles_linkarticle', {'number':service.article.number, 'language':service.article.language}, true);
-
-            link = '<' + Routing.generate('newscoop_gimme_images_getimage', {'number':id}, true) + '>';
-
-            /* this could cause some trouble depending on the
-             * setting of the server (OPTIONS request), thus debug
-             * log may be useful to reproduce the original
-             * request */
-            $log.debug('sending link request');
-            $log.debug(url);
-            $log.debug(link);
-
-            $http({
-                url: url,
-                method: 'LINK',
-                headers: { Link: link }
-            }).success(function () {
-                if (loadFromServer) {
-                    // uploaded images need to be retrieved from server
-                    // to get all image metadata
-                    $http.get(
-                        Routing.generate('newscoop_gimme_images_getimage', {'number':id}, true)
-                    )
-                    .success(function (data) {
-                        service.attached.push(data);
-                    });
-                } else {
-                    var image = _.find(service.displayed, match);
-                    service.attached.push(image);
-                }
+            promise = snippet.addToArticle(article.number, article.language);
+            promise.then(function () {
+                self.attached.push(snippet);
             });
+            return promise;
         };
 
         /**

@@ -7,64 +7,6 @@
 */
 
 describe('Service: snippets', function () {
-    // var mock = {
-    //     "items":[
-    //         {
-    //             "id":1,
-    //             "basename":"cms-image-000000001.jpg"
-    //         },
-    //         {
-    //             "id":2,
-    //             "basename":"cms-image-000000002.jpg"
-    //         },
-    //         {
-    //             "id":3,
-    //             "basename":"cms-image-000000003.jpg"
-    //         },
-    //         {
-    //             "id":4,
-    //             "basename":"cms-image-000000004.jpg"
-    //         },
-    //         {
-    //             "id":5,
-    //             "basename":"cms-image-000000005.jpg"
-    //         },
-    //         {
-    //             "id":6,
-    //             "basename":"cms-image-000000006.jpg"
-    //         },
-    //         {
-    //             "id":7,
-    //             "basename":"cms-image-000000007.jpg"
-    //         },
-    //         {
-    //             "id":8,
-    //             "basename":"cms-image-000000008.jpg"
-    //         },
-    //         {
-    //             "id":9,
-    //             "basename":"cms-image-000000009.jpg"
-    //         },
-    //         {
-    //             "id":10,
-    //             "basename":"cms-image-000000010.jpg"
-    //         }
-    //     ]
-    // };
-    // var mockSingle = {
-    //     "id":1,
-    //     "location":"local",
-    //     "basename":"mock-single.jpg",
-    //     "thumbnailPath":"cms-thumb-000000001.jpg",
-    //     "url":"",
-    //     "description":"",
-    //     "width":"150",
-    //     "height":"210",
-    //     "photographer":"",
-    //     "photographerUrl":"",
-    //     "place":""
-    // };
-
     var articleServiceMock,
         articleDeferred,
         Snippet,
@@ -115,122 +57,63 @@ describe('Service: snippets', function () {
         }
     );
 
-    xdescribe('loadAttached() method', function () {
-        beforeEach(function () {
-            var url = Routing.generate(
-                'newscoop_gimme_snippets_getsnippetsforarticle',
-                {
-                    number: 64, language: 'de',
-                    items_per_page: 99999, expand: true
-                },
-                true
-            );
-            $httpBackend.expectGET(url).respond(mock);
-        });
-
-        afterEach(function () {
-            $httpBackend.verifyNoOutstandingExpectation();
-        });
-
-        it('initializes the list of article\'s attached images', function () {
-            images.attached = [];
-
-            images.loadAttached({number: 64, language: 'de'});
-            $httpBackend.flush(1);
-
-            expect(images.attached).toEqual(mock.items);
-        });
+    describe('addToIncluded() method', function () {
+        it('adds snippet ID to the list of snippets in article body',
+            function () {
+                snippets.inArticleBody = {19: true};
+                snippets.addToIncluded(7);
+                expect(snippets.inArticleBody).toEqual({7: true, 19: true});
+            }
+        );
     });
 
-    xdescribe('attach() method', function () {
-        var headerCheckers,
-            linkHeaderSpy;
-
-        /**
-        * Generates API URL for retrieving a particular image.
-        *
-        * @function imageGetUrl
-        * @param imageId {Number} ID of the image to retrieve
-        * @return {String} generated URL
-        */
-        function imageGetUrl(imageId) {
-            return Routing.generate(
-                'newscoop_gimme_images_getimage',
-                {'number': imageId}, true
-            );
-        }
-
-        headerCheckers = {
-            Link: function (headers) {
-                return 'Link' in headers;
-            }
-        };
-
-        beforeEach(function () {
-            linkHeaderSpy = spyOn(headerCheckers, 'Link').andCallThrough();
-            $httpBackend.expect(
-                'LINK',
-                Routing.generate(
-                    'newscoop_gimme_articles_linkarticle',
-                    {number: 64, language: 'de'}, true
-                ),
-                undefined,
-                headerCheckers.Link
-            ).respond(201, '');
-        });
-
-        afterEach(function () {
-            // the following also raises an error in cases when unexpected
-            // requests have been made (even if all other expectations
-            // have been fulfilled)
-            $httpBackend.verifyNoOutstandingExpectation();
-        });
-
-        it('correctly invokes backend API', function () {
-            images.attached = [];
-
-            images.attach(5);
-            $httpBackend.flush();
-
-            expect(linkHeaderSpy.mostRecentCall.args[0].Link).toEqual(
-                '<' + imageGetUrl(5) + '>'
-            );
-        });
-
-        it('does not try to attach an already attached image', function () {
-            images.attached = [mock.items[4]];  // id === 5
-            $httpBackend.resetExpectations();
-            images.attach(5);
-        });
-
-        it('updates attached images list on positive server response',
+    describe('removeFromIncluded() method', function () {
+        it('removes snippet ID from the list of snippets in article body',
             function () {
-                images.displayed = [
-                    mock.items[0], mock.items[4], mock.items[6]
-                ];
-                images.attached = [mock.items[0]];
+                snippets.inArticleBody = {19: true, 6: true, 8: true};
+                snippets.removeFromIncluded(6);
+                expect(snippets.inArticleBody).toEqual({8: true, 19: true});
+            }
+        );
+    });
 
-                images.attach(5);
-                $httpBackend.flush();
+    describe('addToArticle() method', function () {
+        var articleInfo,
+            deferredAdd,
+            snippetObj;
 
-                expect(images.attached.length).toEqual(2);
+        beforeEach(inject(function ($q) {
+            articleInfo = {number: 35, language: 'pl'};
+            snippetObj = {
+                id: 7,
+                addToArticle: function () {}
+            };
+            deferredAdd = $q.defer();
+            spyOn(snippetObj, 'addToArticle').andReturn(deferredAdd.promise);
+        }));
 
-                // existing images are not overriden
-                expect(
-                    _.contains(images.attached, mock.items[0])).toEqual(true);
-
-                // new image is added to the list
-                expect(
-                    _.contains(images.attached, mock.items[4])).toEqual(true);
+        it('does not try to attach an already attached snippet', function () {
+            snippets.attached = [{id: 5}, {id: 7}, {id: 2}];
+            snippets.addToArticle(snippetObj, articleInfo);
+            expect(snippetObj.addToArticle).not.toHaveBeenCalled();
         });
 
-        it('retrieves uploaded image\'s info if necessary', function () {
-            images.attached = [];
+        it('invokes snippet\'s addToArticle method with correct parameters',
+            function () {
+                snippets.attached = [{id: 5}, {id: 2}];
+                snippets.addToArticle(snippetObj, articleInfo);
+                expect(snippetObj.addToArticle).toHaveBeenCalledWith(35, 'pl');
+            }
+        );
 
-            $httpBackend.expectGET(imageGetUrl(6)).respond(200, {});
+        it('updates the list of attached snippets on success', function () {
+            snippets.attached = [{id: 5}, {id: 2}];
 
-            images.attach(6, true);
-            $httpBackend.flush();
+            snippets.addToArticle(snippetObj, articleInfo);
+            deferredAdd.resolve();
+            $rootScope.$apply();
+
+            expect(snippets.attached).toEqual([{id: 5}, {id: 2}, snippetObj]);
         });
     });
 

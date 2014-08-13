@@ -136,7 +136,6 @@ describe('Controller: PaneSnippetsCtrl', function () {
 
     describe('scope\'s addNewSnippetToArticle() method', function () {
         var createdSnippet,
-            deferredAdd,
             deferredCreate,
             snippetData;
 
@@ -157,14 +156,9 @@ describe('Controller: PaneSnippetsCtrl', function () {
             spyOn(Snippet, 'create').andCallFake(function () {
                 return deferredCreate.promise;
             });
+            createdSnippet = {id: 42};
 
-            deferredAdd = $q.defer();
-            createdSnippet = {
-                id: 42,
-                addToArticle: function () {
-                    return deferredAdd.promise
-                }
-            };
+            spyOn(snippetsService, 'addToArticle');
         }));
 
         it('sets addingNewSnippet flag before doing anything', function () {
@@ -180,7 +174,6 @@ describe('Controller: PaneSnippetsCtrl', function () {
 
                 deferredCreate.resolve(createdSnippet);
                 articleDeferred.resolve({number: 25, language: 'de'});
-                deferredAdd.resolve();
                 scope.$apply();
 
                 expect(scope.addingNewSnippet).toBe(false);
@@ -209,25 +202,15 @@ describe('Controller: PaneSnippetsCtrl', function () {
         );
 
         it('attaches created snippet to article', function () {
-            spyOn(createdSnippet, 'addToArticle').andCallThrough();
-
             scope.addNewSnippetToArticle(snippetData);
             deferredCreate.resolve(createdSnippet);
             articleDeferred.resolve({number: 25, language: 'de'});
             scope.$apply();
 
-            expect(createdSnippet.addToArticle).toHaveBeenCalledWith(25, 'de');
-        });
-
-        // TODO: this will be refactored
-        xit('appends new snippet to scope\'s snippets list', function () {
-            scope.addNewSnippetToArticle(snippetData);
-            deferredCreate.resolve(createdSnippet);
-            articleDeferred.resolve({number: 25, language: 'de'});
-            deferredAdd.resolve();
-            scope.$apply();
-
-            expect(scope.snippets).toEqual([{id: 1}, {id: 2}, createdSnippet]);
+            expect(snippetsService.addToArticle).toHaveBeenCalledWith(
+                createdSnippet,
+                {number: 25, language: 'de'}
+            );
         });
     });
 

@@ -42,7 +42,6 @@ angular.module('authoringEnvironmentApp').controller('PaneSnippetsCtrl', [
         *       have a "name" property and a "fromValue" property (value of
         *       the field as entered by user).
         */
-        // TODO: this will probably be refactored to use the snippets service
         $scope.addNewSnippetToArticle = function (snippetData) {
             var fields = {},
                 newSnippet;
@@ -53,7 +52,6 @@ angular.module('authoringEnvironmentApp').controller('PaneSnippetsCtrl', [
                 fields[field.name] = field.value;
             });
 
-            // TODO: go through the snippets service
             Snippet.create(
                 snippetData.name, snippetData.template.id, fields
             )
@@ -62,11 +60,7 @@ angular.module('authoringEnvironmentApp').controller('PaneSnippetsCtrl', [
                 return article.promise;
             }, $q.reject)
             .then(function (articleData) {
-                return newSnippet.addToArticle(
-                    articleData.number, articleData.language);
-            }, $q.reject)
-            .then(function () {
-                $scope.snippets.push(newSnippet);
+                snippets.addToArticle(newSnippet, articleData);
             })
             .finally(function () {
                 $scope.addingNewSnippet = false;
