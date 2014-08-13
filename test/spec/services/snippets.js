@@ -117,182 +117,47 @@ describe('Service: snippets', function () {
         });
     });
 
-    xdescribe('detach() method', function () {
-        var headerCheckers,
-            linkHeaderSpy;
+    describe('removeFromArticle() method', function () {
+        var articleInfo,
+            deferredRemove,
+            snippetObj;
 
-        headerCheckers = {
-            Link: function (headers) {
-                return 'Link' in headers;
+        beforeEach(inject(function ($q) {
+            articleInfo = {number: 35, language: 'pl'};
+            snippetObj = {
+                id: 7,
+                removeFromArticle: function () {}
+            };
+
+            deferredRemove = $q.defer();
+            spyOn(snippetObj, 'removeFromArticle')
+                .andReturn(deferredRemove.promise);
+        }));
+
+        it('does not try to detach an already detached snippet', function () {
+            snippets.attached = [{id: 5}, {id: 2}];
+            snippets.removeFromArticle(snippetObj, articleInfo);
+            expect(snippetObj.removeFromArticle).not.toHaveBeenCalled();
+        });
+
+        it('invokes snippet\'s removeFromArticle method with' +
+           'correct parameters',
+            function () {
+                snippets.attached = [{id: 5}, {id: 7}, {id: 2}];
+                snippets.removeFromArticle(snippetObj, articleInfo);
+                expect(snippetObj.removeFromArticle)
+                    .toHaveBeenCalledWith(35, 'pl');
             }
-        };
+        );
 
-        beforeEach(function () {
-            linkHeaderSpy = spyOn(headerCheckers, 'Link').andCallThrough();
-        });
+        it('updates the list of attached snippets on success', function () {
+            snippets.attached = [{id: 5}, snippetObj, {id: 2}];
 
-        afterEach(function () {
-            // the following also raises an error in cases when unexpected
-            // requests have been made (even if all other expectations
-            // have been fulfilled)
-            $httpBackend.verifyNoOutstandingExpectation();
-        });
+            snippets.removeFromArticle(snippetObj, articleInfo);
+            deferredRemove.resolve();
+            $rootScope.$apply();
 
-        it('correctly invokes backend API', function () {
-            var expectedHeader;
-
-            images.attached = [mock.items[4], mock.items[7]];
-
-            $httpBackend.expect(
-                'UNLINK',
-                Routing.generate(
-                    'newscoop_gimme_articles_unlinkarticle',
-                    {number: 64, language: 'de'}, true
-                ),
-                undefined,
-                headerCheckers.Link
-            ).respond(204, '');
-
-            images.detach(5);
-            $httpBackend.flush();
-
-            expectedHeader = [
-                '<',
-                Routing.generate(
-                    'newscoop_gimme_images_getimage', {number: 5}, true
-                ),
-                '>'
-            ].join('');
-            expect(linkHeaderSpy.mostRecentCall.args[0].Link)
-                .toEqual(expectedHeader);
-        });
-
-        it('updates attached images list on positive server response',
-            function () {
-                images.attached = [mock.items[4], mock.items[7]];
-
-                $httpBackend.expect(
-                    'UNLINK',
-                    Routing.generate(
-                        'newscoop_gimme_articles_unlinkarticle',
-                        {number: 64, language: 'de'}, true
-                    ),
-                    undefined,
-                    headerCheckers.Link
-                ).respond(204, '');
-
-                images.detach(5);
-                $httpBackend.flush();
-
-                // check that correct image was removed
-                expect(images.attached.length).toEqual(1);
-                expect(images.attached[0]).toEqual(mock.items[7]);
-        });
-
-        it('does not try to detach an already detached image', function () {
-            images.attached = [];
-            images.detach(5);
-            // there should be no "unexpected request" error
-        });
-    });
-
-    xdescribe('addToIncluded() method', function () {
-        it('adds image ID to the inArticleBody list', function () {
-            images.inArticleBody = {2: true, 15: true, 99: true};
-            images.addToIncluded(77);
-            expect(images.inArticleBody).toEqual({
-                2: true, 15: true, 77: true, 99: true
-            });
-        });
-    });
-
-    xdescribe('removeFromIncluded() method', function () {
-        it('removes image ID from the inArticleBody list', function () {
-            images.inArticleBody = {2: true, 15: true, 99: true};
-            images.removeFromIncluded(15);
-            expect(images.inArticleBody).toEqual({2: true, 99: true});
-        });
-    });
-
-    xdescribe('findAttached() method', function () {
-        it('returns correct image from the attached images list',
-            function () {
-                var returned = null;
-
-                images.attached = [
-                    mock.items[4],
-                    mock.items[7],
-                    mock.items[2],  // id === 3
-                    mock.items[1]
-                ];
-
-                returned = images.findAttached(3);
-                expect(returned).toEqual(mock.items[2]);
-        });
-
-        it('returns undefined if image is not in the attached images list',
-            function () {
-                var returned = null;
-
-                images.attached = [
-                    mock.items[4],
-                    mock.items[7],
-                    mock.items[2],  // id === 3
-                    mock.items[1]
-                ];
-
-                returned = images.findAttached(42);
-                expect(typeof returned).toEqual('undefined');
-        });
-    });
-
-    xdescribe('byId() method', function () {
-        it('returns correct image from the the attached images list',
-            function () {
-                var returned = null;
-
-                images.attached = [
-                    mock.items[4],
-                    mock.items[7],
-                    mock.items[2],  // id === 3
-                    mock.items[1]
-                ];
-
-                returned = images.byId(3);
-                expect(returned).toEqual(mock.items[2]);
-        });
-
-        it('raises an error if image is not in the attached images list',
-            function () {
-                images.attached = [
-                    mock.items[4],
-                    mock.items[7],
-                    mock.items[2],
-                    mock.items[1]
-                ];
-                expect(function () { images.byId(42); }).toThrow();
-        });
-    });
-
-    xdescribe('isAttached() method', function () {
-        it('returns true for attached image', function () {
-            images.attached = [
-                mock.items[4],
-                mock.items[7],
-                mock.items[2],  // id === 3
-                mock.items[1]
-            ];
-            expect(images.isAttached(3)).toBe(true);
-        });
-
-        it('returns false for image that is not attached', function () {
-            images.attached = [
-                mock.items[4],
-                mock.items[7],
-                mock.items[2],
-                mock.items[1]
-            ];
-            expect(images.isAttached(42)).toBe(false);
+            expect(snippets.attached).toEqual([{id: 5}, {id: 2}]);
         });
     });
 

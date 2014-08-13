@@ -95,16 +95,7 @@ angular.module('authoringEnvironmentApp').controller('PaneSnippetsCtrl', [
                 // NOTE: detach snippet from article but don't delete it,
                 // because it might be attached to some other article, too
                 // (in theory at least)
-                // TODO: go through snippets service! so that machinery
-                // is notified ... adn $scope.snippets is loaded
-                // through the snippets service!
-                return snippet.removeFromArticle(
-                    articleData.number, articleData.language);
-            }, $q.reject)
-            .then(function () {
-                _.remove($scope.snippets, function (item) {
-                    return item === snippet;
-                });
+                snippets.removeFromArticle(snippet, articleData);
             });
         };
 

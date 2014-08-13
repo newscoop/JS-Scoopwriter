@@ -76,6 +76,9 @@ angular.module('authoringEnvironmentApp').service('snippets', [
         *   be attached.
         *   @param article.number {Number} ID of the article
         *   @param article.language {String} article language code (e.g. 'de')
+        *
+        * @return {Object} promise object that is resolved when the snippet
+        *   has been successfully attached to the article
         */
         self.addToArticle = function (snippet, article) {
             var match = self.matchMaker(snippet.id),
@@ -104,30 +107,27 @@ angular.module('authoringEnvironmentApp').service('snippets', [
         *   be attached.
         *   @param article.number {Number} ID of the article
         *   @param article.language {String} article language code (e.g. 'de')
+        * @return {Object} promise object that is resolved when the snippet
+        *   has been successfully detached from the article
         */
         self.removeFromArticle = function (snippet, article) {
-            var match = this.matchMaker(id);
-            console.log('detaching..');
-            if (_.find(this.attached, match)) {
-                var url = Routing.generate('newscoop_gimme_articles_unlinkarticle', {'number':service.article.number, 'language':service.article.language}, true);
-                var link = '<' + Routing.generate('newscoop_gimme_images_getimage', {'number':id}, true) + '>';
-                /* this could cause some troubles depending on the
-                 * setting of the server (OPTIONS request), thus debug
-                 * log may be useful to reproduce the original
-                 * request */
-                $log.debug('sending an unlink request');
-                $log.debug(url);
-                $log.debug(link);
-                $http({
-                    url: url,
-                    method: 'UNLINK',
-                    headers: { Link: link }
-                }).success(function () {
-                    _.remove(service.attached, match);
-                });
-            } else {
-                $log.debug('image already detached, ignoring attach request');
+            var match = self.matchMaker(snippet.id),
+                promise;
+
+            if (!_.find(self.attached, match)) {
+                $log.warn('Snippet', snippet.id, 'is already detached.');
+                return;
             }
+            // XXX: perhaps add an extra check if snippet is in article body?
+
+            promise = snippet.removeFromArticle(
+                article.number, article.language);
+
+            promise.then(function () {
+                _.remove(self.attached, match);
+            });
+
+            return promise;
         };
     }
 ]);
