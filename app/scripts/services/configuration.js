@@ -26,6 +26,7 @@ angular.module('authoringEnvironmentApp').factory('configuration', function () {
             },
             float: 'none'
         },
+        // XXX: this will most likely be replaced by articleTypeFields
         additionalFields: {
             news: [
                 {
@@ -39,6 +40,77 @@ angular.module('authoringEnvironmentApp').factory('configuration', function () {
                     isContentField: true
                 }
             ]
-        }
+        },
+
+        // configuration of the fields and their order for all supported
+        // article types
+        // XXX: field weight is taken from API data? and for the fields NOT
+        // returned by the api, the config here specifies their weights?
+        articleTypeFields: {
+            news: {
+                dateline: {  // article field
+                    name:'dateline',
+                    order: 10
+                },
+                title: {  // article name
+                    name: 'title',
+                    order: 20
+                },
+                lede: {  // field
+                    name: 'lede',
+                    order: 30
+                },
+                mainImage: {  // defined only in config
+                    name: 'mainImage',
+                    order: 40
+                },
+                body: {  // field
+                    name: 'body',
+                    order: 50
+                }
+            },
+            newswire: {
+                dateline: {  // article field
+                    name:'dateline',
+                    order: 10
+                },
+                title: {  // article name
+                    name: 'title',
+                    order: 20
+                },
+                // XXX: could this be upper-cased? as retrieved it is DataLead
+                dataLead: {  // field
+                    name: 'dataLead',
+                    order: 30
+                },
+                mainImage: {  // defined only in config
+                    name: 'mainImage',
+                    order: 40
+                },
+                // XXX: could this be upper-cased? retrieved it is DataContent
+                dataContent: {  // field
+                    name: 'dataContent',
+                    order: 50
+                }
+            },
+            blog: {
+                title: {  // article name
+                    name: 'title',
+                    order: 10
+                },
+                lede: {  // field
+                    name: 'lede',
+                    order: 20
+                },
+                mainImage: {  // defined only in config
+                    name: 'mainImage',
+                    order: 30
+                },
+                body: {  // field
+                    name: 'body',
+                    order: 40
+                }
+            }
+        }  // end articleTypeFields
     };
 });
