@@ -75,7 +75,6 @@ angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
                     additional.forEach(function (field) {
                         $scope.type.fields.push(field);
                     });
-                    console.log('--article fields:', $scope.type.fields);
                 });
             }
         });

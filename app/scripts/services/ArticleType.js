@@ -20,13 +20,14 @@ angular.module('authoringEnvironmentApp').factory('ArticleType', [
         *   (as returned by API)
         * @return {Object} new ArticleType instance
         */
-        // TODO: tests
         self.createFromApiData = function (data) {
             var instance = new ArticleType();
 
             instance.name = data.name;
 
             instance.fields = [];
+            // XXX: create a copy of  objects?
+            // XXX:convert 0/1 to false/true for specific fields?
             data.fields.forEach(function (field) {
                 instance.fields.push(field);
             });
@@ -43,7 +44,6 @@ angular.module('authoringEnvironmentApp').factory('ArticleType', [
         *   ArticleType instance on success and rejected with server error
         *   message on failure.
         */
-        // TODO: tests
         ArticleType.getByName = function (name) {
             var deferredGet = $q.defer(),
                 url = Routing.generate(
@@ -53,7 +53,7 @@ angular.module('authoringEnvironmentApp').factory('ArticleType', [
 
             $http.get(url)
             .success(function (response) {
-                deferredGet.resolve(self.createFromApiData(response));
+                deferredGet.resolve(ArticleType.createFromApiData(response));
             }).error(function (responseBody) {
                 deferredGet.reject(responseBody);
             });
