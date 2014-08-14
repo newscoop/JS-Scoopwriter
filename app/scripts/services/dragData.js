@@ -1,8 +1,7 @@
 'use strict';
 angular.module('authoringEnvironmentApp').service('Dragdata', [
     '$log',
-    'articleType',
-    function Dragdata($log, articleType) {
+    function Dragdata($log) {
         // AngularJS will instantiate a singleton by calling "new" on this function
         this.converters = {
             'test': function ($e) {

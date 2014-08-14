@@ -75,7 +75,9 @@ angular.module('authoringEnvironmentApp').factory('Snippet', [
         *
         * @method getById
         * @param snippetId {Number} ID of the snippet to retrieve
-        * @return {Object} retrieved Snippet instance
+        * @return {Object} promise object which is resolved with retrieved
+        *   Snippet instance on success and rejected with server error
+        *   message on failure
         */
         Snippet.getById = function (snippetId) {
             var deferredGet = $q.defer(),

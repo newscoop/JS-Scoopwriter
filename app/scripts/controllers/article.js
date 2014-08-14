@@ -2,7 +2,7 @@
 angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
     '$scope',
     'article',
-    'articleType',
+    'ArticleType',
     'panes',
     'configuration',
     'mode',
@@ -10,7 +10,7 @@ angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
     '$log',
     '$routeParams',
     function (
-        $scope, article, articleType, panes, configuration, mode, platform,
+        $scope, article, ArticleType, panes, configuration, mode, platform,
         $log, $routeParams
     ) {
 
@@ -67,17 +67,43 @@ angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
                 }
             }
             if (typeof $scope.type === 'undefined') {
-                $scope.type = articleType.get({ type: article.type }, function () {
-                    var additional = configuration.additionalFields[article.type];
+                ArticleType.getByName(article.type)
+                .then(function (articleType) {
+                    var additional;
+                    $scope.type = articleType;
+                    additional = configuration.additionalFields[article.type];
                     additional.forEach(function (field) {
                         $scope.type.fields.push(field);
                     });
+                    console.log('--article fields:', $scope.type.fields);
                 });
             }
         });
 
         $scope.panes = panes.query();
         $scope.platform = platform;
+
+        // TODO: how are fields in config related to "fields" retrieved from
+        // the API? Should the API fields be redifined to match those here?
+        // Ideally, fields in configuration should be a subset of those
+        // retrieved... should not be adding extra fields here on client side,
+        // but use only those retrieved by API
+
+        // {
+        //     name: "news",
+        //     fields:[
+        //         // {
+        //         //   "name": "print_ref",
+        //         //   "length": 0,
+        //         //   "type": "text",
+        //         //   "fieldWeight": 16,
+        //         //   "isHidden": 1,
+        //         //   "commentsEnabled": 0,
+        //         //    fieldTypeParam: "editor_size=500"
+        //         //   "isContentField": 0
+        //         // },
+        //     ]
+        // }
 
         // used to filter
         $scope.editable = function (field) {
