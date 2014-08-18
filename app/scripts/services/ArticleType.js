@@ -26,10 +26,9 @@ angular.module('authoringEnvironmentApp').factory('ArticleType', [
             instance.name = data.name;
 
             instance.fields = [];
-            // XXX: create a copy of  objects?
-            // XXX:convert 0/1 to false/true for specific fields?
+            // XXX: convert 0/1 to false/true for specific fields?
             data.fields.forEach(function (field) {
-                instance.fields.push(field);
+                instance.fields.push(angular.copy(field));
             });
 
             return instance;

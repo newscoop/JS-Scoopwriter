@@ -41,7 +41,7 @@
   </div>
     <section
        class="article-full-text article-field {{field.name}}"
-       ng-repeat="field in editableFields = (type.fields | orderBy:'fieldWeight' | filter:editable)"
+       ng-repeat="field in (editableFields | orderBy: 'order')"
        ng-switch on="field.name"
        >
       <div
@@ -52,7 +52,7 @@
          >
       </div>
       <fixed-image-placeholder
-         ng-switch-when="main_image"
+         ng-switch-when="mainImage"
          ng-controller="FixedImagePlaceholderCtrl"
          >
       </fixed-image-placeholder>

@@ -26,87 +26,72 @@ angular.module('authoringEnvironmentApp').factory('configuration', function () {
             },
             float: 'none'
         },
-        // XXX: this will most likely be replaced by articleTypeFields
-        additionalFields: {
-            news: [
-                {
-                    name: 'main_image',
-                    fieldWeight: 10,
-                    isContentField: true
-                },
-                {
-                    name: 'title',
-                    fieldWeight: 0,
-                    isContentField: true
-                }
-            ]
-        },
 
-        // configuration of the fields and their order for all supported
-        // article types
-        // XXX: field weight is taken from API data? and for the fields NOT
-        // returned by the api, the config here specifies their weights?
+        // Configuration of the fields and their order for all supported
+        // article types - only these fields are visible to user and available
+        // for editing, even though a particular article type might have
+        // some other fields defined as well.
         articleTypeFields: {
             news: {
-                dateline: {  // article field
+                dateline: {
                     name:'dateline',
                     order: 10
                 },
-                title: {  // article name
+                title: {  // article title (not a regular field from DB)
                     name: 'title',
                     order: 20
                 },
-                lede: {  // field
+                lede: {
                     name: 'lede',
                     order: 30
                 },
-                mainImage: {  // defined only in config
+                mainImage: {  // not a regular field from DB
                     name: 'mainImage',
                     order: 40
                 },
-                body: {  // field
+                body: {
                     name: 'body',
                     order: 50
                 }
             },
             newswire: {
-                dateline: {  // article field
+                dateline: {
                     name:'dateline',
                     order: 10
                 },
-                title: {  // article name
+                title: {  // article title (not a regular field from DB)
                     name: 'title',
                     order: 20
                 },
-                // XXX: could this be upper-cased? as retrieved it is DataLead
-                dataLead: {  // field
+                dataLead: {
                     name: 'dataLead',
                     order: 30
                 },
-                mainImage: {  // defined only in config
+                mainImage: {  // not a regular field from DB
                     name: 'mainImage',
-                    order: 40
+                    order: 40,
                 },
-                // XXX: could this be upper-cased? retrieved it is DataContent
-                dataContent: {  // field
+                dataContent: {
                     name: 'dataContent',
                     order: 50
                 }
             },
             blog: {
-                title: {  // article name
+                title: {  // article title (not a regular field from DB)
                     name: 'title',
-                    order: 10
+                    order: 10,
+                    isRegular: false
                 },
-                lede: {  // field
+                lede: {
                     name: 'lede',
                     order: 20
                 },
-                mainImage: {  // defined only in config
+                mainImage: {  // not a regular field from DB
                     name: 'mainImage',
-                    order: 30
+                    order: 30,
+                    isRegular: false
                 },
-                body: {  // field
+                body: {
                     name: 'body',
                     order: 40
                 }
