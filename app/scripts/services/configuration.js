@@ -26,19 +26,76 @@ angular.module('authoringEnvironmentApp').factory('configuration', function () {
             },
             float: 'none'
         },
-        additionalFields: {
-            news: [
-                {
-                    name: 'main_image',
-                    fieldWeight: 10,
-                    isContentField: true
+
+        // Configuration of the fields and their order for all supported
+        // article types - only these fields are visible to user and available
+        // for editing, even though a particular article type might have
+        // some other fields defined as well.
+        articleTypeFields: {
+            news: {
+                dateline: {
+                    name:'dateline',
+                    order: 10
                 },
-                {
+                title: {  // article title (not a regular field from DB)
                     name: 'title',
-                    fieldWeight: 0,
-                    isContentField: true
+                    order: 20
+                },
+                lede: {
+                    name: 'lede',
+                    order: 30
+                },
+                mainImage: {  // not a regular field from DB
+                    name: 'mainImage',
+                    order: 40
+                },
+                body: {
+                    name: 'body',
+                    order: 50
                 }
-            ]
-        }
+            },
+            newswire: {
+                dateline: {
+                    name:'dateline',
+                    order: 10
+                },
+                title: {  // article title (not a regular field from DB)
+                    name: 'title',
+                    order: 20
+                },
+                dataLead: {
+                    name: 'dataLead',
+                    order: 30
+                },
+                mainImage: {  // not a regular field from DB
+                    name: 'mainImage',
+                    order: 40,
+                },
+                dataContent: {
+                    name: 'dataContent',
+                    order: 50
+                }
+            },
+            blog: {
+                title: {  // article title (not a regular field from DB)
+                    name: 'title',
+                    order: 10,
+                    isRegular: false
+                },
+                lede: {
+                    name: 'lede',
+                    order: 20
+                },
+                mainImage: {  // not a regular field from DB
+                    name: 'mainImage',
+                    order: 30,
+                    isRegular: false
+                },
+                body: {
+                    name: 'body',
+                    order: 40
+                }
+            }
+        }  // end articleTypeFields
     };
 });

@@ -12,13 +12,9 @@ angular.module('authoringEnvironmentApp').controller('ImagePaneCtrl', [
     'modal',  // XXX: later move this old modal service into modalFactory
     'modalFactory',
     'article',
-    'articleType',
     '$location',
     'configuration',
-    function (
-        $scope, images, modal, modalFactory, article, articleType,
-        $location, conf
-    ) {
+    function ($scope, images, modal, modalFactory, article, $location, conf) {
 
         $scope.images = images;
         $scope.defaultWidth = '100%';

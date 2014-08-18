@@ -2,17 +2,19 @@
 angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
     '$scope',
     'article',
-    'articleType',
+    'ArticleType',
     'panes',
     'configuration',
     'mode',
     'platform',
     '$log',
     '$routeParams',
+    '$q',
     function (
-        $scope, article, articleType, panes, configuration, mode, platform,
-        $log, $routeParams
+        $scope, article, ArticleType, panes, configuration, mode, platform,
+        $log, $routeParams, $q
     ) {
+        var articleService = article;
 
         article.init({
             articleId: $routeParams.article,
@@ -20,7 +22,7 @@ angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
         });
 
         $scope.mode = mode;
-        $scope.articleService = article;
+        $scope.articleService = articleService;
 
         $scope.watchCallback = function (newValue, oldValue) {
             if (angular.equals(newValue, oldValue)) {
@@ -41,6 +43,7 @@ angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
                 }
             }
         };
+
         // wrapper just for testability purposes
         $scope.setModified = function (value) {
             article.modified = value;
@@ -55,40 +58,41 @@ angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
             }
         });
 
-        $scope.articleService.promise.then(function (article) {
-            $scope.article = article;
+        articleService.promise  // a promise to retrieve the article
+        .then(
+            function (article) {
+                $scope.article = article;
+                return ArticleType.getByName(article.type);
+            },
+            $q.reject
+        ).then(function (articleType) {
+            var cfgFields = configuration.articleTypeFields[articleType.name],
+                editableFields = [];
 
-            for (var key in article.fields) {
-                if (article.fields.hasOwnProperty(key)) {
-                    article.fields[key] =
-                        $scope.articleService.deserializeAlohaBlocks(
-                            article.fields[key]
+            // Go through all the fields defined for this particular article's
+            // type. Those that are listed in config get deserialized, so that
+            // any dropped images and snippets in their content get converted
+            // to Aloha blocks.
+            // NOTE: no need to deserialize other fields, since only the fields
+            // listed in the configuration are available to user for editing.
+            articleType.fields.forEach(function (field) {
+                if (field.name in cfgFields) {
+                    $scope.article.fields[field.name] =
+                        articleService.deserializeAlohaBlocks(
+                            $scope.article.fields[field.name]
                         );
                 }
-            }
-            if (typeof $scope.type === 'undefined') {
-                $scope.type = articleType.get({ type: article.type }, function () {
-                    var additional = configuration.additionalFields[article.type];
-                    additional.forEach(function (field) {
-                        $scope.type.fields.push(field);
-                    });
-                });
-            }
+            });
+
+            // convert to array (for sorting purposes in template)
+            _(cfgFields).forIn(function (field, key, collection) {
+                editableFields.push(field);
+            });
+
+            $scope.editableFields = editableFields;
         });
 
         $scope.panes = panes.query();
         $scope.platform = platform;
-
-        // used to filter
-        $scope.editable = function (field) {
-            var known = [
-                'date', 'dateline', 'main_image', 'lede', 'body', 'title'
-            ];
-            if (known.indexOf(field.name) === -1) {
-                return false;
-            } else {
-                return true;
-            }
-        };
     }
 ]);
