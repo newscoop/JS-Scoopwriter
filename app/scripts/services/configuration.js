@@ -31,11 +31,15 @@ angular.module('authoringEnvironmentApp').factory('configuration', function () {
         // article types - only these fields are visible to user and available
         // for editing, even though a particular article type might have
         // some other fields defined as well.
+        //
+        // Regular fields that are defined for the article type can also
+        // have default text set, which is displayed if that field is empty.
         articleTypeFields: {
             news: {
                 dateline: {
                     name:'dateline',
-                    order: 10
+                    order: 10,
+                    defaultText: '[please provide article creation date]'
                 },
                 title: {  // article title (not a regular field from DB)
                     name: 'title',
@@ -43,7 +47,8 @@ angular.module('authoringEnvironmentApp').factory('configuration', function () {
                 },
                 lede: {
                     name: 'lede',
-                    order: 30
+                    order: 30,
+                    defaultText: '[please provide your content]'
                 },
                 mainImage: {  // not a regular field from DB
                     name: 'mainImage',
@@ -51,13 +56,15 @@ angular.module('authoringEnvironmentApp').factory('configuration', function () {
                 },
                 body: {
                     name: 'body',
-                    order: 50
+                    order: 50,
+                    defaultText: '[please provide your content]'
                 }
             },
             newswire: {
                 dateline: {
                     name:'dateline',
-                    order: 10
+                    order: 10,
+                    defaultText: '[please provide article creation date]'
                 },
                 title: {  // article title (not a regular field from DB)
                     name: 'title',
@@ -65,7 +72,8 @@ angular.module('authoringEnvironmentApp').factory('configuration', function () {
                 },
                 dataLead: {
                     name: 'dataLead',
-                    order: 30
+                    order: 30,
+                    defaultText: '[please provide your content]'
                 },
                 mainImage: {  // not a regular field from DB
                     name: 'mainImage',
@@ -73,18 +81,19 @@ angular.module('authoringEnvironmentApp').factory('configuration', function () {
                 },
                 dataContent: {
                     name: 'dataContent',
-                    order: 50
+                    order: 50,
+                    defaultText: '[please provide your content]'
                 }
             },
             blog: {
                 title: {  // article title (not a regular field from DB)
                     name: 'title',
-                    order: 10,
-                    isRegular: false
+                    order: 10
                 },
                 lede: {
                     name: 'lede',
-                    order: 20
+                    order: 20,
+                    defaultText: '[please provide your content]'
                 },
                 mainImage: {  // not a regular field from DB
                     name: 'mainImage',
@@ -93,7 +102,8 @@ angular.module('authoringEnvironmentApp').factory('configuration', function () {
                 },
                 body: {
                     name: 'body',
-                    order: 40
+                    order: 40,
+                    defaultText: '[please provide your content]'
                 }
             }
         }  // end articleTypeFields

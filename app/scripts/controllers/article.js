@@ -76,11 +76,16 @@ angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
             // NOTE: no need to deserialize other fields, since only the fields
             // listed in the configuration are available to user for editing.
             articleType.fields.forEach(function (field) {
+                var value = $scope.article.fields[field.name];
+
                 if (field.name in cfgFields) {
-                    $scope.article.fields[field.name] =
-                        articleService.deserializeAlohaBlocks(
-                            $scope.article.fields[field.name]
-                        );
+                    if (value) {
+                        $scope.article.fields[field.name] =
+                            articleService.deserializeAlohaBlocks(value);
+                    } else {
+                        $scope.article.fields[field.name] =
+                            cfgFields[field.name].defaultText;
+                    }
                 }
             });
 
