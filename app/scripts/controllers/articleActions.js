@@ -96,7 +96,6 @@ angular.module('authoringEnvironmentApp').controller('ArticleActionsCtrl', [
                     firstArticleChange = false;
                     return;
                 }
-                console.log('setting modified to TRUE');
                 $scope.setModified(true);
             }, true);
         });
