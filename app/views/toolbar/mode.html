@@ -42,11 +42,10 @@
     </a>
    
   </div>
-<!-- TODO: conditionally enable Save button (for now it's always enabled
-    until the enabling button bug  is resolved) -->
+
   <button
      class="btn btn-primary btn-sm save-button"
-     ng-disabled="false && !article.modified"
+     ng-disabled="!articleService.modified"
      ng-click="save()"
      >
     Save

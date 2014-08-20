@@ -24,40 +24,6 @@ angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
         $scope.mode = mode;
         $scope.articleService = articleService;
 
-        $scope.watchCallback = function (newValue, oldValue) {
-            if (angular.equals(newValue, oldValue)) {
-                // initialisation
-                $scope.modified = false;
-            } else {
-                if (newValue && oldValue) {
-                    // modified
-                    $scope.setModified(true);
-                } else {
-                    // used also for testing
-                    if (!oldValue) {
-                        $log.debug('the old article value is', oldValue);
-                    }
-                    if (!newValue) {
-                        $log.debug('the new article value is', newValue);
-                    }
-                }
-            }
-        };
-
-        // wrapper just for testability purposes
-        $scope.setModified = function (value) {
-            article.modified = value;
-        };
-
-        $scope.$watch('article', $scope.watchCallback, true);
-        $scope.$watch('articleService.modified', function (newValue) {
-            if (newValue) {
-                $scope.status = 'Modified';
-            } else {
-                $scope.status = 'Saved';
-            }
-        });
-
         articleService.promise  // a promise to retrieve the article
         .then(
             function (article) {

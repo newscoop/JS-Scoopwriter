@@ -56,7 +56,6 @@ describe('Controller: ArticleActionsCtrl', function () {
             article: articleService
         });
         spyOn(scope, 'setModified').andCallThrough();
-        spyOn(scope, 'watchCallback').andCallThrough();
     }));
     it('is not requesting things we do not expect', function() {
         $httpBackend.verifyNoOutstandingRequest();
@@ -64,21 +63,10 @@ describe('Controller: ArticleActionsCtrl', function () {
     it('initialises', function () {
         expect(!!ArticleActionsCtrl).toBe(true);
     });
-    // it('proxies platform', function() {
-    //     expect(scope.platform).toBeDefined();
-    // });
-    // it('proxies panes', function() {
-    //     expect(scope.panes).toBeDefined();
-    // });
+
     it('has no article', function() {
         expect(scope.article).toBeUndefined();
     });
-    // it('has empty history', function() {
-    //     expect(scope.history.used()).toBe(0);
-    // });
-    // it('is not modified', function() {
-    //     expect(scope.status).toBe('Initializing');
-    // });
 
     it('initializes article workflow status options in scope', function () {
         var expected = [
