@@ -44,7 +44,7 @@ describe('Controller: ArticleCtrl', function () {
         ArticleType = _ArticleType_;
         $controller = _$controller_;
 
-        // XXX: not exactly theright way to mock a promise, but these tests
+        // XXX: not exactly the right way to mock a promise, but these tests
         // should be refactored and improved anyway.
         spyOn(ArticleType, 'getByName').andReturn({
             then: function (callback) {
@@ -60,8 +60,6 @@ describe('Controller: ArticleCtrl', function () {
             new RegExp('^' + urlArticleGet)
         ).respond(article);
 
-        // $httpBackend.expectGET(urlArticleTypeGet).respond(articleTypeNews);
-
         ArticleCtrl = $controller('ArticleCtrl', {
             $scope: scope,
             $log: log,
@@ -71,8 +69,6 @@ describe('Controller: ArticleCtrl', function () {
             },
             article: articleService
         });
-        spyOn(scope, 'setModified').andCallThrough();
-        spyOn(scope, 'watchCallback').andCallThrough();
     }));
     it('is not requesting things we do not expect', function() {
         $httpBackend.verifyNoOutstandingRequest();
@@ -100,29 +96,6 @@ describe('Controller: ArticleCtrl', function () {
         it('proxies the article', function() {
             expect(scope.article).toBeDefined();
         });
-        it('reacts well to weird events', function() {
-            /* in the angular doc i found no mention of the previous
-             * value being undefined during initialisation, but this
-             * is what we get, so i added some checks for that */
-            expect(log.debug.calls[0].args).toEqual([ 'the old article value is', undefined ]);
-            expect(log.debug.calls[1].args).toEqual([ 'the old article value is', undefined ]);
-        });
-        it('is not modified', function() {
-            expect(scope.modified).toBe(false);
-            expect(scope.status).toBe('Saved');
-        });
-        describe('with a changed field', function() {
-            beforeEach(function() {
-                scope.$apply(function() {
-                    scope.article.fields.lede = 'changed';
-                });
-            });
-            it('knows something changed', function() {
-                expect(scope.setModified).toHaveBeenCalledWith(true);
-                expect(scope.articleService.modified).toBe(true);
-                expect(scope.status).toBe('Modified');
-            });
-        });
     });
     describe('initialised again on an already modified article', function() {
         beforeEach(function() {
@@ -131,13 +104,10 @@ describe('Controller: ArticleCtrl', function () {
                 {name: 'news'}, true
             );
 
-            //$httpBackend.flush(2);
             $httpBackend.flush(1);
             scope = $rootScope.$new();
             articleService.modified = true;
-            // $httpBackend
-            //     .expectGET(url)
-            //     .respond({});
+
             ArticleCtrl = $controller('ArticleCtrl', {
                 $scope: scope,
                 $routeParams: {
@@ -161,37 +131,6 @@ describe('Controller: ArticleCtrl', function () {
         it('finds a modified article', function() {
             $rootScope.$apply();
             expect(scope.articleService.modified).toBe(true);
-        });
-        it('is modified', function() {
-            $rootScope.$apply();
-            expect(scope.status).toBe('Modified');
-        });
-    });
-    describe('initialised again on a saved article', function() {
-        beforeEach(function() {
-            var url =  Routing.generate(
-                'newscoop_gimme_articletypes_getarticletype',
-                {name: 'news'}, true
-            );
-
-            //$httpBackend.flush(2);
-            $httpBackend.flush(1);
-            scope = $rootScope.$new();
-            articleService.modified = false;
-            // $httpBackend
-            //     .expectGET(url)
-            //     .respond({});
-            ArticleCtrl = $controller('ArticleCtrl', {
-                $scope: scope,
-                $routeParams: {
-                    'article': 123,
-                    'language': 'de'
-                }
-            });
-        });
-        it('is shows the correct status', function() {
-            $rootScope.$apply();
-            expect(scope.status).toBe('Saved');
         });
     });
 });

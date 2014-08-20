@@ -6,6 +6,10 @@ angular.module('authoringEnvironmentApp').controller('ArticleActionsCtrl', [
     '$log',
     function ($scope, article, mode, $log) {
 
+        // a flag indicating if article content has been changed at most
+        // once (after the watch on the article is set)
+        var firstArticleChange = true;
+
         $scope.mode = mode;
 
         $scope.articleService = article;
@@ -64,41 +68,37 @@ angular.module('authoringEnvironmentApp').controller('ArticleActionsCtrl', [
         };
 
         $scope.save = function () {
+            // XXX: disable save button during saving? to prevent double
+            // saving?
             $scope.articleService.save($scope.article).then(function () {
-                 // XXX: this is already tracked in article service?
                 $scope.setModified(false);
             });
         };
 
         // wrapper just for testability purposes
         $scope.setModified = function (value) {
-            article.modified = value;  // article here is article *service*
+            $scope.articleService.modified = value;
         };
-
-        $scope.watchCallback = function (newValue, oldValue) {
-            if (angular.equals(newValue, oldValue)) {
-                // initialization
-                $scope.modified = false;
-            } else {
-                if (newValue && oldValue) {
-                    // modified
-                    $scope.setModified(true);
-                } else {
-                    // used also for testing
-                    if (!oldValue) {
-                        $log.debug('the old article value is', oldValue);
-                    }
-                    if (!newValue) {
-                        $log.debug('the new article value is', newValue);
-                    }
-                }
-            }
-        };
-
-        $scope.$watch('article', $scope.watchCallback, true);
 
         $scope.articleService.promise.then(function (article) {
             $scope.article = article;
+            $scope.$watch('article', function (newValue, oldValue) {
+                if (newValue === oldValue) {
+                    return;  // called due to watcher initialization, skip
+                }
+                // The first article change is triggered when any images and
+                // snippets placeholders in article fields get deserialized to
+                // the actual HTML code. This happens soon after the article is
+                // retrieved from the API (initialization phase) and we don't
+                // consider that as a "real" article content change. Therefore
+                // we ignore the event on its first occurrence.
+                if (firstArticleChange) {
+                    firstArticleChange = false;
+                    return;
+                }
+                console.log('setting modified to TRUE');
+                $scope.setModified(true);
+            }, true);
         });
     }
 ]);
