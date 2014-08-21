@@ -41,7 +41,7 @@ describe('Controller: PaneSnippetsCtrl', function () {
                 ];
             });
 
-            snippetsService.attached = [{id: 1}, {id: 8}];
+            snippetsService.attached = [{id:5}];
 
             scope = $rootScope.$new();
             SnippetsCtrl = $controller('PaneSnippetsCtrl', {
@@ -90,9 +90,24 @@ describe('Controller: PaneSnippetsCtrl', function () {
         ]);
     });
 
-    it('initializes a list of article snippets in scope', function () {
-        expect(scope.snippets).toEqual([{id:1}, {id:8}]);
-    });
+    it('initializes a list of article snippets in scope to currently ' +
+       'attached snippets',
+        function () {
+            expect(scope.snippets).toEqual([{id:5}]);
+        }
+    );
+
+    it('updates a list of article snippets in scope when a change occurs',
+        function () {
+            // NOTE: don't modify the existing snippet service's attached
+            // array (e.g. by using .push()), but instead assign it a new
+            // array instance, as this correctly resembles the way the snippets
+            // service internally works.
+            snippetsService.attached = [{id:5}, {id:1}];
+            scope.$apply();
+            expect(scope.snippets).toEqual([{id:5}, {id:1}]);
+        }
+    );
 
     describe('scope\'s clearNewSnippetForm() method', function () {
         it('clears all new snippet form fields (deep)', function () {
