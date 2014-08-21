@@ -127,5 +127,9 @@ angular.module('authoringEnvironmentApp').controller('PaneSnippetsCtrl', [
 
         $scope.snippetTemplates = SnippetTemplate.getAll();
         $scope.snippets = snippets.attached;
+
+        $scope.$watchCollection(snippets.attached, function () {
+            $scope.snippets = snippets.attached;
+        });
     }
 ]);
