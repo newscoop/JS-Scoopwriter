@@ -10,7 +10,7 @@
     "angular-sanitize": "~1.2.0",
     "angular-route": "~1.2.0",
     "angular-animate": "~1.2.14",
-    "ng-aloha-editor": "https://github.com/plamut/ng-aloha-editor.git#fix-commands-ff",
+    "ng-aloha-editor": "https://github.com/plamut/ng-aloha-editor.git#newer-aloha",
     "requirejs": "~2.1.9",
     "bootstrap": "~3.0.3",
     "lodash": "~2.4.1",
