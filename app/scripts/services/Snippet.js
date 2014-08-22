@@ -21,7 +21,7 @@ angular.module('authoringEnvironmentApp').factory('Snippet', [
         * @return {Object} new Snippet instance
         */
         self.createFromApiData = function (data) {
-            var snippet = Object.create(Snippet.prototype);
+            var snippet = new Snippet();
 
             ['id', 'templateId', 'name', 'render'].forEach(
                 function (attribute) {
