@@ -19,15 +19,26 @@ angular.module('authoringEnvironmentApp').directive('sfAlohaFormatGeneric', [
                 buttonName: '@buttonName'
             },
             link: function postLink(scope, element, attrs) {
+                var enabled,
+                    supported;
+
                 AlohaFormattingFactory.add(scope.alohaElement);
-                element.attr(
-                    'disabled',
-                    Aloha.queryCommandSupported(scope.alohaElement) &&
-                    Aloha.queryCommandEnabled(scope.alohaElement)
-                );
+
+                supported = Aloha.queryCommandSupported(scope.alohaElement);
+                enabled = Aloha.queryCommandEnabled(scope.alohaElement);
+                if (typeof enabled === 'undefined') {
+                    // in chrome we get undefined, but that's just fine...
+                    enabled = true;
+                }
+
+                element.attr('disabled', !supported || !enabled);
+
                 element.bind('click', function () {
                     Aloha.execCommand(scope.alohaElement, false, '');
-                    element.toggleClass('active', AlohaFormattingFactory.query(scope.alohaElement));
+                    element.toggleClass(
+                        'active',
+                        AlohaFormattingFactory.query(scope.alohaElement)
+                    );
                 });
             }
         };
