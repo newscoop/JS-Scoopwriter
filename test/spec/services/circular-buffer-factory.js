@@ -14,6 +14,13 @@ describe('Service: CircularBufferFactory', function () {
     it('should do something', function () {
         expect(!!circularBufferFactory).toBe(true);
     });
+
+    it('rases an error if "size" option is not given', function () {
+        expect(function () {
+            circularBufferFactory.create({foo: 42});
+        }).toThrow('a circular buffer needs an integer size option');
+    });
+
     describe('a circular buffer', function(){
         beforeEach(function() {
             circularBuffer = circularBufferFactory.create({
