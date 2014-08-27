@@ -2,7 +2,6 @@
 
 /**
 * AngularJS controller for the Images pane.
-* not individual comments).
 *
 * @class ImagePaneCtrl
 */

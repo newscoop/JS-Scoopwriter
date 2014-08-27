@@ -1,17 +1,22 @@
 'use strict';
+
+/**
+* AngularJS controller for managing various actions on the article, e.g.
+* changing the article's workflow status.
+*
+* @class ArticleActionsCtrl
+*/
 angular.module('authoringEnvironmentApp').controller('ArticleActionsCtrl', [
     '$scope',
     'article',
     'mode',
-    '$log',
-    function ($scope, article, mode, $log) {
+    function ($scope, article, mode) {
 
         // a flag indicating if article content has been changed at most
         // once (after the watch on the article is set)
         var firstArticleChange = true;
 
         $scope.mode = mode;
-
         $scope.articleService = article;
 
         // list of possible article workflow status options to choose from
@@ -38,7 +43,30 @@ angular.module('authoringEnvironmentApp').controller('ArticleActionsCtrl', [
         $scope.changingWfStatus = false;
 
         $scope.articleService.promise.then(function (article) {
-            var statusObj = _.find(
+            var statusObj;
+
+            $scope.article = article;
+
+            // set a watch on article's content changes
+            $scope.$watch('article', function (newValue, oldValue) {
+                if (newValue === oldValue) {
+                    return;  // called due to watcher initialization, skip
+                }
+                // The first article change is triggered when any images and
+                // snippets placeholders in article fields get deserialized to
+                // the actual HTML code. This happens soon after the article is
+                // retrieved from the API (initialization phase) and we don't
+                // consider that as a "real" article content change. Therefore
+                // we ignore the event on its first occurrence.
+                if (firstArticleChange) {
+                    firstArticleChange = false;
+                    return;
+                }
+                $scope.setModified(true);
+            }, true);
+
+            // set workflow status to the actual article's workflow status
+            statusObj = _.find(
                 $scope.workflowStatuses, {value: article.status}
             );
             $scope.wfStatus = statusObj;
@@ -67,6 +95,12 @@ angular.module('authoringEnvironmentApp').controller('ArticleActionsCtrl', [
                 });
         };
 
+        /**
+        * Saves article's content to server and clears the article modified
+        * flag on success.
+        *
+        * @method save
+        */
         $scope.save = function () {
             // XXX: disable save button during saving? to prevent double
             // saving?
@@ -75,29 +109,14 @@ angular.module('authoringEnvironmentApp').controller('ArticleActionsCtrl', [
             });
         };
 
-        // wrapper just for testability purposes
+        /**
+        * Updates the article modified flag in article service.
+        *
+        * @method setModified
+        * @param value {Boolean} article modified flag's new value
+        */
         $scope.setModified = function (value) {
             $scope.articleService.modified = value;
         };
-
-        $scope.articleService.promise.then(function (article) {
-            $scope.article = article;
-            $scope.$watch('article', function (newValue, oldValue) {
-                if (newValue === oldValue) {
-                    return;  // called due to watcher initialization, skip
-                }
-                // The first article change is triggered when any images and
-                // snippets placeholders in article fields get deserialized to
-                // the actual HTML code. This happens soon after the article is
-                // retrieved from the API (initialization phase) and we don't
-                // consider that as a "real" article content change. Therefore
-                // we ignore the event on its first occurrence.
-                if (firstArticleChange) {
-                    firstArticleChange = false;
-                    return;
-                }
-                $scope.setModified(true);
-            }, true);
-        });
     }
 ]);

@@ -1,4 +1,10 @@
 'use strict';
+
+/**
+* AngularJS controller for loading the article to edit.
+*
+* @class ArticleCtrl
+*/
 angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
     '$scope',
     'article',
@@ -7,22 +13,23 @@ angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
     'configuration',
     'mode',
     'platform',
-    '$log',
     '$routeParams',
     '$q',
     function (
         $scope, article, ArticleType, panes, configuration, mode, platform,
-        $log, $routeParams, $q
+        $routeParams, $q
     ) {
         var articleService = article;
 
-        article.init({
+        articleService.init({
             articleId: $routeParams.article,
             language: $routeParams.language
         });
 
         $scope.mode = mode;
         $scope.articleService = articleService;
+        $scope.panes = panes.query();
+        $scope.platform = platform;
 
         articleService.promise  // a promise to retrieve the article
         .then(
@@ -62,8 +69,5 @@ angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
 
             $scope.editableFields = editableFields;
         });
-
-        $scope.panes = panes.query();
-        $scope.platform = platform;
     }
 ]);

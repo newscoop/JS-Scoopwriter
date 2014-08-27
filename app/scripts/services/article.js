@@ -1,4 +1,10 @@
 'use strict';
+
+/**
+* AngularJS service implementing the article model.
+*
+* @class article
+*/
 angular.module('authoringEnvironmentApp').service('article', [
     '$resource',
     '$q',
@@ -6,8 +12,7 @@ angular.module('authoringEnvironmentApp').service('article', [
     'configuration',
     function article($resource, $q, $http, configuration) {
 
-        var API_ROOT = configuration.API.full,
-            commenting,
+        var commenting,
             deferred = $q.defer(),
             issueWfStatus,
             langMap,
@@ -80,6 +85,9 @@ angular.module('authoringEnvironmentApp').service('article', [
                 },
                 save: {
                     url: Routing.generate(
+                    // XXX: should be the patcharticle path, but there is a bug
+                    // in Routing object, thus we use another path that
+                    // gives us the same result
                         'newscoop_gimme_articles_getarticle', {}, true
                     ) + '/:articleId/:language',
                     method: 'PATCH'
@@ -87,8 +95,17 @@ angular.module('authoringEnvironmentApp').service('article', [
             }
         );
 
-        // helper function:
-        // Convert the Snippet comments into divs so that Aloha can process them
+        /**
+        * Finds snippets placeholders in text and converts them to
+        * snippets HTML (this can be later converted to Aloha blocks).
+        *
+        * An example of such placeholder:
+        *     <-- Snippet 1234 -->
+        *
+        * @function snippetCommentsToDivs
+        * @param text {String} text to convert
+        * @return {String} converted text
+        */
         function snippetCommentsToDivs(text) {
             if (text === null) {
                 return text;
@@ -118,19 +135,25 @@ angular.module('authoringEnvironmentApp').service('article', [
             var snippetPattern = new RegExp(snippetRex, 'ig');
 
             var converted = text.replace(snippetPattern, function(whole, id) {
-                var output = '';
-                if (id !== undefined) {
-                    output += '<div class="snippet" data-id="'+parseInt(id)+'"';
-                    output += '></div>';
-                }
+                var output = '<div class="snippet" data-id="';
+                output += parseInt(id);
+                output += '"></div>';
                 return output;
             });
             return converted;
         }
 
-        // helper function:
-        // Convert the Image comments into divs for Aloha
-        // example: <** Image 1234 float="left" size="small" **>
+        /**
+        * Finds images placeholders in text and converts them to
+        * images HTML (thiscan be later converted to Aloha blocks).
+        *
+        * An example of such placeholder:
+        *     <** Image 1234 float="left" size="small" **>
+        *
+        * @function imageCommentsToDivs
+        * @param text {String} text to convert
+        * @return {String} converted text
+        */
         function imageCommentsToDivs(text) {
             if (text === null) {
                 return text;
@@ -181,17 +204,30 @@ angular.module('authoringEnvironmentApp').service('article', [
                 }
             );
             return converted;
-        }  // end function imageCommentsToDivs
+        }
 
-        // TODO: tests, better comments etc.
-        // deserialize placeholders in article text to snippets and images divs
+        /**
+        * Converts placeholders in text to images and snippets HTML.
+        *
+        * @method deserializeAlohaBlocks
+        * @param text {String} text to convert
+        * @return {String} converted text
+        */
         function deserializeAlohaBlocks(text) {
             return imageCommentsToDivs(snippetCommentsToDivs(text));
         }
 
-        // converts images' and snippets' HTML in text to special
-        // placeholder comments
-        // TODO: tests, comments
+        /**
+        * Converts images' and snippets' HTML in article text (Aloha blocks) to
+        * special placeholders, allowing to later convert those placeholders
+        * back to original content.
+        *
+        * @method serializeAlohaBlocks
+        * @param type {String} the type of Aloha blocks to search for and
+        *   convert ('snippet' or 'image')
+        * @param text {String} text to convert
+        * @return {String} converted text
+        */
         function serializeAlohaBlocks(type, text) {
             var content,
                 matches,
@@ -234,25 +270,28 @@ angular.module('authoringEnvironmentApp').service('article', [
                 .replace(/\-\-\&gt\;/g, '-->'); // replace --&gt; with -->
         }
 
-        // TODO: comments & tests
+        /**
+        * Saves all changes in article content to the server.
+        *
+        * @method save
+        * @param articleObj {Object} object with all article data
+        * @return {Object} promise object.
+        */
         // XXX: get rid of explicitly passing the articleObj
         function save(articleObj) {
             var deferred = $q.defer(),
-                key,
                 postData = angular.copy(articleObj),
                 serialized;
 
             // serialize objects (images, snippets) in all article fields
-            for (key in postData.fields) {
-                if (postData.fields.hasOwnProperty(key)) {
-                    serialized = serializeAlohaBlocks(
-                        'image', postData.fields[key]
-                    );
-                    postData.fields[key] = serializeAlohaBlocks(
-                        'snippet', serialized
-                    );
-                }
-            }
+            Object.keys(postData.fields).forEach(function (key) {
+                serialized = serializeAlohaBlocks(
+                    'image', postData.fields[key]
+                );
+                postData.fields[key] = serializeAlohaBlocks(
+                    'snippet', serialized
+                );
+            });
 
             resource.save({
                 articleId: articleObj.number,
@@ -277,6 +316,7 @@ angular.module('authoringEnvironmentApp').service('article', [
             promise: deferred.promise,
             save: save,
             // XXX: this deserialization shouldn't be public...?
+            // Should be hidden here in this service to simplify ArticleCtrl
             deserializeAlohaBlocks: deserializeAlohaBlocks,
 
             init: function (par) {
@@ -324,9 +364,15 @@ angular.module('authoringEnvironmentApp').service('article', [
                 var promise,
                     url;
 
-                url = [
-                    API_ROOT, 'articles', this.articleId, this.language, status
-                ].join('/');
+                url = Routing.generate(
+                    'newscoop_gimme_articles_changearticlestatus',
+                    {
+                        number: this.articleId,
+                        language: this.language,
+                        status: status
+                    },
+                    true
+                );
 
                 promise = $http({
                     method: 'PATCH',
