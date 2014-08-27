@@ -7,10 +7,6 @@
 */
 
 describe('Controller: ArticleCtrl', function () {
-
-    // load the controller's module
-    beforeEach(module('authoringEnvironmentApp'));
-
     var ArticleCtrl,
         articleService,
         ArticleType,
@@ -20,6 +16,9 @@ describe('Controller: ArticleCtrl', function () {
         panesService,
         platformService,
         scope;
+
+    // load the controller's module
+    beforeEach(module('authoringEnvironmentApp'));
 
     beforeEach(inject(function ($controller, $rootScope, $q, article) {
         articleService = article;
