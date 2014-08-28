@@ -517,25 +517,34 @@ a:hover {
 
         section {
             header {
+                display: block;
                 visibility:hidden;
                 margin-bottom: 3px;
+                font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+                font-weight: normal;
+                font-style: normal;
+                line-height:18px;
                 .edit-label {
                     background: #c0c0c0;
                     .border-radius(2px);
                     font-size:10px;
                     color:#fff;
                     text-transform:uppercase;
-                    line-height:18px;
                     padding:0 5px;
                 }
                 .edit-words-info {
                     color:#6b6b6b;
                     font-style:italic;
                     font-size:11px;
-                    line-height:18px;
                     padding-left:5px;
                 }
             }
+            &:hover {
+                header {
+                    visibility: visible;
+                }
+            }
+
             p {
                 padding:2px;
             }
@@ -577,14 +586,6 @@ a:hover {
                     outline:none;
                     border-color:#e8e8e8;
                 }
-            }
-
-        }
-
-        &.edit-mode section {
-            header {
-                visibility:visible;
-                display:block;
             }
         }
 
