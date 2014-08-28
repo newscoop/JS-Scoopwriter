@@ -7,20 +7,20 @@
 */
 
 describe('Service: article', function () {
-    var article,
+    var articleService,
         $httpBackend,
         $rootScope;
 
     beforeEach(module('authoringEnvironmentApp'));
 
-    beforeEach(inject(function (_article_, _$httpBackend_, _$rootScope_) {
-        article = _article_;
+    beforeEach(inject(function (article, _$httpBackend_, _$rootScope_) {
+        articleService = article;
         $httpBackend = _$httpBackend_;
         $rootScope = _$rootScope_;
     }));
 
     it('should define correct options for "commenting"', function () {
-        var options = article.commenting;
+        var options = articleService.commenting;
         expect(options).not.toBeUndefined();
         expect(_.size(options)).toBe(3);
         expect('ENABLED' in options).toBe(true);
@@ -33,7 +33,7 @@ describe('Service: article', function () {
 
     it('should define correct options for the article workflow status',
         function () {
-            var options = article.wfStatus;
+            var options = articleService.wfStatus;
             expect(options).toBeDefined();
             expect(_.size(options)).toEqual(4);
             expect('NEW' in options).toBe(true);
@@ -49,7 +49,7 @@ describe('Service: article', function () {
 
     it('should define correct options for the article issue workflow status',
         function () {
-            var options = article.issueWfStatus;
+            var options = articleService.issueWfStatus;
             expect(options).toBeDefined();
             expect(_.size(options)).toEqual(2);
             expect('NOT_PUBLISHED' in options).toBe(true);
@@ -60,7 +60,7 @@ describe('Service: article', function () {
     );
 
     it('has the modified flag cleared by default', function () {
-        expect(article.modified).toBe(false);
+        expect(articleService.modified).toBe(false);
     });
 
     describe('save() method', function () {
@@ -86,14 +86,14 @@ describe('Service: article', function () {
         });
 
         it('sends a correct request to API', function () {
-            article.save(articleObj);
+            articleService.save(articleObj);
         });
 
         it('resolves given promise on successful server response',
             function () {
                 var successSpy = jasmine.createSpy();
 
-                article.save(articleObj).then(successSpy);
+                articleService.save(articleObj).then(successSpy);
                 $httpBackend.flush(1);
                 expect(successSpy).toHaveBeenCalled();
             }
@@ -106,7 +106,7 @@ describe('Service: article', function () {
                 $httpBackend.resetExpectations();
                 $httpBackend.expectPATCH(url).respond(500);
 
-                article.save(articleObj).catch(errorSpy);
+                articleService.save(articleObj).catch(errorSpy);
                 $httpBackend.flush(1);
                 expect(errorSpy).toHaveBeenCalled();
             }
@@ -138,7 +138,7 @@ describe('Service: article', function () {
                             '<p>This is <b>bold</b>, really.&nbsp;</p>';
                     });
 
-                    article.save(articleObj);
+                    articleService.save(articleObj);
                 }
             );
 
@@ -150,7 +150,7 @@ describe('Service: article', function () {
                     return jsonData.fields.teaser === null;  // still null?
                 });
 
-                article.save(articleObj);
+                articleService.save(articleObj);
             });
 
             it('serializes images in article body', function () {
@@ -168,7 +168,7 @@ describe('Service: article', function () {
                         'Body text<** Image 123 size="small" **>End of text.');
                 });
 
-                article.save(articleObj);
+                articleService.save(articleObj);
             });
 
             it('serializes snippets in article body', function () {
@@ -186,14 +186,14 @@ describe('Service: article', function () {
                         'Body text<-- Snippet 99 -->End of text.');
                 });
 
-                article.save(articleObj);
+                articleService.save(articleObj);
             });
         });
     });
 
-    describe('deserializeAlohaBlocks', function () {
+    describe('deserializeAlohaBlocks() method', function () {
         it('returns null if text is null as well', function () {
-            var converted = article.deserializeAlohaBlocks(null);
+            var converted = articleService.deserializeAlohaBlocks(null);
             expect(converted).toBe(null);
         });
 
@@ -201,7 +201,7 @@ describe('Service: article', function () {
             var converted,
                 text = 'Foo <** Image 12 size="small" **> bar.';
 
-            converted = article.deserializeAlohaBlocks(text);
+            converted = articleService.deserializeAlohaBlocks(text);
             expect(converted).toEqual([
                 'Foo ',
                 '<div class="image" dropped-image ',
@@ -214,7 +214,7 @@ describe('Service: article', function () {
             var converted,
                 text = 'Foo <-- Snippet 10 --> bar.';
 
-            converted = article.deserializeAlohaBlocks(text);
+            converted = articleService.deserializeAlohaBlocks(text);
             expect(converted).toEqual([
                 'Foo ',
                 '<div class="snippet" data-id="10"></div>',
@@ -223,14 +223,88 @@ describe('Service: article', function () {
         });
     });
 
+    describe('init() method', function () {
+        var responseData,
+            $httpBackend;
+
+        beforeEach(inject(function (_$httpBackend_) {
+            var url = Routing.generate(
+                'newscoop_gimme_articles_getarticle',
+                {number: 8, language: 'de'},
+                true
+            );
+
+            responseData = {number: 8, language: 'de'};
+
+            $httpBackend = _$httpBackend_;
+            $httpBackend.expectGET(url).respond(200, responseData);
+        }));
+
+        afterEach(function () {
+            $httpBackend.verifyNoOutstandingExpectation();
+        });
+
+        it('sends a correct request to API', function () {
+            articleService.init({articleId: 8, language: 'de'});
+        });
+
+        it('initializes articleId on successful server response', function () {
+            articleService.articleId = undefined;
+
+            articleService.init({articleId: 8, language: 'de'});
+            $httpBackend.flush(1);
+
+            expect(articleService.articleId).toBe(8);
+        });
+
+        it('initializes article language on successful server response',
+            function () {
+                articleService.language = undefined;
+
+                articleService.init({articleId: 8, language: 'de'});
+                $httpBackend.flush(1);
+
+                expect(articleService.language).toEqual('de');
+            }
+        );
+
+        it('resolves article promise with retrieved data on successful ' +
+           'server response',
+            function () {
+                var callArgs,
+                    onSuccess = jasmine.createSpy('onSuccess()');
+
+                articleService.promise.then(onSuccess);
+
+                articleService.init({articleId: 8, language: 'de'});
+                $httpBackend.flush(1);
+
+                expect(onSuccess).toHaveBeenCalled();
+                callArgs = onSuccess.mostRecentCall.args[0];
+                expect(callArgs.number).toEqual(responseData.number);
+                expect(callArgs.language).toEqual(responseData.language);
+            }
+        );
+
+        it('successive calls to the method have no effect', function () {
+                articleService.init({articleId: 8, language: 'de'});
+                $httpBackend.flush(1);
+
+                // The following should not trigger the "unexpected request"
+                // error. If it does, the test (correctly) fails.
+                articleService.init({articleId: 8, language: 'de'});
+            }
+        );
+    });
+
     describe('changeCommentingSetting() method', function () {
         var fakePromiseObj;
 
         beforeEach(function () {
-            article.articleId = 1234;
-            article.language = 'pl';
+            articleService.articleId = 1234;
+            articleService.language = 'pl';
             fakePromiseObj = {then: null};
-            spyOn(article.resource, 'save').andCallFake(function () {
+            spyOn(articleService.resource, 'save').andCallFake(function () {
                 return {
                     $promise: fakePromiseObj
                 };
@@ -238,8 +312,8 @@ describe('Service: article', function () {
         });
 
         it('returns resource\'s promise', function () {
-            var returnedObj = article.changeCommentingSetting(
-                article.commenting.ENABLED
+            var returnedObj = articleService.changeCommentingSetting(
+                articleService.commenting.ENABLED
             );
             expect(returnedObj).toBe(fakePromiseObj);
         });
@@ -247,12 +321,12 @@ describe('Service: article', function () {
         it('invokes resource with correct parameters', function () {
             var callArgs;
 
-            article.changeCommentingSetting(
-                article.commenting.DISABLED
+            articleService.changeCommentingSetting(
+                articleService.commenting.DISABLED
             );
 
-            expect(article.resource.save.callCount).toBe(1);
-            callArgs = article.resource.save.mostRecentCall.args;
+            expect(articleService.resource.save.callCount).toBe(1);
+            callArgs = articleService.resource.save.mostRecentCall.args;
             expect(callArgs.length).toBeGreaterThan(0);
             expect(callArgs[0]).toEqual({
                 articleId: 1234,
@@ -264,12 +338,12 @@ describe('Service: article', function () {
            'commenting to ENABLED', function () {
                 var callArgs;
 
-                article.changeCommentingSetting(
-                    article.commenting.ENABLED
+                articleService.changeCommentingSetting(
+                    articleService.commenting.ENABLED
                 );
 
-                expect(article.resource.save.callCount).toBe(1);
-                callArgs = article.resource.save.mostRecentCall.args;
+                expect(articleService.resource.save.callCount).toBe(1);
+                callArgs = articleService.resource.save.mostRecentCall.args;
                 expect(callArgs.length).toBe(2);
                 expect(callArgs[1]).toEqual({
                     comments_enabled: 1,
@@ -281,12 +355,12 @@ describe('Service: article', function () {
            'commenting to DISABLED', function () {
                 var callArgs;
 
-                article.changeCommentingSetting(
-                    article.commenting.DISABLED
+                articleService.changeCommentingSetting(
+                    articleService.commenting.DISABLED
                 );
 
-                expect(article.resource.save.callCount).toBe(1);
-                callArgs = article.resource.save.mostRecentCall.args;
+                expect(articleService.resource.save.callCount).toBe(1);
+                callArgs = articleService.resource.save.mostRecentCall.args;
                 expect(callArgs.length).toBe(2);
                 expect(callArgs[1]).toEqual({
                     comments_enabled: 0,
@@ -299,12 +373,12 @@ describe('Service: article', function () {
             function () {
                 var callArgs;
 
-                article.changeCommentingSetting(
-                    article.commenting.LOCKED
+                articleService.changeCommentingSetting(
+                    articleService.commenting.LOCKED
                 );
 
-                expect(article.resource.save.callCount).toBe(1);
-                callArgs = article.resource.save.mostRecentCall.args;
+                expect(articleService.resource.save.callCount).toBe(1);
+                callArgs = articleService.resource.save.mostRecentCall.args;
                 expect(callArgs.length).toBe(2);
                 expect(callArgs[1]).toEqual({
                     comments_enabled: 0,
@@ -321,8 +395,8 @@ describe('Service: article', function () {
 
             $httpBackend = _$httpBackend_;
 
-            article.articleId = 25;
-            article.language = 'de';
+            articleService.articleId = 25;
+            articleService.language = 'de';
 
             url = Routing.generate(
                 'newscoop_gimme_articles_changearticlestatus',
@@ -333,11 +407,11 @@ describe('Service: article', function () {
         }));
 
         it ('sends a correct request to API', function () {
-            article.setWorkflowStatus('Y');
+            articleService.setWorkflowStatus('Y');
         });
 
         it ('returns $http promise', function () {
-            var returned = article.setWorkflowStatus('Y');
+            var returned = articleService.setWorkflowStatus('Y');
 
             // if it looks like a promise, then it probably is a promise
             ['then', 'success', 'error', 'finally'].forEach(function (key) {

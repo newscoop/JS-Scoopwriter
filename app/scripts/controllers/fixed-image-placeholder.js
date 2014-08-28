@@ -1,5 +1,12 @@
 'use strict';
-angular.module('authoringEnvironmentApp').controller('FixedImagePlaceholderCtrl', [
+
+/**
+* AngularJS controller for managing a fixed image field in article body.
+*
+* @class FixedImagePlaceholderCtrl
+*/
+angular.module('authoringEnvironmentApp')
+.controller('FixedImagePlaceholderCtrl', [
     '$scope',
     'images',
     'configuration',
@@ -8,6 +15,7 @@ angular.module('authoringEnvironmentApp').controller('FixedImagePlaceholderCtrl'
         $scope.style = {};
         // currently unused
         $scope.dropped = false;
+
         $scope.onDrop = function (data) {
             var parsed = JSON.parse(data);
             if ('image' === parsed.type) {

@@ -319,14 +319,25 @@ angular.module('authoringEnvironmentApp').service('article', [
             // Should be hidden here in this service to simplify ArticleCtrl
             deserializeAlohaBlocks: deserializeAlohaBlocks,
 
-            init: function (par) {
+            /**
+            * Retrieves article from the server and initializes the service
+            * with article data.
+            * NOTE: any successive calls to the method after initialization
+            * have no effect.
+            *
+            * @method init
+            * @param articleQuery {Object} which article to retrieve
+            *   @param articleQuery.articleId {Number} article's ID
+            *   @param articleQuery.number {String} article's language code
+            */
+            init: function (articleQuery) {
                 var service = this;
-                resource.get(par).$promise.then(function (data) {
-                    service.articleId = data.number;
+                resource.get(articleQuery).$promise.then(function (data) {
+                    service.articleId = parseInt(data.number);
                     service.language = data.language;
                     service.init = function () {
+                        // ignore successive calls (by not doing anything)
                     };
-                    // ignore successive calls
                     deferred.resolve(data);
                 });
             },
