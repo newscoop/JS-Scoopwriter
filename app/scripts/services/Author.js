@@ -43,10 +43,7 @@ angular.module('authoringEnvironmentApp').factory('Author', [
             }
 
             if (data.author.image) {
-                // XXX: temporary fix until the API starts returning
-                // un-encoded avatar image paths, without host name
-                author.avatarUrl =
-                    'http://' + decodeURIComponent(data.author.image);
+                author.avatarUrl = decodeURIComponent(data.author.image);
             } else {
                 author.avatarUrl = '/images/authors-default-avatar.png';
             }
