@@ -27,12 +27,12 @@ describe('Factory: Author', function () {
             id: 22,
             firstName: 'John',
             lastName: 'Doe',
-            image: 'foo.bar/image%2Fthumb_22.png'
+            image: 'http://foo.bar/image%2Fthumb_22.png'
         }, {
             id: 76,
             firstName: 'Wesley',
             lastName: 'Snipes',
-            image: 'foo.bar/image%2Fthumb_76.png'
+            image: 'http://foo.bar/image%2Fthumb_76.png'
         }]
     };
 
@@ -42,7 +42,7 @@ describe('Factory: Author', function () {
                 id: 22,
                 firstName: 'John',
                 lastName: 'Doe',
-                image: 'foo.bar/image%2Fthumb_22.png'
+                image: 'http://foo.bar/image%2Fthumb_22.png'
             },
             type: {
                 id: 1,
@@ -68,7 +68,7 @@ describe('Factory: Author', function () {
                     id: 155,
                     firstName: 'Foo',
                     lastName: 'Bar',
-                    image: 'baz.com%2Fimage%2Fimg_155.jpg'
+                    image: 'http://baz.com%2Fimage%2Fimg_155.jpg'
                 },
                 type: {
                     id: 13,
@@ -322,7 +322,7 @@ describe('Factory: Author', function () {
 
                 response.items = [{
                     id: 66, firstName: 'Hans', lastName: 'Doe',
-                    image: 'foo.bar/images/img_66.jpg'}
+                    image: 'http://foo.bar/images/img_66.jpg'}
                 ];
                 response.pagination = {
                     itemsPerPage: 10,
