@@ -1,50 +1,96 @@
 'use strict';
 
+/**
+* Module with tests for the FixedImagePlaceholderCtrl controller.
+*
+* @module FixedImagePlaceholderCtrl tests
+*/
+
 describe('Controller: FixedImagePlaceholderCtrl', function () {
+    var FixedImagePlaceholderCtrl,
+        scope,
+        imagesService;
 
     // load the controller's module
     beforeEach(module('authoringEnvironmentApp'));
 
-    var FixedImagePlaceholderCtrl,
-    scope,
-    images = {
-        byId: function() {
-            return {
-                basename: 'mocked.jpg'
-            }
-        }
-    };
-
     // Initialize the controller and a mock scope
     beforeEach(inject(function ($controller, $rootScope) {
         scope = $rootScope.$new();
+        imagesService =  {
+            byId: function () {}
+        };
+
         FixedImagePlaceholderCtrl = $controller('FixedImagePlaceholderCtrl', {
             $scope: scope,
-            images: images
+            images: imagesService
         });
     }));
 
-    it('knows that no image has been dropped at the beginning', function() {
+    it('initializes the dropped flag in scope to false', function () {
         expect(scope.dropped).toBe(false);
     });
-    describe('dropped image', function() {
-        beforeEach(function() {
-            spyOn(images, 'byId').andCallThrough();
+
+    it('defines no special styling in scope by default', function () {
+        expect(scope.style).toEqual({});
+    });
+
+    describe('scope\'s onDrop() method', function () {
+        beforeEach(function () {
+            spyOn(imagesService, 'byId');
+        });
+
+        it('makes the dropped image opaque', function () {
             scope.onDrop(
-                '{"id":"3","width":"100%","type":"image"}'
+                JSON.stringify({id: 3, width: '100%', type: 'image'})
             );
+            expect(scope.style.opacity).toEqual(1);
         });
-        it('shows the dropped image', function() {
-            expect(scope.style.opacity).toBe(1);
+
+        it('fetches image details from the images service', function () {
+            scope.onDrop(
+                JSON.stringify({id: 3, width: '100%', type: 'image'})
+            );
+            expect(imagesService.byId).toHaveBeenCalledWith(3);
         });
-        it('fetches image details', function() {
-            expect(images.byId).toHaveBeenCalledWith('3');
+
+        it('exposes retrieved image object in scope', function () {
+            var image = {id: 3, basename: 'mock.jpg'};
+            imagesService.byId.andReturn(image);
+
+            scope.onDrop(
+                JSON.stringify({id: 3, width: '100%', type: 'image'})
+            );
+            expect(scope.image).toEqual(image);
         });
-        it('updates the source', function() {
-            expect(scope.image.basename).toBe('mocked.jpg');
-        });
-        it('knows that some image has been dropped', function() {
+
+        it('sets the dropped flag in scope', function () {
+            scope.onDrop(
+                JSON.stringify({id: 3, width: '100%', type: 'image'})
+            );
             expect(scope.dropped).toBe(true);
+        });
+
+        it('sets the dropped flag in scope', function () {
+            scope.onDrop(
+                JSON.stringify({id: 3, width: '100%', type: 'image'})
+            );
+            expect(scope.dropped).toBe(true);
+        });
+
+        it('does not do anything for unknown types', function () {
+            scope.image = undefined;
+            scope.style = {};
+            scope.dropped = false;
+
+            scope.onDrop(
+                JSON.stringify({id: 3, width: '100%', type: 'unknown'})
+            );
+
+            expect(imagesService.byId).not.toHaveBeenCalled();
+            expect(scope.image).toBeUndefined();
+            expect(scope.style).toEqual({});
+            expect(scope.dropped).toBe(false);
         });
     });
 });
