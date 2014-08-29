@@ -38,24 +38,29 @@ angular.module('authoringEnvironmentApp').factory('configuration', function () {
             news: {
                 dateline: {
                     name:'dateline',
+                    displayName: 'Date Line',
                     order: 10,
                     defaultText: '[please provide article creation date]'
                 },
                 title: {  // article title (not a regular field from DB)
                     name: 'title',
+                    displayName: 'Title',
                     order: 20
                 },
                 lede: {
                     name: 'lede',
+                    displayName: 'Lead',
                     order: 30,
                     defaultText: '[please provide your content]'
                 },
                 mainImage: {  // not a regular field from DB
                     name: 'mainImage',
+                    displayName: 'Main Image',
                     order: 40
                 },
                 body: {
                     name: 'body',
+                    displayName: 'Body',
                     order: 50,
                     defaultText: '[please provide your content]'
                 }
@@ -63,24 +68,29 @@ angular.module('authoringEnvironmentApp').factory('configuration', function () {
             newswire: {
                 dateline: {
                     name:'dateline',
+                    displayName: 'Date Line',
                     order: 10,
                     defaultText: '[please provide article creation date]'
                 },
                 title: {  // article title (not a regular field from DB)
                     name: 'title',
+                    displayName: 'Title',
                     order: 20
                 },
                 dataLead: {
                     name: 'dataLead',
+                    displayName: 'Lead',
                     order: 30,
                     defaultText: '[please provide your content]'
                 },
                 mainImage: {  // not a regular field from DB
                     name: 'mainImage',
+                    displayName: 'Main Image',
                     order: 40,
                 },
                 dataContent: {
                     name: 'dataContent',
+                    displayName: 'Body',
                     order: 50,
                     defaultText: '[please provide your content]'
                 }
@@ -88,20 +98,24 @@ angular.module('authoringEnvironmentApp').factory('configuration', function () {
             blog: {
                 title: {  // article title (not a regular field from DB)
                     name: 'title',
+                    displayName: 'Title',
                     order: 10
                 },
                 lede: {
                     name: 'lede',
+                    displayName: 'Lead',
                     order: 20,
                     defaultText: '[please provide your content]'
                 },
                 mainImage: {  // not a regular field from DB
                     name: 'mainImage',
+                    displayName: 'Main Image',
                     order: 30,
                     isRegular: false
                 },
                 body: {
                     name: 'body',
+                    displayName: 'Body',
                     order: 40,
                     defaultText: '[please provide your content]'
                 }
