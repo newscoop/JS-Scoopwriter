@@ -390,6 +390,23 @@ angular.module('authoringEnvironmentApp').service('article', [
                     url: url
                 });
                 return promise;
+            },
+
+            // TODO:comments & tests utility method for calculating
+            // text statistics...
+            // and change the way word count is made (char delimiters etc.)
+            textStats: function (text) {
+                var stats = {};
+
+                if (text) {
+                    text = $('<div/>').html(text).text();  // strip HTML
+                    stats.chars = text.length;
+                    stats.words = text.split(/\s+/).length;
+                } else {
+                    stats.chars = 0;
+                    stats.words = 0;
+                }
+                return stats;
             }
         };
     }

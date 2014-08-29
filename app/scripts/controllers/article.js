@@ -19,7 +19,8 @@ angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
         $scope, article, ArticleType, panes, configuration, mode, platform,
         $routeParams, $q
     ) {
-        var articleService = article;
+        var articleService = article,
+            self = this;
 
         articleService.init({
             articleId: $routeParams.article,
@@ -31,28 +32,21 @@ angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
         $scope.panes = panes.query();
         $scope.platform = platform;
 
-        // TODO:comments & tests
-        function textStats(text) {
-            var stats = {};
+        // TODO:comments, tests... yes, this goes here, it's for the
+        // presentation purposes
+        self.fieldStatsText = function (fieldName) {
+            var statsText,
+                stats,
+                fieldValue;
 
-            if (text) {
-                text = $('<div/>').html(text).text();  // strip HTML
-                stats.chars = text.length;
-                stats.words = text.split(/\s+/).length;
+            if (fieldName === 'title') {
+                fieldValue = $scope.article.title;
             } else {
-                stats.chars = 0;
-                stats.words = 0;
+                fieldValue = $scope.article.fields[fieldName];
             }
-            return stats;
-        }
 
-        // TODO:comments, tests
-        function textInfo(text) {
-            var infoText,
-                stats;
-
-            stats = textStats(text);
-            infoText = [
+            stats = articleService.textStats(fieldValue);
+            statsText = [
                 stats.chars,
                 ' Character', (stats.chars !== 1) ? 's' : '',
                 ' / ',
@@ -60,39 +54,30 @@ angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
                 ' Word', (stats.words !== 1) ? 's' : '',
             ].join('');
 
-            return infoText;
-        }
+            return statsText;
+        };
 
-        // XXX: this word count logic should be hidden in some service
+        // listen to editor content changes and update character / word
+        // count info above the changed field accordingly
+        // TODO: tests
         $scope.$on('texteditor-content-changed', function (
             eventObj, jqEvent, alohaEditable
         ) {
-            var field,
-                fieldName,
-                infoText,
-                newValue,
+            var fieldName,
+                statsText,
                 reactOnTypes = {'keypress': true, 'paste': true, 'idle': true};
 
-            // TODO: remove this
             if (!(alohaEditable.triggerType in reactOnTypes)) {
-                console.debug('not reacting on ', alohaEditable.triggerType,
-                    'leaving');
                 return;
             }
 
             fieldName = alohaEditable.editable.originalObj.data('field-name');
-            field = _($scope.editableFields).find({name: fieldName});
-
-            newValue = alohaEditable.editable.getContents();
-            infoText = textInfo(newValue);
+            statsText = self.fieldStatsText(fieldName);
 
             $scope.$apply(function () {
-                field.textStats = infoText;
+                var field = _($scope.editableFields).find({name: fieldName});
+                field.statsText = statsText;
             });
-
-            // TODO: remove this
-            console.debug('texteditor-content-changed, metainfo updated',
-                'for field', fieldName, ':', field.textStats);
         });
 
         articleService.promise  // a promise to retrieve the article
@@ -129,14 +114,7 @@ angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
             // calculate text stats and convert to array (for sorting purposes
             // in template)
             _(cfgFields).forIn(function (field, key, collection) {
-                if (field.name === 'title') {
-                    field.textStats = textInfo($scope.article.title);
-                } else {
-                    field.textStats = textInfo(
-                        $scope.article.fields[field.name]
-                    );
-                }
-
+                field.statsText = self.fieldStatsText(field.name);
                 editableFields.push(field);
             });
 
