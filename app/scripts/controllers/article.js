@@ -31,6 +31,59 @@ angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
         $scope.panes = panes.query();
         $scope.platform = platform;
 
+        // XXX: this word count logic should be hidden in some service
+        $scope.$on('texteditor-content-changed', function (
+            eventObj, jqEvent, alohaEditable
+        ) {
+            var field,
+                fieldName,
+                infoText,
+                newValue,
+                reactOnTypes = {
+                    'keypress': true,
+                    'paste': true,
+                    'idle': true
+                },
+                stats = {};
+
+            // TODO: remove this
+            if (!(alohaEditable.triggerType in reactOnTypes)) {
+                console.debug('not reacting on ', alohaEditable.triggerType,
+                    'leaving');
+                return;
+            }
+
+            fieldName = alohaEditable.editable.originalObj.data('field-name');
+            field = _($scope.editableFields).find({name: fieldName});
+
+            newValue = alohaEditable.editable.getContents();
+
+            if (newValue) {
+                newValue = $('<div/>').html(newValue).text();  // strip HTML
+                stats.chars = newValue.length;
+                stats.words = newValue.split(/\s+/).length;
+            } else {
+                stats.chars = 0;
+                stats.words = 0;
+            }
+
+            infoText = [
+                stats.chars,
+                ' Character', (stats.chars !== 1) ? 's' : '',
+                ' / ',
+                stats.words,
+                ' Word', (stats.words !== 1) ? 's' : '',
+            ].join('');
+
+            $scope.$apply(function () {
+                field.textStats = infoText;
+            });
+
+            // TODO: remove this
+            console.debug('texteditor-content-changed, metainfo updated',
+                'for field', fieldName, ':', field.textStats);
+        });
+
         articleService.promise  // a promise to retrieve the article
         .then(
             function (article) {
@@ -69,5 +122,6 @@ angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
 
             $scope.editableFields = editableFields;
         });
+
     }
 ]);
