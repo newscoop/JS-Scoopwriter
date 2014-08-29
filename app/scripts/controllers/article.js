@@ -31,6 +31,38 @@ angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
         $scope.panes = panes.query();
         $scope.platform = platform;
 
+        // TODO:comments & tests
+        function textStats(text) {
+            var stats = {};
+
+            if (text) {
+                text = $('<div/>').html(text).text();  // strip HTML
+                stats.chars = text.length;
+                stats.words = text.split(/\s+/).length;
+            } else {
+                stats.chars = 0;
+                stats.words = 0;
+            }
+            return stats;
+        }
+
+        // TODO:comments, tests
+        function textInfo(text) {
+            var infoText,
+                stats;
+
+            stats = textStats(text);
+            infoText = [
+                stats.chars,
+                ' Character', (stats.chars !== 1) ? 's' : '',
+                ' / ',
+                stats.words,
+                ' Word', (stats.words !== 1) ? 's' : '',
+            ].join('');
+
+            return infoText;
+        }
+
         // XXX: this word count logic should be hidden in some service
         $scope.$on('texteditor-content-changed', function (
             eventObj, jqEvent, alohaEditable
@@ -39,12 +71,7 @@ angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
                 fieldName,
                 infoText,
                 newValue,
-                reactOnTypes = {
-                    'keypress': true,
-                    'paste': true,
-                    'idle': true
-                },
-                stats = {};
+                reactOnTypes = {'keypress': true, 'paste': true, 'idle': true};
 
             // TODO: remove this
             if (!(alohaEditable.triggerType in reactOnTypes)) {
@@ -57,23 +84,7 @@ angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
             field = _($scope.editableFields).find({name: fieldName});
 
             newValue = alohaEditable.editable.getContents();
-
-            if (newValue) {
-                newValue = $('<div/>').html(newValue).text();  // strip HTML
-                stats.chars = newValue.length;
-                stats.words = newValue.split(/\s+/).length;
-            } else {
-                stats.chars = 0;
-                stats.words = 0;
-            }
-
-            infoText = [
-                stats.chars,
-                ' Character', (stats.chars !== 1) ? 's' : '',
-                ' / ',
-                stats.words,
-                ' Word', (stats.words !== 1) ? 's' : '',
-            ].join('');
+            infoText = textInfo(newValue);
 
             $scope.$apply(function () {
                 field.textStats = infoText;
@@ -115,8 +126,17 @@ angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
                 }
             });
 
-            // convert to array (for sorting purposes in template)
+            // calculate text stats and convert to array (for sorting purposes
+            // in template)
             _(cfgFields).forIn(function (field, key, collection) {
+                if (field.name === 'title') {
+                    field.textStats = textInfo($scope.article.title);
+                } else {
+                    field.textStats = textInfo(
+                        $scope.article.fields[field.name]
+                    );
+                }
+
                 editableFields.push(field);
             });
 
