@@ -420,4 +420,58 @@ describe('Service: article', function () {
         });
     });
 
+    describe('textStats() method', function () {
+        it('it returns zero count for null value', function () {
+            expect(
+                articleService.textStats(null)
+            ).toEqual({chars: 0, words: 0});
+        });
+
+        it('it returns word count of zero for strings with no matches',
+            function () {
+                expect(
+                    articleService.textStats(' #$/ &@! :*+').words
+                ).toEqual(0);
+            }
+        );
+
+        it('correctly counts characters and words in ascii text', function () {
+            expect(
+                articleService.textStats('foo bar baz')
+            ).toEqual({chars: 11, words: 3});
+        });
+
+        it('correctly counts characters and words in non-ascii text',
+            function () {
+                expect(
+                    articleService.textStats('foöbarbázŁeiß')
+                ).toEqual({chars: 13, words: 1});
+            }
+        );
+
+        it('does not count HTML tags in statistics', function () {
+            var text = '<p>Some text is <b>bold</b>.</p>';
+            expect(
+                articleService.textStats(text)
+            ).toEqual({chars: 18, words: 4});
+        });
+
+        it('counts HTML entities as single characters', function () {
+            var text = 'A&nbsp;&lt;&nbsp;B&#8482;';  // A < B™
+            expect(articleService.textStats(text).chars).toEqual(6);
+        });
+
+        it('correctly counts words in text with many different delimiters',
+            function () {
+                var text = '  foo,bar bAz!Hocus POCUS. one&lt;two ... end  ';
+                expect(articleService.textStats(text).words).toEqual(8);
+            }
+        );
+
+        it('counts numbers as words', function () {
+            var text = 'foo 555 bar 777 end';
+            expect(articleService.textStats(text).words).toEqual(5);
+        });
+    });
+
 });

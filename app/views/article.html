@@ -47,13 +47,14 @@
       <header>
         <span class="edit-label">{{field.displayName}}</span>
         <span ng-if="field.name !== 'mainImage'"
-              class="edit-words-info">?? Character(s) / ?? Word(s)</span>
+              class="edit-words-info">{{field.statsText}}</span>
       </header>
       <div
          ng-switch-when="title"
-         data-aloha-content="article.title"
          class="article-editable-title clearfix"
+         data-field-name="{{field.name}}"
          aloha
+         data-aloha-content="article.title"
          >
       </div>
       <fixed-image-placeholder
@@ -64,8 +65,9 @@
       <div
          ng-switch-default
          class="clearfix"
-         data-aloha-content="article.fields[field.name]"
+         data-field-name="{{field.name}}"
          aloha
+         data-aloha-content="article.fields[field.name]"
          sf-droppable
          >
       </div>

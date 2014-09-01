@@ -10,6 +10,7 @@ describe('Controller: ArticleCtrl', function () {
     var ArticleCtrl,
         articleService,
         ArticleType,
+        fakeTextStats,
         getArticleDeferred,
         getArticleTypeDeferred,
         modeService,
@@ -35,6 +36,11 @@ describe('Controller: ArticleCtrl', function () {
         getArticleDeferred = $q.defer();
         spyOn(articleService, 'init');
         articleService.promise = getArticleDeferred.promise;
+
+        fakeTextStats = {chars: 0, words: 0};
+        spyOn(articleService, 'textStats').andCallFake(function () {
+            return fakeTextStats;
+        });
 
         ArticleType = {
             getByName: jasmine.createSpy('ArticleType.getByName()')
@@ -81,6 +87,96 @@ describe('Controller: ArticleCtrl', function () {
 
     it('exposes platform service in scope', function () {
         expect(scope.platform).toBe(platformService);
+    });
+
+    describe('fieldStatsText() helper method', function () {
+        beforeEach(function () {
+            scope.article = {
+                title: 'Article Title',
+                fields: {
+                    body: 'Body text.'
+                }
+            };
+        });
+
+        it('invokes textStats() service method with correct parameters ' +
+           'for a regular article field',
+            function () {
+                ArticleCtrl.fieldStatsText('body');
+                expect(articleService.textStats)
+                    .toHaveBeenCalledWith('Body text.');
+            }
+        );
+
+        it('invokes textStats() service method with correct parameters ' +
+           'for the article title',
+            function () {
+                ArticleCtrl.fieldStatsText('title');
+                expect(articleService.textStats)
+                    .toHaveBeenCalledWith('Article Title');
+            }
+        );
+
+        it('returns stats text for the given article field', function () {
+            var result;
+
+            fakeTextStats = {chars: 10, words: 2};
+            result = ArticleCtrl.fieldStatsText('body');
+            expect(result).toEqual('10 Characters / 2 Words');
+        });
+
+        it('uses singular form in returned text when necessary', function () {
+            var result;
+
+            fakeTextStats = {chars: 1, words: 1};
+            result = ArticleCtrl.fieldStatsText('body');
+            expect(result).toEqual('1 Character / 1 Word');
+        });
+    });
+
+    describe('on editor content change', function () {
+        var alohaEditable;
+
+        beforeEach(function () {
+            alohaEditable = {
+                triggerType: 'keypress',
+                editable: {
+                    originalObj: {
+                        data: function () {
+                            return 'teaser';  // return changed field's name
+                        }
+                    }
+                }
+            };
+            spyOn(ArticleCtrl, 'fieldStatsText');
+            scope.editableFields = [
+                {name: 'teaser', statsText: ''},
+                {name: 'body', statsText: ''}
+            ];
+        });
+
+        it('updates changed field\'s stats text ', function () {
+            ArticleCtrl.fieldStatsText.andReturn('26 Characters / 5 Words');
+            scope.$emit('texteditor-content-changed', {}, alohaEditable);
+
+            expect(
+                scope.editableFields[0].statsText  // teaser field
+            ).toEqual('26 Characters / 5 Words');
+        });
+
+        it('does not do anything if event\'s trigger type is "blur"',
+            function () {
+                scope.editableFields[0].statsText = 'Original stats text';
+                ArticleCtrl.fieldStatsText.andReturn('New stats text');
+                alohaEditable.triggerType = 'blur';
+
+                scope.$emit('texteditor-content-changed', {}, alohaEditable);
+
+                expect(
+                    scope.editableFields[0].statsText
+                ).toEqual('Original stats text');  // remains unchanged
+            }
+        );
     });
 
     it('exposes retrieved article in scope', function () {
@@ -177,6 +273,26 @@ describe('Controller: ArticleCtrl', function () {
             scope.$digest();
 
             expect(scope.article.fields.body).toEqual('[body]');
+        });
+
+        it('sets fields\' stats text', function () {
+            var field;
+
+            scope.editableFields = [
+                {name: 'title', statsText: undefined},
+                {name: 'body', statsText: undefined}
+            ];
+            spyOn(ArticleCtrl, 'fieldStatsText').andReturn('foo / bar');
+
+            getArticleDeferred.resolve(article);
+            getArticleTypeDeferred.resolve(articleTypeNews);
+
+            scope.$digest();
+
+            field = _(scope.editableFields).find({name: 'title'});
+            expect(field.statsText).toEqual('foo / bar');
+            field = _(scope.editableFields).find({name: 'body'});
+            expect(field.statsText).toEqual('foo / bar');
         });
     });
 

@@ -48,6 +48,7 @@ angular.module('authoringEnvironmentApp').controller('ArticleActionsCtrl', [
             $scope.article = article;
 
             // set a watch on article's content changes
+            // XXX: better listen on editor-content-changed event?
             $scope.$watch('article', function (newValue, oldValue) {
                 if (newValue === oldValue) {
                     return;  // called due to watcher initialization, skip
