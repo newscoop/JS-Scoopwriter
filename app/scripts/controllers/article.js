@@ -32,8 +32,15 @@ angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
         $scope.panes = panes.query();
         $scope.platform = platform;
 
-        // TODO:comments, tests... yes, this goes here, it's for the
-        // presentation purposes
+        /**
+        * Returns text with word and character count information for the given
+        * article field.
+        *
+        * @method fieldStatsText
+        * @param fieldName {String} name of the article field (can also be
+        *   'title' for the article title).
+        * @return {String}
+        */
         self.fieldStatsText = function (fieldName) {
             var statsText,
                 stats,
@@ -59,7 +66,6 @@ angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
 
         // listen to editor content changes and update character / word
         // count info above the changed field accordingly
-        // TODO: tests
         $scope.$on('texteditor-content-changed', function (
             eventObj, jqEvent, alohaEditable
         ) {
