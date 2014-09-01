@@ -29,6 +29,7 @@
     "jQuery": false,    // jQuery
     "Aloha": false,     // Aloha
     "Routing": false,   // FOSJsRoutingBundle
-    "alert": false      // alert
+    "alert": false,     // alert
+    "XRegExp": false    // XRegExp library
   }
 }

@@ -17,6 +17,7 @@ angular.module('authoringEnvironmentApp').service('article', [
             issueWfStatus,
             langMap,
             resource,
+            unicodeWords = new XRegExp('(\\p{Letter}|\\d)+', 'g'),
             wfStatus;
 
         langMap = {
@@ -392,16 +393,24 @@ angular.module('authoringEnvironmentApp').service('article', [
                 return promise;
             },
 
-            // TODO:comments & tests utility method for calculating
-            // text statistics...
-            // and change the way word count is made (char delimiters etc.)
+            /**
+            * Returns the number of characters and the number of
+            * words in a string.
+            *
+            * @method textStats
+            * @param text {String} text for which to calculate the stats
+            * @return {Object} text statistics (e.g. {chars: 15, words:4})
+            */
             textStats: function (text) {
-                var stats = {};
+                var match,
+                    stats = {};
 
                 if (text) {
                     text = $('<div/>').html(text).text();  // strip HTML
                     stats.chars = text.length;
-                    stats.words = text.split(/\s+/).length;
+
+                    match = text.match(unicodeWords);
+                    stats.words = match ? match.length : 0;
                 } else {
                     stats.chars = 0;
                     stats.words = 0;
