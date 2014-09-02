@@ -10,7 +10,8 @@
 angular.module('authoringEnvironmentApp').directive('droppedImage', [
     'configuration',
     '$log',
-    function (configuration, $log) {
+    '$timeout',
+    function (configuration, $log, $timeout) {
         return {
             restrict: 'A',
             templateUrl: 'views/dropped-image.html',
@@ -142,17 +143,23 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
 
                 /**
                 * Sets the size of the image to one of the predifined sizes
-                * (e.g. 'big'). If the given size is unknown, it sets the size
-                * to the original size of the image.
+                * (e.g. 'big') or to the exact width in pixels. If the given
+                * size is unknown, it sets the width to the original size of
+                * the image.
                 *
                 * @method setSize
                 * @param size {String} image size (e.g. 'small', 'medium',
-                * 'big')
+                * 'big', '82px')
                 */
                 scope.setSize = function (size) {
                     var width;
 
-                    if (size in configuration.image.width) {
+                    if (size.match(/^\d+px$/)) {
+                        width = size.substring(0, size.length - 2);
+                        scope.changePixelSize(parseInt(width));
+                        positionToolbar();
+                        return;
+                    } else if (size in configuration.image.width) {
                         width = configuration.image.width[size];
                     } else {
                         // set to original image size
@@ -162,6 +169,8 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                     $parent.width(width);
                     $element.css('width', '100%');
                     $parent.attr('data-size', size);
+
+                    scope.widthPx = $element.innerWidth();
 
                     positionToolbar();
                 };
@@ -174,9 +183,18 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                 * @method changePixelSize
                 * @param width {Number} image width in pixels
                 */
+                // XXX: unify this method and the setSize method as they serve
+                // the same purpose
                 scope.changePixelSize = function (width) {
                     if (angular.isNumber(width) && width > 0) {
-                        $element.width(Math.round(width));
+                        width = Math.round(width);
+                        $element.width(width);
+                        $parent.width(width);
+                        $parent.attr('data-size', width + 'px');
+
+                        scope.widthPx = $element.innerWidth();
+
+                        positionToolbar();
                     }
                 };
 
@@ -191,6 +209,11 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                 .then(function () {
                     scope.setAlignment(imgConfig.alignment);
                     scope.setSize(imgConfig.size);
+
+                    // asynchronously re-position the toolbar b/c initially,
+                    // $bar.outerWidth() returns null instead of the bar's
+                    // actual width, causing an incorrect initial positioning
+                    $timeout(positionToolbar, 0);
                 });
 
             }  // end postLink function
