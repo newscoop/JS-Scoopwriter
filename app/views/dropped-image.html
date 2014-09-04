@@ -58,28 +58,31 @@
                               ng-model="widthPx"
                               ng-change="changePixelSize(widthPx)"
                               /> px</span>
-      <button
-         class="btn btn-default btn-xs"
-         ng-class="{active: activeAlignment === 'left'}"
-         data-id="left"
-         ng-click="setAlignment('left')"
-         >
-        <span class="glyphicon glyphicon-align-left"></span>
-      </button><button
-                  class="btn btn-default btn-xs"
-                  ng-class="{active: activeAlignment === 'center'}"
-                  data-id="center"
-                  ng-click="setAlignment('center')"
-                  >
-        <span class="glyphicon glyphicon-align-center"></span>
-      </button><button
-                  class="btn btn-default btn-xs"
-                  ng-class="{active: activeAlignment === 'right'}"
-                  data-id="right"
-                  ng-click="setAlignment('right')"
-                  >
-        <span class="glyphicon glyphicon-align-right"></span>
-      </button>
+      <div class="btn-group">
+            <button
+               class="btn btn-default btn-xs"
+               ng-class="{active: activeAlignment === 'left'}"
+               data-id="left"
+               ng-click="setAlignment('left')"
+               >
+              <span class="glyphicon glyphicon-align-left"></span>
+            </button><button
+                        class="btn btn-default btn-xs"
+                        ng-class="{active: activeAlignment === 'center'}"
+                        data-id="center"
+                        ng-click="setAlignment('center')"
+                        >
+              <span class="glyphicon glyphicon-align-center"></span>
+            </button><button
+                        class="btn btn-default btn-xs"
+                        ng-class="{active: activeAlignment === 'right'}"
+                        data-id="right"
+                        ng-click="setAlignment('right')"
+                        >
+              <span class="glyphicon glyphicon-align-right"></span>
+            </button>
+      </div>
+
     </div>
   </div>
 </div>
