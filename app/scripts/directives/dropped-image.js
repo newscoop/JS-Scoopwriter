@@ -149,9 +149,12 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                 *
                 * @method setSize
                 * @param size {String} image size (e.g. 'small', 'medium',
-                * 'big', '82px')
+                *   'big', '82px')
+                * @param initPhase {Boolean} a flag indicating whether the
+                *    method is invoked during the init phase (when the image
+                *    has just been retrieved but not rendered yet)
                 */
-                scope.setSize = function (size) {
+                scope.setSize = function (size, initPhase) {
                     var width;
 
                     if (size.match(/^\d+px$/)) {
@@ -162,15 +165,25 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                     } else if (size in configuration.image.width) {
                         width = configuration.image.width[size];
                     } else {
-                        // set to original image size
-                        width = scope.image.width;
+                        // set to original image size (NOTE: add 2px because
+                        // border width is subtracted from image width due to
+                        // the "border-box" box-sizing property that we use)
+                        width = scope.image.width + 2 + 'px';
                     }
 
-                    $parent.width(width);
+                    // NOTE: use .css() instead of .width() as the latter
+                    // does not set the desired pixel width due to "border-box"
+                    // box-sizing CSS property that we use
+                    $parent.css('width', width);
                     $element.css('width', '100%');
                     $parent.attr('data-size', size);
 
                     scope.widthPx = $element.innerWidth();
+                    if (initPhase) {
+                        // in the init phase, innerWidth returns width with
+                        // border included, thus we need to adjust for that
+                        scope.widthPx -= 2;
+                    }
 
                     positionToolbar();
                 };
@@ -188,11 +201,16 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                 scope.changePixelSize = function (width) {
                     if (angular.isNumber(width) && width > 0) {
                         width = Math.round(width);
-                        $element.width(width);
-                        $parent.width(width);
+                        $element.css('width', width + 'px');
+
+                        // add 2px to parent to account for child's border
+                        // NOTE: must use .css() instead of .width() to set
+                        // the exact size in pixels (b/c we use "border-box"
+                        // box-sizing property)
+                        $parent.css('width', width + 2 + 'px');
                         $parent.attr('data-size', width + 'px');
 
-                        scope.widthPx = $element.innerWidth();
+                        scope.widthPx = width;
 
                         positionToolbar();
                     }
@@ -208,7 +226,7 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                 ctrl.init(parseInt(scope.imageId, 10))
                 .then(function () {
                     scope.setAlignment(imgConfig.alignment);
-                    scope.setSize(imgConfig.size);
+                    scope.setSize(imgConfig.size, true);
 
                     // asynchronously re-position the toolbar b/c initially,
                     // $bar.outerWidth() returns null instead of the bar's
