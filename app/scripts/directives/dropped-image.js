@@ -28,6 +28,10 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                     $parent = $element.parent(),  // Aloha block container
                     $toolbar;
 
+                // which size and alignment are currently applied to the image
+                scope.activeSize = null;
+                scope.activeAlignment = null;
+
                 /**
                 * Retrieves a jQuery reference to the image toolbar node. It
                 * also makes sure that the toolbar is a direct child of the
@@ -109,17 +113,21 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                     case 'left':
                         cssFloat = 'left';
                         cssMargin = '2% 2% 2% 0';
+                        scope.activeAlignment = 'left';
                         break;
                     case 'right':
                         cssFloat = 'right';
                         cssMargin = '2% 0 2% 2%';
+                        scope.activeAlignment = 'right';
                         break;
                     case 'center':
                         cssFloat = 'none';
                         cssMargin = '2% auto';
+                        scope.activeAlignment = 'center';
                         break;
                     default:
                         $log.warn('unknown image alignment:', position);
+                        scope.activeAlignment = null;
                         return;
                     }
 
@@ -160,15 +168,18 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                     if (size.match(/^\d+px$/)) {
                         width = size.substring(0, size.length - 2);
                         scope.changePixelSize(parseInt(width));
+                        scope.activeSize = 'custom';
                         positionToolbar();
                         return;
                     } else if (size in configuration.image.width) {
                         width = configuration.image.width[size];
+                        scope.activeSize = size;
                     } else {
                         // set to original image size (NOTE: add 2px because
                         // border width is subtracted from image width due to
                         // the "border-box" box-sizing property that we use)
                         width = scope.image.width + 2 + 'px';
+                        scope.activeSize = 'original';
                     }
 
                     // NOTE: use .css() instead of .width() as the latter
@@ -211,6 +222,7 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                         $parent.attr('data-size', width + 'px');
 
                         scope.widthPx = width;
+                        scope.activeSize = 'custom';
 
                         positionToolbar();
                     }
