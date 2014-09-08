@@ -56,11 +56,14 @@ angular.module('authoringEnvironmentApp').factory('SnippetTemplate', [
 
             templates.$promise = deferredGet.promise;
 
-            $http.get(Routing.generate('newscoop_gimme_snippettemplates_getsnippettemplates', {}, true), {
-                params: {
-                    items_per_page: 99999  // de facto "all"
-                }
-            }).success(function (response) {
+            $http.get(
+                Routing.generate(
+                    'newscoop_gimme_snippettemplates_getsnippettemplates',
+                    {},
+                    true
+                ),
+                {params: {items_per_page: 99999}}  // de facto "all"
+            ).success(function (response) {
                 response.items.forEach(function (item) {
                     item = self.createFromApiData(item);
                     templates.push(item);

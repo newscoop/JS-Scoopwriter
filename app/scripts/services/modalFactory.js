@@ -1,6 +1,5 @@
 'use strict';
 
-
 /**
 * Constructor function for modal confirmations controllers.
 *
@@ -60,8 +59,8 @@ angular.module('authoringEnvironmentApp').factory('modalFactory', [
             * @class createConfirmInstance
             * @param title {String} title of the modal window
             * @param text {String} text in the modal window's body
-            * @param isHeavy {Boolean} whether to create a "heavy" version of the
-            *     confirmation dialog
+            * @param isHeavy {Boolean} whether to create a "heavy" version
+            *   of the confirmation dialog
             * @return {Object} AngularJS UI modal dialog instance
             */
             _createConfirmInstance: function (title, text, isHeavy) {

@@ -5,7 +5,9 @@ angular.module('authoringEnvironmentApp').service('imageResource', [
     'transform',
     function imageResource($resource, transform) {
         return $resource(
-            Routing.generate('newscoop_gimme_images_getimage', {}, true) + '/:id',
+            Routing.generate(
+                'newscoop_gimme_images_getimage', {}, true
+            ) + '/:id',
             {},
             {
                 'modify': {
@@ -14,6 +16,5 @@ angular.module('authoringEnvironmentApp').service('imageResource', [
                 }
             }
         );
-
     }
 ]);

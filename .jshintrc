@@ -22,6 +22,7 @@
   "strict": true,       // Require `use strict` pragma  in every file.
   "trailing": true,     // Prohibit trailing whitespaces.
   "regexp": true,       // Prohibit `.` and `[^...]` in regular expressions.
+  "maxlen": 80,         // This option lets you set the maximum length of a line.
   "globals": {
     "angular": false,   // Tells JSHint about the existence of Angular as a global var
     "_": false,         // Tells JSHint about LoDash

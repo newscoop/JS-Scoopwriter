@@ -1,5 +1,6 @@
 'use strict';
-angular.module('authoringEnvironmentApp').service('currentTime', function currentTime() {
+
+angular.module('authoringEnvironmentApp').service('currentTime', function () {
     var preset = false;
     this.set = function (newPreset) {
         preset = newPreset;
