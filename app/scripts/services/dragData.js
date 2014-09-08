@@ -2,7 +2,6 @@
 angular.module('authoringEnvironmentApp').service('Dragdata', [
     '$log',
     function Dragdata($log) {
-        // AngularJS will instantiate a singleton by calling "new" on this function
         this.converters = {
             'test': function ($e) {
                 return {};
@@ -27,7 +26,8 @@ angular.module('authoringEnvironmentApp').service('Dragdata', [
         this.checkDraggable = function (element) {
             var type = element.attr('data-draggable-type');
             if (!type) {
-                return 'error: a draggable element has not a data-draggable-type attribute';
+                return 'error: a draggable element has not a ' +
+                    'data-draggable-type attribute';
             }
             if (!(type in this.converters)) {
                 return 'error: draggable type "' + type + '" is not supported';
@@ -61,7 +61,8 @@ angular.module('authoringEnvironmentApp').service('Dragdata', [
                 )
                 .alohaBlock();
             default:
-                $log.debug('getDropped function called on a malformed data object, no known type into it');
+                $log.debug('getDropped function called on a malformed data ' +
+                    'object, no known type into it');
             }
         };
     }

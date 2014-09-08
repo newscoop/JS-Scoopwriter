@@ -1,4 +1,5 @@
 'use strict';
+
 /**
 * AngularJS Service for displaying a modal box (overlay) on a page.
 *
@@ -9,10 +10,9 @@ angular.module('authoringEnvironmentApp').service('modal', [
     '$log',
     '$http',
     function modal($templateCache, $log, $http) {
-        // AngularJS will instantiate a singleton by calling "new" on this function
         // jQuery selector for the modal's root DOM element
-        var selector = '#myModal';
-        var service = this;  // alias for the modal service itself
+        var selector = '#myModal',
+            service = this;  // alias for the modal service itself
 
         /**
         * A flag indicating whether the modal is visible or not

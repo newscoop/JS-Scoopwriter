@@ -1,6 +1,6 @@
 'use strict';
-angular.module('authoringEnvironmentApp').service('addToUrl', function AddToUrl() {
-    // AngularJS will instantiate a singleton by calling "new" on this function
+
+angular.module('authoringEnvironmentApp').service('addToUrl', function () {
     this.add = function (params, url) {
         var serialisedParams = '';
         angular.forEach(params, function (value, key) {

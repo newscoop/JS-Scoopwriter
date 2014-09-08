@@ -111,27 +111,27 @@ angular.module('authoringEnvironmentApp').service('article', [
             if (text === null) {
                 return text;
             }
-                                            // the extra backward slash (\) is because of Javascript being picky
+            // the extra backslash (\) is because of Javascript being picky
             var snippetRex  = '<--';     // exact match
             snippetRex     += '\\s';      // single whitespace
             snippetRex     += 'Snippet';  // exact match
             snippetRex     += '\\s';      // single whitespace
-            snippetRex     += '([\\d]+)'; // capture group 1, match 1 or more digits (\d)
-            snippetRex     += '(';                           // capture group 2
-            snippetRex     +=     '(';                       // capture group 3, 0 to unlimited
-            snippetRex     +=         '[\\s]+';              // match whitespace 1 to unlimited
-            snippetRex     +=         '(align';              // alternating capture group
-            snippetRex     +=         '|\\w+)';              // or any word longer then 1 to unlimited, end of alternating
-            snippetRex     +=         '\\s*';                // match whitespace 0 to unlimited
-            snippetRex     +=         '=';                   // exact match
-            snippetRex     +=         '\\s*';                // match whitespace 0 to unlimited
-            snippetRex     +=         '(';                   // capture group 4
-            snippetRex     +=             '"[^"]*"';         // capture anything except ", 0 to unlimited characters
-            snippetRex     +=             '|[^\\s]*';        // capture anything except whitespace, 0 to unlimited
-            snippetRex     +=         ')';                   // end capture group 4
-            snippetRex     +=     ')*';                      // end capture group 3, 0 to unlimited
-            snippetRex     += ')';                           // end capture group 2
-            snippetRex     += '[\\s]*';                      // match whitespace 0 to unlimited
+            snippetRex     += '([\\d]+)'; // capture group 1, 1 or more digits
+            snippetRex     += '(';               // capture group 2
+            snippetRex     +=     '(';           // capture group 3
+            snippetRex     +=         '[\\s]+';  // at least 1 whitespace
+            snippetRex     +=         '(align';  // alternating capture group
+            snippetRex     +=         '|\\w+)';  // or any other word
+            snippetRex     +=         '\\s*';    // optional whitespace
+            snippetRex     +=         '=';       // exact match
+            snippetRex     +=         '\\s*';    // optional whitespace
+            snippetRex     +=         '(';          // capture group 4
+            snippetRex     +=             '"[^"]*"';  // anything except "
+            snippetRex     +=             '|[^\\s]*'; // anything but whitesp.
+            snippetRex     +=         ')';         // end capture group 4
+            snippetRex     +=     ')*';    // end capture group 3 (0 or more)
+            snippetRex     += ')';       // end capture group 2
+            snippetRex     += '[\\s]*';  // optional whitespace
             snippetRex     += '-->';      // exact match
             var snippetPattern = new RegExp(snippetRex, 'ig');
 
@@ -159,31 +159,31 @@ angular.module('authoringEnvironmentApp').service('article', [
             if (text === null) {
                 return text;
             }
-                                                           // the extra backward slash (\) is because of Javascript being picky
-            var imageReg  = '<';                          // exact match
-            imageReg     += '\\*\\*';                      // exact match on **
-            imageReg     += '[\\s]*';                      // match whitespace 0 to unlimited
-            imageReg     += 'Image';                       // exact match
-            imageReg     += '[\\s]+';                      // match whitespace 1 to unlimited
-            imageReg     += '([\\d]+)';                    // capture digit 1 to unlimited
-            imageReg     += '(';                           // capture group 2
-            imageReg     +=     '(';                       // capture group 3, 0 to unlimited
-            imageReg     +=         '[\\s]+';              // match whitespace 1 to unlimited
-            imageReg     +=         '(align|alt|sub';      // alternating capture group
+            // the extra backslash (\) is because of Javascript being picky
+            var imageReg  = '<';         // exact match
+            imageReg     += '\\*\\*';    // exact match on **
+            imageReg     += '[\\s]*';    // optional whitespace
+            imageReg     += 'Image';     // exact match
+            imageReg     += '[\\s]+';    // whitespace
+            imageReg     += '([\\d]+)';  // capture group 1, number
+            imageReg     += '(';         // capture group 2
+            imageReg     +=     '(';       // capture group 3, 0 to unlimited
+            imageReg     +=         '[\\s]+';  // optional whitespace
+            imageReg     +=         '(align|alt|sub';  // alternating capt. gr.
             imageReg     +=         '|width|height|ratio';
-            imageReg     +=         '|\\w+)';              // or any word longer then 1 to unlimited, end of alternating
-            imageReg     +=         '\\s*';                // match whitespace 0 to unlimited
-            imageReg     +=         '=';                   // exact match
-            imageReg     +=         '\\s*';                // match whitespace 0 to unlimited
-            imageReg     +=         '(';                   // capture group 4
-            imageReg     +=             '"[^"]*"';         // capture anything except ", 0 to unlimited characters
-            imageReg     +=             '|[^\\s]*';        // capture anything except whitespace, 0 to unlimited
-            imageReg     +=         ')';                   // end capture group 4
-            imageReg     +=     ')*';                      // end capture group 3, 0 to unlimited
-            imageReg     += ')';                           // end capture group 2
-            imageReg     += '[\\s]*';                      // match whitespace 0 to unlimited
-            imageReg     += '\\*\\*';                      // exact match on **
-            imageReg     += '>';                           // exact match
+            imageReg     +=         '|\\w+)';  // or any word, end of group
+            imageReg     +=         '\\s*';    // optional whitespace
+            imageReg     +=         '=';       // exact match
+            imageReg     +=         '\\s*';    // optional whitespace
+            imageReg     +=         '(';       // capture group 4
+            imageReg     +=             '"[^"]*"';  // anything except "
+            imageReg     +=             '|[^\\s]*'; // anything but whitespace
+            imageReg     +=         ')';       // end capture group 4
+            imageReg     +=     ')*';        //end capture group 3 (0 or more)
+            imageReg     += ')';           // end capture group 2
+            imageReg     += '[\\s]*';      // optional whitespace
+            imageReg     += '\\*\\*';      // exact match on **
+            imageReg     += '>';           // exact match
             var imagePattern = new RegExp(imageReg, 'ig');
 
             var converted = text.replace(

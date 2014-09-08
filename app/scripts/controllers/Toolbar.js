@@ -1,8 +1,11 @@
 'use strict';
+
 angular.module('authoringEnvironmentApp').controller('ToolbarCtrl', [
     '$scope',
     '$filter',
     function ($scope, $filter) {
+        var updateScope;
+
         $scope.stylers = [
             {
                 element: 'p',
@@ -33,17 +36,28 @@ angular.module('authoringEnvironmentApp').controller('ToolbarCtrl', [
                 name: 'Preformatted'
             }
         ];
-        $scope.active = $filter('filter')($scope.stylers, { element: 'p' }, true)[0].name;
-        var updateScope = function () {
-            var commandValue = Aloha.queryCommandValue('formatBlock');
+
+        $scope.active = $filter('filter')(
+            $scope.stylers,
+            {element: 'p'},
+            true
+        )[0].name;
+
+        updateScope = function () {
+            var commandValue = Aloha.queryCommandValue('formatBlock'),
+                filtered;
+
             if (commandValue.toString().length > 0) {
-                var filtered = $filter('filter')($scope.stylers, { element: commandValue }, true);
+                filtered = $filter('filter')(
+                    $scope.stylers, {element: commandValue}, true
+                );
                 if (filtered.length > 0) {
                     $scope.active = filtered[0].name;
                     $scope.$apply();
                 }
             }
         };
+
         Aloha.ready(function () {
             Aloha.bind('aloha-selection-changed', function () {
                 updateScope();
@@ -52,6 +66,5 @@ angular.module('authoringEnvironmentApp').controller('ToolbarCtrl', [
                 updateScope();
             });
         });
-
     }
 ]);

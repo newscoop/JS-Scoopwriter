@@ -1,11 +1,12 @@
 'use strict';
+
 /**
 * AngularJS Service for tracking which batches of content have been loaded
 * from the backend server. Useful when implementing pagination behavior.
 *
 * @class pageTracker
 */
-angular.module('authoringEnvironmentApp').service('pageTracker', function PageTracker() {
+angular.module('authoringEnvironmentApp').service('pageTracker', function () {
 
     /**
     * Examines the given pagination object and determine, whether it

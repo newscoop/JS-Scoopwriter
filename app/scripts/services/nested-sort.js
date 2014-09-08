@@ -43,10 +43,12 @@ angular.module('authoringEnvironmentApp').service('nestedSort', [
                         if (copy.parent in service.map) {
                             service.map[copy.parent].childs.push(copy);
                         } else {
-                            $log.debug('error, comment', copy, 'has parent', copy.parent, 'which is not available to us');
+                            $log.debug('error, comment', copy, 'has parent',
+                                copy.parent, 'which is not available to us');
                         }
                     } else {
-                        $log.debug('error, comment', copy, 'is not first level but it has no parent');
+                        $log.debug('error, comment', copy,
+                            'is not first level but it has no parent');
                     }
                 });
             });
@@ -62,12 +64,14 @@ angular.module('authoringEnvironmentApp').service('nestedSort', [
                 });
             }
             assignPosition(service.map.root);
-            /* navigate the original array, and copy the positions from the map */
+            /* navigate the original array and copy positions from the map */
             arr.forEach(function (comment) {
                 if (comment.id in service.map) {
-                    comment.nestedPosition = service.map[comment.id].nestedPosition;
+                    comment.nestedPosition =
+                            service.map[comment.id].nestedPosition;
                 } else {
-                    $log.error('comment', comment, 'is not in the nested sorting map', service.map);
+                    $log.error('comment', comment,
+                        'is not in the nested sorting map', service.map);
                 }
             });
         };

@@ -1,4 +1,5 @@
 'use strict';
+
 angular.module('authoringEnvironmentApp').directive('sfDroppable', [
     '$compile',
     'Dragdata',
@@ -14,18 +15,26 @@ angular.module('authoringEnvironmentApp').directive('sfDroppable', [
                 $(element).on('dragover', sel, function (e) {
                     var target = $(e.target);
                     if (!target.next().is(place)) {
-                        target.after($('<div>&nbsp;</div>').addClass(placeholderClass));
+                        target.after(
+                            $('<div>&nbsp;</div>').addClass(placeholderClass)
+                        );
                     }
                 }).on('dragleave', sel, function (e) {
                     if ($(e.target).next().is(place)) {
                         $(place).remove();
                     }
                 }).on('drop', sel, function (e) {
+                    var dropped,
+                        target;
+
                     e.preventDefault();
                     // to prevent browser element appending
                     e.stopPropagation();
-                    var target = $(e.target);
-                    var dropped = Dragdata.getDropped(e.originalEvent.dataTransfer.getData('Text'));
+
+                    target = $(e.target);
+                    dropped = Dragdata.getDropped(
+                        e.originalEvent.dataTransfer.getData('Text')
+                    );
                     if (target.next().is(place)) {
                         $(place).remove();
                     }

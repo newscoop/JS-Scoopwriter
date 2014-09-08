@@ -55,8 +55,11 @@ angular.module('authoringEnvironmentApp').factory('NcImage', [
         NcImage.getById = function (id) {
             var deferredGet = $q.defer();
 
-            $http.get(Routing.generate('newscoop_gimme_images_getimage', {'number': id}, true))
-            .success(function (response) {
+            $http.get(
+                Routing.generate(
+                    'newscoop_gimme_images_getimage', {number: id}, true
+                )
+            ).success(function (response) {
                 deferredGet.resolve(new NcImage(response));
             }).error(function (responseBody) {
                 deferredGet.reject(responseBody);
