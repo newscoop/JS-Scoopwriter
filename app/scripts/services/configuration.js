@@ -40,7 +40,8 @@ angular.module('authoringEnvironmentApp').factory('configuration', function () {
                     name:'dateline',
                     displayName: 'Date Line',
                     order: 10,
-                    defaultText: '[please provide article creation date]'
+                    defaultText:
+                        '[please provide your One-Word-Catchline here]'
                 },
                 title: {  // article title (not a regular field from DB)
                     name: 'title',
@@ -70,7 +71,8 @@ angular.module('authoringEnvironmentApp').factory('configuration', function () {
                     name:'dateline',
                     displayName: 'Date Line',
                     order: 10,
-                    defaultText: '[please provide article creation date]'
+                    defaultText:
+                        '[Please provide your One-Word-Catchline here]'
                 },
                 title: {  // article title (not a regular field from DB)
                     name: 'title',
