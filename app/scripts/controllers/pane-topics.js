@@ -1,5 +1,10 @@
 'use strict';
 
+/**
+* AngularJS controller for the Topics pane.
+*
+* @class PaneTopicsCtrl
+*/
 angular.module('authoringEnvironmentApp').controller('PaneTopicsCtrl',
     function ($scope) {
         $scope.topics = [

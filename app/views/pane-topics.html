@@ -1,21 +1,83 @@
-<section ng-controller="PaneTopicsCtrl" class="tab-content" id="topics-tab">
-    <form ng-submit="addTopic()">
-        <input type="text" ng-model="topicText"  size="30"
-               placeholder="Add a new Topic here">
-        <input class="btn-primary" type="submit" value="add">
-    </form>
-    <input type="text" ng-model="search" class="search-query" placeholder="Search">
-    <h3>Available Topics</h3>
-    <ul class="edit-toc">
-        <li ng-repeat="topic in topics | filter:{selected:false} | filter:search | orderBy:'text'" ng-click="chooseTopic(topic)">
-            {{topic.text}} <button ng-click="deleteTopic(topic)"> X </button>
-        </li>
-    </ul>
+<section
+    ng-controller="PaneTopicsCtrl"
+    class="tabcontent topics-panel">
 
-    <h3>Chosen Topics</h3>
-    <ul class="edit-toc">
-        <li ng-repeat="topic in topics | filter:{selected:true} | orderBy:'text'">
-            {{topic.text}} <button ng-click="deleteChTopic(topic)"> X </button>
-        </li>
-    </ul>
+  <div class="panel-title">
+    Topics
+  </div>
+
+  <div class="add-element" ng-class="{expanded: showAddNew}">
+    <div class="heading">
+      <button class="btn btn-sf-invisible"
+              ng-click="showAddNew = !showAddNew">
+        <span class="glyphicon"
+              ng-class="{'glyphicon-plus': !showAddNew,
+                         'glyphicon-minus': showAddNew}"
+              ></span><span class="add-text">ADD NEW TOPIC</span>
+      </button>
+    </div>
+
+    <form name="addSnippet" class="body" ng-show="showAddNew">
+      <div class="input-name">Title</div>
+      <input name="snippetTitle" required
+          class="editor-input"
+          placeholder="Title"
+          ng-model="newSnippet.name">
+      <div class="controls">
+        <button
+            class="btn btn-primary btn-sm pull-right"
+            data-test-button="new"
+            ng-click="addSnippet.$valid && addNewSnippetToArticle(newSnippet)"
+            ng-disabled="addingNewSnippet"
+            >Add</button>
+        <button
+            class="btn btn-default btn-sm pull-right"
+            ng-click="clearNewSnippetForm()"
+            ng-disabled="addingNewSnippet ||
+                        (!newSnippet.name && !newSnippet.template)"
+            >Clear</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="add-element" ng-class="{expanded: showAddExisting}">
+    <div class="heading">
+      <button class="btn btn-sf-invisible"
+              ng-click="showAddExisting = !showAddExisting">
+        <span class="glyphicon"
+              ng-class="{'glyphicon-plus': !showAddExisting,
+                         'glyphicon-minus': showAddExisting}"
+              ></span><span class="add-text">ADD EXISTING TOPIC</span>
+      </button>
+    </div>
+
+    <form name="addSnippet" class="body" ng-show="showAddExisting">
+      <div class="input-name">Title</div>
+      <input name="snippetTitle" required
+          class="editor-input"
+          placeholder="Title"
+          ng-model="newSnippet.name">
+      <div class="controls">
+        <button
+            class="btn btn-primary btn-sm pull-right"
+            data-test-button="new"
+            ng-click="addSnippet.$valid && addNewSnippetToArticle(newSnippet)"
+            ng-disabled="addingNewSnippet"
+            >Add</button>
+        <button
+            class="btn btn-default btn-sm pull-right"
+            ng-click="clearNewSnippetForm()"
+            ng-disabled="addingNewSnippet ||
+                        (!newSnippet.name && !newSnippet.template)"
+            >Clear</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="assigned-title">Assigned Topics</div>
+
+  <div class="list">
+    TODO: list of topics
+  </div>
+
 </section>
