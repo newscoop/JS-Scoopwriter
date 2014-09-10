@@ -75,9 +75,12 @@
   </div>
 
   <div class="assigned-title">Assigned Topics</div>
-
   <div class="list">
-    TODO: list of topics
-  </div>
+    <div
+       ng-repeat="topic in assignedTopics"
+       class="panel panel-default">
+       {{topic.title}}
+    </div>
+  </div><!-- end list -->
 
 </section>
