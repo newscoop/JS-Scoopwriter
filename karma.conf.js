@@ -48,6 +48,7 @@ module.exports = function(config) {
       'app/bower_components/ng-aloha-editor/libs/alohaeditor-0.26.4/aloha/lib/aloha-full.js',
       'app/bower_components/bootstrap/dist/js/bootstrap.js',
       'app/bower_components/xregexp/min/xregexp-all-min.js',
+      'app/bower_components/ng-tags-input/ng-tags-input.js',
       //include the directory where directive templates are stored
       'app/views/*.html'
     ],

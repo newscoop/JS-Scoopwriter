@@ -94,8 +94,6 @@ angular.module('authoringEnvironmentApp').factory('Topic', [
                 // ) +
                 '; rel="topic">';
 
-            console.log('linkheader:', linkHeader);
-
             $http({
                 url: Routing.generate(
                     'newscoop_gimme_articles_linkarticle',

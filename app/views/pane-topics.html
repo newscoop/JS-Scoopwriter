@@ -51,12 +51,13 @@
       </button>
     </div>
 
-    <form name="addSnippet" class="body" ng-show="showAddExisting">
-      <div class="input-name">Title</div>
-      <input name="snippetTitle" required
-          class="editor-input"
-          placeholder="Title"
-          ng-model="newSnippet.name">
+    <div class="body" ng-show="showAddExisting">
+      <tags-input
+          ng-model="selectedTopics"
+          add-from-autocomplete-only="true">
+        <auto-complete source="findTopics($query)"></auto-complete>
+      </tags-input>
+
       <div class="controls">
         <button
             class="btn btn-primary btn-sm pull-right"
@@ -71,8 +72,10 @@
                         (!newSnippet.name && !newSnippet.template)"
             >Clear</button>
       </div>
-    </form>
+    </div>
+
   </div>
+
 
   <div class="assigned-title">Assigned Topics</div>
   <div class="list">
