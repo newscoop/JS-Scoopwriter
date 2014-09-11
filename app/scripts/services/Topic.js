@@ -69,6 +69,52 @@ angular.module('authoringEnvironmentApp').factory('Topic', [
             return topics;
         };
 
+        /**
+        * Assignes the topic to an article.
+        *
+        * @method addToArticle
+        * @param number {Number} article ID
+        * @param language {String} article language code (e.g. 'de')
+        * @return {Object} promise object that is resolved on successful server
+        *   response and rejected on server error response
+        */
+        Topic.prototype.addToArticle = function (number, language) {
+            var topic = this,
+                deferred = $q.defer(),
+                linkHeader;
+
+            linkHeader =
+                '<' +
+                // XXX: gettopic path does not exist (yet) in API!
+                '/content-api/topics/' + topic.id +
+                // Routing.generate(
+                //     'newscoop_gimme_topics_gettopic',
+                //     {topicId: topic.id},
+                //     false
+                // ) +
+                '; rel="topic">';
+
+            console.log('linkheader:', linkHeader);
+
+            $http({
+                url: Routing.generate(
+                    'newscoop_gimme_articles_linkarticle',
+                    {number: number, language: language},
+                    true
+                ),
+                method: 'LINK',
+                headers: {link: linkHeader}
+            })
+            .success(function () {
+                deferred.resolve();
+            })
+            .error(function (responseBody) {
+                deferred.reject(responseBody);
+            });
+
+            return deferred.promise;
+        };
+
         return Topic;
     }
 ]);
