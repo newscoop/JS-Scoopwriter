@@ -142,23 +142,27 @@ describe('Factory: Topic', function () {
     });
 
     describe('addToArticle() method', function () {
-        var topic,
-            url;
+        var url,
+            topics;
 
         beforeEach(function () {
-            var expectedLinkHeader,
-                topicUri;
+            var expectedLinkHeader;
 
-            // topicUri = Routing.generate(
-            //     'newscoop_gimme_topics_gettopic', {topicId: 1}, false
+            topics = [
+                {id: 2, name: 'topic 2'},
+                {id: 6, name: 'topic 6'}
+            ];
+
+            // Routing.generate(
+            //     'newscoop_gimme_topics_gettopic', {topicId: 2}, false
+            // )
+            // Routing.generate(
+            //     'newscoop_gimme_topics_gettopic', {topicId: 6}, false
             // );
-            topicUri = '/content-api/topics/1';
-            expectedLinkHeader = '<' + topicUri + '; rel="topic">';
-
-            topic = Object.create(Topic.prototype, {
-                id: {value: 1, writable: true, enumerable: true},
-                title: {value: 'topic 1', writable: true, enumerable: true}
-            });
+            expectedLinkHeader = [
+                '</content-api/topics/2; rel="topic">,',
+                '</content-api/topics/6; rel="topic">'
+            ].join('');
 
             url = Routing.generate(
                 'newscoop_gimme_articles_linkarticle',
@@ -179,15 +183,22 @@ describe('Factory: Topic', function () {
             $httpBackend.verifyNoOutstandingExpectation();
         });
 
+        it('raises an error if given topics list is empty', function () {
+            $httpBackend.resetExpectations();
+            expect(function () {
+                Topic.addToArticle(18, 'it', []);
+            }).toThrow(new Error('Topics list is empty.'));
+        });
+
         it('returns a promise', inject(function ($q) {
             var deferred = $q.defer(),
                 promise;
-            promise = topic.addToArticle(18, 'it')
+            promise = Topic.addToArticle(18, 'it', topics);
             expect(promise instanceof deferred.promise.constructor).toBe(true);
         }));
 
         it('sends a correct request to API', function () {
-            topic.addToArticle(18, 'it');
+            Topic.addToArticle(18, 'it', topics);
         });
 
         it('resolves given promise on successful server response',
@@ -197,7 +208,7 @@ describe('Factory: Topic', function () {
                         callMeOnSuccess: jasmine.createSpy()
                     };
 
-                topic.addToArticle(18, 'it')
+                Topic.addToArticle(18, 'it', topics)
                     .then(spyHelper.callMeOnSuccess);
 
                 $httpBackend.flush(1);
@@ -215,7 +226,7 @@ describe('Factory: Topic', function () {
             $httpBackend.resetExpectations();
             $httpBackend.expect('LINK', url).respond(500, 'Error :(');
 
-            topic.addToArticle(18, 'it')
+            Topic.addToArticle(18, 'it', topics)
                 .then(null, spyHelper.callMeOnError);
 
             $httpBackend.flush(1);

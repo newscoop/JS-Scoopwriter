@@ -24,9 +24,13 @@ angular.module('authoringEnvironmentApp').controller('PaneTopicsCtrl', [
             );
         });
 
-        // TODO: docs & tests
+        /**
+        * Clears the list of currently selected topics.
+        *
+        * @method clearSelectedTopics
+        */
         $scope.clearSelectedTopics = function () {
-            while($scope.selectedTopics.length > 0) {
+            while ($scope.selectedTopics.length > 0) {
                 $scope.selectedTopics.pop();
             }
         };
@@ -66,9 +70,28 @@ angular.module('authoringEnvironmentApp').controller('PaneTopicsCtrl', [
             article.articleId, article.language
         );
 
-        // TODO: docs & tests
+        /**
+        * Assigns all currently selected topics to the article and then clears
+        * the selected topics list.
+        *
+        * @method assignSelectedToArticle
+        */
         $scope.assignSelectedToArticle = function () {
-            console.log('TODO: assign topics to article');
+
+            $scope.assigningTopics = true;
+
+            Topic.addToArticle(
+                article.articleId, article.language, $scope.selectedTopics
+            ).then(function (topics) {
+                topics.forEach(function (item) {
+                    $scope.assignedTopics.push(item);
+                });
+                $scope.clearSelectedTopics();
+            }).finally(function () {
+                $scope.assigningTopics = false;
+            });
+
+            // XXX: what about errors, e.g. 409 Conflict?
         };
     }
 ]);
