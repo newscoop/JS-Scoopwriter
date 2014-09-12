@@ -55,22 +55,24 @@
       <tags-input
           class="ti-input-sm"
           ng-model="selectedTopics"
+          display-property="title"
+          placeholder="Topic name"
           add-from-autocomplete-only="true">
-        <auto-complete source="findTopics($query)"></auto-complete>
+        <auto-complete
+            source="findTopics($query)"
+            debounce-delay="250"></auto-complete>
       </tags-input>
 
       <div class="controls">
         <button
             class="btn btn-primary btn-sm pull-right"
-            data-test-button="new"
-            ng-click="addSnippet.$valid && addNewSnippetToArticle(newSnippet)"
-            ng-disabled="addingNewSnippet"
+            ng-disabled="assigningTopics || selectedTopics.length < 1"
+            ng-click="assignSelectedToArticle()"
             >Add</button>
         <button
             class="btn btn-default btn-sm pull-right"
-            ng-click="clearNewSnippetForm()"
-            ng-disabled="addingNewSnippet ||
-                        (!newSnippet.name && !newSnippet.template)"
+            ng-disabled="assigningTopics || selectedTopics.length < 1"
+            ng-click="clearSelectedTopics()"
             >Clear</button>
       </div>
     </div>

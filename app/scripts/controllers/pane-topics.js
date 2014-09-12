@@ -15,6 +15,21 @@ angular.module('authoringEnvironmentApp').controller('PaneTopicsCtrl', [
             availableTopics = [];  // all existing topicsto choose from
 
         $scope.selectedTopics = [];
+        $scope.assigningTopics = false;  // topic assignment in progress?
+
+        // retrieve all topics assigned to the article
+        article.promise.then(function (articleData) {
+            $scope.assignedTopics = Topic.getAllByArticle(
+                articleData.number, articleData.language
+            );
+        });
+
+        // TODO: docs & tests
+        $scope.clearSelectedTopics = function () {
+            while($scope.selectedTopics.length > 0) {
+                $scope.selectedTopics.pop();
+            }
+        };
 
         // TODO: comments, tests
         $scope.findTopics = function (query) {
@@ -26,19 +41,19 @@ angular.module('authoringEnvironmentApp').controller('PaneTopicsCtrl', [
             // (all is probably still OK? not that big data set and it will
             //  not hammer the server with requests)
             availableTopics = [
-                // text property is important, expected by the widget
-                {id: 1, text: 'topic 1'},
-                {id: 2, text: 'topic 2'},
-                {id: 3, text: 'topic 3'},
-                {id: 11, text: 'topic 11'},
-                {id: 52, text: 'topic 52'},
-                {id: 110, text: 'topic 110'}
+                {id: 1, title: 'topic 1'},
+                {id: 2, title: 'topic 2'},
+                {id: 3, title: 'topic 3'},
+                {id: 11, title: 'topic 11'},
+                {id: 52, title: 'topic 52'},
+                {id: 110, title: 'topic 110'}
             ];
 
             query = query.toLowerCase();
 
             filtered = _.filter(availableTopics, function (item) {
-                return (item.text.indexOf(query) >= 0);
+                // TODO: also filter out topics already assigned to the article
+                return (item.title.indexOf(query) >= 0);
             });
 
             deferred.resolve(filtered);
@@ -50,5 +65,10 @@ angular.module('authoringEnvironmentApp').controller('PaneTopicsCtrl', [
         $scope.assignedTopics = Topic.getAllByArticle(
             article.articleId, article.language
         );
+
+        // TODO: docs & tests
+        $scope.assignSelectedToArticle = function () {
+            console.log('TODO: assign topics to article');
+        };
     }
 ]);
