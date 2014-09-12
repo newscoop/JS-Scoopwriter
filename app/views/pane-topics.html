@@ -53,6 +53,7 @@
 
     <div class="body" ng-show="showAddExisting">
       <tags-input
+          class="ti-input-sm"
           ng-model="selectedTopics"
           add-from-autocomplete-only="true">
         <auto-complete source="findTopics($query)"></auto-complete>
