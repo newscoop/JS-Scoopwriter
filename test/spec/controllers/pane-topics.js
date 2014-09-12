@@ -46,6 +46,11 @@ describe('Controller: PaneTopicsCtrl', function () {
         expect(scope.assigningTopics).toBe(false);
     });
 
+
+    it('initializes the assigningTopics flag in scope to false', function () {
+        expect(scope.assigningTopics).toBe(false);
+    });
+
     describe('initialization of article topics in scope', function () {
         it('invokes service\'s getAllByArticle() method with correct ' +
            'parameters',
@@ -173,6 +178,7 @@ describe('Controller: PaneTopicsCtrl', function () {
             expect(Topic.getAll.callCount).toEqual(1);
         });
     });
+
 
     describe('scope\'s assignSelectedToArticle() method', function () {
         var deferredAdd,
