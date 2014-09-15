@@ -267,4 +267,87 @@ describe('Controller: PaneTopicsCtrl', function () {
         );
     });
 
+    describe('scope\'s confirmUnassignTopic() method', function () {
+        var deferedRemove,
+            topic,
+            modalDeferred,
+            modalFactory;
+
+        beforeEach(inject(function ($q, _modalFactory_) {
+            deferedRemove = $q.defer();
+            modalDeferred = $q.defer();
+            modalFactory = _modalFactory_;
+
+            spyOn(modalFactory, 'confirmLight').andCallFake(function () {
+                return {
+                    result: modalDeferred.promise
+                }
+            });
+
+            spyOn(Topic, 'getAllByArticle').andCallFake(function () {
+                return [];
+            });
+
+            topic = {
+                id: 20,
+                removeFromArticle: function () {}
+            };
+            spyOn(topic, 'removeFromArticle').andReturn(deferedRemove.promise);
+        }));
+
+        it('opens a "light" confirmation dialog', function () {
+            scope.confirmUnassignTopic(topic);
+            expect(modalFactory.confirmLight).toHaveBeenCalled();
+        });
+
+        it('invokes topic\'s removeFromArticle() method ' +
+           'with correct parameters on action confirmation',
+           function () {
+                articleDeferred.resolve({number: 25, language: 'de'});
+                scope.$apply();
+
+                scope.confirmUnassignTopic(topic);
+                modalDeferred.resolve();
+                scope.$apply();
+
+                expect(topic.removeFromArticle).toHaveBeenCalledWith(25, 'de');
+            }
+        );
+
+        it('does not try to unassign topic on action cancellation',
+            function () {
+                articleDeferred.resolve({number: 25, language: 'de'});
+                scope.$apply();
+
+                scope.confirmUnassignTopic(topic);
+                modalDeferred.reject();
+                scope.$apply();
+
+                expect(topic.removeFromArticle).not.toHaveBeenCalled();
+            }
+        );
+
+        it('removes the topic from the list of assigned topics ' +
+           'on action confirmation',
+           function () {
+                articleDeferred.resolve({number: 25, language: 'de'});
+                scope.$apply();
+                scope.assignedTopics= [
+                    {id: 4, title: 'topic 4'},
+                    {id: 20, title: 'topic 20'},
+                    {id: 8, title: 'topic 8'}
+                ];
+
+                scope.confirmUnassignTopic(topic);
+                modalDeferred.resolve();
+                deferedRemove.resolve();
+                scope.$apply();
+
+                expect(scope.assignedTopics).toEqual(
+                    [{id: 4, title: 'topic 4'}, {id: 8, title: 'topic 8'}]
+                );
+            }
+        );
+    });
+
 });

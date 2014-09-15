@@ -328,4 +328,82 @@ describe('Factory: Topic', function () {
         });
     });
 
+
+    describe('removeFromArticle() method', function () {
+        var topic,
+            url;
+
+        beforeEach(function () {
+            var expectedLinkHeader,
+                topicUri;
+
+            // topicUri = Routing.generate(
+            //     'newscoop_gimme_topics_gettopic', {topicId: 1}, false
+            // );
+            topicUri = '/content-api/topics/1';
+            expectedLinkHeader = '<' + topicUri + '; rel="topic">';
+
+            topic = Object.create(Topic.prototype, {
+                id: {value: 1, writable: true, enumerable: true}
+            });
+
+            url = Routing.generate(
+                'newscoop_gimme_articles_linkarticle',
+                {number: 25, language: 'en'}, true
+            );
+
+            $httpBackend.expect(
+                'UNLINK',
+                url,
+                undefined,
+                function (headers) {
+                    return headers.link === expectedLinkHeader;
+                }
+            ).respond(204, '');
+        });
+
+        it('returns a promise', inject(function ($q) {
+            var deferred = $q.defer(),
+                promise;
+            promise = topic.removeFromArticle(25, 'de')
+            expect(promise instanceof deferred.promise.constructor).toBe(true);
+        }));
+
+        it('sends a correct request to API', function () {
+            topic.removeFromArticle(25, 'en');
+            $httpBackend.verifyNoOutstandingExpectation();
+        });
+
+        it('resolves given promise on successful server response',
+            function () {
+                var promise,
+                    spyHelper = {
+                        callMeOnSuccess: jasmine.createSpy()
+                    };
+
+                topic.removeFromArticle(25, 'en')
+                    .then(spyHelper.callMeOnSuccess);
+                $httpBackend.flush(1);
+
+                expect(spyHelper.callMeOnSuccess).toHaveBeenCalled();
+            }
+        );
+
+        it('rejects given promise on server error response', function () {
+            var promise,
+                spyHelper = {
+                    callMeOnError: jasmine.createSpy()
+                };
+
+            $httpBackend.resetExpectations();
+            $httpBackend.expect('UNLINK', url).respond(500, 'Error :(');
+
+            topic.removeFromArticle(25, 'en')
+                .catch(spyHelper.callMeOnError);
+            $httpBackend.flush(1);
+
+            expect(spyHelper.callMeOnError).toHaveBeenCalledWith('Error :(');
+        });
+    });
+
 });

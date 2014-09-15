@@ -81,11 +81,15 @@
 
 
   <div class="assigned-title">Assigned Topics</div>
+
   <div class="list">
     <div
        ng-repeat="topic in assignedTopics"
        class="panel panel-default">
        {{topic.title}}
+      <div class="unassign" ng-click="confirmUnassignTopic(topic)">
+        <span class="glyphicon glyphicon-remove" title="Unassign topic"></span>
+      </div>
     </div>
   </div><!-- end list -->
 

@@ -9,8 +9,9 @@ angular.module('authoringEnvironmentApp').controller('PaneTopicsCtrl', [
     '$q',
     '$scope',
     'article',
+    'modalFactory',
     'Topic',
-    function ($q, $scope, articleService, Topic) {
+    function ($q, $scope, articleService, modalFactory, Topic) {
         var article = articleService.articleInstance,
             availableTopics = [],   // all existing topics to choose from
             topicListRetrieved = false;  // avilableTopics initialized yet?
@@ -117,6 +118,37 @@ angular.module('authoringEnvironmentApp').controller('PaneTopicsCtrl', [
             });
 
             // XXX: what about errors, e.g. 409 Conflict?
+        };
+
+        /**
+        * Asks user to confirm unassigning a topic from the article and then
+        * unassignes the topic, if the action is confirmed.
+        *
+        * @method confirmUnassignTopic
+        * @param topic {Object} topic to unassign
+        */
+        $scope.confirmUnassignTopic = function (topic) {
+            var modal,
+                title,
+                text;
+
+            title = 'Do you really want to unassign this topic from ' +
+                'the article?';
+            text = 'Should you change your mind, the topic can ' +
+                'always be re-assigned again.';
+
+            modal = modalFactory.confirmLight(title, text);
+
+            modal.result.then(function () {
+                return article.promise;
+            }, $q.reject)
+            .then(function (articleData) {
+                return topic.removeFromArticle(
+                    articleData.number, articleData.language);
+            }, $q.reject)
+            .then(function () {
+                _.remove($scope.assignedTopics, {id: topic.id});
+            });
         };
     }
 ]);
