@@ -38,6 +38,7 @@ angular.module('authoringEnvironmentApp').controller('PaneTopicsCtrl', [
         // TODO: comments, tests
         $scope.findTopics = function (query) {
             var deferred = $q.defer(),
+                ignored = {},
                 filtered;
 
             // TODO: retrieve all available topics (Topic.getAll())
@@ -53,11 +54,21 @@ angular.module('authoringEnvironmentApp').controller('PaneTopicsCtrl', [
                 {id: 110, title: 'topic 110'}
             ];
 
+            // build a list of topic IDs to exclude from results (i.e. topics
+            // that are already selected and/or assigned to the article)
+            $scope.selectedTopics.forEach(function (item) {
+                ignored[item.id] = true;
+            });
+            $scope.assignedTopics.forEach(function (item) {
+                ignored[item.id] = true;
+            });
+
             query = query.toLowerCase();
 
             filtered = _.filter(availableTopics, function (item) {
-                // TODO: also filter out topics already assigned to the article
-                return (item.title.indexOf(query) >= 0);
+                return (
+                    !(item.id in ignored) && item.title.indexOf(query) >= 0
+                );
             });
 
             deferred.resolve(filtered);
