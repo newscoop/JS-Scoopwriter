@@ -179,7 +179,6 @@ describe('Controller: PaneTopicsCtrl', function () {
         });
     });
 
-
     describe('scope\'s assignSelectedToArticle() method', function () {
         var deferredAdd,
             topics;
