@@ -40,6 +40,102 @@ describe('Factory: Topic', function () {
         );
     });
 
+    describe('getAll() method', function () {
+        var url,
+            response;
+
+        beforeEach(function () {
+            response = {
+                items: [
+                    {id: 5, title: 'topic 5'},
+                    {id: 2, title: 'topic 2'},
+                    {id: 9, title: 'topic 9'}
+                ]
+            };
+
+            url = Routing.generate(
+                'newscoop_gimme_topics_gettopics',
+                {items_per_page: 9999}, true
+            );
+
+            $httpBackend.expectGET(url).respond(200, response);
+        });
+
+        afterEach(function () {
+            $httpBackend.verifyNoOutstandingExpectation();
+        });
+
+        it('sends a correct request to API', function () {
+            Topic.getAll();
+        });
+
+        it('returns an empty array which is populated on successful response',
+            function () {
+                var result = Topic.getAll();
+                expect(result instanceof Array).toBe(true);
+                expect(result.length).toEqual(0);
+
+                $httpBackend.flush(1);
+                expect(result.length).toEqual(3);
+        });
+
+        it('resolves returned array\'s promise on successful response',
+            function () {
+                var result,
+                    spy = jasmine.createSpy();
+
+                result = Topic.getAll();
+                result.$promise.then(spy);
+                expect(spy).not.toHaveBeenCalled();
+
+                $httpBackend.flush(1);
+                expect(spy).toHaveBeenCalled();
+        });
+
+        it('returned array is populated with Topic instances on successful ' +
+           'response',
+            function () {
+                var result,
+                    spy = jasmine.createSpy();
+
+                result = Topic.getAll();
+                $httpBackend.flush(1);
+
+                result.forEach(function (item) {
+                    expect(item instanceof Topic).toBe(true);
+                });
+            }
+        );
+
+        describe('on server error response', function () {
+            beforeEach(function () {
+                $httpBackend.resetExpectations();
+                $httpBackend.expectGET(url).respond(500, 'Server error');
+            });
+
+            it('returned array is not populated', function () {
+                var result = Topic.getAll();
+                expect(result.length).toEqual(0);
+                $httpBackend.flush(1);
+                expect(result.length).toEqual(0);  // still empty
+            });
+
+            it('returned array\'s promise is rejected', function () {
+                var result,
+                    spy = jasmine.createSpy();
+
+                result = Topic.getAll();
+                result.$promise.catch(function (reason) {
+                    spy(reason);
+                });
+                expect(spy).not.toHaveBeenCalled();
+
+                $httpBackend.flush(1);
+                expect(spy).toHaveBeenCalledWith('Server error');
+            });
+        });
+    });
+
     describe('getAllByArticle() method', function () {
         var url,
             response,
@@ -47,9 +143,9 @@ describe('Factory: Topic', function () {
 
         beforeEach(function () {
             topics = [
-                {id: 5, name: 'topic 5'},
-                {id: 2, name: 'topic 2'},
-                {id: 9, name: 'topic 9'}
+                {id: 5, title: 'topic 5'},
+                {id: 2, title: 'topic 2'},
+                {id: 9, title: 'topic 9'}
             ];
 
             response = {

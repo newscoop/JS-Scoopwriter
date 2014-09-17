@@ -28,6 +28,43 @@ angular.module('authoringEnvironmentApp').factory('Topic', [
         };
 
         /**
+        * Retrieves a list of all existing topics.
+        *
+        * Initially, an empty array is returned, which is later filled with
+        * data on successful server response. At that point the given promise
+        * is resolved (exposed as a $promise property of the returned array).
+        *
+        * @method getAll
+        * @return {Object} array of topics
+        */
+        Topic.getAll = function () {
+            var topics = [],
+                deferredGet = $q.defer(),
+                url;
+
+            topics.$promise = deferredGet.promise;
+
+            url = Routing.generate(
+                'newscoop_gimme_topics_gettopics',
+                {items_per_page: 9999},  // de facto "all"
+                true
+            );
+
+            $http.get(url)
+            .success(function (response) {
+                response.items.forEach(function (item) {
+                    item = Topic.createFromApiData(item);
+                    topics.push(item);
+                });
+                deferredGet.resolve();
+            }).error(function (responseBody) {
+                deferredGet.reject(responseBody);
+            });
+
+            return topics;
+        };
+
+        /**
         * Retrieves a list of all topics assigned to a specific article.
         *
         * Initially, an empty array is returned, which is later filled with

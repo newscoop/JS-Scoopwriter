@@ -12,7 +12,8 @@ angular.module('authoringEnvironmentApp').controller('PaneTopicsCtrl', [
     'Topic',
     function ($q, $scope, articleService, Topic) {
         var article = articleService.articleInstance,
-            availableTopics = [];  // all existing topicsto choose from
+            availableTopics = [],   // all existing topics to choose from
+            topicListRetrieved = false;  // avilableTopics initialized yet?
 
         $scope.selectedTopics = [];
         $scope.assigningTopics = false;  // topic assignment in progress?
@@ -35,24 +36,20 @@ angular.module('authoringEnvironmentApp').controller('PaneTopicsCtrl', [
             }
         };
 
-        // TODO: comments, tests
+        /**
+        * Finds a list of topics that can be assigned to the article based on
+        * the search query. Topics that are already selected or assigned to
+        * the article are excluded from search results.
+        *
+        * @method findTopics
+        * @param query {String} topics search query
+        * @return {Object} promise object which is resolved with (filtered)
+        *   search results
+        */
         $scope.findTopics = function (query) {
             var deferred = $q.defer(),
                 ignored = {},
                 filtered;
-
-            // TODO: retrieve all available topics (Topic.getAll())
-            // - only the first time needed
-            // (all is probably still OK? not that big data set and it will
-            //  not hammer the server with requests)
-            availableTopics = [
-                {id: 1, title: 'topic 1'},
-                {id: 2, title: 'topic 2'},
-                {id: 3, title: 'topic 3'},
-                {id: 11, title: 'topic 11'},
-                {id: 52, title: 'topic 52'},
-                {id: 110, title: 'topic 110'}
-            ];
 
             // build a list of topic IDs to exclude from results (i.e. topics
             // that are already selected and/or assigned to the article)
@@ -63,15 +60,24 @@ angular.module('authoringEnvironmentApp').controller('PaneTopicsCtrl', [
                 ignored[item.id] = true;
             });
 
-            query = query.toLowerCase();
+            // topics list is long, thus we only retrieve it once
+            if (!topicListRetrieved) {
+                availableTopics = Topic.getAll();
+            }
 
-            filtered = _.filter(availableTopics, function (item) {
-                return (
-                    !(item.id in ignored) && item.title.indexOf(query) >= 0
-                );
+            availableTopics.$promise.then(function () {
+                topicListRetrieved = true;
+                query = query.toLowerCase();
+
+                filtered = _.filter(availableTopics, function (item) {
+                    return (
+                        !(item.id in ignored) &&
+                        item.title.toLowerCase().indexOf(query) >= 0
+                    );
+                });
+
+                deferred.resolve(filtered);
             });
-
-            deferred.resolve(filtered);
 
             return deferred.promise;
         };
