@@ -60,8 +60,13 @@ angular.module('authoringEnvironmentApp').controller('PaneSnippetsCtrl', [
                 return article.promise;
             }, $q.reject)
             .then(function (articleData) {
-                snippets.addToArticle(newSnippet, articleData);
-            })
+                return snippets.addToArticle(newSnippet, articleData);
+            }, $q.reject)
+            .then(function () {
+                // hide form on successful add and clear its field
+                $scope.showAddSnippet = false;
+                $scope.clearNewSnippetForm();
+            }, $q.reject)
             .finally(function () {
                 $scope.addingNewSnippet = false;
             });

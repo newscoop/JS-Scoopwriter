@@ -151,6 +151,7 @@ describe('Controller: PaneSnippetsCtrl', function () {
 
     describe('scope\'s addNewSnippetToArticle() method', function () {
         var createdSnippet,
+            deferredAddToArticle,
             deferredCreate,
             snippetData;
 
@@ -173,13 +174,65 @@ describe('Controller: PaneSnippetsCtrl', function () {
             });
             createdSnippet = {id: 42};
 
-            spyOn(snippetsService, 'addToArticle');
+            deferredAddToArticle = $q.defer();
+            spyOn(snippetsService, 'addToArticle')
+                .andReturn(deferredAddToArticle.promise);
+
+            spyOn(scope, 'clearNewSnippetForm');
         }));
 
         it('sets addingNewSnippet flag before doing anything', function () {
             scope.addingNewSnippet = false;
             scope.addNewSnippetToArticle(snippetData);
             expect(scope.addingNewSnippet).toBe(true);
+        });
+
+        it('closes the add snippet form on successful server response',
+            function () {
+                scope.showAddSnippet = true;
+
+                scope.addNewSnippetToArticle(snippetData);
+
+                deferredCreate.resolve(createdSnippet);
+                articleDeferred.resolve({number: 25, language: 'de'});
+                deferredAddToArticle.resolve();
+                scope.$digest();
+
+                expect(scope.showAddSnippet).toBe(false);
+            }
+        );
+
+        it('clears the add snippet form on successful server response',
+            function () {
+                scope.addNewSnippetToArticle(snippetData);
+
+                deferredCreate.resolve(createdSnippet);
+                articleDeferred.resolve({number: 25, language: 'de'});
+                deferredAddToArticle.resolve();
+                scope.$digest();
+
+                expect(scope.clearNewSnippetForm).toHaveBeenCalled();
+            }
+        );
+
+        it('leaves the add snippet form open on error', function () {
+            scope.showAddSnippet = true;
+
+            scope.addNewSnippetToArticle(snippetData);
+
+            deferredCreate.reject();
+            scope.$digest();
+
+            expect(scope.showAddSnippet).toBe(true);
+        });
+
+        it('does not clear the add snippet form fields on error', function () {
+            scope.addNewSnippetToArticle(snippetData);
+
+            deferredCreate.reject();
+            scope.$digest();
+
+            expect(scope.clearNewSnippetForm).not.toHaveBeenCalled();
         });
 
         it('clears addingNewSnippet flag on successful server response',
@@ -189,7 +242,8 @@ describe('Controller: PaneSnippetsCtrl', function () {
 
                 deferredCreate.resolve(createdSnippet);
                 articleDeferred.resolve({number: 25, language: 'de'});
-                scope.$apply();
+                deferredAddToArticle.resolve();
+                scope.$digest();
 
                 expect(scope.addingNewSnippet).toBe(false);
             }
@@ -201,7 +255,7 @@ describe('Controller: PaneSnippetsCtrl', function () {
                 scope.addingNewSnippet = true;
 
                 deferredCreate.reject();
-                scope.$apply();
+                scope.$digest();
 
                 expect(scope.addingNewSnippet).toBe(false);
             }
@@ -220,7 +274,7 @@ describe('Controller: PaneSnippetsCtrl', function () {
             scope.addNewSnippetToArticle(snippetData);
             deferredCreate.resolve(createdSnippet);
             articleDeferred.resolve({number: 25, language: 'de'});
-            scope.$apply();
+            scope.$digest();
 
             expect(snippetsService.addToArticle).toHaveBeenCalledWith(
                 createdSnippet,
