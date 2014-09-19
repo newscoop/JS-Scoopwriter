@@ -127,5 +127,19 @@ angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
             $scope.editableFields = editableFields;
         });
 
+        /**
+        * Saves article's content to server and clears the article modified
+        * flag on success.
+        *
+        * @method save
+        */
+        $scope.save = function () {
+            // XXX: disable save button during saving? to prevent double
+            // saving?
+            $scope.articleService.save($scope.article).then(function () {
+                $scope.articleService.modified = false;
+            });
+        };
+
     }
 ]);
