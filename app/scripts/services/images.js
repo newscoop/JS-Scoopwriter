@@ -156,16 +156,16 @@ angular.module('authoringEnvironmentApp').service('images', [
             var url = Routing.generate(
                 'newscoop_gimme_images_getimagesforarticle',
                 {
-                    'number':article.number,
-                    'language':article.language,
-                    'items_per_page':99999,
-                    'expand':'true'
+                    number: article.number,
+                    language: article.language,
+                    items_per_page: 99999,
+                    expand: true
                 },
                 true
             );
 
             $http.get(url).then(function (result) {
-                service.attached = result.data.items;
+                service.attached = result.data.items || [];
             });
         };
 
@@ -409,13 +409,6 @@ angular.module('authoringEnvironmentApp').service('images', [
                     ) +
                     '>';
 
-                /* this could cause some troubles depending on the
-                 * setting of the server (OPTIONS request), thus debug
-                 * log may be useful to reproduce the original
-                 * request */
-                $log.debug('sending an unlink request');
-                $log.debug(url);
-                $log.debug(link);
                 $http({
                     url: url,
                     method: 'UNLINK',
