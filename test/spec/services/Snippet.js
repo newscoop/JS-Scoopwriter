@@ -73,6 +73,19 @@ describe('Factory: Snippet', function () {
                 expect(spy).toHaveBeenCalled();
         });
 
+        it('does not throw an error on empty response', function () {
+            var result,
+                spy = jasmine.createSpy();
+
+            $httpBackend.resetExpectations();
+            $httpBackend.expectGET(url).respond(204, '');
+
+            result = Snippet.getAllByArticle(77, 'pl');
+            $httpBackend.flush(1);
+
+            // no error should have been thrown...
+        });
+
         describe('on server error response', function () {
             beforeEach(function () {
                 $httpBackend.resetExpectations();

@@ -66,10 +66,12 @@ angular.module('authoringEnvironmentApp').factory('Snippet', [
                 ),
                 reqParams
             ).success(function (response) {
-                response.items.forEach(function (item) {
-                    item = self.createFromApiData(item);
-                    snippets.push(item);
-                });
+                if (response.items) {
+                    response.items.forEach(function (item) {
+                        item = self.createFromApiData(item);
+                        snippets.push(item);
+                    });
+                }
                 deferredGet.resolve();
             }).error(function (responseBody) {
                 deferredGet.reject(responseBody);
