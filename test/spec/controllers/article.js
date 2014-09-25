@@ -16,6 +16,7 @@ describe('Controller: ArticleCtrl', function () {
         modeService,
         panesService,
         platformService,
+        saveArticleDeferred,
         scope;
 
     // load the controller's module
@@ -36,6 +37,9 @@ describe('Controller: ArticleCtrl', function () {
         getArticleDeferred = $q.defer();
         spyOn(articleService, 'init');
         articleService.promise = getArticleDeferred.promise;
+
+        saveArticleDeferred = $q.defer();
+        spyOn(articleService, 'save').andReturn(saveArticleDeferred.promise);
 
         fakeTextStats = {chars: 0, words: 0};
         spyOn(articleService, 'textStats').andCallFake(function () {
@@ -293,6 +297,26 @@ describe('Controller: ArticleCtrl', function () {
             expect(field.statsText).toEqual('foo / bar');
             field = _(scope.editableFields).find({name: 'body'});
             expect(field.statsText).toEqual('foo / bar');
+        });
+    });
+
+    describe('scope\'s save() method', function () {
+        it('invokes article service with the article object as a parameter',
+            function () {
+                scope.article = {id: 1234};
+                scope.save();
+                expect(articleService.save).toHaveBeenCalledWith({id: 1234});
+            }
+        );
+
+        it('clears the article modifed flag in article service', function () {
+            articleService.modified = true;
+
+            scope.save();
+            saveArticleDeferred.resolve();
+            scope.$digest();
+
+            expect(articleService.modified).toBe(false);
         });
     });
 

@@ -9,52 +9,52 @@
 describe('Service: Images', function () {
     var e = rootURI;
     var mock = {
-        "items":[
+        items: [
             {
-                "id":1,
-                "basename":"cms-image-000000001.jpg"
+                id: 1,
+                basename: 'cms-image-000000001.jpg'
             },
             {
-                "id":2,
-                "basename":"cms-image-000000002.jpg"
+                id: 2,
+                basename: 'cms-image-000000002.jpg'
             },
             {
-                "id":3,
-                "basename":"cms-image-000000003.jpg"
+                id: 3,
+                basename: 'cms-image-000000003.jpg'
             },
             {
-                "id":4,
-                "basename":"cms-image-000000004.jpg"
+                id: 4,
+                basename: 'cms-image-000000004.jpg'
             },
             {
-                "id":5,
-                "basename":"cms-image-000000005.jpg"
+                id: 5,
+                basename: 'cms-image-000000005.jpg'
             },
             {
-                "id":6,
-                "basename":"cms-image-000000006.jpg"
+                id: 6,
+                basename: 'cms-image-000000006.jpg'
             },
             {
-                "id":7,
-                "basename":"cms-image-000000007.jpg"
+                id: 7,
+                basename: 'cms-image-000000007.jpg'
             },
             {
-                "id":8,
-                "basename":"cms-image-000000008.jpg"
+                id: 8,
+                basename: 'cms-image-000000008.jpg'
             },
             {
-                "id":9,
-                "basename":"cms-image-000000009.jpg"
+                id: 9,
+                basename: 'cms-image-000000009.jpg'
             },
             {
-                "id":10,
-                "basename":"cms-image-000000010.jpg"
+                id: 10,
+                basename: 'cms-image-000000010.jpg'
             }
         ],
-        "pagination":{
-            "itemsPerPage":50,
-            "currentPage":1,
-            "itemsCount":149735,
+        pagination: {
+            'itemsPerPage': 50,
+            'currentPage': 1,
+            'itemsCount': 149735,
             nextPageLink: Routing.generate(
                 'newscoop_gimme_images_getimages',
                 {page: 2, items_per_page: 10}, true
@@ -62,17 +62,17 @@ describe('Service: Images', function () {
         }
     };
     var mockSingle = {
-        "id":1,
-        "location":"local",
-        "basename":"mock-single.jpg",
-        "thumbnailPath":"cms-thumb-000000001.jpg",
-        "url":"",
-        "description":"",
-        "width":"150",
-        "height":"210",
-        "photographer":"",
-        "photographerUrl":"",
-        "place":""
+        id: 1,
+        location: 'local',
+        basename: 'mock-single.jpg',
+        thumbnailPath: 'cms-thumb-000000001.jpg',
+        url: '',
+        description: '',
+        width: 150,
+        height: 210,
+        photographer: '',
+        photographerUrl: '',
+        place: ''
     };
 
     // load the service's module
@@ -442,8 +442,10 @@ describe('Service: Images', function () {
     });
 
     describe('loadAttached() method', function () {
+        var url;
+
         beforeEach(function () {
-            var url = Routing.generate(
+            url = Routing.generate(
                 'newscoop_gimme_images_getimagesforarticle',
                 {
                     number: 64, language: 'de',
@@ -466,6 +468,19 @@ describe('Service: Images', function () {
 
             expect(images.attached).toEqual(mock.items);
         });
+
+        it('initializes article\'s attached images to empty list on empty ' +
+            'server response',
+            function () {
+                $httpBackend.resetExpectations();
+                $httpBackend.expectGET(url).respond('');
+
+                images.loadAttached({number: 64, language: 'de'});
+                $httpBackend.flush(1);
+
+                expect(images.attached).toEqual([]);
+            }
+        );
     });
 
     describe('collect() method', function () {
