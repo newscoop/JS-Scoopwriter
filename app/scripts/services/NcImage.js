@@ -68,6 +68,48 @@ angular.module('authoringEnvironmentApp').factory('NcImage', [
             return deferredGet.promise;
         };
 
+        /**
+        * Updates image's description.
+        *
+        * @method updateDescription
+        * @param newDesc {String} new description of the image
+        * @return {Object} promise object which is resolved on success and
+        *   rejected with server error message on failure
+        */
+        NcImage.prototype.updateDescription = function (newDesc) {
+            var deferredPatch = $q.defer(),
+                params,
+                self = this,
+                url;
+
+            url = Routing.generate(
+                'newscoop_gimme_images_updateimage',
+                {number: self.id},
+                true
+            );
+
+            params = {
+                number: self.id,
+                image: {
+                    description: newDesc
+                }
+            };
+
+            $http({
+                method: 'PATCH',
+                url: url,
+                data: params
+            })
+            .success(function (response) {
+                self.description = newDesc;
+                deferredPatch.resolve();
+            }).error(function (responseBody) {
+                deferredPatch.reject(responseBody);
+            });
+
+            return deferredPatch.promise;
+        };
+
         return NcImage;
     }
 ]);

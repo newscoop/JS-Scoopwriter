@@ -145,4 +145,82 @@ describe('Factory: NcImage', function () {
         });
     });
 
+    describe('updateDescription() method', function () {
+        var image,
+            requestData,
+            url;
+
+        beforeEach(function () {
+            image = new NcImage();
+            image.id = 5;
+            image.description = 'foo';
+
+            requestData = {
+                number: 5,
+                image: {
+                    description: 'bar'
+                }
+            };
+
+            url = Routing.generate(
+                'newscoop_gimme_images_updateimage', {number: 5}, true
+            );
+            $httpBackend.expectPATCH(url, requestData).respond(200);
+        });
+
+        afterEach(function () {
+            $httpBackend.verifyNoOutstandingExpectation();
+        });
+
+        it('returns a promise', inject(function ($q) {
+            var deferred = $q.defer(),
+                promise;
+            promise = image.updateDescription('bar');
+            expect(promise instanceof deferred.promise.constructor).toBe(true);
+        }));
+
+        it('sends a correct request to API', function () {
+            image.updateDescription('bar');
+        });
+
+        it('resolves given promise on successful server response',
+            function () {
+                var spyHelper = {
+                        onSuccess: jasmine.createSpy()
+                    };
+
+                image.updateDescription('bar').then(spyHelper.onSuccess);
+                $httpBackend.flush(1);
+
+                expect(spyHelper.onSuccess).toHaveBeenCalled();
+            }
+        );
+
+        it('updates instance\'s description attribute on success',
+            function () {
+                image.description = 'foo';
+                image.updateDescription('bar');
+                $httpBackend.flush(1);
+                expect(image.description).toEqual('bar');
+            }
+        );
+
+        it('rejects given promise on server error response', function () {
+            var expectedArg,
+                spyHelper = {
+                    errorCallback: jasmine.createSpy()
+                };
+
+            $httpBackend.resetExpectations();
+            $httpBackend.expectPATCH(
+                url, requestData
+            ).respond(500, 'Error :(');
+
+            image.updateDescription('bar').catch(spyHelper.errorCallback);
+            $httpBackend.flush(1);
+
+            expect(spyHelper.errorCallback).toHaveBeenCalledWith('Error :(');
+        });
+    });
+
 });

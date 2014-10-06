@@ -3118,9 +3118,42 @@ a:hover {
                 }
             }
             .caption {
+                position: relative;
                 text-align: center;
                 padding: 2%;
+                cursor: text;
+                .edit, .save {
+                    cursor: pointer;
+                    background: white;
+                    color: #333;
+                    border: 1px solid #ccc;
+                    .border-radius(2px);
+                    .box-shadow(0 0 6px rgba(0,0,0,.2));
+                    opacity: 1;
+                    padding: 4px;
+                    font-size: 10px;
+                    &:hover {
+                        background-color: gray;
+                    }
+                }
+                .edit {
+                    position: absolute;
+                    top: 5%;
+                    right: 5%;
+                    visibility: hidden;
+                }
+
+                &:hover {
+                    .edit {
+                        visibility: visible;
+                    }
+                };
+
+                input {
+                    width: 80%;
+                }
             }
+
             &:hover {
                 .image {
                     opacity: 0.5;

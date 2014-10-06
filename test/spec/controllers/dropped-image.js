@@ -28,6 +28,25 @@ describe('Controller: DroppedImageCtrl', function () {
         });
     }));
 
+    it('exposes images service in scope', function () {
+        expect(scope.images).toBe(images);
+    });
+
+    it('exposes base URL in scope', inject(function (configuration) {
+        expect(scope.root).toEqual(configuration.API.rootURI);
+    }));
+
+    it('sets scope\'s editingCaption flag to false by default', function () {
+        expect(scope.editingCaption).toBe(false);
+    });
+
+    it('sets new image caption auxiliary variable in scope to an empty ' +
+       'string by default',
+        function () {
+            expect(scope.newCaption).toEqual('');
+        }
+    );
+
     describe('init() method', function () {
         var deferredGet;
 
@@ -63,6 +82,20 @@ describe('Controller: DroppedImageCtrl', function () {
                 expect(images.addToIncluded).toHaveBeenCalledWith(5);
             }
         );
+
+        it('sets new image caption auxiliary variable to image description',
+            function () {
+                scope.newCaption = '';
+
+                DroppedImageCtrl.init(5);
+                deferredGet.resolve({
+                    id: 5, basename: 'foo.jpg', description: 'bar'
+                });
+                scope.$digest();
+
+                expect(scope.newCaption).toEqual('bar');
+            }
+        );
     });
 
     describe('imageRemoved() method', function () {
@@ -75,7 +108,52 @@ describe('Controller: DroppedImageCtrl', function () {
         );
     });
 
-    it('proxies images', function () {
-        expect(scope.images).toBeDefined();
+    describe('scope\'s editCaptionMode() method', function () {
+        it('sets the editingCaption flag on request', function () {
+            scope.editingCaption = false;
+            scope.editCaptionMode(true);
+            expect(scope.editingCaption).toBe(true);
+        });
+
+        it('clears the editingCaption flag on request', function () {
+            scope.editingCaption = true;
+            scope.editCaptionMode(false);
+            expect(scope.editingCaption).toBe(false);
+        });
+    });
+
+    describe('scope\'s updateCaption() method', function () {
+        var deferredUpdate;
+
+        beforeEach(inject(function ($q) {
+            scope.image = {
+                description: 'Image foo',
+                updateDescription: function () {}
+            };
+
+            deferredUpdate = $q.defer();
+            spyOn(scope.image, 'updateDescription').andCallFake(function () {
+                return deferredUpdate.promise;
+            });
+        }));
+
+        it('clears the editingCaption flag', function () {
+            scope.editingCaption = true;
+            scope.updateCaption();
+            expect(scope.editingCaption).toBe(false);
+        });
+
+        it('reverts new image caption auxiliary variable back to original ' +
+            'image description on server error',
+            function () {
+                scope.image.description = 'Image foo';
+                scope.newCaption = 'Image new foo';
+
+                scope.updateCaption();
+                deferredUpdate.reject('Server timeout');
+                scope.$digest();
+
+                expect(scope.newCaption).toEqual('Image foo');
+        });
     });
 });

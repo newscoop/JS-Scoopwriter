@@ -14,7 +14,23 @@
   <button class="close" title="Remove">
     <span class="glyphicon glyphicon-remove"></span>
   </button>
-  <div class="caption" ng-bind="image.description"></div>
+
+  <div class="caption">
+    <div ng-show="!editingCaption">
+      {{image.description}}
+      <button class="edit" title="Edit Caption" ng-click="editCaptionMode(true)">
+        <span class="glyphicon glyphicon-edit"></span>
+      </button>
+    </div>
+
+    <div ng-show="editingCaption">
+      <input type="text" ng-model="newCaption" />
+      <button class="save" title="Save" ng-click="updateCaption()">
+        <span class="glyphicon glyphicon-save"></span>
+      </button>
+    </div>
+  </div>
+
 </div>
 
 <!-- POPOVER BAR USED FOR IMAGE EDITING -->
