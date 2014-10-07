@@ -109,6 +109,10 @@ describe('Controller: DroppedImageCtrl', function () {
     });
 
     describe('scope\'s editCaptionMode() method', function () {
+        beforeEach(function () {
+            scope.image = {description: 'my image'};
+        });
+
         it('sets the editingCaption flag on request', function () {
             scope.editingCaption = false;
             scope.editCaptionMode(true);
@@ -120,6 +124,15 @@ describe('Controller: DroppedImageCtrl', function () {
             scope.editCaptionMode(false);
             expect(scope.editingCaption).toBe(false);
         });
+
+        it('sets the newCaption variable to image\'s description when ' +
+            'enabling the edit caption mode',
+            function () {
+                scope.newCaption = 'foo';
+                scope.editCaptionMode(true);
+                expect(scope.newCaption).toEqual('my image');
+            }
+        );
     });
 
     describe('scope\'s updateCaption() method', function () {

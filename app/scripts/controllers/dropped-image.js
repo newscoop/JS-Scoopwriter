@@ -44,6 +44,9 @@ angular.module('authoringEnvironmentApp').controller('DroppedImageCtrl', [
         * @param enabled {Boolean} whether to enable the mode or not
         */
         $scope.editCaptionMode = function (enabled) {
+            if (enabled) {
+                $scope.newCaption = $scope.image.description;
+            }
             $scope.editingCaption = enabled;
         };
 
