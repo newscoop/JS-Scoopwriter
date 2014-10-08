@@ -442,45 +442,25 @@ describe('Service: Images', function () {
     });
 
     describe('loadAttached() method', function () {
-        var url;
+        var getAllResponse,
+            NcImage;
 
-        beforeEach(function () {
-            url = Routing.generate(
-                'newscoop_gimme_images_getimagesforarticle',
-                {
-                    number: 64, language: 'de',
-                    items_per_page: 99999, expand: true
-                },
-                true
-            );
-            $httpBackend.expectGET(url).respond(mock);
-        });
+        beforeEach(inject(function (_NcImage_) {
+            NcImage = _NcImage_;
+            getAllResponse = [{id: 2}, {id: 5}, {id: 1}];
+            spyOn(NcImage, 'getAllByArticle').andReturn(getAllResponse);
+        }));
 
-        afterEach(function () {
-            $httpBackend.verifyNoOutstandingExpectation();
+        it('retrieves attached images for the right article', function () {
+            images.loadAttached({number: 17, language: 'it'});
+            expect(NcImage.getAllByArticle).toHaveBeenCalledWith(17, 'it');
         });
 
         it('initializes the list of article\'s attached images', function () {
             images.attached = [];
-
-            images.loadAttached({number: 64, language: 'de'});
-            $httpBackend.flush(1);
-
-            expect(images.attached).toEqual(mock.items);
+            images.loadAttached({number: 17, language: 'it'});
+            expect(images.attached).toEqual(getAllResponse);
         });
-
-        it('initializes article\'s attached images to empty list on empty ' +
-            'server response',
-            function () {
-                $httpBackend.resetExpectations();
-                $httpBackend.expectGET(url).respond('');
-
-                images.loadAttached({number: 64, language: 'de'});
-                $httpBackend.flush(1);
-
-                expect(images.attached).toEqual([]);
-            }
-        );
     });
 
     describe('collect() method', function () {

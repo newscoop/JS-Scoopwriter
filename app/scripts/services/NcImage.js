@@ -69,6 +69,54 @@ angular.module('authoringEnvironmentApp').factory('NcImage', [
         };
 
         /**
+        * Retrieves a list of all images attached to a specific article.
+        * Returned array has a special $promise property which is resolved or
+        * rejected depending on the server response.
+        *
+        * @method getAllByArticle
+        * @param number {Number} article ID
+        * @param language {String} article language code, e.g. 'de'
+        * @return {Object} "future" array of NcImage objects - initially
+        *   an empty array is returned, which is later populated with the
+        *   actual data (once the http promise has been successfully resolved)
+        */
+        NcImage.getAllByArticle = function (number, language) {
+            var deferredGet = $q.defer(),
+                requestOptions,
+                images = [];
+
+            images.$promise = deferredGet.promise;
+
+            requestOptions = {
+                params: {
+                    expand: true,
+                    items_per_page: 99999  // de facto "all"
+                }
+            };
+
+            $http.get(
+                Routing.generate(
+                    'newscoop_gimme_images_getimagesforarticle',
+                    {number: number, language: language},
+                    true
+                ),
+                requestOptions
+            ).success(function (response) {
+                if (response.items) {
+                    response.items.forEach(function (item) {
+                        item = new NcImage(item);
+                        images.push(item);
+                    });
+                }
+                deferredGet.resolve(images);
+            }).error(function (responseBody) {
+                deferredGet.reject(responseBody);
+            });
+
+            return images;
+        };
+
+        /**
         * Updates image's description.
         *
         * @method updateDescription

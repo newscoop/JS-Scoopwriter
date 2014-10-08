@@ -8,12 +8,14 @@ angular.module('authoringEnvironmentApp').service('images', [
     'getFileReader',
     'formDataFactory',
     'imageFactory',
+    'NcImage',
     '$upload',
     '$rootScope',
     '$q',
     function images(
         $http, pageTracker, configuration, $log, article,
-        getFileReader, formDataFactory, imageFactory, $upload, $rootScope, $q
+        getFileReader, formDataFactory, imageFactory, NcImage,
+        $upload, $rootScope, $q
     ) {
         /* more info about the page tracker in its tests */
         var service = this,
@@ -153,20 +155,8 @@ angular.module('authoringEnvironmentApp').service('images', [
         *     attached images.
         */
         this.loadAttached = function (article) {
-            var url = Routing.generate(
-                'newscoop_gimme_images_getimagesforarticle',
-                {
-                    number: article.number,
-                    language: article.language,
-                    items_per_page: 99999,
-                    expand: true
-                },
-                true
-            );
-
-            $http.get(url).then(function (result) {
-                service.attached = result.data.items || [];
-            });
+            service.attached = NcImage.getAllByArticle(
+                article.number, article.language);
         };
 
         /**

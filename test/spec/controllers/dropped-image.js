@@ -15,7 +15,9 @@ describe('Controller: DroppedImageCtrl', function () {
         images = {
             addToIncluded: jasmine.createSpy(),
             removeFromIncluded: jasmine.createSpy(),
-            inArticleBody: {}
+            inArticleBody: {},
+            attached: [],
+            byId: function () {}
         };
 
     // Initialize the controller and a mock scope
@@ -48,54 +50,63 @@ describe('Controller: DroppedImageCtrl', function () {
     );
 
     describe('init() method', function () {
-        var deferredGet;
+        var deferredAttached,
+            mockedImage;
 
         beforeEach(inject(function ($q) {
-            deferredGet = $q.defer();
-            spyOn(NcImage, 'getById').andCallFake(function () {
-                return deferredGet.promise;
-            });
+            mockedImage = {
+                id: 5,
+                description: 'My image'
+            };
+            spyOn(images, 'byId').andReturn(mockedImage);
+
+            deferredAttached = $q.defer();
+            images.attached.$promise = deferredAttached.promise;
         }));
 
-        it('tries to retrieve the right image', function () {
-            DroppedImageCtrl.init(5);
-            expect(NcImage.getById).toHaveBeenCalledWith(5);
-        });
-
-        it('initializes the image object in scope', function () {
+        it('exposes correct image object in scope', function () {
             scope.image = null;
 
             DroppedImageCtrl.init(5);
-            deferredGet.resolve({id: 5, basename: 'foo.jpg'});
-            scope.$apply();
+            deferredAttached.resolve();
+            scope.$digest();
 
-            expect(scope.image).toEqual({id: 5, basename: 'foo.jpg'});
+            expect(scope.image).toBe(mockedImage);  // test for identity!
         });
 
-        it('adds ID of the retrieved image to the list of images ' +
-            'in article body',
-            function () {
-                DroppedImageCtrl.init(5);
-                deferredGet.resolve({id: 5, basename: 'foo.jpg'});
-                scope.$apply();
+        it('adds image to the list of images in article body', function () {
+            DroppedImageCtrl.init(5);
+            deferredAttached.resolve();
+            scope.$digest();
 
-                expect(images.addToIncluded).toHaveBeenCalledWith(5);
-            }
-        );
+            expect(images.addToIncluded).toHaveBeenCalledWith(5);
+        });
 
-        it('sets new image caption auxiliary variable to image description',
+        it('sets the new image caption auxiliary variable to image ' +
+            'description',
             function () {
                 scope.newCaption = '';
 
                 DroppedImageCtrl.init(5);
-                deferredGet.resolve({
-                    id: 5, basename: 'foo.jpg', description: 'bar'
-                });
+                deferredAttached.resolve();
                 scope.$digest();
 
-                expect(scope.newCaption).toEqual('bar');
+                expect(scope.newCaption).toEqual('My image');
             }
         );
+
+        it('resolves given promise with correct image object', function () {
+            var onSuccessSpy = jasmine.createSpy(),
+                promise;
+
+            promise = DroppedImageCtrl.init(5);
+            promise.then(onSuccessSpy);
+
+            deferredAttached.resolve();
+            scope.$digest();
+
+            expect(onSuccessSpy).toHaveBeenCalledWith(mockedImage);
+        });
     });
 
     describe('imageRemoved() method', function () {
