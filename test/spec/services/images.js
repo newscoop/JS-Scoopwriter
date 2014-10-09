@@ -490,39 +490,31 @@ describe('Service: Images', function () {
         });
 
         describe('invoked with loadFromServer flag set', function () {
-            var httpBackend;
+            var deferredGet,
+                NcImage;
 
-            beforeEach(inject(function (_$httpBackend_) {
-                var url = Routing.generate(
-                    'newscoop_gimme_images_getimage',
-                    {number: 1}, true
-                );
-                httpBackend = _$httpBackend_;
-                httpBackend.expectGET(url).respond(200, mockSingle);
+            beforeEach(inject(function ($q, _NcImage_) {
+                deferredGet = $q.defer();
+                NcImage = _NcImage_;
+                spyOn(NcImage, 'getById').andReturn(deferredGet.promise);
             }));
 
-            afterEach(function () {
-                httpBackend.verifyNoOutstandingExpectation();
-            });
-
-            it('retrieves image data from server', function () {
+            it('tries to retrieve data of a correct image', function () {
                 images.collect(1, true);
+                expect(NcImage.getById).toHaveBeenCalledWith(1);
             });
 
-            it('add retrieved image object to basket', function () {
-                images.collect(1, true);
-                httpBackend.flush(1);
+            it('adds retrieved image object to basket',
+                inject(function ($rootScope) {
+                    images.collect(1, true);
+                    deferredGet.resolve(mockSingle);
+                    $rootScope.$apply();
 
-                expect(images.collected.length).toEqual(2);
-
-                expect(
-                    _.findIndex(images.collected, {id: 5})
-                ).toBeGreaterThan(-1);
-
-                expect(
-                    _.findIndex(images.collected, {id: 1})
-                ).toBeGreaterThan(-1);
-            });
+                    expect(images.collected.length).toEqual(2);
+                    expect(_.find(images.collected, {id: 5})).toBeDefined();
+                    expect(_.find(images.collected, {id: 1})).toBeDefined();
+                })
+            );
         });
     });
 

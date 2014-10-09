@@ -192,25 +192,20 @@ angular.module('authoringEnvironmentApp').service('images', [
         *     image info from the server
         */
         this.collect = function (id, loadFromServer) {
-            var image,
-                match,
-                url;
+            var image;
 
             if (this.isCollected(id)) {
                 return;
             }
 
             if (!loadFromServer) {
-                match = this.matchMaker(id);
-                image = _.find(this.displayed, match);
+                image = _.find(this.displayed, {id: id});
                 if (image) {
                     service.collected.push(image);
                 }
             } else {
-                url = Routing.generate(
-                    'newscoop_gimme_images_getimage', {'number':id}, true);
-                $http.get(url).then(function (result) {
-                    service.collected.push(result.data);
+                NcImage.getById(id).then(function (image) {
+                    service.collected.push(image);
                 });
             }
         };
