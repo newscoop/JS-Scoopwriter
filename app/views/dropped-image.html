@@ -17,20 +17,22 @@
 
   <div class="caption">
     <div ng-show="!editingCaption">
-      {{image.description}}
+      <div class="static">{{image.description}}</div>
       <button class="edit" title="Edit Caption" ng-click="editCaptionMode(true)">
-        <span class="glyphicon glyphicon-edit"></span>
+        <i class="fa fa-pencil"></i>
       </button>
     </div>
 
     <div ng-show="editingCaption">
       <input type="text" ng-model="newCaption" />
-      <button class="save" title="Save" ng-click="updateCaption()">
-        <span class="glyphicon glyphicon-save"></span>
-      </button>
-      <button class="cancel" title="Cancel" ng-click="editCaptionMode(false)">
-        <span class="glyphicon glyphicon-remove"></span>
-      </button>
+      <div class="btn-group">
+        <button class="save" title="Save" ng-click="updateCaption()">
+          <span class="glyphicon glyphicon-ok"></span>
+        </button>
+        <button class="cancel" title="Cancel" ng-click="editCaptionMode(false)">
+          <span class="glyphicon glyphicon-remove"></span>
+        </button>
+      </div>
     </div>
   </div>
 
