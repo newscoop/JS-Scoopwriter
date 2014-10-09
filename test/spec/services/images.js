@@ -782,82 +782,39 @@ describe('Service: Images', function () {
     });
 
     describe('detach() method', function () {
-        var headerCheckers,
-            linkHeaderSpy;
+        var deferredRemove,
+            image;
 
-        headerCheckers = {
-            Link: function (headers) {
-                return 'Link' in headers;
-            }
-        };
+        beforeEach(inject(function ($q, NcImage) {
+            image = Object.create(NcImage.prototype);
+            image.id = 5;
 
-        beforeEach(function () {
-            linkHeaderSpy = spyOn(headerCheckers, 'Link').andCallThrough();
-        });
+            deferredRemove = $q.defer();
+            spyOn(image, 'removeFromArticle')
+                .andReturn(deferredRemove.promise);
 
-        afterEach(function () {
-            // the following also raises an error in cases when unexpected
-            // requests have been made (even if all other expectations
-            // have been fulfilled)
-            $httpBackend.verifyNoOutstandingExpectation();
-        });
-
-        it('correctly invokes backend API', function () {
-            var expectedHeader;
-
-            images.attached = [mock.items[4], mock.items[7]];
-
-            $httpBackend.expect(
-                'UNLINK',
-                Routing.generate(
-                    'newscoop_gimme_articles_unlinkarticle',
-                    {number: 64, language: 'de'}, true
-                ),
-                undefined,
-                headerCheckers.Link
-            ).respond(204, '');
-
-            images.detach(5);
-            $httpBackend.flush();
-
-            expectedHeader = [
-                '<',
-                Routing.generate(
-                    'newscoop_gimme_images_getimage', {number: 5}, true
-                ),
-                '>'
-            ].join('');
-            expect(linkHeaderSpy.mostRecentCall.args[0].Link)
-                .toEqual(expectedHeader);
-        });
-
-        it('updates attached images list on positive server response',
-            function () {
-                images.attached = [mock.items[4], mock.items[7]];
-
-                $httpBackend.expect(
-                    'UNLINK',
-                    Routing.generate(
-                        'newscoop_gimme_articles_unlinkarticle',
-                        {number: 64, language: 'de'}, true
-                    ),
-                    undefined,
-                    headerCheckers.Link
-                ).respond(204, '');
-
-                images.detach(5);
-                $httpBackend.flush();
-
-                // check that correct image was removed
-                expect(images.attached.length).toEqual(1);
-                expect(images.attached[0]).toEqual(mock.items[7]);
-        });
+            images.attached = [{id: 1}, image, {id: 8}];
+        }));
 
         it('does not try to detach an already detached image', function () {
-            images.attached = [];
-            images.detach(5);
-            // there should be no "unexpected request" error
+            images.detach(99);
+            expect(image.removeFromArticle).not.toHaveBeenCalled();
         });
+
+        it('tries to remove an image from the correct article', function () {
+            images.detach(5);
+            expect(image.removeFromArticle).toHaveBeenCalledWith(64, 'de');
+        });
+
+        it('remove an image from the list of attached images on success',
+            inject(function ($rootScope) {
+                images.detach(5);
+                deferredRemove.resolve();
+                $rootScope.$apply();
+
+                expect(images.attached).toEqual([{id: 1}, {id: 8}]);
+            })
+        );
     });
 
     describe('addToIncluded() method', function () {

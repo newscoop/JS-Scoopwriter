@@ -370,45 +370,25 @@ angular.module('authoringEnvironmentApp').service('images', [
         };
 
         /**
-        * Detaches a single image from the article (using HTTP UNLINK). If the
-        * image is not attached to the article, it does not do anything.
+        * Detaches a single image from the article. If the image is not
+        * in the list of attached images, it does not do anything.
         *
         * @method detach
         * @param id {Number} ID of an image to detach
         */
         this.detach = function (id) {
-            var match = this.matchMaker(id);
-            if (_.find(this.attached, match)) {
-                var link,
-                    url;
+            var image = _.find(this.attached, {id: id});
 
-                url = Routing.generate(
-                    'newscoop_gimme_articles_unlinkarticle',
-                    {
-                        number: service.article.number,
-                        language: service.article.language
-                    },
-                    true
-                );
-
-                link = '<' +
-                    Routing.generate(
-                        'newscoop_gimme_images_getimage',
-                        {number: id},
-                        true
-                    ) +
-                    '>';
-
-                $http({
-                    url: url,
-                    method: 'UNLINK',
-                    headers: { Link: link }
-                }).success(function () {
-                    _.remove(service.attached, match);
-                });
-            } else {
-                $log.debug('image already detached, ignoring attach request');
+            if (!image) {
+                return;  // image not attached, nothing to do
             }
+
+            image.removeFromArticle(
+                service.article.number, service.article.language
+            )
+            .then(function () {
+                _.remove(service.attached, {id: id});
+            });
         };
 
         /**

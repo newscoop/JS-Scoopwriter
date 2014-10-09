@@ -158,6 +158,47 @@ angular.module('authoringEnvironmentApp').factory('NcImage', [
             return deferredPatch.promise;
         };
 
+        /**
+        * Detaches the image from an article.
+        *
+        * @method removeFromArticle
+        * @param number {Number} article ID
+        * @param language {String} article language code (e.g. 'de')
+        * @return {Object} promise object that is resolved on successful server
+        *   response and rejected on server error response
+        */
+        NcImage.prototype.removeFromArticle = function(number, language) {
+            var self = this,
+                deferred = $q.defer(),
+                linkHeader;
+
+            linkHeader = '<' +
+                Routing.generate(
+                    'newscoop_gimme_images_getimage',
+                    {number: self.id},
+                    false
+                ) +
+                '; rel="image">';
+
+            $http({
+                url: Routing.generate(
+                    'newscoop_gimme_articles_unlinkarticle',
+                    {number: number, language:language},
+                    true
+                ),
+                method: 'UNLINK',
+                headers: {link: linkHeader}
+            })
+            .success(function () {
+                deferred.resolve();
+            })
+            .error(function (responseBody) {
+                deferred.reject(responseBody);
+            });
+
+            return deferred.promise;
+        };
+
         return NcImage;
     }
 ]);

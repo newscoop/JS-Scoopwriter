@@ -322,4 +322,74 @@ describe('Factory: NcImage', function () {
         });
     });
 
+
+    describe('removeFromArticle() method', function () {
+        var image,
+            url;
+
+        beforeEach(function () {
+            var expectedLinkHeader,
+                imageUri;
+
+            imageUri = Routing.generate(
+                'newscoop_gimme_images_getimage', {number: 1}, false
+            );
+            expectedLinkHeader = '<' + imageUri + '; rel="image">';
+
+            image = Object.create(NcImage.prototype, {
+                id: {value: 1, writable: true, enumerable: true}
+            });
+
+            url = Routing.generate(
+                'newscoop_gimme_articles_unlinkarticle',
+                {number: 25, language: 'en'}, true
+            );
+
+            $httpBackend.expect(
+                'UNLINK',
+                url,
+                undefined,
+                function (headers) {
+                    return headers.link === expectedLinkHeader;
+                }
+            ).respond(204, '');
+        });
+
+        it('returns a promise', inject(function ($q) {
+            var deferred = $q.defer(),
+                promise;
+            promise = image.removeFromArticle(25, 'de')
+            expect(promise instanceof deferred.promise.constructor).toBe(true);
+            expect(typeof promise.then).toBe('function');
+        }));
+
+        it('sends a correct request to API', function () {
+            image.removeFromArticle(25, 'en');
+            $httpBackend.verifyNoOutstandingExpectation();
+        });
+
+        it('resolves given promise on successful server response',
+            function () {
+                var onSuccessSpy = jasmine.createSpy();
+
+                image.removeFromArticle(25, 'en').then(onSuccessSpy);
+                $httpBackend.flush(1);
+
+                expect(onSuccessSpy).toHaveBeenCalled();
+            }
+        );
+
+        it('rejects given promise on server error response', function () {
+            var onErrorSpy = jasmine.createSpy();
+
+            $httpBackend.resetExpectations();
+            $httpBackend.expect('UNLINK', url).respond(500, 'Error :(');
+
+            image.removeFromArticle(25, 'en').catch(onErrorSpy);
+            $httpBackend.flush(1);
+
+            expect(onErrorSpy).toHaveBeenCalledWith('Error :(');
+        });
+    });
+
 });
