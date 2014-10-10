@@ -101,8 +101,8 @@
 
 // Disabled buttons
 .btn.disabled, .btn[disabled], fieldset[disabled] .btn {
-  opacity: 0.35;
-  filter: alpha(opacity=35);
+  opacity: 0.45;
+  filter: alpha(opacity=45);
 }
 
 
@@ -171,4 +171,23 @@ a.list-group-item {
 .list-group-item:last-child {
   border-bottom-right-radius: 0;
   border-bottom-left-radius: 0;
+}
+
+
+//
+// Forms
+// --------------------------------------------------
+
+input {
+  &.form-control {
+    .border-radius(2px);
+    &+.form-control {
+      margin-top: 10px;
+    }
+  }
+}
+.checkbox {
+  label {
+    line-height: 1.6em;
+  }
 }
