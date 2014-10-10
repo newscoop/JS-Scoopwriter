@@ -178,6 +178,52 @@ angular.module('authoringEnvironmentApp').factory('NcImage', [
         };
 
         /**
+        * Attaches one or more images to an article.
+        *
+        * @method addAllToArticle
+        * @param articleId {Number} article ID
+        * @param articleLang {String} article language code (e.g. 'de')
+        * @param images {Array} list of images (NcImage instances) to attach
+        * @return {Object} promise object that is resolved on successful server
+        *   response and rejected on server error response
+        */
+        NcImage.addAllToArticle = function (articleId, articleLang, images) {
+            var deferred = $q.defer(),
+                linkHeader = [];
+
+            images.forEach(function (item) {
+                linkHeader.push(
+                    '<' +
+                    Routing.generate(
+                        'newscoop_gimme_images_getimage',
+                        {'number': item.id},
+                        false
+                    ) +
+                    '; rel="image">'
+                );
+            });
+            linkHeader = linkHeader.join(',');
+
+            $http({
+                url: Routing.generate(
+                    'newscoop_gimme_articles_linkarticle',
+                    {number: articleId, language: articleLang},
+                    true
+                ),
+                method: 'LINK',
+                headers: {link: linkHeader}
+            })
+            .success(function () {
+                deferred.resolve();
+            })
+            .error(function (responseBody) {
+                deferred.reject(responseBody);
+            });
+
+            return deferred.promise;
+        };
+
+        /**
         * Updates image's description.
         *
         * @method updateDescription

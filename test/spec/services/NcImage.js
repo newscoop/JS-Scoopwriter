@@ -395,6 +395,90 @@ describe('Factory: NcImage', function () {
         });
     });
 
+
+    describe('addAllToArticle() method', function () {
+        var expectedLinkHeader,
+            imagesToAdd,
+            url;
+
+        /**
+        * Generates URI for a particular image.
+        *
+        * @function imageUri
+        * @param imageId {Number} ID of the image
+        * @return {String} URI of the image
+        */
+        function imageUri(imageId) {
+            return Routing.generate(
+                'newscoop_gimme_images_getimage',
+                {'number': imageId}, false
+            );
+        }
+
+        beforeEach(function () {
+            imagesToAdd = [{id: 4}, {id: 7}];
+
+            url = Routing.generate(
+                'newscoop_gimme_articles_linkarticle',
+                {number: 25, language: 'en'}, true
+            );
+
+            expectedLinkHeader = [
+                '<', imageUri(4), '; rel="image">,',
+                '<', imageUri(7), '; rel="image">',
+            ].join('');
+
+            $httpBackend.expect(
+                'LINK',
+                url,
+                undefined,
+                function (headers) {
+                    return headers.link === expectedLinkHeader;
+                }
+            ).respond(201);
+        });
+
+        afterEach(function () {
+            $httpBackend.verifyNoOutstandingExpectation();
+        });
+
+        it('returns a promise', function () {
+            var promise = NcImage.addAllToArticle(25, 'en', imagesToAdd);
+            expect(typeof promise.then).toBe('function');
+            expect(typeof promise.catch).toBe('function');
+        });
+
+        it('sends a correct request to API', function () {
+            NcImage.addAllToArticle(25, 'en', imagesToAdd);
+        });
+
+        it('resolves given promise on successful server response',
+            function () {
+                var onSuccessSpy = jasmine.createSpy();
+
+                NcImage.addAllToArticle(25, 'en', imagesToAdd)
+                    .then(onSuccessSpy);
+                $httpBackend.flush(1);
+
+                expect(onSuccessSpy).toHaveBeenCalled();
+            }
+        );
+
+        it('rejects given promise on server error response', function () {
+            var onErrorSpy = jasmine.createSpy();
+
+            $httpBackend.resetExpectations();
+            $httpBackend.expect('LINK', url).respond(500, 'Error :(');
+
+            NcImage.addAllToArticle(25, 'en', imagesToAdd)
+                .catch(onErrorSpy);
+            $httpBackend.flush(1);
+
+            expect(onErrorSpy).toHaveBeenCalledWith('Error :(');
+        });
+    });
+
+
     describe('updateDescription() method', function () {
         var image,
             requestData,

@@ -1,6 +1,5 @@
 'use strict';
 angular.module('authoringEnvironmentApp').service('images', [
-    '$http',
     'pageTracker',
     'configuration',
     '$log',
@@ -13,7 +12,7 @@ angular.module('authoringEnvironmentApp').service('images', [
     '$rootScope',
     '$q',
     function images(
-        $http, pageTracker, configuration, $log, article,
+        pageTracker, configuration, $log, article,
         getFileReader, formDataFactory, imageFactory, NcImage,
         $upload, $rootScope, $q
     ) {
@@ -226,10 +225,8 @@ angular.module('authoringEnvironmentApp').service('images', [
         *¸
         * @method attachAllCollected
         */
-        this.attachAllCollected = function () {
-            var notYetAttached = [],
-                resourceLinks = [],
-                url;
+        self.attachAllCollected = function () {
+            var notYetAttached = [];
 
             // skip already attached images (this should generally not happen,
             // but if it does, it might be some bug in the basket logic)
@@ -243,40 +240,14 @@ angular.module('authoringEnvironmentApp').service('images', [
                 return;  // nothing to do
             }
 
-            notYetAttached.forEach(function (image) {
-                resourceLinks.push(
-                    '<' +
-                    Routing.generate(
-                        'newscoop_gimme_images_getimage',
-                        {'number': image.id},
-                        true
-                    ) +
-                    '>'
-                );
-            });
-            resourceLinks = resourceLinks.join();
-
-            url = Routing.generate(
-                'newscoop_gimme_articles_linkarticle',
-                {
-                    number: service.article.number,
-                    language: service.article.language
-                },
-                true
-            );
-
-            $http({
-                url: url,
-                method: 'LINK',
-                headers: { Link: resourceLinks }
-            }).success(function () {
+            NcImage.addAllToArticle(
+                self.article.number, self.article.language, notYetAttached
+            )
+            .then(function () {
                 notYetAttached.forEach(function (image) {
-                    service.attached.push(image);
+                    self.attached.push(image);
                 });
             });
-            // XXX: do we handle conflicts (409 errors)? For cases when
-            // another user attaches the same image(s) while we are still
-            // adding them to our own basket
         };
 
         /**
@@ -559,6 +530,7 @@ angular.module('authoringEnvironmentApp').service('images', [
                 fd.append('image[description]', imageObj.description);
                 fd.append('image[image]', imageObj);
 
+                // XXX: wrap this into NcImage (e.g. NcImage.create())
                 $upload.http({
                     method: 'POST',
                     url: Routing.generate(

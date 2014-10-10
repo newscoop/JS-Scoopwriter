@@ -530,64 +530,25 @@ describe('Service: Images', function () {
     });
 
     describe('attachAllCollected() method', function () {
-        var headerCheckers,
-            linkHeaderSpy;
+        var deferredAdd,
+            NcImage;
 
-        headerCheckers = {
-            Link: function (headers) {
-                return 'Link' in headers;
-            }
-        };
+        beforeEach(inject(function ($q, _NcImage_) {
+            NcImage = _NcImage_;
+            deferredAdd = $q.defer();
+            spyOn(NcImage, 'addAllToArticle').andReturn(deferredAdd.promise);
+        }));
 
-        /**
-        * Generates API URL for retrieving a particular image.
-        *
-        * @function imageGetUrl
-        * @param imageId {Number} ID of the image to retrieve
-        * @return {String} generated URL
-        */
-        function imageGetUrl(imageId) {
-            return Routing.generate(
-                'newscoop_gimme_images_getimage',
-                {'number': imageId}, true
-            );
-        }
-
-        beforeEach(function () {
-            var url = Routing.generate(
-                'newscoop_gimme_articles_linkarticle',
-                {number: 64, language: 'de'}, true
-            );
-
-            linkHeaderSpy = spyOn(headerCheckers, 'Link').andCallThrough();
-            $httpBackend.expect(
-                'LINK',
-                url,
-                undefined,
-                headerCheckers.Link
-            ).respond(201, '');
-        });
-
-        afterEach(function () {
-            // the following also raises an error in cases when unexpected
-            // requests have been made (even if all other expectations
-            // have been fulfilled)
-            $httpBackend.verifyNoOutstandingExpectation();
-        });
-
-        it('correctly invokes backend API', function () {
+        it('tries to attach images in basket to correct article', function () {
             images.collected = [
                 mock.items[1], mock.items[4], mock.items[5]
             ];
             images.attached = [];
 
             images.attachAllCollected();
-            $httpBackend.flush();
 
-            expect(linkHeaderSpy.mostRecentCall.args[0].Link).toEqual(
-                ['<', imageGetUrl(2), '>,',
-                 '<', imageGetUrl(5), '>,',
-                 '<', imageGetUrl(6), '>'].join('')
+            expect(NcImage.addAllToArticle).toHaveBeenCalledWith(
+                64, 'de', [mock.items[1], mock.items[4], mock.items[5]]
             );
         });
 
@@ -598,30 +559,35 @@ describe('Service: Images', function () {
             images.attached = [mock.items[4]];
 
             images.attachAllCollected();
-            $httpBackend.flush();
 
-            expect(linkHeaderSpy.mostRecentCall.args[0].Link).toEqual(
-                ['<', imageGetUrl(2), '>,',
-                 '<', imageGetUrl(6), '>'].join('')
+            expect(NcImage.addAllToArticle).toHaveBeenCalledWith(
+                64, 'de', [mock.items[1], mock.items[5]]
             );
         });
 
-        it('does not invoke API if there is nothing to attach', function () {
-            images.attached = [mock.items[0], mock.items[3], mock.items[7]];
-            images.collected = [mock.items[0], mock.items[3]];
-            $httpBackend.resetExpectations();
-            images.attachAllCollected();
-        });
-
-        it('updates attached images list on positive server response',
+        it('does not try to attach anything if there are no images to attach',
             function () {
+                images.collected = [mock.items[0], mock.items[3]];
+                images.attached = [
+                    mock.items[0], mock.items[3], mock.items[7]
+                ];
+
+                images.attachAllCollected();
+
+                expect(NcImage.addAllToArticle).not.toHaveBeenCalled();
+            }
+        );
+
+        it('updates attached images list on success',
+            inject(function ($rootScope) {
                 images.collected = [
                     mock.items[0], mock.items[4], mock.items[6]
                 ];
                 images.attached = [mock.items[0]];
 
                 images.attachAllCollected();
-                $httpBackend.flush();
+                deferredAdd.resolve();
+                $rootScope.$apply();
 
                 expect(images.attached.length).toEqual(3);
 
@@ -634,7 +600,8 @@ describe('Service: Images', function () {
                     _.contains(images.attached, mock.items[4])).toEqual(true);
                 expect(
                     _.contains(images.attached, mock.items[6])).toEqual(true);
-        });
+            })
+        );
     });
 
     describe('detach() method', function () {
