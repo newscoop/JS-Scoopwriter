@@ -144,26 +144,6 @@ angular.module('authoringEnvironmentApp').service('images', [
         };
 
         /**
-        * Creates and returns a comparison function. This functions accepts an
-        * object with the "id" attribute as a parameter and returns true if
-        * object.id is equal to the value of the "id" parameter passed to
-        * the method. If not, the created comparison function returns false.
-        *
-        * @method matchMaker
-        * @param id {Number} Value to which the object.id will be compared in
-        *   the comparison function (can also be a numeric string).
-        *   NOTE: before comparison the parameter is converted to integer
-        *   using the built-in parseInt() function.
-        *
-        * @return {Function} Generated comparison function.
-        */
-        this.matchMaker = function (id) {
-            return function (needle) {
-                return parseInt(needle.id) === parseInt(id);
-            };
-        };
-
-        /**
         * Adds an image (from the list of displayed images) to the basket. If
         * loadFromServer flag is set, it instead retrieves image data from the
         * server before adding it to the basket. The latter is useful for
@@ -201,8 +181,7 @@ angular.module('authoringEnvironmentApp').service('images', [
         * @param id {Number} ID of an image to remove
         */
         this.discard = function (id) {
-            var match = this.matchMaker(id);
-            _.remove(this.collected, match);
+            _.remove(this.collected, {id: id});
         };
 
         /**
@@ -304,7 +283,7 @@ angular.module('authoringEnvironmentApp').service('images', [
         *     found)
         */
         this.findAttached = function (id) {
-            return _.find(this.attached, this.matchMaker(id));
+            return _.find(this.attached, {id: id});
         };
 
         /**
@@ -317,7 +296,7 @@ angular.module('authoringEnvironmentApp').service('images', [
         *     found)
         */
         this.findCollected = function (id) {
-            return _.find(this.collected, this.matchMaker(id));
+            return _.find(this.collected, {id: id});
         };
 
         /**
