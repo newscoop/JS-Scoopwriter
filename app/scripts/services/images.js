@@ -19,6 +19,7 @@ angular.module('authoringEnvironmentApp').service('images', [
     ) {
         /* more info about the page tracker in its tests */
         var service = this,
+            self = this,
             ITEMS_PER_PAGE_DEFAULT = 50;
 
         article.promise.then(function (article) {
@@ -51,8 +52,8 @@ angular.module('authoringEnvironmentApp').service('images', [
         * @param filter {String} search term by which to filter results.
         *     Empty string is interpreted as "no filtering".
         */
-        this.query = function (filter) {
-            this.searchFilter = filter;
+        self.query = function (filter) {
+            self.searchFilter = filter;
 
             // not so pretty, but it's the fastest way to clear an Array
             while(service.displayed.length > 0) {
@@ -61,13 +62,13 @@ angular.module('authoringEnvironmentApp').service('images', [
             while(service.loaded.length > 0) {
                 service.loaded.pop();
             }
-            this.tracker.reset();
-            this.itemsFound = 0;
-            this.canLoadMore = false;
+            self.tracker.reset();
+            self.itemsFound = 0;
+            self.canLoadMore = false;
 
-            this.load(
-                this.tracker.next(), this.searchFilter
-            ).success(function (data) {
+            self.load(
+                self.tracker.next(), self.searchFilter
+            ).then(function (data) {
                 service.displayed = data.items;
 
                 if (data.pagination) {
@@ -93,55 +94,39 @@ angular.module('authoringEnvironmentApp').service('images', [
         *
         * @method more
         */
-        this.more = function () {
-            var additional = this.loaded.splice(0, this.itemsPerPage);
-            this.displayed = this.displayed.concat(additional);
+        self.more = function () {
+            var additional = self.loaded.splice(0, self.itemsPerPage);
+            self.displayed = self.displayed.concat(additional);
 
             if (!service.canLoadMore) {
                 return;
             }
 
-            this.load(
-                this.tracker.next(), this.searchFilter
-            ).success(function (data) {
+            self.load(
+                self.tracker.next(), self.searchFilter
+            ).then(function (data) {
                 service.loaded = service.loaded.concat(data.items);
                 service.canLoadMore = !pageTracker.isLastPage(data.pagination);
             });
         };
 
         /**
-        * Asynchronously loads a single page of images from the server.
+        * Loads a single page of images from the server.
         *
         * @method load
         * @param page {Number} index of the page to load
         *     (NOTE: page indices start with 1)
         * @param searchString {String} Search term to narrow down the list of
         *     results. Empty string is interpreted by API as "no restrictions".
-        * @return {Object} promise object
+        * @return {Object} promise object resolved with search results array
+        *   and a pagination object (if available)
         */
-        this.load = function (page, searchString) {
-            var getParams,
-                promise,
-                url;
+        self.load = function (page, searchString) {
+            var promise = NcImage.query(
+                page, self.itemsPerPage, searchString).$promise;
 
-            getParams = {
-                expand: true,
-                items_per_page: this.itemsPerPage,
-                page: page,
-            };
-
-            if (searchString) {
-                url = Routing.generate(
-                    'newscoop_gimme_images_searchimages', {}, true);
-                getParams.query = searchString;
-            } else {
-                url = Routing.generate(
-                    'newscoop_gimme_images_getimages', {}, true);
-            }
-
-            promise = $http.get(url, {params: getParams});
-            promise.error(function () {
-                service.tracker.remove(page);
+            promise.catch(function () {
+                self.tracker.remove(page);
             });
             return promise;
         };

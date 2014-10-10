@@ -69,6 +69,67 @@ angular.module('authoringEnvironmentApp').factory('NcImage', [
         };
 
         /**
+        * Retrieves a single page of images from the server, optionally
+        * filtered by the given search string.
+        * The returned array of search results has a special $promise property
+        * which is resolved or rejected depending on the server response.
+        *
+        * @method query
+        * @param page {Number} index of the results page to load
+        *     (NOTE: page indices start with 1)
+        * @param itemsPerPage {Number} desired page size (the number of
+        *   items in a single search results page)
+        * @param [searchFilter] {String} Optional search term. If not given,
+        *   no images on the server are exluded from the search.
+        * @return {Object} "future" array of NcImage objects - initially
+        *   an empty array is returned, which is later populated with the
+        *   actual data (once the http promise has been successfully resolved)
+        */
+        NcImage.query = function (page, itemsPerPage, searchFilter) {
+            var deferredGet = $q.defer(),
+                requestOptions,
+                results = [],
+                url;
+
+            results.$promise = deferredGet.promise;
+
+            requestOptions = {
+                params: {
+                    expand: true,
+                    items_per_page: itemsPerPage,
+                    page: page
+                }
+            };
+
+            if (searchFilter) {
+                requestOptions.params.query = searchFilter;
+            }
+
+            url = Routing.generate(
+                'newscoop_gimme_images_searchimages', {}, true);
+
+            $http.get(url, requestOptions)
+            .success(function (response) {
+                response = response || {};
+                if (response.items) {
+                    response.items.forEach(function (item) {
+                        item = new NcImage(item);
+                        results.push(item);
+                    });
+                }
+                deferredGet.resolve({
+                    items: results,
+                    pagination: response.pagination
+                });
+            })
+            .error(function (responseBody) {
+                deferredGet.reject(responseBody);
+            });
+
+            return results;
+        };
+
+        /**
         * Retrieves a list of all images attached to a specific article.
         * Returned array has a special $promise property which is resolved or
         * rejected depending on the server response.

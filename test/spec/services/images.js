@@ -115,18 +115,7 @@ describe('Service: Images', function () {
         beforeEach(inject(function (_$rootScope_, $q) {
             $rootScope = _$rootScope_;
             deferredLoad = $q.defer();
-
-            // mock load() method so that the more() method tests do not
-            // depend on correct functioning of the load() method
-            spyOn(images, 'load').andCallFake(function () {
-                return {
-                    success: function (handler) {
-                        deferredLoad.promise.then(function (data) {
-                            handler(data);
-                        });
-                    }
-                };
-            });
+            spyOn(images, 'load').andReturn(deferredLoad.promise);
         }));
 
         it('stores the new value of search filter', function () {
@@ -174,7 +163,7 @@ describe('Service: Images', function () {
             expect(images.load).toHaveBeenCalledWith(1, 'duck');
         });
 
-        describe('on successful server response', function () {
+        describe('on data retrieval', function () {
             var pageTracker;
 
             beforeEach(inject(function (_pageTracker_) {
@@ -225,7 +214,8 @@ describe('Service: Images', function () {
                     $rootScope.$apply();
 
                     expect(images.more).not.toHaveBeenCalled();
-            });
+                }
+            );
 
             it('clears canLoadMore flag if no more pages applicable',
                 function () {
@@ -237,7 +227,8 @@ describe('Service: Images', function () {
                     $rootScope.$apply();
 
                     expect(images.canLoadMore).toEqual(false);
-            });
+                }
+            );
 
             describe('pagination object available', function () {
                 it('sets result page size to what server returned',
@@ -255,7 +246,8 @@ describe('Service: Images', function () {
                         $rootScope.$apply();
 
                         expect(images.itemsPerPage).toEqual(4);
-                });
+                    }
+                );
                 it('sets items found count to total number of matches',
                     function () {
                         images.itemsFound = 50;
@@ -271,7 +263,8 @@ describe('Service: Images', function () {
                         $rootScope.$apply();
 
                         expect(images.itemsFound).toEqual(419);
-                });
+                    }
+                );
             });
 
             describe('pagination object not available', function () {
@@ -307,18 +300,7 @@ describe('Service: Images', function () {
         beforeEach(inject(function (_$rootScope_, $q) {
             $rootScope = _$rootScope_;
             deferredLoad = $q.defer();
-
-            // mock load() method so that the more() method tests do not
-            // depend on correct functioning of the load() method
-            spyOn(images, 'load').andCallFake(function () {
-                return {
-                    success: function (handler) {
-                        deferredLoad.promise.then(function (data) {
-                            handler(data);
-                        });
-                    }
-                };
-            });
+            spyOn(images, 'load').andReturn(deferredLoad.promise);
         }));
 
         it('moves the next page of preloaded images to displayed',
@@ -377,68 +359,43 @@ describe('Service: Images', function () {
             function () {
                 images.canLoadMore = false;
                 images.more();
+                $rootScope.$apply();
                 expect(images.load).not.toHaveBeenCalled();
         });
     });
 
     describe('load() method', function () {
-        /**
-        * Generates API URL for searching the images.
-        *
-        * @function createUrl
-        * @param page {Number} number of the results page to request
-        * @param [query] {String} images search string
-        * @return {String} generated URL
-        */
-        function createUrl(page, query) {
-            var config,
-                routeName;
+        var NcImage,
+            queryDeferred,
+            searchResults;
 
-            config = {
-                expand: true,
-                items_per_page: 50,
-                page: page
-            };
+        beforeEach(inject(function ($q, _NcImage_) {
+            NcImage = _NcImage_;
 
-            if (query) {
-                config.query = query;
-                routeName = 'newscoop_gimme_images_searchimages';
-            } else {
-                routeName = 'newscoop_gimme_images_getimages';
-            }
+            searchResults = [];
+            queryDeferred = $q.defer()
+            searchResults.$promise = queryDeferred.promise;
+            spyOn(NcImage,'query').andReturn(searchResults);
 
-            return Routing.generate(routeName, config, true);
-        }
+            images.itemsPerPage = 50;
+        }));
 
-        it('issues a correct API call (search filter not set)', function () {
-            images.searchFilter = '';
-            $httpBackend.expectGET(createUrl(4)).respond(mock);
-
-            images.load(4);
-            $httpBackend.flush(1);
-            $httpBackend.verifyNoOutstandingExpectation();
+        it('searches for images with correct parameters)', function () {
+            images.load(2, 'lion');
+            expect(NcImage.query).toHaveBeenCalledWith(2, 50, 'lion');
         });
 
-        it('issues a correct API call (search filter set)', function () {
-            images.searchFilter = 'fish'
-            $httpBackend.expectGET(createUrl(4, 'fish')).respond(mock);
+        it('removes a page of images on API error',
+            inject(function ($rootScope) {
+                spyOn(images.tracker, 'remove');
 
-            images.load(4, 'fish');
-            $httpBackend.flush(1);
-            $httpBackend.verifyNoOutstandingExpectation();
-        });
+                images.load(2, 'lion');
+                queryDeferred.reject();
+                $rootScope.$apply();
 
-        it('removes a page of images on API error', function () {
-            spyOn(images.tracker, 'remove');
-
-            $httpBackend.expectGET(createUrl(4))
-                .respond(500, 'Internal Server Error');
-
-            images.load(4);
-            $httpBackend.flush(1);
-
-            expect(images.tracker.remove).toHaveBeenCalledWith(4);
-        });
+                expect(images.tracker.remove).toHaveBeenCalledWith(2);
+            })
+        );
     });
 
     describe('loadAttached() method', function () {
