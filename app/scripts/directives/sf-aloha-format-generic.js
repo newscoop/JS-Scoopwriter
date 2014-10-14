@@ -34,8 +34,6 @@ angular.module('authoringEnvironmentApp').directive('sfAlohaFormatGeneric', [
                 element.attr('disabled', !supported || !enabled);
 
                 element.bind('click', function () {
-                    // http://aloha-editor.org/guides/using_commands.html
-                    debugger;
                     Aloha.execCommand(scope.alohaElement, false, '');
                     element.toggleClass(
                         'active',
