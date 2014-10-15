@@ -1,7 +1,7 @@
 'use strict';
 
 /**
-* A directive which creates a formatting button for managing hyperlinks
+* A directive which creates formatting buttons for managing hyperlinks
 * in Aloha editor's contents.
 *
 * @class sfAlohaFormatLink
@@ -10,32 +10,43 @@ angular.module('authoringEnvironmentApp').directive('sfAlohaFormatLink', [
     '$rootScope',
     function ($rootScope) {
         var template = [
-            '<button class="btn btn-default btn-sm" title="Add Link">',
-            '    <i class="fa fa-link"></i>',
-            '</button>'
+            '<div>',
+            '  <button class="btn btn-default btn-sm" title="Add/Edit Link">',
+            '      <i class="fa fa-link"></i>',
+            '  </button>',
+            '  <button class="btn btn-default btn-sm" title="Remove Link">',
+            '      <i class="fa fa-unlink"></i>',
+            '  </button>',
+            '</div>'
         ].join('');
 
         function postLink(scope, element, attrs) {
-            var cmdEnabled,
-                cmdSupported,
+            var children,
+                cmdLinkEnabled,
+                cmdLinkSupported,
+                cmdUnlinkEnabled,
+                cmdUnlinkSupported,
                 // does the current text selection contain a link or not?
                 linkPresent = false,
-                $icon = element.children('i');
+                $btnLink,
+                $btnUnlink;
 
             // TODO: docs
-            function updateButtonMode() {
-                var title;
+            function updateButtonsMode() {
+                var title = linkPresent ? 'Edit Link' : 'Add Link';
 
-                title = linkPresent ? 'Remove Link' : 'Add Link';
-                element.attr('title', title);
+                $btnLink.attr('title', title);
 
-                if (linkPresent) {
-                    $icon.removeClass('fa-link');
-                    $icon.addClass('fa-unlink');
-                } else {
-                    $icon.removeClass('fa-unlink');
-                    $icon.addClass('fa-link');
-                }
+                // XXX: if current selection contains something?
+                $btnLink.attr(
+                    'disabled',
+                    !cmdLinkSupported || !cmdLinkEnabled
+                );
+
+                $btnUnlink.attr(
+                    'disabled',
+                    !cmdUnlinkSupported || !cmdUnlinkEnabled || !linkPresent
+                );
             }
 
             // TODO: docs
@@ -56,39 +67,63 @@ angular.module('authoringEnvironmentApp').directive('sfAlohaFormatLink', [
                 linkPresent = false;
             }
 
+            /// --- initialization --- ///
+
+            // get rid of the wrapping <div> element
+            children = element.children();
+            $btnLink = $(children[0]);
+            $btnUnlink = $(children[1]);
+
+            children.appendTo(element.parent());
+            element.remove();
+
+            // determine if link/unlink commands are supported and enabled
+            // in the editor
+            cmdLinkSupported = Aloha.queryCommandSupported('createLink');
+            cmdLinkEnabled = Aloha.queryCommandEnabled('createLink');
+            if (typeof cmdLinkEnabled === 'undefined') {
+                // in Chrome we get undefined, fix it to "true"
+                cmdLinkEnabled = true;
+            }
+
+            cmdUnlinkSupported = Aloha.queryCommandSupported('unlink');
+            cmdUnlinkEnabled = Aloha.queryCommandEnabled('unlink');
+            if (typeof cmdUnlinkEnabled === 'undefined') {
+                // in Chrome we get undefined, fix it to "true"
+                cmdUnlinkEnabled = true;
+            }
+
             // update button's mode of operation on every text selection
             // change in the editor
             $rootScope.$on('texteditor-selection-changed', function () {
                 linkPresent = !!Aloha.queryCommandValue('createLink');
-                updateButtonMode();
+                updateButtonsMode();
             });
 
-            element.bind('click', function () {
+            $btnLink.click(function () {
                 if (linkPresent) {
-                    removeLink();
+                    console.debug('must edit link here...');
                 } else {
                     // TODO: open a modal and ask for details
                     addLink();
                 }
 
-                updateButtonMode();
+                updateButtonsMode();
             });
 
-            /// initialization ///
-            cmdSupported = Aloha.queryCommandSupported('createLink');
-            cmdEnabled = Aloha.queryCommandEnabled('createLink');
-            if (typeof cmdEnabled === 'undefined') {
-                // in Chrome we get undefined, fix it to "true"
-                cmdEnabled = true;
-            }
-            element.attr('disabled', !cmdSupported || !cmdEnabled);
+            $btnUnlink.click(function () {
+                if (linkPresent) {
+                    removeLink();
+                    updateButtonsMode();
+                }
+            });
 
-            updateButtonMode();
+            updateButtonsMode();
         }
 
         return {
             template: template,
-            restrict: 'A',
+            restrict: 'E',
             replace: true,
             scope: {},
             link: postLink
