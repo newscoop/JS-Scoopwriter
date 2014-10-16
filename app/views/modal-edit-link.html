@@ -1,0 +1,26 @@
+<div class="modal-edit-link">
+
+  <div class="modal-header">
+    <h3 id="myModalLabel">Insert/Edit Link</h3>
+  </div>
+
+  <div class="modal-body">
+      <input type="text" placeholder="URL" class="form-control"
+          ng-model="linkData.url">
+      <input type="text" placeholder="Text" class="form-control"
+          ng-model="linkData.text">
+      <input type="text" placeholder="Title" class="form-control"
+          ng-model="linkData.title">
+      <div class="checkbox">
+          <label>
+              <input type="checkbox" ng-model="linkData.openNewWindow">
+              Open link in New window
+          </label>
+      </div>
+  </div>
+
+  <div class="modal-footer">
+    <button class="btn btn-primary" ng-click="ok()">OK</button>
+    <button class="btn btn-default" ng-click="cancel()">Cancel</button>
+  </div>
+</div>

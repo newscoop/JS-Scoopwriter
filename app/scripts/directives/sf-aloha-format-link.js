@@ -1,17 +1,54 @@
-'use strict';
+(function () {
+    'use strict';
 
-/**
-* A directive which creates formatting buttons for managing hyperlinks
-* in Aloha editor's contents.
-*
-* @class sfAlohaFormatLink
-*/
-angular.module('authoringEnvironmentApp').directive('sfAlohaFormatLink', [
-    '$rootScope',
-    function ($rootScope) {
+    /**
+    * Constructor function for the add/edit link modal controller.
+    *
+    * @class ModalCtrl
+    * @param $scope {Object} AngularJS $scope object
+    * @param $modalInstance {Object} AngularJS UI instance of the modal
+    *     window the coontroller controls.
+    * @param linkData {Object} object with link data (e.g. url, title...)
+    */
+    function ModalCtrl($scope, $modalInstance, linkData) {
+
+        $scope.linkData = {};
+
+        ['url', 'text', 'title'].forEach(function (item) {
+            $scope.linkData[item] = linkData[item];
+        });
+        $scope.linkData.openNewWindow = !!linkData.openNewWindow;
+
+        /**
+        * Closes the modal with a resolution of OK.
+        * @method ok
+        */
+        $scope.ok = function () {
+            $modalInstance.close($scope.linkData);
+        };
+
+        /**
+        * Closes the modal with a resolution of CANCEL.
+        * @method cancel
+        */
+        $scope.cancel = function () {
+            $modalInstance.dismiss(false);
+        };
+    }
+
+    ModalCtrl.$inject = ['$scope', '$modalInstance', 'linkData'];
+
+
+    /**
+    * A directive which creates formatting buttons for managing hyperlinks
+    * in Aloha editor's contents.
+    *
+    * @class sfAlohaFormatLink
+    */
+    function directiveConstructor($rootScope, $modal) {
         var template = [
             '<div>',
-            '  <button class="btn btn-default btn-sm" title="Add/Edit Link">',
+            '  <button class="btn btn-default btn-sm" title="Add Link">',
             '      <i class="fa fa-link"></i>',
             '  </button>',
             '  <button class="btn btn-default btn-sm" title="Remove Link">',
@@ -31,13 +68,18 @@ angular.module('authoringEnvironmentApp').directive('sfAlohaFormatLink', [
                 $btnLink,
                 $btnUnlink;
 
-            // TODO: docs
+            /**
+            * Updates the formatting buttons appearance depending on whether
+            * or not a hyperlink is present in the currently selected text.
+            *
+            * @function updateButtonsMode
+            */
             function updateButtonsMode() {
                 var title = linkPresent ? 'Edit Link' : 'Add Link';
 
                 $btnLink.attr('title', title);
 
-                // XXX: if current selection contains something?
+                // XXX: only if current selection contains something?
                 $btnLink.attr(
                     'disabled',
                     !cmdLinkSupported || !cmdLinkEnabled
@@ -49,20 +91,51 @@ angular.module('authoringEnvironmentApp').directive('sfAlohaFormatLink', [
                 );
             }
 
-            // TODO: docs
-            function addLink() {
-                // XXX: only if something  is selected? or select the
-                // whole word, if nothing is selected?
-                console.debug('Adding link http://www.sourcefabric.org/');
-                Aloha.execCommand(
-                    'createLink', false, 'http://www.sourcefabric.org/');
-                linkPresent = true;
+            /**
+            * Opens the edit link modal dialog.
+            *
+            * @function editLinkDialog
+            * @return {Object} promise object which is resolved with form
+            *   data if the OK button was clicked or rejected if Cancel
+            *   button was clicked
+            */
+            function editLinkDialog() {
+                var dialog,
+                    linkData;
+
+                if (linkPresent) {
+                    linkData = {
+                        url: Aloha.queryCommandValue('createLink'),
+                        text: 'TODO: get selection text',
+                        title: 'TODO:get link tooltip title',
+                        openNewWindow: false
+                    };
+                } else {
+                    linkData = {};
+                }
+
+                dialog = $modal.open({
+                    templateUrl: 'views/modal-edit-link.html',
+                    controller: ModalCtrl,
+                    scope: scope,
+                    backdrop: 'static',
+                    keyboard: false,
+                    resolve: {
+                        linkData: function () {
+                            return linkData;
+                        }
+                    }
+                });
+
+                return dialog.result;
             }
 
-            // TODO: docs
+            /**
+            * Removes hyperlink from the currently active text in editor.
+            *
+            * @function removeLink
+            */
             function removeLink() {
-                var url = Aloha.queryCommandValue('unlink');
-                console.debug('Removing link', url);
                 Aloha.execCommand('unlink');
                 linkPresent = false;
             }
@@ -100,17 +173,21 @@ angular.module('authoringEnvironmentApp').directive('sfAlohaFormatLink', [
                 updateButtonsMode();
             });
 
+            // Add/Edit link button's click handler
             $btnLink.click(function () {
-                if (linkPresent) {
-                    console.debug('must edit link here...');
-                } else {
-                    // TODO: open a modal and ask for details
-                    addLink();
-                }
+                // TODO: bug - remember current selection and update it
+                // - lost focus with modal, so remember position
+                // also, do nothing if nothing  is selected (disable
+                // button)
 
-                updateButtonsMode();
+                editLinkDialog().then(function (linkData) {
+                    Aloha.execCommand('createLink', false, linkData.url);
+                    linkPresent = true;
+                    updateButtonsMode();
+                });
             });
 
+            // Remove link button's click handler
             $btnUnlink.click(function () {
                 if (linkPresent) {
                     removeLink();
@@ -129,4 +206,11 @@ angular.module('authoringEnvironmentApp').directive('sfAlohaFormatLink', [
             link: postLink
         };
     }
-]);
+
+
+    angular.module('authoringEnvironmentApp')
+        .directive('sfAlohaFormatLink', [
+            '$rootScope', '$modal', directiveConstructor
+        ]);
+
+}());
