@@ -108,22 +108,9 @@
             *   data if the OK button was clicked or rejected if Cancel
             *   button was clicked
             */
-            function editLinkDialog() {
-                var dialog,
-                    linkData;
-
-                if (linkPresent) {
-                    linkData = {
-                        url: Aloha.queryCommandValue('createLink'),
-                        text: 'TODO: get selection text',
-                        title: 'TODO:get link tooltip title',
-                        openNewWindow: false
-                    };
-                } else {
-                    linkData = {};
-                }
-
-                dialog = $modal.open({
+            // TODO:describe linkData param
+            function editLinkDialog(linkData) {
+                var dialog = $modal.open({
                     templateUrl: 'views/modal-edit-link.html',
                     controller: ModalCtrl,
                     scope: scope,
@@ -183,27 +170,55 @@
 
             // Add/Edit link button's click handler
             $btnLink.click(function () {
-                // TODO: bug - remember current selection and update it
-                // - lost focus with modal, so remember position
-                // also, do nothing if nothing  is selected (disable
-                // button)
+                var linkData = {},
+                    range,
+                    selection,
+                    $node,
+                    $parent;
 
-                /////////////////////
-                // TODO: for the addLink determine if selection contains
-                // anything (if link is not present)... AND editable is active
-                var selection = $window.getSelection();
+                // TODO: first make a copy of  the current selection..also
+                // extract link info from it
+                selection = $window.getSelection();
+                $node = $(selection.anchorNode);
+                $parent = $node.parent();
 
-                if (!selection.isCollapsed) {
-                    var node = selection.anchorNode;
-                    console.debug('anchor node:', node);
-                    var parentNode = node.parentNode;
-                    console.debug('parentNode node:', parentNode);
+                if (linkPresent) {
+                    linkData.url = $parent.attr('href');
+                    linkData.title = $parent.attr('title');
+                    linkData.openNewWindow =
+                        ($parent.attr('target') === '_blank');
 
+                    // make sure the whole link node is selected
+                    selection.removeAllRanges();
+                    range= new Range()
+                    range.setStart($parent[0], 0);
+                    range.setEnd($parent[0], 1);
+                    selection.addRange(range)
+                } else {
+                    linkData.title = selection.toString();
+
+                    range = selection.getRangeAt(0);
                 }
-                ///////////
 
-                editLinkDialog().then(function (linkData) {
-                    Aloha.execCommand('createLink', false, linkData.url);
+                editLinkDialog(linkData).then(function (newLinkData) {
+                    var $linkNode;
+
+                    if (linkPresent) {
+                        $linkNode = $parent;  // existing link
+                    } else {
+                        // create and insert a new link element
+                        $linkNode = jQuery('<a/>');
+                        range.surroundContents($linkNode[0]);
+                    }
+
+                    $linkNode.attr('href', newLinkData.url)
+                    $linkNode.attr('title', newLinkData.title)
+                    $linkNode.removeAttr('target');
+
+                    if (newLinkData.openNewWindow) {
+                        $linkNode.attr('target', '_blank');
+                    }
+
                     linkPresent = true;
                     updateButtonsMode();
                 });
