@@ -45,7 +45,7 @@
     *
     * @class sfAlohaFormatLink
     */
-    function directiveConstructor($rootScope, $modal) {
+    function directiveConstructor($rootScope, $modal, $window) {
         var template = [
             '<div>',
             '  <button class="btn btn-default btn-sm" title="Add Link">',
@@ -75,14 +75,23 @@
             * @function updateButtonsMode
             */
             function updateButtonsMode() {
-                var title = linkPresent ? 'Edit Link' : 'Add Link';
+                var title,
+                    textSelected;
 
+                title = linkPresent ? 'Edit Link' : 'Add Link';
                 $btnLink.attr('title', title);
 
-                // XXX: only if current selection contains something?
+                textSelected = !($window.getSelection().isCollapsed);
+
+                // TODO: also, some editable must be active (need listener
+                // on editable activated) - maybe outside of this function
+                // where linkPresent is set
+                // (we shouldn't enable the button when something outside the
+                // editor is selected)
                 $btnLink.attr(
                     'disabled',
-                    !cmdLinkSupported || !cmdLinkEnabled
+                    !cmdLinkSupported || !cmdLinkEnabled ||
+                    (!linkPresent && !textSelected)
                 );
 
                 $btnUnlink.attr(
@@ -136,6 +145,7 @@
             * @function removeLink
             */
             function removeLink() {
+                // TODO: does not remove styling! manually remove!
                 Aloha.execCommand('unlink');
                 linkPresent = false;
             }
@@ -166,8 +176,6 @@
                 cmdUnlinkEnabled = true;
             }
 
-            // update button's mode of operation on every text selection
-            // change in the editor
             $rootScope.$on('texteditor-selection-changed', function () {
                 linkPresent = !!Aloha.queryCommandValue('createLink');
                 updateButtonsMode();
@@ -179,6 +187,20 @@
                 // - lost focus with modal, so remember position
                 // also, do nothing if nothing  is selected (disable
                 // button)
+
+                /////////////////////
+                // TODO: for the addLink determine if selection contains
+                // anything (if link is not present)... AND editable is active
+                var selection = $window.getSelection();
+
+                if (!selection.isCollapsed) {
+                    var node = selection.anchorNode;
+                    console.debug('anchor node:', node);
+                    var parentNode = node.parentNode;
+                    console.debug('parentNode node:', parentNode);
+
+                }
+                ///////////
 
                 editLinkDialog().then(function (linkData) {
                     Aloha.execCommand('createLink', false, linkData.url);
@@ -210,7 +232,7 @@
 
     angular.module('authoringEnvironmentApp')
         .directive('sfAlohaFormatLink', [
-            '$rootScope', '$modal', directiveConstructor
+            '$rootScope', '$modal', '$window', directiveConstructor
         ]);
 
 }());
