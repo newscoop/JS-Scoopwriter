@@ -162,13 +162,12 @@
 
             /// --- initialization --- ///
 
-            // get rid of the wrapping <div> element
+            // store references to both buttons and get rid of the
+            // wrapping <div> element
             children = element.children();
             $btnLink = $(children[0]);
             $btnUnlink = $(children[1]);
-
-            children.appendTo(element.parent());
-            element.remove();
+            children.unwrap();
 
             // determine if link/unlink commands are supported and enabled
             // in the editor
@@ -211,10 +210,10 @@
 
                     // make sure the whole link node is selected
                     selection.removeAllRanges();
-                    range= new Range()
+                    range= new Range();
                     range.setStart($parent[0], 0);
                     range.setEnd($parent[0], 1);
-                    selection.addRange(range)
+                    selection.addRange(range);
                 } else {
                     linkData.title = selection.toString();
 
@@ -232,8 +231,8 @@
                         range.surroundContents($linkNode[0]);
                     }
 
-                    $linkNode.attr('href', newLinkData.url)
-                    $linkNode.attr('title', newLinkData.title)
+                    $linkNode.attr('href', newLinkData.url);
+                    $linkNode.attr('title', newLinkData.title);
                     $linkNode.removeAttr('target');
 
                     if (newLinkData.openNewWindow) {
