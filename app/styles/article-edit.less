@@ -76,13 +76,20 @@ a:hover {
     .article-editable-title {
         font-size: 36px;
     }
-    .save-button {
+    .save-close {
         float: right;
-        margin: 4px 12px 0 0;
+        margin: 4px 8px 0 10px;
+        .btn+.btn {
+            margin-left: 8px;
+        }
+    }
+    .preview-btn {
+        float: right;
+        margin: 4px 10px 0 10px;
     }
     .article-status {
         float: right;
-        margin: 4px 12px 0 12px;
+        margin: 4px 0 0 10px;
         line-height: 2em;
 
         .btn-primary {
@@ -917,6 +924,15 @@ a:hover {
 
     /* ZEN MODE */
 
+    .zen-trigger {
+        position: absolute;
+        top: 6px;
+        right: 10px;
+        .btn {
+            padding: 4px 8px;
+        }
+    }
+
     .zen-buttons {
         display:none;  
     }
@@ -941,7 +957,16 @@ a:hover {
             top: 5px;
             z-index: 100;
             .zen-close {
-                padding: 0 9px;
+                padding: 4px 9px 1px 9px;
+                font-size: 18px;
+                color: #808080;
+                &:hover {
+                    color: #333;
+                }
+                &:active {
+                    .box-shadow(inset 0px 1px 3px #ccc);
+                    .border-radius(2px);
+                }
             }
         }
         .subnav-fixed {
@@ -1934,6 +1959,7 @@ a:hover {
     }
     .sf-lower-toolbar {
         padding: 6px 5px 8px 5px;
+        position: relative;
     }
     /* centered nav bar http://stackoverflow.com/a/18538412/393758 */
     .sf-navbar-center {
