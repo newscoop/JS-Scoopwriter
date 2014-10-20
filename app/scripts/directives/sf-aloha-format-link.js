@@ -132,8 +132,31 @@
             * @function removeLink
             */
             function removeLink() {
-                // TODO: does not remove styling! manually remove!
-                Aloha.execCommand('unlink');
+                var selection,
+                    $node,
+                    $parent;
+
+                // Aloha's unlink command only removes the href attribute, but
+                // if there are other  attributes, the anchor element is not
+                // removed - we must do that manually
+                selection = $window.getSelection();
+                $node = $(selection.anchorNode);  // usually a text node
+                $parent = $node.parent();
+
+                // in some cases there might be additional nodes between
+                // the text node and the link node (e.g. a <b> tag), thus we
+                // must traverse the hierarchy up until we find the anchor
+                // element (or reach the document root)
+                while ($parent.length > 0) {
+                    if ($parent[0].nodeName.toUpperCase() === 'A') {
+                        $node.unwrap();
+                        break;
+                    } else {
+                        $node = $parent;
+                        $parent = $parent.parent();
+                    }
+                }
+
                 linkPresent = false;
             }
 
@@ -176,8 +199,6 @@
                     $node,
                     $parent;
 
-                // TODO: first make a copy of  the current selection..also
-                // extract link info from it
                 selection = $window.getSelection();
                 $node = $(selection.anchorNode);
                 $parent = $node.parent();
