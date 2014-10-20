@@ -257,7 +257,12 @@
                         // a new link must bee created
                         $link = jQuery('<a/>');
                         range.surroundContents($link[0]);
-                        // TODO: strip any existing links in subtree!
+
+                        // also remove any existing nested links
+                        $link.find('a').each(function (i, item) {
+                            var $nestedLink = $(item);
+                            $nestedLink.replaceWith($nestedLink.html());
+                        });
                     }
 
                     $link.attr('href', newLinkData.url);
