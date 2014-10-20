@@ -182,8 +182,7 @@
 
                 range = new Range();
                 range.setStart($linkNode[0], 0);
-                range.setEnd($linkNode[0], 1);
-                // TODO: select all nested DOM subtree as well!
+                range.setEnd($linkNode[0], $linkNode[0].childNodes.length);
 
                 selection.addRange(range);
             }
