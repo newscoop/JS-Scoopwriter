@@ -9,8 +9,10 @@
     * @param $modalInstance {Object} AngularJS UI instance of the modal
     *     window the coontroller controls.
     * @param linkData {Object} object with link data (e.g. url, title...)
+    * @param addingNew {Boolean} true if new link is being added, false if
+    *   existing link is being edited
     */
-    function ModalCtrl($scope, $modalInstance, linkData) {
+    function ModalCtrl($scope, $modalInstance, linkData, addingNew) {
 
         $scope.linkData = {};
 
@@ -18,6 +20,7 @@
             $scope.linkData[item] = linkData[item];
         });
         $scope.linkData.openNewWindow = !!linkData.openNewWindow;
+        $scope.addingNew = addingNew;
 
         /**
         * Closes the modal with a resolution of OK.
@@ -36,7 +39,7 @@
         };
     }
 
-    ModalCtrl.$inject = ['$scope', '$modalInstance', 'linkData'];
+    ModalCtrl.$inject = ['$scope', '$modalInstance', 'linkData', 'addingNew'];
 
 
     /**
@@ -106,11 +109,13 @@
             * @function editLinkDialog
             * @param linkData {Object} object containing link data
             *   (e.g. url, title...)
+            * @param addingNew {Boolean} true if new link is being added,
+            *   false otherwise (i.e.an existing link is being  edited)
             * @return {Object} promise object which is resolved with form
             *   data if the OK button was clicked or rejected if Cancel
             *   button was clicked
             */
-            function editLinkDialog(linkData) {
+            function editLinkDialog(linkData, addingNew) {
                 var dialog = $modal.open({
                     templateUrl: 'views/modal-edit-link.html',
                     controller: ModalCtrl,
@@ -120,6 +125,9 @@
                     resolve: {
                         linkData: function () {
                             return linkData;
+                        },
+                        addingNew: function () {
+                            return addingNew;
                         }
                     }
                 });
@@ -219,7 +227,8 @@
 
             // Add/Edit link button's click handler
             $btnLink.click(function () {
-                var linkData = {},
+                var addingNew,
+                    linkData = {},
                     range,
                     selection,
                     $link;
@@ -235,7 +244,12 @@
                     $link = $link.parent();
                 }
 
-                if ($link.length > 0) {
+                addingNew = $link.length <= 0;
+
+                if (addingNew) {
+                    // will add new link in modal
+                    range = selection.getRangeAt(0);
+                } else {
                     // will edit existing link in modal
                     linkData.url = $link.attr('href');
                     linkData.title = $link.attr('title');
@@ -243,16 +257,14 @@
                         ($link.attr('target') === '_blank');
 
                     highlightLink($link);
-                } else {
-                    // will add new link in modal
-                    linkData.title = selection.toString();
-                    range = selection.getRangeAt(0);
                 }
+
+                linkData.text = selection.toString();
 
                 // open the add/edit link dialog and do the required
                 // action if the OK button has been clicked
-                editLinkDialog(linkData).then(function (newLinkData) {
-                    if ($link.length <= 0) {
+                editLinkDialog(linkData, addingNew).then(function (newData) {
+                    if (addingNew) {
                         // a new link must bee created
                         $link = jQuery('<a/>');
                         range.surroundContents($link[0]);
@@ -264,11 +276,11 @@
                         });
                     }
 
-                    $link.attr('href', newLinkData.url);
-                    $link.attr('title', newLinkData.title);
+                    $link.attr('href', newData.url);
+                    $link.attr('title', newData.title);
                     $link.removeAttr('target');
 
-                    if (newLinkData.openNewWindow) {
+                    if (newData.openNewWindow) {
                         $link.attr('target', '_blank');
                     }
 
