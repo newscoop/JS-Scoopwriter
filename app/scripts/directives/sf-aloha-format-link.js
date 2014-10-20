@@ -140,20 +140,25 @@
                 // if there are other  attributes, the anchor element is not
                 // removed - we must do that manually
                 selection = $window.getSelection();
-                $node = $(selection.anchorNode);  // usually a text node
-                $parent = $node.parent();
+                $node = $(selection.anchorNode);
 
-                // in some cases there might be additional nodes between
-                // the text node and the link node (e.g. a <b> tag), thus we
-                // must traverse the hierarchy up until we find the anchor
-                // element (or reach the document root)
-                while ($parent.length > 0) {
-                    if ($parent[0].nodeName.toUpperCase() === 'A') {
-                        $node.unwrap();
-                        break;
-                    } else {
-                        $node = $parent;
-                        $parent = $parent.parent();
+                // if link node is selected, remove it, otherwise a text node
+                // is selected and we need to go up the DOM hierarchy to find
+                // the ancestor link node and remove it (it might be several
+                // levels above the text node as other DOM nodes might be
+                // in-between, e.g. a <b> tag
+                if ($node[0].nodeName.toUpperCase() === 'A') {
+                    $node.replaceWith($node.html());
+                } else {
+                    $parent = $node.parent();
+                    while ($parent.length > 0) {
+                        if ($parent[0].nodeName.toUpperCase() === 'A') {
+                            $node.unwrap();
+                            break;
+                        } else {
+                            $node = $parent;
+                            $parent = $parent.parent();
+                        }
                     }
                 }
 
