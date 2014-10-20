@@ -182,6 +182,7 @@
                 range = new Range();
                 range.setStart($linkNode[0], 0);
                 range.setEnd($linkNode[0], 1);
+                // TODO: select all nested DOM subtree as well!
 
                 selection.addRange(range);
             }
@@ -221,45 +222,52 @@
                 var linkData = {},
                     range,
                     selection,
-                    $node,
-                    $parent;
+                    $link;
 
                 selection = $window.getSelection();
-                $node = $(selection.anchorNode);
-                $parent = $node.parent();
+                $link = $(selection.anchorNode);
 
-                if (linkPresent) {
-                    linkData.url = $parent.attr('href');
-                    linkData.title = $parent.attr('title');
+                // find link node up in the DOM hierarchy
+                while (
+                    $link.length > 0 &&
+                    $link[0].nodeName.toUpperCase() !== 'A'
+                ) {
+                    $link = $link.parent();
+                }
+
+                if ($link.length > 0) {
+                    // will edit existing link in modal
+                    linkData.url = $link.attr('href');
+                    linkData.title = $link.attr('title');
                     linkData.openNewWindow =
-                        ($parent.attr('target') === '_blank');
+                        ($link.attr('target') === '_blank');
 
-                    highlightLink($parent);
+                    highlightLink($link);
                 } else {
+                    // will add new link in modal
                     linkData.title = selection.toString();
                     range = selection.getRangeAt(0);
                 }
 
+                // open the add/edit link dialog and do the required
+                // action if the OK button has been clicked
                 editLinkDialog(linkData).then(function (newLinkData) {
-                    var $linkNode;
-
-                    if (linkPresent) {
-                        $linkNode = $parent;  // existing link
-                    } else {
-                        // create and insert a new link element
-                        $linkNode = jQuery('<a/>');
-                        range.surroundContents($linkNode[0]);
+                    if ($link.length <= 0) {
+                        // a new link must bee created
+                        $link = jQuery('<a/>');
+                        range.surroundContents($link[0]);
+                        // TODO: strip any existing links in subtree!
                     }
 
-                    $linkNode.attr('href', newLinkData.url);
-                    $linkNode.attr('title', newLinkData.title);
-                    $linkNode.removeAttr('target');
+                    $link.attr('href', newLinkData.url);
+                    $link.attr('title', newLinkData.title);
+                    $link.removeAttr('target');
 
                     if (newLinkData.openNewWindow) {
-                        $linkNode.attr('target', '_blank');
+                        $link.attr('target', '_blank');
                     }
 
-                    highlightLink($linkNode);
+                    highlightLink($link);
                     linkPresent = true;
                     updateButtonsMode();
                 });
