@@ -160,6 +160,27 @@
                 linkPresent = false;
             }
 
+            /**
+            * Makes browser's selection to contain the text of the given
+            * link node.
+            *
+            * @function highlightLink
+            * @param {Object} jQuery-wrapped link DOM node
+            */
+            function highlightLink($linkNode) {
+                var range,
+                    selection;
+
+                selection = $window.getSelection();
+                selection.removeAllRanges();
+
+                range = new Range();
+                range.setStart($linkNode[0], 0);
+                range.setEnd($linkNode[0], 1);
+
+                selection.addRange(range);
+            }
+
             /// --- initialization --- ///
 
             // store references to both buttons and get rid of the
@@ -208,15 +229,9 @@
                     linkData.openNewWindow =
                         ($parent.attr('target') === '_blank');
 
-                    // make sure the whole link node is selected
-                    selection.removeAllRanges();
-                    range= new Range();
-                    range.setStart($parent[0], 0);
-                    range.setEnd($parent[0], 1);
-                    selection.addRange(range);
+                    highlightLink($parent);
                 } else {
                     linkData.title = selection.toString();
-
                     range = selection.getRangeAt(0);
                 }
 
@@ -239,6 +254,7 @@
                         $linkNode.attr('target', '_blank');
                     }
 
+                    highlightLink($linkNode);
                     linkPresent = true;
                     updateButtonsMode();
                 });
