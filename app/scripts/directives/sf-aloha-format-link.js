@@ -104,11 +104,12 @@
             * Opens the edit link modal dialog.
             *
             * @function editLinkDialog
+            * @param linkData {Object} object containing link data
+            *   (e.g. url, title...)
             * @return {Object} promise object which is resolved with form
             *   data if the OK button was clicked or rejected if Cancel
             *   button was clicked
             */
-            // TODO:describe linkData param
             function editLinkDialog(linkData) {
                 var dialog = $modal.open({
                     templateUrl: 'views/modal-edit-link.html',
