@@ -78,29 +78,31 @@
             * @function updateButtonsMode
             */
             function updateButtonsMode() {
-                var title,
-                    textSelected;
+                var editables,
+                    selection = $window.getSelection(),
+                    selectionInEditor,
+                    textSelected,
+                    title;
 
-                title = linkPresent ? 'Edit Link' : 'Add Link';
-                $btnLink.attr('title', title);
+                editables = $(selection.anchorNode).parents('.aloha-editable');
+                selectionInEditor = editables.length > 0;
 
-                textSelected = !($window.getSelection().isCollapsed);
+                textSelected = !selection.isCollapsed;
 
-                // TODO: also, some editable must be active (need listener
-                // on editable activated) - maybe outside of this function
-                // where linkPresent is set
-                // (we shouldn't enable the button when something outside the
-                // editor is selected)
                 $btnLink.attr(
                     'disabled',
                     !cmdLinkSupported || !cmdLinkEnabled ||
-                    (!linkPresent && !textSelected)
+                    !selectionInEditor || (!linkPresent && !textSelected)
                 );
 
                 $btnUnlink.attr(
                     'disabled',
-                    !cmdUnlinkSupported || !cmdUnlinkEnabled || !linkPresent
+                    !cmdUnlinkSupported || !cmdUnlinkEnabled ||
+                    !selectionInEditor || !linkPresent
                 );
+
+                title = linkPresent ? 'Edit Link' : 'Add Link';
+                $btnLink.attr('title', title);
             }
 
             /**
@@ -263,7 +265,8 @@
 
                 // open the add/edit link dialog and do the required
                 // action if the OK button has been clicked
-                editLinkDialog(linkData, addingNew).then(function (newData) {
+                editLinkDialog(linkData, addingNew)
+                .then(function (newData) {
                     if (addingNew) {
                         // a new link must bee created
                         $link = jQuery('<a/>');
@@ -278,14 +281,17 @@
 
                     $link.attr('href', newData.url);
                     $link.attr('title', newData.title);
-                    $link.removeAttr('target');
 
                     if (newData.openNewWindow) {
                         $link.attr('target', '_blank');
+                    } else {
+                        $link.removeAttr('target');
                     }
 
                     highlightLink($link);
                     linkPresent = true;
+                })
+                .finally(function () {
                     updateButtonsMode();
                 });
             });
