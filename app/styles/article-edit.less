@@ -17,6 +17,8 @@ html, body.article-edit {
     overflow: visible;
 }
 
+@-ms-viewport{ width: auto !important; } /* IE10+ fix for badly overlapping scrollbar */
+
 // Links
 // -----
 
@@ -3232,7 +3234,7 @@ a:hover {
                 margin: 0;
                 padding: 0;
                 li {
-                    padding: 10px 0;
+                    padding: 11px 0 9px 0;
                     border-bottom: 1px dotted #d8d8d8;
                     overflow: hidden;
                     font-size: 12px;
@@ -3243,6 +3245,7 @@ a:hover {
                         font-size: 11px;
                         color: #808080;
                         word-wrap: break-word;
+                        padding-left: 2px;
                     }
                     .field-value {
                         float: left;
@@ -3253,6 +3256,7 @@ a:hover {
                     li {
                         padding: 0 0 2px 0;
                         border: none;
+                        word-wrap: break-word;
                     }
                 }
             }
