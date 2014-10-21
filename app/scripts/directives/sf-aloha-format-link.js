@@ -144,33 +144,16 @@
             */
             function removeLink() {
                 var selection,
-                    $node,
-                    $parent;
+                    $link;
 
                 // Aloha's unlink command only removes the href attribute, but
                 // if there are other  attributes, the anchor element is not
                 // removed - we must do that manually
                 selection = $window.getSelection();
-                $node = $(selection.anchorNode);
+                $link = $(selection.anchorNode).closest('a');
 
-                // if link node is selected, remove it, otherwise a text node
-                // is selected and we need to go up the DOM hierarchy to find
-                // the ancestor link node and remove it (it might be several
-                // levels above the text node as other DOM nodes might be
-                // in-between, e.g. a <b> tag
-                if ($node[0].nodeName.toUpperCase() === 'A') {
-                    $node.replaceWith($node.html());
-                } else {
-                    $parent = $node.parent();
-                    while ($parent.length > 0) {
-                        if ($parent[0].nodeName.toUpperCase() === 'A') {
-                            $node.unwrap();
-                            break;
-                        } else {
-                            $node = $parent;
-                            $parent = $parent.parent();
-                        }
-                    }
+                if ($link.length > 0) {
+                    $link.replaceWith($link.html());
                 }
 
                 linkPresent = false;
@@ -229,30 +212,20 @@
 
             // Add/Edit link button's click handler
             $btnLink.click(function () {
-                var addingNew,
+                var addingNew,  // adding new or editing an existing link?
                     linkData = {},
                     range,
-                    selection,
+                    selection = $window.getSelection(),
                     $link;
 
-                selection = $window.getSelection();
-                $link = $(selection.anchorNode);
-
-                // find link node up in the DOM hierarchy
-                while (
-                    $link.length > 0 &&
-                    $link[0].nodeName.toUpperCase() !== 'A'
-                ) {
-                    $link = $link.parent();
-                }
+                // find the closest link node up in the DOM hierarchy
+                // (including the currently selected node)
+                $link = $(selection.anchorNode).closest('a');
 
                 addingNew = $link.length <= 0;
-
                 if (addingNew) {
-                    // will add new link in modal
                     range = selection.getRangeAt(0);
                 } else {
-                    // will edit existing link in modal
                     linkData.url = $link.attr('href');
                     linkData.title = $link.attr('title');
                     linkData.openNewWindow =
@@ -268,7 +241,7 @@
                 editLinkDialog(linkData, addingNew)
                 .then(function (newData) {
                     if (addingNew) {
-                        // a new link must bee created
+                        // a new link must be created
                         $link = jQuery('<a/>');
                         range.surroundContents($link[0]);
 
