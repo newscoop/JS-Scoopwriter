@@ -11,7 +11,7 @@ angular.module('authoringEnvironmentApp', [
     'mgcrea.ngStrap.popover',
     'template/modal/backdrop.html',
     'template/modal/window.html',
-    'ui.bootstrap.dropdownToggle',
+    'ui.bootstrap.dropdown',
     'ui.bootstrap.modal',
     'ui.select2',
     'angularFileUpload',
