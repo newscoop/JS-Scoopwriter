@@ -115,18 +115,7 @@ describe('Service: Images', function () {
         beforeEach(inject(function (_$rootScope_, $q) {
             $rootScope = _$rootScope_;
             deferredLoad = $q.defer();
-
-            // mock load() method so that the more() method tests do not
-            // depend on correct functioning of the load() method
-            spyOn(images, 'load').andCallFake(function () {
-                return {
-                    success: function (handler) {
-                        deferredLoad.promise.then(function (data) {
-                            handler(data);
-                        });
-                    }
-                };
-            });
+            spyOn(images, 'load').andReturn(deferredLoad.promise);
         }));
 
         it('stores the new value of search filter', function () {
@@ -174,7 +163,7 @@ describe('Service: Images', function () {
             expect(images.load).toHaveBeenCalledWith(1, 'duck');
         });
 
-        describe('on successful server response', function () {
+        describe('on data retrieval', function () {
             var pageTracker;
 
             beforeEach(inject(function (_pageTracker_) {
@@ -225,7 +214,8 @@ describe('Service: Images', function () {
                     $rootScope.$apply();
 
                     expect(images.more).not.toHaveBeenCalled();
-            });
+                }
+            );
 
             it('clears canLoadMore flag if no more pages applicable',
                 function () {
@@ -237,7 +227,8 @@ describe('Service: Images', function () {
                     $rootScope.$apply();
 
                     expect(images.canLoadMore).toEqual(false);
-            });
+                }
+            );
 
             describe('pagination object available', function () {
                 it('sets result page size to what server returned',
@@ -255,7 +246,8 @@ describe('Service: Images', function () {
                         $rootScope.$apply();
 
                         expect(images.itemsPerPage).toEqual(4);
-                });
+                    }
+                );
                 it('sets items found count to total number of matches',
                     function () {
                         images.itemsFound = 50;
@@ -271,7 +263,8 @@ describe('Service: Images', function () {
                         $rootScope.$apply();
 
                         expect(images.itemsFound).toEqual(419);
-                });
+                    }
+                );
             });
 
             describe('pagination object not available', function () {
@@ -307,18 +300,7 @@ describe('Service: Images', function () {
         beforeEach(inject(function (_$rootScope_, $q) {
             $rootScope = _$rootScope_;
             deferredLoad = $q.defer();
-
-            // mock load() method so that the more() method tests do not
-            // depend on correct functioning of the load() method
-            spyOn(images, 'load').andCallFake(function () {
-                return {
-                    success: function (handler) {
-                        deferredLoad.promise.then(function (data) {
-                            handler(data);
-                        });
-                    }
-                };
-            });
+            spyOn(images, 'load').andReturn(deferredLoad.promise);
         }));
 
         it('moves the next page of preloaded images to displayed',
@@ -377,110 +359,65 @@ describe('Service: Images', function () {
             function () {
                 images.canLoadMore = false;
                 images.more();
+                $rootScope.$apply();
                 expect(images.load).not.toHaveBeenCalled();
         });
     });
 
     describe('load() method', function () {
-        /**
-        * Generates API URL for searching the images.
-        *
-        * @function createUrl
-        * @param page {Number} number of the results page to request
-        * @param [query] {String} images search string
-        * @return {String} generated URL
-        */
-        function createUrl(page, query) {
-            var config,
-                routeName;
+        var NcImage,
+            queryDeferred,
+            searchResults;
 
-            config = {
-                expand: true,
-                items_per_page: 50,
-                page: page
-            };
+        beforeEach(inject(function ($q, _NcImage_) {
+            NcImage = _NcImage_;
 
-            if (query) {
-                config.query = query;
-                routeName = 'newscoop_gimme_images_searchimages';
-            } else {
-                routeName = 'newscoop_gimme_images_getimages';
-            }
+            searchResults = [];
+            queryDeferred = $q.defer()
+            searchResults.$promise = queryDeferred.promise;
+            spyOn(NcImage,'query').andReturn(searchResults);
 
-            return Routing.generate(routeName, config, true);
-        }
+            images.itemsPerPage = 50;
+        }));
 
-        it('issues a correct API call (search filter not set)', function () {
-            images.searchFilter = '';
-            $httpBackend.expectGET(createUrl(4)).respond(mock);
-
-            images.load(4);
-            $httpBackend.flush(1);
-            $httpBackend.verifyNoOutstandingExpectation();
+        it('searches for images with correct parameters)', function () {
+            images.load(2, 'lion');
+            expect(NcImage.query).toHaveBeenCalledWith(2, 50, 'lion');
         });
 
-        it('issues a correct API call (search filter set)', function () {
-            images.searchFilter = 'fish'
-            $httpBackend.expectGET(createUrl(4, 'fish')).respond(mock);
+        it('removes a page of images on API error',
+            inject(function ($rootScope) {
+                spyOn(images.tracker, 'remove');
 
-            images.load(4, 'fish');
-            $httpBackend.flush(1);
-            $httpBackend.verifyNoOutstandingExpectation();
-        });
+                images.load(2, 'lion');
+                queryDeferred.reject();
+                $rootScope.$apply();
 
-        it('removes a page of images on API error', function () {
-            spyOn(images.tracker, 'remove');
-
-            $httpBackend.expectGET(createUrl(4))
-                .respond(500, 'Internal Server Error');
-
-            images.load(4);
-            $httpBackend.flush(1);
-
-            expect(images.tracker.remove).toHaveBeenCalledWith(4);
-        });
+                expect(images.tracker.remove).toHaveBeenCalledWith(2);
+            })
+        );
     });
 
     describe('loadAttached() method', function () {
-        var url;
+        var getAllResponse,
+            NcImage;
 
-        beforeEach(function () {
-            url = Routing.generate(
-                'newscoop_gimme_images_getimagesforarticle',
-                {
-                    number: 64, language: 'de',
-                    items_per_page: 99999, expand: true
-                },
-                true
-            );
-            $httpBackend.expectGET(url).respond(mock);
-        });
+        beforeEach(inject(function (_NcImage_) {
+            NcImage = _NcImage_;
+            getAllResponse = [{id: 2}, {id: 5}, {id: 1}];
+            spyOn(NcImage, 'getAllByArticle').andReturn(getAllResponse);
+        }));
 
-        afterEach(function () {
-            $httpBackend.verifyNoOutstandingExpectation();
+        it('retrieves attached images for the right article', function () {
+            images.loadAttached({number: 17, language: 'it'});
+            expect(NcImage.getAllByArticle).toHaveBeenCalledWith(17, 'it');
         });
 
         it('initializes the list of article\'s attached images', function () {
             images.attached = [];
-
-            images.loadAttached({number: 64, language: 'de'});
-            $httpBackend.flush(1);
-
-            expect(images.attached).toEqual(mock.items);
+            images.loadAttached({number: 17, language: 'it'});
+            expect(images.attached).toEqual(getAllResponse);
         });
-
-        it('initializes article\'s attached images to empty list on empty ' +
-            'server response',
-            function () {
-                $httpBackend.resetExpectations();
-                $httpBackend.expectGET(url).respond('');
-
-                images.loadAttached({number: 64, language: 'de'});
-                $httpBackend.flush(1);
-
-                expect(images.attached).toEqual([]);
-            }
-        );
     });
 
     describe('collect() method', function () {
@@ -510,39 +447,31 @@ describe('Service: Images', function () {
         });
 
         describe('invoked with loadFromServer flag set', function () {
-            var httpBackend;
+            var deferredGet,
+                NcImage;
 
-            beforeEach(inject(function (_$httpBackend_) {
-                var url = Routing.generate(
-                    'newscoop_gimme_images_getimage',
-                    {number: 1}, true
-                );
-                httpBackend = _$httpBackend_;
-                httpBackend.expectGET(url).respond(200, mockSingle);
+            beforeEach(inject(function ($q, _NcImage_) {
+                deferredGet = $q.defer();
+                NcImage = _NcImage_;
+                spyOn(NcImage, 'getById').andReturn(deferredGet.promise);
             }));
 
-            afterEach(function () {
-                httpBackend.verifyNoOutstandingExpectation();
-            });
-
-            it('retrieves image data from server', function () {
+            it('tries to retrieve data of a correct image', function () {
                 images.collect(1, true);
+                expect(NcImage.getById).toHaveBeenCalledWith(1);
             });
 
-            it('add retrieved image object to basket', function () {
-                images.collect(1, true);
-                httpBackend.flush(1);
+            it('adds retrieved image object to basket',
+                inject(function ($rootScope) {
+                    images.collect(1, true);
+                    deferredGet.resolve(mockSingle);
+                    $rootScope.$apply();
 
-                expect(images.collected.length).toEqual(2);
-
-                expect(
-                    _.findIndex(images.collected, {id: 5})
-                ).toBeGreaterThan(-1);
-
-                expect(
-                    _.findIndex(images.collected, {id: 1})
-                ).toBeGreaterThan(-1);
-            });
+                    expect(images.collected.length).toEqual(2);
+                    expect(_.find(images.collected, {id: 5})).toBeDefined();
+                    expect(_.find(images.collected, {id: 1})).toBeDefined();
+                })
+            );
         });
     });
 
@@ -601,64 +530,25 @@ describe('Service: Images', function () {
     });
 
     describe('attachAllCollected() method', function () {
-        var headerCheckers,
-            linkHeaderSpy;
+        var deferredAdd,
+            NcImage;
 
-        headerCheckers = {
-            Link: function (headers) {
-                return 'Link' in headers;
-            }
-        };
+        beforeEach(inject(function ($q, _NcImage_) {
+            NcImage = _NcImage_;
+            deferredAdd = $q.defer();
+            spyOn(NcImage, 'addAllToArticle').andReturn(deferredAdd.promise);
+        }));
 
-        /**
-        * Generates API URL for retrieving a particular image.
-        *
-        * @function imageGetUrl
-        * @param imageId {Number} ID of the image to retrieve
-        * @return {String} generated URL
-        */
-        function imageGetUrl(imageId) {
-            return Routing.generate(
-                'newscoop_gimme_images_getimage',
-                {'number': imageId}, true
-            );
-        }
-
-        beforeEach(function () {
-            var url = Routing.generate(
-                'newscoop_gimme_articles_linkarticle',
-                {number: 64, language: 'de'}, true
-            );
-
-            linkHeaderSpy = spyOn(headerCheckers, 'Link').andCallThrough();
-            $httpBackend.expect(
-                'LINK',
-                url,
-                undefined,
-                headerCheckers.Link
-            ).respond(201, '');
-        });
-
-        afterEach(function () {
-            // the following also raises an error in cases when unexpected
-            // requests have been made (even if all other expectations
-            // have been fulfilled)
-            $httpBackend.verifyNoOutstandingExpectation();
-        });
-
-        it('correctly invokes backend API', function () {
+        it('tries to attach images in basket to correct article', function () {
             images.collected = [
                 mock.items[1], mock.items[4], mock.items[5]
             ];
             images.attached = [];
 
             images.attachAllCollected();
-            $httpBackend.flush();
 
-            expect(linkHeaderSpy.mostRecentCall.args[0].Link).toEqual(
-                ['<', imageGetUrl(2), '>,',
-                 '<', imageGetUrl(5), '>,',
-                 '<', imageGetUrl(6), '>'].join('')
+            expect(NcImage.addAllToArticle).toHaveBeenCalledWith(
+                64, 'de', [mock.items[1], mock.items[4], mock.items[5]]
             );
         });
 
@@ -669,30 +559,35 @@ describe('Service: Images', function () {
             images.attached = [mock.items[4]];
 
             images.attachAllCollected();
-            $httpBackend.flush();
 
-            expect(linkHeaderSpy.mostRecentCall.args[0].Link).toEqual(
-                ['<', imageGetUrl(2), '>,',
-                 '<', imageGetUrl(6), '>'].join('')
+            expect(NcImage.addAllToArticle).toHaveBeenCalledWith(
+                64, 'de', [mock.items[1], mock.items[5]]
             );
         });
 
-        it('does not invoke API if there is nothing to attach', function () {
-            images.attached = [mock.items[0], mock.items[3], mock.items[7]];
-            images.collected = [mock.items[0], mock.items[3]];
-            $httpBackend.resetExpectations();
-            images.attachAllCollected();
-        });
-
-        it('updates attached images list on positive server response',
+        it('does not try to attach anything if there are no images to attach',
             function () {
+                images.collected = [mock.items[0], mock.items[3]];
+                images.attached = [
+                    mock.items[0], mock.items[3], mock.items[7]
+                ];
+
+                images.attachAllCollected();
+
+                expect(NcImage.addAllToArticle).not.toHaveBeenCalled();
+            }
+        );
+
+        it('updates attached images list on success',
+            inject(function ($rootScope) {
                 images.collected = [
                     mock.items[0], mock.items[4], mock.items[6]
                 ];
                 images.attached = [mock.items[0]];
 
                 images.attachAllCollected();
-                $httpBackend.flush();
+                deferredAdd.resolve();
+                $rootScope.$apply();
 
                 expect(images.attached.length).toEqual(3);
 
@@ -705,179 +600,44 @@ describe('Service: Images', function () {
                     _.contains(images.attached, mock.items[4])).toEqual(true);
                 expect(
                     _.contains(images.attached, mock.items[6])).toEqual(true);
-        });
-    });
-
-
-    describe('attach() method', function () {
-        var headerCheckers,
-            linkHeaderSpy;
-
-        /**
-        * Generates API URL for retrieving a particular image.
-        *
-        * @function imageGetUrl
-        * @param imageId {Number} ID of the image to retrieve
-        * @return {String} generated URL
-        */
-        function imageGetUrl(imageId) {
-            return Routing.generate(
-                'newscoop_gimme_images_getimage',
-                {'number': imageId}, true
-            );
-        }
-
-        headerCheckers = {
-            Link: function (headers) {
-                return 'Link' in headers;
-            }
-        };
-
-        beforeEach(function () {
-            linkHeaderSpy = spyOn(headerCheckers, 'Link').andCallThrough();
-            $httpBackend.expect(
-                'LINK',
-                Routing.generate(
-                    'newscoop_gimme_articles_linkarticle',
-                    {number: 64, language: 'de'}, true
-                ),
-                undefined,
-                headerCheckers.Link
-            ).respond(201, '');
-        });
-
-        afterEach(function () {
-            // the following also raises an error in cases when unexpected
-            // requests have been made (even if all other expectations
-            // have been fulfilled)
-            $httpBackend.verifyNoOutstandingExpectation();
-        });
-
-        it('correctly invokes backend API', function () {
-            images.attached = [];
-
-            images.attach(5);
-            $httpBackend.flush();
-
-            expect(linkHeaderSpy.mostRecentCall.args[0].Link).toEqual(
-                '<' + imageGetUrl(5) + '>'
-            );
-        });
-
-        it('does not try to attach an already attached image', function () {
-            images.attached = [mock.items[4]];  // id === 5
-            $httpBackend.resetExpectations();
-            images.attach(5);
-        });
-
-        it('updates attached images list on positive server response',
-            function () {
-                images.displayed = [
-                    mock.items[0], mock.items[4], mock.items[6]
-                ];
-                images.attached = [mock.items[0]];
-
-                images.attach(5);
-                $httpBackend.flush();
-
-                expect(images.attached.length).toEqual(2);
-
-                // existing images are not overriden
-                expect(
-                    _.contains(images.attached, mock.items[0])).toEqual(true);
-
-                // new image is added to the list
-                expect(
-                    _.contains(images.attached, mock.items[4])).toEqual(true);
-        });
-
-        it('retrieves uploaded image\'s info if necessary', function () {
-            images.attached = [];
-
-            $httpBackend.expectGET(imageGetUrl(6)).respond(200, {});
-
-            images.attach(6, true);
-            $httpBackend.flush();
-        });
+            })
+        );
     });
 
     describe('detach() method', function () {
-        var headerCheckers,
-            linkHeaderSpy;
+        var deferredRemove,
+            image;
 
-        headerCheckers = {
-            Link: function (headers) {
-                return 'Link' in headers;
-            }
-        };
+        beforeEach(inject(function ($q, NcImage) {
+            image = Object.create(NcImage.prototype);
+            image.id = 5;
 
-        beforeEach(function () {
-            linkHeaderSpy = spyOn(headerCheckers, 'Link').andCallThrough();
-        });
+            deferredRemove = $q.defer();
+            spyOn(image, 'removeFromArticle')
+                .andReturn(deferredRemove.promise);
 
-        afterEach(function () {
-            // the following also raises an error in cases when unexpected
-            // requests have been made (even if all other expectations
-            // have been fulfilled)
-            $httpBackend.verifyNoOutstandingExpectation();
-        });
-
-        it('correctly invokes backend API', function () {
-            var expectedHeader;
-
-            images.attached = [mock.items[4], mock.items[7]];
-
-            $httpBackend.expect(
-                'UNLINK',
-                Routing.generate(
-                    'newscoop_gimme_articles_unlinkarticle',
-                    {number: 64, language: 'de'}, true
-                ),
-                undefined,
-                headerCheckers.Link
-            ).respond(204, '');
-
-            images.detach(5);
-            $httpBackend.flush();
-
-            expectedHeader = [
-                '<',
-                Routing.generate(
-                    'newscoop_gimme_images_getimage', {number: 5}, true
-                ),
-                '>'
-            ].join('');
-            expect(linkHeaderSpy.mostRecentCall.args[0].Link)
-                .toEqual(expectedHeader);
-        });
-
-        it('updates attached images list on positive server response',
-            function () {
-                images.attached = [mock.items[4], mock.items[7]];
-
-                $httpBackend.expect(
-                    'UNLINK',
-                    Routing.generate(
-                        'newscoop_gimme_articles_unlinkarticle',
-                        {number: 64, language: 'de'}, true
-                    ),
-                    undefined,
-                    headerCheckers.Link
-                ).respond(204, '');
-
-                images.detach(5);
-                $httpBackend.flush();
-
-                // check that correct image was removed
-                expect(images.attached.length).toEqual(1);
-                expect(images.attached[0]).toEqual(mock.items[7]);
-        });
+            images.attached = [{id: 1}, image, {id: 8}];
+        }));
 
         it('does not try to detach an already detached image', function () {
-            images.attached = [];
-            images.detach(5);
-            // there should be no "unexpected request" error
+            images.detach(99);
+            expect(image.removeFromArticle).not.toHaveBeenCalled();
         });
+
+        it('tries to remove an image from the correct article', function () {
+            images.detach(5);
+            expect(image.removeFromArticle).toHaveBeenCalledWith(64, 'de');
+        });
+
+        it('remove an image from the list of attached images on success',
+            inject(function ($rootScope) {
+                images.detach(5);
+                deferredRemove.resolve();
+                $rootScope.$apply();
+
+                expect(images.attached).toEqual([{id: 1}, {id: 8}]);
+            })
+        );
     });
 
     describe('addToIncluded() method', function () {

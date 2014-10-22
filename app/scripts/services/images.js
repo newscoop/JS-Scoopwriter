@@ -1,6 +1,5 @@
 'use strict';
 angular.module('authoringEnvironmentApp').service('images', [
-    '$http',
     'pageTracker',
     'configuration',
     '$log',
@@ -8,15 +7,18 @@ angular.module('authoringEnvironmentApp').service('images', [
     'getFileReader',
     'formDataFactory',
     'imageFactory',
+    'NcImage',
     '$upload',
     '$rootScope',
     '$q',
     function images(
-        $http, pageTracker, configuration, $log, article,
-        getFileReader, formDataFactory, imageFactory, $upload, $rootScope, $q
+        pageTracker, configuration, $log, article,
+        getFileReader, formDataFactory, imageFactory, NcImage,
+        $upload, $rootScope, $q
     ) {
         /* more info about the page tracker in its tests */
         var service = this,
+            self = this,
             ITEMS_PER_PAGE_DEFAULT = 50;
 
         article.promise.then(function (article) {
@@ -49,8 +51,8 @@ angular.module('authoringEnvironmentApp').service('images', [
         * @param filter {String} search term by which to filter results.
         *     Empty string is interpreted as "no filtering".
         */
-        this.query = function (filter) {
-            this.searchFilter = filter;
+        self.query = function (filter) {
+            self.searchFilter = filter;
 
             // not so pretty, but it's the fastest way to clear an Array
             while(service.displayed.length > 0) {
@@ -59,13 +61,13 @@ angular.module('authoringEnvironmentApp').service('images', [
             while(service.loaded.length > 0) {
                 service.loaded.pop();
             }
-            this.tracker.reset();
-            this.itemsFound = 0;
-            this.canLoadMore = false;
+            self.tracker.reset();
+            self.itemsFound = 0;
+            self.canLoadMore = false;
 
-            this.load(
-                this.tracker.next(), this.searchFilter
-            ).success(function (data) {
+            self.load(
+                self.tracker.next(), self.searchFilter
+            ).then(function (data) {
                 service.displayed = data.items;
 
                 if (data.pagination) {
@@ -91,55 +93,39 @@ angular.module('authoringEnvironmentApp').service('images', [
         *
         * @method more
         */
-        this.more = function () {
-            var additional = this.loaded.splice(0, this.itemsPerPage);
-            this.displayed = this.displayed.concat(additional);
+        self.more = function () {
+            var additional = self.loaded.splice(0, self.itemsPerPage);
+            self.displayed = self.displayed.concat(additional);
 
             if (!service.canLoadMore) {
                 return;
             }
 
-            this.load(
-                this.tracker.next(), this.searchFilter
-            ).success(function (data) {
+            self.load(
+                self.tracker.next(), self.searchFilter
+            ).then(function (data) {
                 service.loaded = service.loaded.concat(data.items);
                 service.canLoadMore = !pageTracker.isLastPage(data.pagination);
             });
         };
 
         /**
-        * Asynchronously loads a single page of images from the server.
+        * Loads a single page of images from the server.
         *
         * @method load
         * @param page {Number} index of the page to load
         *     (NOTE: page indices start with 1)
         * @param searchString {String} Search term to narrow down the list of
         *     results. Empty string is interpreted by API as "no restrictions".
-        * @return {Object} promise object
+        * @return {Object} promise object resolved with search results array
+        *   and a pagination object (if available)
         */
-        this.load = function (page, searchString) {
-            var getParams,
-                promise,
-                url;
+        self.load = function (page, searchString) {
+            var promise = NcImage.query(
+                page, self.itemsPerPage, searchString).$promise;
 
-            getParams = {
-                expand: true,
-                items_per_page: this.itemsPerPage,
-                page: page,
-            };
-
-            if (searchString) {
-                url = Routing.generate(
-                    'newscoop_gimme_images_searchimages', {}, true);
-                getParams.query = searchString;
-            } else {
-                url = Routing.generate(
-                    'newscoop_gimme_images_getimages', {}, true);
-            }
-
-            promise = $http.get(url, {params: getParams});
-            promise.error(function () {
-                service.tracker.remove(page);
+            promise.catch(function () {
+                self.tracker.remove(page);
             });
             return promise;
         };
@@ -153,40 +139,8 @@ angular.module('authoringEnvironmentApp').service('images', [
         *     attached images.
         */
         this.loadAttached = function (article) {
-            var url = Routing.generate(
-                'newscoop_gimme_images_getimagesforarticle',
-                {
-                    number: article.number,
-                    language: article.language,
-                    items_per_page: 99999,
-                    expand: true
-                },
-                true
-            );
-
-            $http.get(url).then(function (result) {
-                service.attached = result.data.items || [];
-            });
-        };
-
-        /**
-        * Creates and returns a comparison function. This functions accepts an
-        * object with the "id" attribute as a parameter and returns true if
-        * object.id is equal to the value of the "id" parameter passed to
-        * the method. If not, the created comparison function returns false.
-        *
-        * @method matchMaker
-        * @param id {Number} Value to which the object.id will be compared in
-        *   the comparison function (can also be a numeric string).
-        *   NOTE: before comparison the parameter is converted to integer
-        *   using the built-in parseInt() function.
-        *
-        * @return {Function} Generated comparison function.
-        */
-        this.matchMaker = function (id) {
-            return function (needle) {
-                return parseInt(needle.id) === parseInt(id);
-            };
+            service.attached = NcImage.getAllByArticle(
+                article.number, article.language);
         };
 
         /**
@@ -202,25 +156,20 @@ angular.module('authoringEnvironmentApp').service('images', [
         *     image info from the server
         */
         this.collect = function (id, loadFromServer) {
-            var image,
-                match,
-                url;
+            var image;
 
             if (this.isCollected(id)) {
                 return;
             }
 
             if (!loadFromServer) {
-                match = this.matchMaker(id);
-                image = _.find(this.displayed, match);
+                image = _.find(this.displayed, {id: id});
                 if (image) {
                     service.collected.push(image);
                 }
             } else {
-                url = Routing.generate(
-                    'newscoop_gimme_images_getimage', {'number':id}, true);
-                $http.get(url).then(function (result) {
-                    service.collected.push(result.data);
+                NcImage.getById(id).then(function (image) {
+                    service.collected.push(image);
                 });
             }
         };
@@ -232,8 +181,7 @@ angular.module('authoringEnvironmentApp').service('images', [
         * @param id {Number} ID of an image to remove
         */
         this.discard = function (id) {
-            var match = this.matchMaker(id);
-            _.remove(this.collected, match);
+            _.remove(this.collected, {id: id});
         };
 
         /**
@@ -256,10 +204,8 @@ angular.module('authoringEnvironmentApp').service('images', [
         *¸
         * @method attachAllCollected
         */
-        this.attachAllCollected = function () {
-            var notYetAttached = [],
-                resourceLinks = [],
-                url;
+        self.attachAllCollected = function () {
+            var notYetAttached = [];
 
             // skip already attached images (this should generally not happen,
             // but if it does, it might be some bug in the basket logic)
@@ -273,152 +219,36 @@ angular.module('authoringEnvironmentApp').service('images', [
                 return;  // nothing to do
             }
 
-            notYetAttached.forEach(function (image) {
-                resourceLinks.push(
-                    '<' +
-                    Routing.generate(
-                        'newscoop_gimme_images_getimage',
-                        {'number': image.id},
-                        true
-                    ) +
-                    '>'
-                );
-            });
-            resourceLinks = resourceLinks.join();
-
-            url = Routing.generate(
-                'newscoop_gimme_articles_linkarticle',
-                {
-                    number: service.article.number,
-                    language: service.article.language
-                },
-                true
-            );
-
-            $http({
-                url: url,
-                method: 'LINK',
-                headers: { Link: resourceLinks }
-            }).success(function () {
+            NcImage.addAllToArticle(
+                self.article.number, self.article.language, notYetAttached
+            )
+            .then(function () {
                 notYetAttached.forEach(function (image) {
-                    service.attached.push(image);
+                    self.attached.push(image);
                 });
             });
-            // XXX: do we handle conflicts (409 errors)? For cases when
-            // another user attaches the same image(s) while we are still
-            // adding them to our own basket
         };
 
         /**
-        * Attaches a single image to the article (using HTTP LINK). If the
-        * image is already attached, it does not do anything.
-        * If loadFromServer flag is set, it also retrieves detailed image info
-        * after successfully attaching it to the article.
-        *
-        * @method attach
-        * @param id {Number} ID of an image to attach
-        * @param [loadFromServer=false] {Boolean} whether or not to retrieve
-        *     image info from the server after attaching (useful if the image
-        *     is uploaded from a computer)
-        */
-        this.attach = function (id, loadFromServer) {
-            var link,
-                match = this.matchMaker(id),
-                url;
-
-            if (_.find(this.attached, match)) {
-                $log.debug('image already attached, ignoring attach request');
-                return;
-            }
-
-            url = Routing.generate(
-                'newscoop_gimme_articles_linkarticle',
-                {
-                    'number':service.article.number,
-                    'language':service.article.language
-                },
-                true
-            );
-
-            link = '<' +
-                Routing.generate(
-                    'newscoop_gimme_images_getimage', {number: id}, true
-                ) +
-                '>';
-
-            /* this could cause some trouble depending on the
-             * setting of the server (OPTIONS request), thus debug
-             * log may be useful to reproduce the original
-             * request */
-            $log.debug('sending link request');
-            $log.debug(url);
-            $log.debug(link);
-
-            $http({
-                url: url,
-                method: 'LINK',
-                headers: { Link: link }
-            }).success(function () {
-                if (loadFromServer) {
-                    // uploaded images need to be retrieved from server
-                    // to get all image metadata
-                    $http.get(
-                        Routing.generate(
-                            'newscoop_gimme_images_getimage',
-                            {number:id},
-                            true
-                        )
-                    )
-                    .success(function (data) {
-                        service.attached.push(data);
-                    });
-                } else {
-                    var image = _.find(service.displayed, match);
-                    service.attached.push(image);
-                }
-            });
-        };
-
-        /**
-        * Detaches a single image from the article (using HTTP UNLINK). If the
-        * image is not attached to the article, it does not do anything.
+        * Detaches a single image from the article. If the image is not
+        * in the list of attached images, it does not do anything.
         *
         * @method detach
         * @param id {Number} ID of an image to detach
         */
         this.detach = function (id) {
-            var match = this.matchMaker(id);
-            if (_.find(this.attached, match)) {
-                var link,
-                    url;
+            var image = _.find(this.attached, {id: id});
 
-                url = Routing.generate(
-                    'newscoop_gimme_articles_unlinkarticle',
-                    {
-                        number: service.article.number,
-                        language: service.article.language
-                    },
-                    true
-                );
-
-                link = '<' +
-                    Routing.generate(
-                        'newscoop_gimme_images_getimage',
-                        {number: id},
-                        true
-                    ) +
-                    '>';
-
-                $http({
-                    url: url,
-                    method: 'UNLINK',
-                    headers: { Link: link }
-                }).success(function () {
-                    _.remove(service.attached, match);
-                });
-            } else {
-                $log.debug('image already detached, ignoring attach request');
+            if (!image) {
+                return;  // image not attached, nothing to do
             }
+
+            image.removeFromArticle(
+                service.article.number, service.article.language
+            )
+            .then(function () {
+                _.remove(service.attached, {id: id});
+            });
         };
 
         /**
@@ -453,7 +283,7 @@ angular.module('authoringEnvironmentApp').service('images', [
         *     found)
         */
         this.findAttached = function (id) {
-            return _.find(this.attached, this.matchMaker(id));
+            return _.find(this.attached, {id: id});
         };
 
         /**
@@ -466,7 +296,7 @@ angular.module('authoringEnvironmentApp').service('images', [
         *     found)
         */
         this.findCollected = function (id) {
-            return _.find(this.collected, this.matchMaker(id));
+            return _.find(this.collected, {id: id});
         };
 
         /**
@@ -679,6 +509,7 @@ angular.module('authoringEnvironmentApp').service('images', [
                 fd.append('image[description]', imageObj.description);
                 fd.append('image[image]', imageObj);
 
+                // XXX: wrap this into NcImage (e.g. NcImage.create())
                 $upload.http({
                     method: 'POST',
                     url: Routing.generate(

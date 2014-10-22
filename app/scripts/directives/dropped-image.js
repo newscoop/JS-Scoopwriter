@@ -92,6 +92,10 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                     ctrl.imageRemoved(parseInt(scope.imageId, 10));
                 });
 
+                $element.find('.caption').click(function (e) {
+                    e.stopPropagation();
+                });
+
                 // clicking the image displays the toolbar
                 $imageBox.click(function (e) {
                     toolbarNode().toggle();

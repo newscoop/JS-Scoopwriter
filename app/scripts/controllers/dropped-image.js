@@ -5,24 +5,29 @@ angular.module('authoringEnvironmentApp').controller('DroppedImageCtrl', [
     'configuration',
     'NcImage',
     '$rootScope',
-    function (images, $scope, configuration, NcImage, $rootScope) {
+    '$q',
+    function (images, $scope, configuration, NcImage, $rootScope, $q) {
 
         /**
-        * Initializes the controller - it retrieves the specified image from
-        * the server and adds it to the images-in-article list.
+        * Initializes the controller - it finds the specified image in the
+        * list of images attached to the article and adds it to
+        * the images-in-article list.
         *
         * @method init
-        * @param imageId {Number} ID of the image to retrieve
+        * @param imageId {Number} ID of the image to find
         */
         this.init = function (imageId) {
-            var promise = NcImage.getById(imageId);
+            var deferred = $q.defer();
 
-            promise.then(function (image) {
-                $scope.image = image;
-                images.addToIncluded(image.id);
+            images.attached.$promise.then(function () {
+                $scope.image = images.byId(imageId);
+                images.addToIncluded($scope.image.id);
+                $scope.newCaption = $scope.image.description;
+
+                deferred.resolve($scope.image);
             });
 
-            return promise;
+            return deferred.promise;
         };
 
         /**
@@ -35,6 +40,37 @@ angular.module('authoringEnvironmentApp').controller('DroppedImageCtrl', [
             images.removeFromIncluded(imageId);
             $rootScope.$apply(images.inArticleBody);
         };
+
+        /**
+        * Activates the editing image caption mode.
+        *
+        * @method editCaptionMode
+        * @param enabled {Boolean} whether to enable the mode or not
+        */
+        $scope.editCaptionMode = function (enabled) {
+            if (enabled) {
+                $scope.newCaption = $scope.image.description;
+            }
+            $scope.editingCaption = enabled;
+        };
+
+        /**
+        * Updates image's caption on the server and exits the editing
+        * caption mode.
+        *
+        * @method updateCaption
+        */
+        $scope.updateCaption = function () {
+            $scope.editingCaption = false;
+
+            $scope.image.updateDescription($scope.newCaption)
+            .catch(function () {
+                $scope.newCaption = $scope.image.description;
+            });
+        };
+
+        $scope.editingCaption = false;
+        $scope.newCaption = '';  // temp value of image's new description
 
         $scope.root = configuration.API.rootURI;
         $scope.images = images;

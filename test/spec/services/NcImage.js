@@ -145,4 +145,486 @@ describe('Factory: NcImage', function () {
         });
     });
 
+   describe('query() method', function () {
+        var paginationObj,
+            responseItems,
+            url;
+
+        beforeEach(function () {
+            responseItems = [
+                {id: 1, description: 'img 1'},
+                {id: 2, description: 'img 2'},
+                {id: 3, description: 'img 3'},
+            ];
+
+            paginationObj = {
+                itemsPerPage: 50,
+                currentPage: 2,
+                itemsCount: 162,
+                nextPageLink: 'https;//foo.com/page_2'
+            };
+
+            url = Routing.generate(
+                'newscoop_gimme_images_searchimages',
+                {expand: true, items_per_page: 50, page: 2, query: 'fish'},
+                true
+            );
+
+            $httpBackend.expectGET(url).respond(
+                200, {items: responseItems, pagination: paginationObj}
+            );
+        });
+
+        afterEach(function () {
+            $httpBackend.verifyNoOutstandingExpectation();
+        });
+
+        it('sends a correct request to API (search term given)', function () {
+            NcImage.query(2, 50, 'fish');
+            // no unexpected request error should be thrown here
+        });
+
+        it('sends a correct request to API (search term not given)',
+            function () {
+                url = Routing.generate(
+                    'newscoop_gimme_images_searchimages',
+                    {expand: true, items_per_page: 50, page: 2},
+                    true
+                );
+                $httpBackend.resetExpectations();
+                $httpBackend.expectGET(url).respond(
+                    200, {items: responseItems, pagination: paginationObj}
+                );
+
+                NcImage.query(2, 50);
+                // no unexpected request error should be thrown here
+            }
+        );
+
+        it('returns an empty array which is populated with NcImage ' +
+            'instances on successful response',
+            function () {
+                var result = NcImage.query(2, 50, 'fish');
+                expect(result instanceof Array).toEqual(true);
+                expect(result.length).toEqual(0);
+
+                $httpBackend.flush(1);
+
+                expect(result.length).toEqual(3);
+                result.forEach(function (item) {
+                    expect(item instanceof NcImage).toBe(true);
+                });
+            }
+        );
+
+        it('returned array\'s promise is resolved on successful response',
+            function () {
+                var result,
+                    onSuccessSpy = jasmine.createSpy();
+
+                result = NcImage.query(2, 50, 'fish');
+                result.$promise.then(onSuccessSpy);
+                expect(onSuccessSpy).not.toHaveBeenCalled();
+
+                $httpBackend.flush(1);
+                expect(onSuccessSpy).toHaveBeenCalled();
+            }
+        );
+
+        it('returned array\'s promise is resolved with items list and ' +
+            'pagination object',
+            function () {
+                var callArg,
+                    result,
+                    onSuccessSpy = jasmine.createSpy();
+
+                result = NcImage.query(2, 50, 'fish');
+                result.$promise.then(onSuccessSpy);
+
+                $httpBackend.flush(1);
+
+                callArg = onSuccessSpy.mostRecentCall.args[0];
+                expect(callArg.items.constructor).toBe(Array);
+                expect(callArg.pagination).toEqual(paginationObj);
+            }
+        );
+
+        it('correctly resolves promise on empty server response', function () {
+            var callArg,
+                result,
+                onSuccessSpy = jasmine.createSpy();
+
+            $httpBackend.resetExpectations();
+            $httpBackend.expectGET(url).respond(204);
+
+            result = NcImage.query(2, 50, 'fish');
+            result.$promise.then(onSuccessSpy);
+
+            $httpBackend.flush(1);
+
+            callArg = onSuccessSpy.mostRecentCall.args[0];
+            expect(callArg.items.length).toEqual(0);
+            expect(callArg.pagination).toBeUndefined();
+        });
+
+        describe('on server error response', function () {
+            beforeEach(function () {
+                $httpBackend.resetExpectations();
+                $httpBackend.expectGET(url).respond(500, 'Server error');
+            });
+
+            it('returned array is not populated', function () {
+                var result = NcImage.query(2, 50, 'fish');
+                expect(result.length).toEqual(0);
+                $httpBackend.flush(1);
+                expect(result.length).toEqual(0);  // still empty
+            });
+
+            it('returned array\'s promise is rejected', function () {
+                var result,
+                    spy = jasmine.createSpy();
+
+                result = NcImage.query(2, 50, 'fish');
+                result.$promise.catch(function (reason) {
+                    spy(reason);
+                });
+                expect(spy).not.toHaveBeenCalled();
+
+                $httpBackend.flush(1);
+                expect(spy).toHaveBeenCalledWith('Server error');
+            });
+        });
+    });
+
+   describe('getAllByArticle() method', function () {
+        var images,
+            url;
+
+        beforeEach(function () {
+            images = [
+                {id: 1, description: 'img 1'},
+                {id: 2, description: 'img 2'},
+                {id: 3, description: 'img 3'},
+            ];
+
+            url = Routing.generate(
+                'newscoop_gimme_images_getimagesforarticle',
+                {
+                    number: 77, language: 'pl',
+                    expand: true, items_per_page: 99999
+                },
+                true
+            );
+
+            $httpBackend.expectGET(url).respond(200, {items: images});
+        });
+
+        afterEach(function () {
+            $httpBackend.verifyNoOutstandingExpectation();
+        });
+
+        it('sends a correct request to API', function () {
+            NcImage.getAllByArticle(77, 'pl');
+        });
+
+        it('returns an empty array which is populated with NcImage ' +
+            'instances on successful response',
+            function () {
+                var result = NcImage.getAllByArticle(77, 'pl');
+                expect(result instanceof Array).toEqual(true);
+                expect(result.length).toEqual(0);
+
+                $httpBackend.flush(1);
+                expect(result.length).toEqual(3);
+                result.forEach(function (item) {
+                    expect(item instanceof NcImage).toBe(true);
+                });
+            }
+        );
+
+        it('returned array\'s promise is resolved on successful response',
+            function () {
+                var result,
+                    onSuccessSpy = jasmine.createSpy();
+
+                result = NcImage.getAllByArticle(77, 'pl');
+                result.$promise.then(onSuccessSpy);
+                expect(onSuccessSpy).not.toHaveBeenCalled();
+
+                $httpBackend.flush(1);
+                expect(onSuccessSpy).toHaveBeenCalled();
+            }
+        );
+
+        it('does not throw an error on empty response', function () {
+            $httpBackend.resetExpectations();
+            $httpBackend.expectGET(url).respond(204, '');
+
+            NcImage.getAllByArticle(77, 'pl');
+            $httpBackend.flush(1);
+
+            // no error should have been thrown...
+        });
+
+        describe('on server error response', function () {
+            beforeEach(function () {
+                $httpBackend.resetExpectations();
+                $httpBackend.expectGET(url).respond(500, 'Server error');
+            });
+
+            it('returned array is not populated', function () {
+                var result = NcImage.getAllByArticle(77, 'pl');
+                expect(result.length).toEqual(0);
+                $httpBackend.flush(1);
+                expect(result.length).toEqual(0);  // still empty
+            });
+
+            it('returned array\'s promise is rejected', function () {
+                var result,
+                    spy = jasmine.createSpy();
+
+                result = NcImage.getAllByArticle(77, 'pl');
+                result.$promise.catch(function (reason) {
+                    spy(reason);
+                });
+                expect(spy).not.toHaveBeenCalled();
+
+                $httpBackend.flush(1);
+                expect(spy).toHaveBeenCalledWith('Server error');
+            });
+        });
+    });
+
+
+    describe('addAllToArticle() method', function () {
+        var expectedLinkHeader,
+            imagesToAdd,
+            url;
+
+        /**
+        * Generates URI for a particular image.
+        *
+        * @function imageUri
+        * @param imageId {Number} ID of the image
+        * @return {String} URI of the image
+        */
+        function imageUri(imageId) {
+            return Routing.generate(
+                'newscoop_gimme_images_getimage',
+                {'number': imageId}, false
+            );
+        }
+
+        beforeEach(function () {
+            imagesToAdd = [{id: 4}, {id: 7}];
+
+            url = Routing.generate(
+                'newscoop_gimme_articles_linkarticle',
+                {number: 25, language: 'en'}, true
+            );
+
+            expectedLinkHeader = [
+                '<', imageUri(4), '; rel="image">,',
+                '<', imageUri(7), '; rel="image">',
+            ].join('');
+
+            $httpBackend.expect(
+                'LINK',
+                url,
+                undefined,
+                function (headers) {
+                    return headers.link === expectedLinkHeader;
+                }
+            ).respond(201);
+        });
+
+        afterEach(function () {
+            $httpBackend.verifyNoOutstandingExpectation();
+        });
+
+        it('returns a promise', function () {
+            var promise = NcImage.addAllToArticle(25, 'en', imagesToAdd);
+            expect(typeof promise.then).toBe('function');
+            expect(typeof promise.catch).toBe('function');
+        });
+
+        it('sends a correct request to API', function () {
+            NcImage.addAllToArticle(25, 'en', imagesToAdd);
+        });
+
+        it('resolves given promise on successful server response',
+            function () {
+                var onSuccessSpy = jasmine.createSpy();
+
+                NcImage.addAllToArticle(25, 'en', imagesToAdd)
+                    .then(onSuccessSpy);
+                $httpBackend.flush(1);
+
+                expect(onSuccessSpy).toHaveBeenCalled();
+            }
+        );
+
+        it('rejects given promise on server error response', function () {
+            var onErrorSpy = jasmine.createSpy();
+
+            $httpBackend.resetExpectations();
+            $httpBackend.expect('LINK', url).respond(500, 'Error :(');
+
+            NcImage.addAllToArticle(25, 'en', imagesToAdd)
+                .catch(onErrorSpy);
+            $httpBackend.flush(1);
+
+            expect(onErrorSpy).toHaveBeenCalledWith('Error :(');
+        });
+    });
+
+
+    describe('updateDescription() method', function () {
+        var image,
+            requestData,
+            url;
+
+        beforeEach(function () {
+            image = new NcImage();
+            image.id = 5;
+            image.description = 'foo';
+
+            requestData = {
+                number: 5,
+                image: {
+                    description: 'bar'
+                }
+            };
+
+            url = Routing.generate(
+                'newscoop_gimme_images_updateimage', {number: 5}, true
+            );
+            $httpBackend.expectPATCH(url, requestData).respond(200);
+        });
+
+        afterEach(function () {
+            $httpBackend.verifyNoOutstandingExpectation();
+        });
+
+        it('returns a promise', inject(function ($q) {
+            var deferred = $q.defer(),
+                promise;
+            promise = image.updateDescription('bar');
+            expect(promise instanceof deferred.promise.constructor).toBe(true);
+        }));
+
+        it('sends a correct request to API', function () {
+            image.updateDescription('bar');
+        });
+
+        it('resolves given promise on successful server response',
+            function () {
+                var spyHelper = {
+                        onSuccess: jasmine.createSpy()
+                    };
+
+                image.updateDescription('bar').then(spyHelper.onSuccess);
+                $httpBackend.flush(1);
+
+                expect(spyHelper.onSuccess).toHaveBeenCalled();
+            }
+        );
+
+        it('updates instance\'s description attribute on success',
+            function () {
+                image.description = 'foo';
+                image.updateDescription('bar');
+                $httpBackend.flush(1);
+                expect(image.description).toEqual('bar');
+            }
+        );
+
+        it('rejects given promise on server error response', function () {
+            var expectedArg,
+                spyHelper = {
+                    errorCallback: jasmine.createSpy()
+                };
+
+            $httpBackend.resetExpectations();
+            $httpBackend.expectPATCH(
+                url, requestData
+            ).respond(500, 'Error :(');
+
+            image.updateDescription('bar').catch(spyHelper.errorCallback);
+            $httpBackend.flush(1);
+
+            expect(spyHelper.errorCallback).toHaveBeenCalledWith('Error :(');
+        });
+    });
+
+
+    describe('removeFromArticle() method', function () {
+        var image,
+            url;
+
+        beforeEach(function () {
+            var expectedLinkHeader,
+                imageUri;
+
+            imageUri = Routing.generate(
+                'newscoop_gimme_images_getimage', {number: 1}, false
+            );
+            expectedLinkHeader = '<' + imageUri + '; rel="image">';
+
+            image = Object.create(NcImage.prototype, {
+                id: {value: 1, writable: true, enumerable: true}
+            });
+
+            url = Routing.generate(
+                'newscoop_gimme_articles_unlinkarticle',
+                {number: 25, language: 'en'}, true
+            );
+
+            $httpBackend.expect(
+                'UNLINK',
+                url,
+                undefined,
+                function (headers) {
+                    return headers.link === expectedLinkHeader;
+                }
+            ).respond(204, '');
+        });
+
+        it('returns a promise', inject(function ($q) {
+            var deferred = $q.defer(),
+                promise;
+            promise = image.removeFromArticle(25, 'de')
+            expect(promise instanceof deferred.promise.constructor).toBe(true);
+            expect(typeof promise.then).toBe('function');
+        }));
+
+        it('sends a correct request to API', function () {
+            image.removeFromArticle(25, 'en');
+            $httpBackend.verifyNoOutstandingExpectation();
+        });
+
+        it('resolves given promise on successful server response',
+            function () {
+                var onSuccessSpy = jasmine.createSpy();
+
+                image.removeFromArticle(25, 'en').then(onSuccessSpy);
+                $httpBackend.flush(1);
+
+                expect(onSuccessSpy).toHaveBeenCalled();
+            }
+        );
+
+        it('rejects given promise on server error response', function () {
+            var onErrorSpy = jasmine.createSpy();
+
+            $httpBackend.resetExpectations();
+            $httpBackend.expect('UNLINK', url).respond(500, 'Error :(');
+
+            image.removeFromArticle(25, 'en').catch(onErrorSpy);
+            $httpBackend.flush(1);
+
+            expect(onErrorSpy).toHaveBeenCalledWith('Error :(');
+        });
+    });
+
 });
