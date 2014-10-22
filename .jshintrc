@@ -29,6 +29,7 @@
     "$": false,         // jQuery
     "jQuery": false,    // jQuery
     "Aloha": false,     // Aloha
+    "Range": false,     // built-in Range object
     "Routing": false,   // FOSJsRoutingBundle
     "alert": false,     // alert
     "XRegExp": false    // XRegExp library

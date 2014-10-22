@@ -2,8 +2,10 @@
 
 angular.module('authoringEnvironmentApp').controller('ToolbarCtrl', [
     '$scope',
+    '$rootScope',
     '$filter',
-    function ($scope, $filter) {
+    '$timeout',
+    function ($scope, $rootScope, $filter, $timeout) {
         var updateScope;
 
         $scope.stylers = [
@@ -52,19 +54,24 @@ angular.module('authoringEnvironmentApp').controller('ToolbarCtrl', [
                     $scope.stylers, {element: commandValue}, true
                 );
                 if (filtered.length > 0) {
-                    $scope.active = filtered[0].name;
-                    $scope.$apply();
+                    // We need to trigger a $digest cycle here, but sometimes
+                    // one is already in progress and thus we cannot simply
+                    // call $scope.$apply(). With $timeout, hovever, we
+                    // achieve the same and the change of the active styler
+                    // is immediately reflected in the UI (page).
+                    $timeout(function () {
+                        $scope.active = filtered[0].name;
+                    });
                 }
             }
         };
 
-        Aloha.ready(function () {
-            Aloha.bind('aloha-selection-changed', function () {
-                updateScope();
-            });
-            Aloha.bind('aloha-command-executed', function () {
-                updateScope();
-            });
+        $rootScope.$on('texteditor-selection-changed', function () {
+            updateScope();
+        });
+
+        $rootScope.$on('texteditor-command-executed', function () {
+            updateScope();
         });
     }
 ]);
