@@ -1,6 +1,6 @@
 {
   "name": "authoringenvironment",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "dependencies": {},
   "devDependencies": {
     "clean-css": "~2.0.2",
