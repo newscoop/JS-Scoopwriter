@@ -9,8 +9,8 @@
         <label>{{addingNew ? 'Selected' : 'Link'}} text:</label>
         {{linkData.text}}
 
-        <input type="url" ng-model="linkData.url" required
-            placeholder="http:// ..." class="form-control">
+        <input type="text" ng-model="linkData.url" required
+            placeholder="URL" class="form-control">
         <input type="text" placeholder="Title" class="form-control"
             ng-model="linkData.title">
         <div class="checkbox">
@@ -21,8 +21,10 @@
         </div>
     </div>
     <div class="modal-footer">
-      <button class="btn btn-primary" ng-click="linkForm.$valid && ok()">OK</button>
-      <button class="btn btn-default" ng-click="cancel()">Cancel</button>
+      <button class="btn btn-primary"
+          ng-click="linkForm.$valid && ok()">OK</button>
+      <button class="btn btn-default" ng-click="cancel()"
+          formnovalidate>Cancel</button>
     </div>
 
   </form>
