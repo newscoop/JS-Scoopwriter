@@ -38,21 +38,26 @@ a:hover {
     outline: none !important;
     box-shadow:
         inset 0 1px 1px rgba(0, 0, 0, 0.075),
-        0 0 8px rgba(82, 168, 236, 0.6);
+        0 0 4px rgba(82, 168, 236, 0.4);
+}
+.aloha-editable .aloha-block {
+    border: 1px solid white;
+    margin: 10px 0;
 }
 .aloha-editable-active .aloha-block, .aloha-block-highlighted {
-    border: rgba(255, 170, 0, 0.8) solid 1px !important;
+    border: rgba(50, 50, 50, 0.1) solid 1px;
     outline: none !important;
-    box-shadow:
-        inset 0 1px 1px rgba(0, 0, 0, 0.075),
-        0 0 8px rgba(255, 170, 0, 0.6);
+    box-shadow: none;
+}
+.aloha-editable-active .aloha-block:hover, .aloha-block-highlighted:hover {
+    border: rgba(50, 50, 50, 0.2) solid 1px;
 }
 .aloha-block.aloha-block-active, .aloha-block.aloha-block-active:hover {
     border: rgba(82, 168, 236, 0.8) solid 1px !important;
     outline: none !important;
     box-shadow:
         inset 0 1px 1px rgba(0, 0, 0, 0.075),
-        0 0 8px rgba(82, 168, 236, 0.6);
+        0 0 4px rgba(82, 168, 236, 0.4);
 }
 
 /* a modern fix for containers whose floated elements fall outside them */
@@ -3101,8 +3106,8 @@ a:hover {
             }
             .close {
                 position: absolute;
-                top: 5%;
-                right: 5%;
+                top: 10px;
+                right: 10px;
                 cursor: pointer;
                 background: white;
                 color: #333;
@@ -3114,32 +3119,39 @@ a:hover {
                 font-size: 16px;
                 visibility: hidden;
                 &:hover {
-                    background-color: #f6f6f6;
+                    background-color: #e6e6e6;
                 }
             }
             .caption {
                 position: relative;
-                text-align: center;
-                padding: 2%;
+                text-align: left;
+                padding: 6px 8px;
                 cursor: text;
+                background: #f5f5f5;
+                font-size: 12px;
+                min-height: 44px;
+                overflow: hidden;
                 .edit, .save, .cancel {
                     cursor: pointer;
                     background: white;
                     color: #333;
                     border: 1px solid #ccc;
                     .border-radius(2px);
-                    .box-shadow(0 0 6px rgba(0,0,0,.2));
                     opacity: 1;
-                    padding: 4px;
-                    font-size: 10px;
+                    padding: 4px 6px;
+                    font-size: 12px;
                     &:hover {
-                        background-color: gray;
+                        background-color: #e6e6e6;
                     }
+                }
+                .static {
+                    padding: 7px 36px 7px 7px;
+                    color: #666;
                 }
                 .edit {
                     position: absolute;
-                    top: 5%;
-                    right: 5%;
+                    top: 8px;
+                    right: 8px;
                     visibility: hidden;
                 }
 
@@ -3148,9 +3160,20 @@ a:hover {
                         visibility: visible;
                     }
                 };
-
                 input {
-                    width: 80%;
+                    width: 100%;
+                    display: block;
+                    margin: 2px 0 6px 0;
+                    border: 1px solid #ccc;
+                    padding: 4px 6px;
+                    &:focus {
+                        border: rgba(82, 168, 236, 1) solid 1px !important;
+                        outline: none !important;
+                    }
+                }
+                .btn-group {
+                    display:block;
+                    float:right;
                 }
             }
 
@@ -3165,23 +3188,17 @@ a:hover {
         }
     }
     .snippet {
-        /*
-          border: 1px solid grey;
-          border-top-left-radius: 11px;
-          border-top-right-radius: 11px;
-          border-bottom-right-radius: 11px;
-          border-bottom-left-radius: 11px;
-          padding: 5px;
-          background-color: rgb(220, 220, 220);
-          position: relative;
-          */
+        min-height: 26px;
+        padding: 4px;
         .controls {
             display: inline-block;
             color: rgb(77, 77, 77);
             background-color: lightgray;
             text-transform: uppercase;
-            font-weight: bold;
-            font-size: x-small;
+            font-weight: 600;
+            font-size: 11px;
+            font-family: @baseFontFamily;
+            padding: 2px 0 4px 0;
 
             span {
                 margin: 5px;

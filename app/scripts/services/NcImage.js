@@ -69,6 +69,67 @@ angular.module('authoringEnvironmentApp').factory('NcImage', [
         };
 
         /**
+        * Retrieves a single page of images from the server, optionally
+        * filtered by the given search string.
+        * The returned array of search results has a special $promise property
+        * which is resolved or rejected depending on the server response.
+        *
+        * @method query
+        * @param page {Number} index of the results page to load
+        *     (NOTE: page indices start with 1)
+        * @param itemsPerPage {Number} desired page size (the number of
+        *   items in a single search results page)
+        * @param [searchFilter] {String} Optional search term. If not given,
+        *   no images on the server are exluded from the search.
+        * @return {Object} "future" array of NcImage objects - initially
+        *   an empty array is returned, which is later populated with the
+        *   actual data (once the http promise has been successfully resolved)
+        */
+        NcImage.query = function (page, itemsPerPage, searchFilter) {
+            var deferredGet = $q.defer(),
+                requestOptions,
+                results = [],
+                url;
+
+            results.$promise = deferredGet.promise;
+
+            requestOptions = {
+                params: {
+                    expand: true,
+                    items_per_page: itemsPerPage,
+                    page: page
+                }
+            };
+
+            if (searchFilter) {
+                requestOptions.params.query = searchFilter;
+            }
+
+            url = Routing.generate(
+                'newscoop_gimme_images_searchimages', {}, true);
+
+            $http.get(url, requestOptions)
+            .success(function (response) {
+                response = response || {};
+                if (response.items) {
+                    response.items.forEach(function (item) {
+                        item = new NcImage(item);
+                        results.push(item);
+                    });
+                }
+                deferredGet.resolve({
+                    items: results,
+                    pagination: response.pagination
+                });
+            })
+            .error(function (responseBody) {
+                deferredGet.reject(responseBody);
+            });
+
+            return results;
+        };
+
+        /**
         * Retrieves a list of all images attached to a specific article.
         * Returned array has a special $promise property which is resolved or
         * rejected depending on the server response.
@@ -117,6 +178,52 @@ angular.module('authoringEnvironmentApp').factory('NcImage', [
         };
 
         /**
+        * Attaches one or more images to an article.
+        *
+        * @method addAllToArticle
+        * @param articleId {Number} article ID
+        * @param articleLang {String} article language code (e.g. 'de')
+        * @param images {Array} list of images (NcImage instances) to attach
+        * @return {Object} promise object that is resolved on successful server
+        *   response and rejected on server error response
+        */
+        NcImage.addAllToArticle = function (articleId, articleLang, images) {
+            var deferred = $q.defer(),
+                linkHeader = [];
+
+            images.forEach(function (item) {
+                linkHeader.push(
+                    '<' +
+                    Routing.generate(
+                        'newscoop_gimme_images_getimage',
+                        {'number': item.id},
+                        false
+                    ) +
+                    '; rel="image">'
+                );
+            });
+            linkHeader = linkHeader.join(',');
+
+            $http({
+                url: Routing.generate(
+                    'newscoop_gimme_articles_linkarticle',
+                    {number: articleId, language: articleLang},
+                    true
+                ),
+                method: 'LINK',
+                headers: {link: linkHeader}
+            })
+            .success(function () {
+                deferred.resolve();
+            })
+            .error(function (responseBody) {
+                deferred.reject(responseBody);
+            });
+
+            return deferred.promise;
+        };
+
+        /**
         * Updates image's description.
         *
         * @method updateDescription
@@ -156,6 +263,47 @@ angular.module('authoringEnvironmentApp').factory('NcImage', [
             });
 
             return deferredPatch.promise;
+        };
+
+        /**
+        * Detaches the image from an article.
+        *
+        * @method removeFromArticle
+        * @param number {Number} article ID
+        * @param language {String} article language code (e.g. 'de')
+        * @return {Object} promise object that is resolved on successful server
+        *   response and rejected on server error response
+        */
+        NcImage.prototype.removeFromArticle = function(number, language) {
+            var self = this,
+                deferred = $q.defer(),
+                linkHeader;
+
+            linkHeader = '<' +
+                Routing.generate(
+                    'newscoop_gimme_images_getimage',
+                    {number: self.id},
+                    false
+                ) +
+                '; rel="image">';
+
+            $http({
+                url: Routing.generate(
+                    'newscoop_gimme_articles_unlinkarticle',
+                    {number: number, language:language},
+                    true
+                ),
+                method: 'UNLINK',
+                headers: {link: linkHeader}
+            })
+            .success(function () {
+                deferred.resolve();
+            })
+            .error(function (responseBody) {
+                deferred.reject(responseBody);
+            });
+
+            return deferred.promise;
         };
 
         return NcImage;
