@@ -1,6 +1,6 @@
 <section
-    ng-controller="PaneTopicsCtrl"
-    class="tabcontent topics-panel">
+    class="tabcontent info-pane"
+    ng-controller="PaneInfoCtrl">
 
   <div class="panel-title">
     Article Info
@@ -14,7 +14,7 @@
         </div>
         <div class="field-value">
           <ul>
-            <li>Ganz besonders, diese Elsasser</li>
+            <li>{{article.title | stripHTML}}</li>
           </ul>
         </div>
       </li>
@@ -24,17 +24,17 @@
         </div>
         <div class="field-value">
           <ul>
-            <li>Gideon Lehmann</li>
+            <li>???</li>
           </ul>
         </div>
       </li>
       <li>
         <div class="field-description">
-          Created on:
+          Last updated:
         </div>
         <div class="field-value">
           <ul>
-            <li>01.01.2013.</li>
+            <li>{{(article.updated | date : 'yyyy-MM-dd') || '-'}}</li>
           </ul>
         </div>
       </li>
@@ -44,7 +44,7 @@
         </div>
         <div class="field-value">
           <ul>
-            <li>-</li>
+            <li>{{(article.published | date : 'yyyy-MM-dd') || '-'}}</li>
           </ul>
         </div>
       </li>
@@ -54,7 +54,7 @@
         </div>
         <div class="field-value">
           <ul>
-            <li>news</li>
+            <li>{{::article.type}}</li>
           </ul>
         </div>
       </li>
@@ -64,7 +64,7 @@
         </div>
         <div class="field-value">
           <ul>
-            <li>+cup6z</li>
+            <li>{{::article.webcode}}</li>
           </ul>
         </div>
       </li>
@@ -74,12 +74,8 @@
         </div>
         <div class="field-value">
           <ul>
-            <li>Gideon Lehmann</li>
-            <li>David Bauer</li>
-            <li>Darko Tomic</li>
-            <li>Sebastian Horn</li>
-            <li>Holman Romero</li>
-            <li>Aleksandar Erkalovic</li>
+            <li ng-repeat="author in article.authors">{{author.name}}</li>
+            <li ng-hide="article.authors.length">-</li>
           </ul>
         </div>
       </li>
@@ -89,12 +85,11 @@
         </div>
         <div class="field-value">
           <ul>
-            <li>Soccer</li>
-            <li>Basel</li>
-            <li>Politik</li>
+            <li ng-repeat="topic in article.topics">{{topic.title}}</li>
+            <li ng-hide="article.topics.length">-</li>
           </ul>
         </div>
-      </li>                
+      </li>
     </ul>
   </div>
 
