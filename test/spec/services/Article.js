@@ -11,11 +11,24 @@ describe('Factory: Article', function () {
     var Article,
         $httpBackend;
 
+    /**
+    * Escapes given string so that it can be treated as a literal
+    * string in a regular expression.
+    *
+    * @function regexEscape
+    * @param str {String} string to escape
+    * @return {String} escaped string
+    */
+    function regexEscape(str){
+        return str.replace(/([.*+?^${}()|\[\]\/\\])/g, "\\$1");
+    }
+
     beforeEach(module('authoringEnvironmentApp'));
 
     beforeEach(inject(function (_Article_, _$httpBackend_) {
         Article = _Article_;
         $httpBackend = _$httpBackend_;
+
     }));
 
     it('defines correct options for the commenting setting', function () {
@@ -54,5 +67,70 @@ describe('Factory: Article', function () {
             expect(options.PUBLISHED).toEqual('Y');
         }
     );
+
+    describe('constructor', function () {
+        // TODO
+    });
+
+
+    describe('getById() method', function () {
+        var urlMatcher,
+            validUrl,
+            $httpBackend;
+
+        beforeEach(inject(function (_$httpBackend_) {
+            var articleData = {number: 8, language: 'de'};
+
+            urlMatcher = function (url) {
+                return validUrl.test(url);
+            };
+
+            validUrl = new RegExp('.*');  // match any URL by default
+
+            $httpBackend = _$httpBackend_;
+            $httpBackend.expectGET(urlMatcher).respond(200, articleData);
+        }));
+
+        it('sends a correct request to API', function () {
+            var url = Routing.generate(
+                'newscoop_gimme_articles_getarticle',
+                {number: 8, language: 'de'},
+                true
+            );
+            validUrl = new RegExp('^' + regexEscape(url) + '$');
+
+            Article.getById(8, 'de');
+
+            $httpBackend.verifyNoOutstandingExpectation();
+        });
+
+        it('resolves given promise with Article instance on successful ' +
+            'server response',
+            function () {
+                var expectedArg,
+                    onSuccessSpy = jasmine.createSpy();
+
+                Article.getById(8, 'de').then(onSuccessSpy);
+                $httpBackend.flush(1);
+
+                expect(onSuccessSpy).toHaveBeenCalled();
+                expectedArg = onSuccessSpy.mostRecentCall.args[0];
+                expect(expectedArg instanceof Article).toBe(true);
+            }
+        );
+
+        it('rejects given promise on server error response', function () {
+            var expectedArg,
+                onErrorSpy= jasmine.createSpy();
+
+            $httpBackend.resetExpectations();
+            $httpBackend.expectGET(urlMatcher).respond(500, 'Error :(');
+
+            Article.getById(8, 'de').catch(onErrorSpy);
+            $httpBackend.flush(1);
+
+            expect(onErrorSpy).toHaveBeenCalledWith('Error :(');
+        });
+    });
 
 });

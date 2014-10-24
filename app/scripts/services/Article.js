@@ -42,6 +42,37 @@ angular.module('authoringEnvironmentApp').factory('Article', [
             PUBLISHED: 'Y'
         });
 
+        /**
+        * Retrieves a specific article from the server.
+        *
+        * @method getById
+        * @param articleId {Number} article ID
+        * @param langCode {String} article language code (e.g. 'en')
+        * @return {Object} promise object which is resolved with retrieved
+        *   Article instance on success and rejected with server error
+        *   message on failure
+        */
+        Article.getById = function (articleId, langCode) {
+            var deferredGet = $q.defer(),
+                url;
+
+            url = Routing.generate(
+                'newscoop_gimme_articles_getarticle',
+                {number: articleId, language: langCode},
+                true
+            );
+
+            $http.get(url)
+            .success(function (data) {
+                var article = new Article(data);
+                deferredGet.resolve(article);
+            }).error(function (responseBody) {
+                deferredGet.reject(responseBody);
+            });
+
+            return deferredGet.promise;
+        };
+
         return Article;
     }
 ]);
