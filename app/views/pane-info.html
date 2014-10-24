@@ -10,26 +10,6 @@
     <ul>
       <li>
         <div class="field-description">
-          Title:
-        </div>
-        <div class="field-value">
-          <ul>
-            <li>{{article.title | stripHTML}}</li>
-          </ul>
-        </div>
-      </li>
-      <li>
-        <div class="field-description">
-          Created by:
-        </div>
-        <div class="field-value">
-          <ul>
-            <li>???</li>
-          </ul>
-        </div>
-      </li>
-      <li>
-        <div class="field-description">
           Last updated:
         </div>
         <div class="field-value">
@@ -65,28 +45,6 @@
         <div class="field-value">
           <ul>
             <li>{{::article.webcode}}</li>
-          </ul>
-        </div>
-      </li>
-      <li>
-        <div class="field-description">
-          Authors:
-        </div>
-        <div class="field-value">
-          <ul>
-            <li ng-repeat="author in article.authors">{{author.name}}</li>
-            <li ng-hide="article.authors.length">-</li>
-          </ul>
-        </div>
-      </li>
-      <li>
-        <div class="field-description">
-          Topics:
-        </div>
-        <div class="field-value">
-          <ul>
-            <li ng-repeat="topic in article.topics">{{topic.title}}</li>
-            <li ng-hide="article.topics.length">-</li>
           </ul>
         </div>
       </li>
