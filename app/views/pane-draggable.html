@@ -49,7 +49,7 @@
             <span class="description">
               {{image.description || "No description"}}
             </span>
-            <span class="photographer-info" ng-if="image.photographer">&copy; {{image.photographer || ''}}</span>
+            <span ng-if="image.photographer" class="photographer-info">&copy; {{image.photographer || ''}}</span>
           </div>
         </li>
       </ul>
