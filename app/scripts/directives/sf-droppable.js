@@ -1,45 +1,130 @@
 'use strict';
 
+/**
+* A directive which allows dropping images and HTML snippets into
+* Aloha editables.
+*
+* @class sfDroppable
+*/
 angular.module('authoringEnvironmentApp').directive('sfDroppable', [
     '$compile',
     'Dragdata',
     function ($compile, Dragdata) {
-        /* the selector for event delegation. in future also aloha blocks
-     * may be added */
-        var sel = 'p';
-        var placeholderClass = 'drag-drop-placeholder';
-        var place = '.' + placeholderClass;
+        var place,
+            placeholderClass,
+            sel;
+
+        sel = 'p';
+        placeholderClass = 'drag-drop-placeholder';
+        place = '.' + placeholderClass;
+
         return {
             restrict: 'A',
             link: function postLink(scope, element, attrs) {
-                $(element).on('dragover', sel, function (e) {
-                    var target = $(e.target);
-                    if (!target.next().is(place)) {
-                        target.after(
-                            $('<div>&nbsp;</div>').addClass(placeholderClass)
-                        );
-                    }
-                }).on('dragleave', sel, function (e) {
-                    if ($(e.target).next().is(place)) {
-                        $(place).remove();
-                    }
-                }).on('drop', sel, function (e) {
+                var counter,
+                    $element = $(element);
+
+                // when dragging over a child element, a dragleave event is
+                // fired on on the parent, but we only want to react when
+                // mouse leaves the parent element itself, hence the need
+                // for a counter
+                counter = 0;
+
+                /**
+                * Creates a new drag-drop placeholder DOM element.
+                *
+                * @function createPlaceholder
+                * @return {Object} created DOM element
+                */
+                function createPlaceholder() {
+                    var $node = $('<div>&nbsp;</div>')
+                        .addClass(placeholderClass)
+                        .attr('contenteditable', false);
+
+                    return $node;
+                }
+
+                /**
+                * onDrop event handler. Resets counter, removes all drag-drop
+                * placeholders and creates a new DOM node in the editable
+                * based on the drop event data.
+                *
+                * @function onDrop
+                * @param e {Object} event object
+                */
+                function onDrop(e) {
                     var dropped,
-                        target;
+                        newNode,
+                        $target = $(e.target);
 
                     e.preventDefault();
-                    // to prevent browser element appending
                     e.stopPropagation();
 
-                    target = $(e.target);
+                    counter = 0;
+                    $(place).remove();  // remove all drag-drop placeholders
+
                     dropped = Dragdata.getDropped(
                         e.originalEvent.dataTransfer.getData('Text')
                     );
-                    if (target.next().is(place)) {
-                        $(place).remove();
+                    newNode = $compile(dropped)(scope);
+
+                    if ($target.is(sel)) {
+                        $target.after(newNode);
+                    } else {
+                        $element.prepend(newNode);
                     }
-                    target.after($compile(dropped)(scope));
+                }
+
+                /// event listeners for Aloha editable's children ///
+                $element.on('dragover', sel, function (e) {
+                    var $target = $(e.target);
+                    if (!$target.next().is(place)) {
+                        $target.after(createPlaceholder());
+                    }
                 });
+
+                $element.on('dragleave', sel, function (e) {
+                    var $nxtNode = $(e.target).next();
+                    if ($nxtNode.is(place)) {
+                        $nxtNode.remove();
+                    }
+                });
+
+                $element.on('drop', sel, onDrop);
+
+                /// special case for adding/removing a placeholder ///
+                /// to the very beginning of the Aloha editable  ///
+                $element.on('dragenter', function (e) {
+                    var $placeholder;
+
+                    counter++;
+
+                    if (!$element.children(':first').is(place)) {
+                        $placeholder = createPlaceholder();
+
+                        $placeholder.on('dragenter', function () {
+                            $placeholder.addClass('drag-over');
+                        });
+
+                        $placeholder.on('dragleave', function () {
+                            $placeholder.removeClass('drag-over');
+                        });
+
+                        $element.prepend($placeholder);
+                    }
+                });
+
+                $element.on('dragleave', function (e) {
+                    var firstChild = $element.children(':first');
+
+                    counter--;
+
+                    if ((counter < 1) && firstChild.is(place)) {
+                        firstChild.remove();
+                    }
+                });
+
+                $element.on('drop', onDrop);
             }
         };
     }

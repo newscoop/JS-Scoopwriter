@@ -542,7 +542,12 @@ a:hover {
             margin: 1em;
             border: 3px dashed #d3d3d3;
             height:1.5em;
-            width:100%
+            &:first-child {
+                opacity: 0.2;
+                &.drag-over {
+                    opacity: 1.0;
+                }
+            }
         }
 
         section {
