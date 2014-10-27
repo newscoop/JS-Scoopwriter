@@ -1448,11 +1448,10 @@ a:hover {
                         line-height: 15px;
                         font-size: 12px;
                         &:before {
-                            color: #888;
+                            color: #808080;
                             text-transform: uppercase;
-                            font-size: 10px;
-                            font-weight: 500;
-                            display: block;
+                            font-size: 11px;                            
+                            display: inline-block;
                         }
                         &.approved:before {
                             content: "Approved";
@@ -1460,12 +1459,37 @@ a:hover {
                         &.unapproved:before {
                             content: "Unapproved";
                         }
-                        .size-info {
+                        .photographer-info {
                             display: block;
-                            height: 15px;
+                            min-height: 15px;
                             overflow: hidden;
                             text-overflow: ellipsis;
                             white-space: nowrap;
+                            margin: 0;
+                            color: #808080;
+                        }
+                        .description {
+                            display: block;
+                            margin: 4px 0;
+                        }
+                        .size-info {                            
+                            position: relative;
+                            overflow: hidden;
+                            text-overflow: ellipsis;
+                            white-space: nowrap;
+                            margin: 0 0 0 2px;
+                            padding-left: 8px;
+                            color: #808080;
+                            &:before {
+                                position: absolute;
+                                display: block;
+                                width: 1px;
+                                height: 10px;
+                                top: 4px;
+                                left: 0;
+                                content: '';
+                                background: #aaa;
+                            }                            
                         }
 
                     }
