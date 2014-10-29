@@ -18,6 +18,11 @@
   <div class="caption">
     <div ng-show="!editingCaption">
       <div class="static">{{image.description}}</div>
+
+      <div ng-if="image.photographer" class="photographer">
+        &copy; {{image.photographer}}
+      </div>
+
       <button class="edit" title="Edit Caption" ng-click="editCaptionMode(true)">
         <i class="fa fa-pencil"></i>
       </button>
@@ -25,6 +30,11 @@
 
     <div ng-show="editingCaption">
       <input type="text" ng-model="newCaption" />
+
+      <div ng-if="image.photographer" class="photographer">
+        &copy; {{image.photographer}}
+      </div>
+
       <div class="btn-group">
         <button class="save" title="Save" ng-click="updateCaption()">
           <span class="glyphicon glyphicon-ok"></span>

@@ -7,7 +7,6 @@
 */
 
 describe('Service: Images', function () {
-    var e = rootURI;
     var mock = {
         items: [
             {
@@ -982,11 +981,11 @@ describe('Service: Images', function () {
         });
 
         describe('startUpload() method', function () {
+            var headersCheck,
+                postData,
+                url;
 
             beforeEach(inject(function (formDataFactory) {
-                var headersCheck,
-                    postData;
-
                 spyOn(formDataFactory, 'makeInstance').andCallFake(
                     // factory should return a fake FormData object that we
                     // can actually inspect in tests (built-in FormData is not
@@ -1016,11 +1015,10 @@ describe('Service: Images', function () {
                     return typeof headers['Content-Type'] === 'undefined';
                 };
 
-                $httpBackend.expectPOST(
-                    rootURI + '/images',
-                    postData,
-                    headersCheck
-                )
+                url = Routing.generate(
+                    'newscoop_gimme_images_createimage', {}, true);
+
+                $httpBackend.expectPOST(url, postData, headersCheck)
                 .respond(
                     201, null,
                     {'X-Location' : 'http://foo.com/images/4321'},
@@ -1043,6 +1041,25 @@ describe('Service: Images', function () {
             });
 
             // XXX: how to test progress callbacks?
+
+            it('converts undefined values to empty strings', function () {
+                postData.dict['image[photographer]']= '';
+                postData.dict['image[description]']= '';
+
+                $httpBackend.resetExpectations();
+                $httpBackend.expectPOST(url, postData, headersCheck)
+                .respond(
+                    201, null,
+                    {'X-Location' : 'http://foo.com/images/4321'},
+                    'Created'
+                );
+
+                decoratedImg.photographer = undefined;
+                decoratedImg.description = undefined;
+                decoratedImg.startUpload();
+                // test will fail if http expectation is not fulfilled
+                // (= misformed POST request sent)
+            });
 
             it('sets isUploaded flag on success', function () {
                 decoratedImg.startUpload();
