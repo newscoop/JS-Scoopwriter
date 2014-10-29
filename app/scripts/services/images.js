@@ -505,9 +505,11 @@ angular.module('authoringEnvironmentApp').service('images', [
                     parts,
                     rejectMsg = 'No x-location header in API response.';
 
-                fd.append('image[photographer]', imageObj.photographer);
-                fd.append('image[description]', imageObj.description);
                 fd.append('image[image]', imageObj);
+                fd.append(
+                    'image[photographer]', imageObj.photographer || '');
+                fd.append(
+                    'image[description]', imageObj.description || '');
 
                 // XXX: wrap this into NcImage (e.g. NcImage.create())
                 $upload.http({
