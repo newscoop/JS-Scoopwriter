@@ -1,0 +1,54 @@
+/*!
+ *
+ * AES custom stylesheet
+ * Adapt the look and feel of the articletemplates in the AES
+ *
+ * Important! This only works with default set of fields defined in config
+ *
+ */
+
+
+/* Date line */
+.authoring-environment .article-field.dateline {
+    font-family: 'Roboto', Arial, Helvetica, sans-serif;
+    font-size: 14px;
+    font-weight: normal;
+    font-style: normal;
+    color: #333;
+    line-height: 150%;
+}
+/* end Date line */
+
+/* Title */
+.authoring-environment .article-field.title {
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    font-size: 36px;
+    font-weight: normal;
+    font-style: normal;
+    color: #333;
+    line-height: 130%;
+}
+/* end Title */
+
+/* Lead */
+.authoring-environment .article-field.lede {
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    font-size: 20px;
+    font-weight: normal;
+    font-style: normal;
+    color: #333;
+    line-height: 140%;
+}
+/* end Lead */
+
+/*  Body */
+.authoring-environment .article-field.body {
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    /*font-family: 'Roboto', Arial, Helvetica, sans-serif;*/
+    font-size: 16px;
+    font-weight: normal;
+    font-style: normal;
+    color: #333;
+    line-height: 150%;
+}
+/* end Body */
