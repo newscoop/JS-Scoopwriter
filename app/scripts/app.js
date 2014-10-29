@@ -21,14 +21,28 @@ angular.module('authoringEnvironmentApp', [
     '$httpProvider',
     '$buttonProvider',
     function ($routeProvider, $httpProvider, $buttonProvider) {
-        $routeProvider.when('/:language/:article', {
-            templateUrl: 'views/main.html'
-        }).when('/:callback*', {
-            templateUrl:'views/oAuthCallback.html',
-            controller: 'CallbackCtrl'
-        }).otherwise({
-            redirectTo: '/de/533522'
-        });
+        $routeProvider
+        .when(
+            '/:language/:article', {
+                templateUrl: 'views/main.html',
+                resolve: {
+                    articleInstance: [
+                        'articleLoader',
+                        function (articleLoader) {
+                            return articleLoader();
+                        }
+                    ]
+                }
+            }
+        ).when(
+            '/:callback*', {
+                templateUrl:'views/oAuthCallback.html',
+                controller: 'CallbackCtrl'
+            }
+        ).otherwise(
+            {redirectTo: '/de/533522'}
+        );
+
         $httpProvider.interceptors.push('authInterceptor');
         $buttonProvider.defaults.toggleEvent = 'change';
     }
