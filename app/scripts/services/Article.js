@@ -9,7 +9,172 @@ angular.module('authoringEnvironmentApp').factory('Article', [
     '$http',
     '$q',
     function ($http, $q) {
-        var Article;
+        var Article,
+            unicodeWords = new XRegExp('(\\p{Letter}|\\d)+', 'g');
+
+        /**
+        * Converts images' and snippets' HTML in article text (Aloha blocks) to
+        * special placeholders, allowing to later convert those placeholders
+        * back to original content.
+        *
+        * @method serializeAlohaBlocks
+        * @param type {String} the type of Aloha blocks to search for and
+        *   convert ('snippet' or 'image')
+        * @param text {String} text to convert
+        * @return {String} converted text
+        */
+        function serializeAlohaBlocks(type, text) {
+            var content,
+                matches,
+                sep;
+
+            if ((type !== 'snippet' && type !== 'image') || text === null) {
+                return text;
+            }
+
+            sep = {snippet: '--', image: '**'};
+            content = $('<div/>').html(text);
+
+            matches = content.contents().filter('div.' + type);
+
+            // replace each matching div with its serialized version
+            matches.replaceWith(function() {
+                var serialized,
+                    $match = $(this);
+
+                serialized = [
+                    '<', sep[type], ' ',
+                    type.charAt(0).toUpperCase(), type.slice(1), ' ',
+                    parseInt($match.data('id'), 10)
+                ];
+
+                $.each($match.data(), function (name, value) {
+                    if (name !== 'id') {
+                        serialized.push(' ', name, '="', value, '"');
+                    }
+                });
+
+                serialized.push(' ', sep[type], '>');
+                return serialized.join('');
+            });
+
+            return content.html()
+                .replace(/\&lt\;\*\*/g,'<**')   // replace &lt;** with <**
+                .replace(/\*\*\&gt\;/g, '**>')  // replace **&gt; with **>
+                .replace(/\&lt\;\-\-/g,'<--')   // replace &lt;-- with <--
+                .replace(/\-\-\&gt\;/g, '-->'); // replace --&gt; with -->
+        }
+
+        /**
+        * Finds snippets placeholders in text and converts them to
+        * snippets HTML (this can be later converted to Aloha blocks).
+        *
+        * An example of such placeholder:
+        *     <-- Snippet 1234 -->
+        *
+        * @function snippetCommentsToDivs
+        * @param text {String} text to convert
+        * @return {String} converted text
+        */
+        function snippetCommentsToDivs(text) {
+            if (text === null) {
+                return text;
+            }
+            // the extra backslash (\) is because of Javascript being picky
+            var snippetRex  = '<--';     // exact match
+            snippetRex     += '\\s';      // single whitespace
+            snippetRex     += 'Snippet';  // exact match
+            snippetRex     += '\\s';      // single whitespace
+            snippetRex     += '([\\d]+)'; // capture group 1, 1 or more digits
+            snippetRex     += '(';               // capture group 2
+            snippetRex     +=     '(';           // capture group 3
+            snippetRex     +=         '[\\s]+';  // at least 1 whitespace
+            snippetRex     +=         '(align';  // alternating capture group
+            snippetRex     +=         '|\\w+)';  // or any other word
+            snippetRex     +=         '\\s*';    // optional whitespace
+            snippetRex     +=         '=';       // exact match
+            snippetRex     +=         '\\s*';    // optional whitespace
+            snippetRex     +=         '(';          // capture group 4
+            snippetRex     +=             '"[^"]*"';  // anything except "
+            snippetRex     +=             '|[^\\s]*'; // anything but whitesp.
+            snippetRex     +=         ')';         // end capture group 4
+            snippetRex     +=     ')*';    // end capture group 3 (0 or more)
+            snippetRex     += ')';       // end capture group 2
+            snippetRex     += '[\\s]*';  // optional whitespace
+            snippetRex     += '-->';      // exact match
+            var snippetPattern = new RegExp(snippetRex, 'ig');
+
+            var converted = text.replace(snippetPattern, function(whole, id) {
+                var output = '<div class="snippet" data-id="';
+                output += parseInt(id);
+                output += '"></div>';
+                return output;
+            });
+            return converted;
+        }
+
+        /**
+        * Finds images placeholders in text and converts them to
+        * images HTML (thiscan be later converted to Aloha blocks).
+        *
+        * An example of such placeholder:
+        *     <** Image 1234 float="left" size="small" **>
+        *
+        * @function imageCommentsToDivs
+        * @param text {String} text to convert
+        * @return {String} converted text
+        */
+        function imageCommentsToDivs(text) {
+            if (text === null) {
+                return text;
+            }
+            // the extra backslash (\) is because of Javascript being picky
+            var imageReg  = '<';         // exact match
+            imageReg     += '\\*\\*';    // exact match on **
+            imageReg     += '[\\s]*';    // optional whitespace
+            imageReg     += 'Image';     // exact match
+            imageReg     += '[\\s]+';    // whitespace
+            imageReg     += '([\\d]+)';  // capture group 1, number
+            imageReg     += '(';         // capture group 2
+            imageReg     +=     '(';       // capture group 3, 0 to unlimited
+            imageReg     +=         '[\\s]+';  // optional whitespace
+            imageReg     +=         '(align|alt|sub';  // alternating capt. gr.
+            imageReg     +=         '|width|height|ratio';
+            imageReg     +=         '|\\w+)';  // or any word, end of group
+            imageReg     +=         '\\s*';    // optional whitespace
+            imageReg     +=         '=';       // exact match
+            imageReg     +=         '\\s*';    // optional whitespace
+            imageReg     +=         '(';       // capture group 4
+            imageReg     +=             '"[^"]*"';  // anything except "
+            imageReg     +=             '|[^\\s]*'; // anything but whitespace
+            imageReg     +=         ')';       // end capture group 4
+            imageReg     +=     ')*';        //end capture group 3 (0 or more)
+            imageReg     += ')';           // end capture group 2
+            imageReg     += '[\\s]*';      // optional whitespace
+            imageReg     += '\\*\\*';      // exact match on **
+            imageReg     += '>';           // exact match
+            var imagePattern = new RegExp(imageReg, 'ig');
+
+            var converted = text.replace(
+                imagePattern,
+                function(whole, imageId, imageAttributes) {
+                    var imageDiv = '<div class="image" dropped-image ' +
+                        'data-id="' + imageId + '"';
+                    var tmpElement = document.createElement('div');
+                    tmpElement.innerHTML = '<div '+imageAttributes+'></div>';
+                    var attributes = tmpElement.childNodes[0].attributes;
+
+                    for (var i = 0; i < attributes.length; i++) {
+                        imageDiv += ' data-' + attributes[i].name +
+                            '="'+attributes[i].value + '"';
+                    }
+
+                    imageDiv += '></div>';
+                    return imageDiv;
+                }
+            );
+            return converted;
+        }
 
         /**
         * Article constructor function.
@@ -17,8 +182,13 @@ angular.module('authoringEnvironmentApp').factory('Article', [
         * @function Article
         * @param data {Object} object containing article data
         */
+        // TODO: tests
         Article = function (data) {
-            // TODO: implement
+            var self = this;
+            // TODO: add any data conversions necessary...
+            Object.keys(data).forEach(function (key) {
+                self[key] = data[key];
+            });
         };
 
         // all possible values for the article commenting setting
@@ -71,6 +241,150 @@ angular.module('authoringEnvironmentApp').factory('Article', [
             });
 
             return deferredGet.promise;
+        };
+
+        /**
+        * Converts placeholders in text to images and snippets HTML.
+        *
+        * @method deserializeAlohaBlocks
+        * @param text {String} text to convert
+        * @return {String} converted text
+        */
+        // TODO: tests
+        // XXX: this deserialization shouldn't be public...?
+        // Should be hidden here in this service to simplify ArticleCtrl
+        Article.deserializeAlohaBlocks = function (text) {
+            return imageCommentsToDivs(snippetCommentsToDivs(text));
+        };
+
+        /**
+        * Returns the number of characters and the number of
+        * words in a string.
+        *
+        * @method textStats
+        * @param text {String} text for which to calculate the stats
+        * @return {Object} text statistics (e.g. {chars: 15, words:4})
+        */
+        // TODO: tests
+        Article.textStats = function (text) {
+            var match,
+                stats = {};
+
+            if (text) {
+                text = $('<div/>').html(text).text();  // strip HTML
+                stats.chars = text.length;
+
+                match = text.match(unicodeWords);
+                stats.words = match ? match.length : 0;
+            } else {
+                stats.chars = 0;
+                stats.words = 0;
+            }
+            return stats;
+        };
+
+        // TODO: comments & tests
+        Article.prototype.save = function () {
+            var deferred = $q.defer(),
+                postData,
+                url;
+
+            url = Routing.generate(
+                'newscoop_gimme_articles_patcharticle',
+                {number: this.articleId, language: this.language},
+                true
+            );
+
+            // TODO: copy only data, not functions?
+            postData = angular.copy(this);
+
+            // serialize objects (images, snippets) in all article fields
+            Object.keys(postData.fields).forEach(function (key) {
+                var serialized = serializeAlohaBlocks(
+                    'image', postData.fields[key]
+                );
+                postData.fields[key] = serializeAlohaBlocks(
+                    'snippet', serialized
+                );
+            });
+
+            $http.patch(
+                url, postData
+            ).success(function () {
+                deferred.resolve();
+            }).error(function (responseBody) {
+                deferred.reject(responseBody);
+            });
+
+            return deferred.promise;
+        };
+
+        /**
+        * Changes the value of the article's commenting setting and updates
+        * it on the server.
+        *
+        * @method changeCommentingSetting
+        * @param newValue {Number} New value of the article commenting
+        *   setting. Should be one of the values from article.commenting
+        *   object.
+        * @return {Object} promise object.
+        */
+        // TODO: tests
+        Article.prototype.changeCommentingSetting = function (newValue) {
+            var deferred = $q.defer(),
+                postData,
+                url;
+
+            url = Routing.generate(
+                'newscoop_gimme_articles_patcharticle',
+                {number: this.articleId, language: this.language},
+                true
+            );
+
+            // TODO: booleans fine? or need to convert to 1 or 0?
+            postData = {
+                comments_enabled: (newValue === Article.commenting.ENABLED),
+                comments_locked: (newValue === Article.commenting.LOCKED)
+            };
+
+            $http.patch(
+                url, postData
+            ).success(function () {
+                deferred.resolve();
+            }).error(function (responseBody) {
+                deferred.reject(responseBody);
+            });
+
+            return deferred.promise;
+        };
+
+        /**
+        * Updates article's workflow status on the server.
+        *
+        * @method updateWorkflowStatus
+        * @param status {String} article's new workflow status
+        * @return {Object} the underlying $http object's promise
+        */
+        // TODO: tests
+        Article.prototype.updateWorkflowStatus = function (status) {
+            var promise,
+                url;
+
+            url = Routing.generate(
+                'newscoop_gimme_articles_changearticlestatus',
+                {
+                    number: this.articleId,
+                    language: this.language,
+                    status: status
+                },
+                true
+            );
+
+            promise = $http({
+                method: 'PATCH',
+                url: url
+            });
+            return promise;
         };
 
         return Article;
