@@ -21,8 +21,11 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                 alignment: '@imageAlignment',
                 size: '@imageSize'
             },
-            link: function postLink(scope, element, attrs, ctrl) {
-                var imgConfig = {},
+            require: ['dropped-image', '^^dropped-images-container'],
+            link: function postLink(scope, element, attrs, controllers) {
+                var ctrl = controllers[0],
+                    imgConfig = {},
+                    parentCtrl = controllers[1],
                     $element = $(element),
                     $imageBox = $element.find('.dropped-image'),
                     $parent = $element.parent(),  // Aloha block container
@@ -98,7 +101,11 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
 
                 // clicking the image displays the toolbar
                 $imageBox.click(function (e) {
-                    toolbarNode().toggle();
+                    parentCtrl.toggleToolbar(toolbarNode());
+                });
+
+                element.on('$destroy', function() {
+                    parentCtrl.deregisterToolbar(toolbarNode());
                 });
 
                 /**
