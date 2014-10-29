@@ -45,8 +45,12 @@
             <img ng-src="{{root}}/images/thumbnails/{{image.thumbnailPath}}">
           </figure>
           <div class="media-description approved">
-            {{image.description || "No description"}}
             <span class="size-info">{{image.width}} x {{image.height}}</span>
+            <span class="description">
+              {{image.description || "No description"}}
+            </span>
+            <span ng-if="image.photographer"
+                class="photographer-info">&copy; {{image.photographer}}</span>
           </div>
         </li>
       </ul>
