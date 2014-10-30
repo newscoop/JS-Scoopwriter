@@ -10,14 +10,14 @@
 
 /* Date line */
 .authoring-environment .article-field.dateline {
-    font-family: 'Roboto', Arial, Helvetica, sans-serif;
-    font-size: 14px;
+    /*font-family: 'Roboto', Arial, Helvetica, sans-serif;*/
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    font-size: 16px;
     font-weight: normal;
     font-style: normal;
     color: #333;
     line-height: 150%;
 }
-/* end Date line */
 
 /* Title */
 .authoring-environment .article-field.title {
@@ -28,7 +28,6 @@
     color: #333;
     line-height: 130%;
 }
-/* end Title */
 
 /* Lead */
 .authoring-environment .article-field.lede {
@@ -39,16 +38,44 @@
     color: #333;
     line-height: 140%;
 }
-/* end Lead */
 
 /*  Body */
 .authoring-environment .article-field.body {
     font-family: Georgia, 'Times New Roman', Times, serif;
     /*font-family: 'Roboto', Arial, Helvetica, sans-serif;*/
-    font-size: 16px;
+    font-size: 16px; /* Normal text */
     font-weight: normal;
     font-style: normal;
     color: #333;
-    line-height: 150%;
+    line-height: 140%;
 }
-/* end Body */
+
+/* space between paragraphs */
+.authoring-environment .main-article-container p {
+    margin-bottom: 10px;
+}
+/* Heading 1 */
+.authoring-environment .main-article-container h1 {
+    font-size: 40px;
+    font-weight: normal;
+}
+/* Heading 2 */
+.authoring-environment .main-article-container h2 {
+    font-size: 34px;
+    font-weight: normal;
+}
+/* Heading 3 */
+.authoring-environment .main-article-container h3 {
+    font-size: 26px;
+    font-weight: normal;
+}
+/* Heading 4 */
+.authoring-environment .main-article-container h4 {
+    font-size: 22px;
+    font-weight: normal;
+}
+/* Heading 4 */
+.authoring-environment .main-article-container h5 {
+    font-size: 18px;
+    font-weight: normal;
+}
