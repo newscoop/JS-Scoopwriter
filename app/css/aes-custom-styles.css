@@ -43,7 +43,7 @@
 .authoring-environment .article-field.body {
     font-family: Georgia, 'Times New Roman', Times, serif;
     /*font-family: 'Roboto', Arial, Helvetica, sans-serif;*/
-    font-size: 16px; /* Normal text */
+    font-size: 16px; /* body text size (normal) */
     font-weight: normal;
     font-style: normal;
     color: #333;
@@ -58,7 +58,7 @@
 .authoring-environment .main-article-container h1 {
     font-size: 40px;
     font-weight: normal;
-    font-style: italic;
+    font-style: normal;
 }
 /* Heading 2 */
 .authoring-environment .main-article-container h2 {
