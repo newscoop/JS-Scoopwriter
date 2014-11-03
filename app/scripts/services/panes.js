@@ -4,6 +4,17 @@ angular.module('authoringEnvironmentApp').factory('panes', [
     function ($filter) {
         var panes = [
                 {
+                    name: 'Info',
+                    id: 'info',
+                    icon: 'info',
+                    template: 'views/pane-info.html',
+                    position: 'right',
+                    size: 'small',
+                    visible: false,
+                    active: false,
+                    selected: true
+                },
+                {
                     name: 'Topics',
                     id: 'topics',
                     icon: 'topics',

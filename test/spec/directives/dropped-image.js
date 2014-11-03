@@ -52,7 +52,7 @@ describe('Directive: droppedImage', function () {
             // the .remove() call on it does not work for some reason, causing
             // the corresponding test to fail
             html = [
-                '<div id="wrapper">',
+                '<div id="wrapper" dropped-images-container>',
                   '<div id="aloha-block">',
                     '<div dropped-image data-image-id="4"></div>',
                   '</div>',

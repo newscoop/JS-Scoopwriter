@@ -17,6 +17,8 @@ html, body.article-edit {
     overflow: visible;
 }
 
+@-ms-viewport{ width: auto !important; } /* IE10+ fix for badly overlapping scrollbar */
+
 // Links
 // -----
 
@@ -540,7 +542,12 @@ a:hover {
             margin: 1em;
             border: 3px dashed #d3d3d3;
             height:1.5em;
-            width:100%
+            &:first-child {
+                opacity: 0.2;
+                &.drag-over {
+                    opacity: 1.0;
+                }
+            }
         }
 
         section {
@@ -1441,11 +1448,10 @@ a:hover {
                         line-height: 15px;
                         font-size: 12px;
                         &:before {
-                            color: #888;
+                            color: #808080;
                             text-transform: uppercase;
-                            font-size: 10px;
-                            font-weight: 500;
-                            display: block;
+                            font-size: 11px;                            
+                            display: inline-block;
                         }
                         &.approved:before {
                             content: "Approved";
@@ -1453,12 +1459,37 @@ a:hover {
                         &.unapproved:before {
                             content: "Unapproved";
                         }
-                        .size-info {
+                        .photographer-info {
                             display: block;
-                            height: 15px;
+                            min-height: 15px;
                             overflow: hidden;
                             text-overflow: ellipsis;
                             white-space: nowrap;
+                            margin: 0;
+                            color: #808080;
+                        }
+                        .description {
+                            display: block;
+                            margin: 4px 0;
+                        }
+                        .size-info {                            
+                            position: relative;
+                            overflow: hidden;
+                            text-overflow: ellipsis;
+                            white-space: nowrap;
+                            margin: 0 0 0 2px;
+                            padding-left: 8px;
+                            color: #808080;
+                            &:before {
+                                position: absolute;
+                                display: block;
+                                width: 1px;
+                                height: 10px;
+                                top: 4px;
+                                left: 0;
+                                content: '';
+                                background: #aaa;
+                            }                            
                         }
 
                     }
@@ -3124,7 +3155,7 @@ a:hover {
             .caption {
                 position: relative;
                 text-align: left;
-                padding: 6px 8px;
+                padding: 6px 8px 6px 8px;
                 cursor: text;
                 background: #f5f5f5;
                 font-size: 12px;
@@ -3144,7 +3175,7 @@ a:hover {
                     }
                 }
                 .static {
-                    padding: 7px 36px 7px 7px;
+                    padding: 7px 36px 3px 7px;
                     color: #666;
                 }
                 .edit {
@@ -3174,6 +3205,16 @@ a:hover {
                     display:block;
                     float:right;
                 }
+            }
+            .photographer {
+                background: #f5f5f5;
+                font-family: 'Roboto', Arial, Helvetica;
+                font-size: 12px;
+                color: #aaa;
+                text-align: left;
+                padding: 0px 15px 2px 6px;
+                display: inline-block;
+                /*border-top: 1px solid #E3E3E3;*/
             }
 
             &:hover {
@@ -3213,6 +3254,48 @@ a:hover {
             font-size: small;
         }
     }
+
+    /* Info panel */
+    .info {
+        .info-list {
+            position: absolute;
+            right: 12px;
+            bottom: 12px;
+            left: 12px;
+            top: 60px;
+            overflow: auto;
+            &::-webkit-scrollbar { width: 14px !important; height: 8px; margin: -1px 0; }
+            &::-webkit-scrollbar-thumb { background: #949494; border-left: 6px solid rgba(0,0,0,0) !important; background-clip: padding-box !important; }
+            &::-webkit-scrollbar-thumb:hover { background: #6e6e6e; border-left: 6px solid rgba(0,0,0,0);background-clip: padding-box; }
+            ul {
+                list-style-type: none;
+                margin: 0;
+                padding: 0;
+                li {
+                    padding: 11px 0 9px 0;
+                    border-bottom: 1px dotted #d8d8d8;
+                    overflow: hidden;
+                    font-size: 12px;
+                    .field-description {
+                        float: left;
+                        width: 90px;
+                        text-transform: uppercase;
+                        font-size: 11px;
+                        color: #808080;
+                        word-wrap: break-word;
+                        padding-left: 2px;
+                    }
+                    .field-value {
+                        float: left;
+                        padding-left: 14px;
+                        word-wrap: break-word;
+                        width: 198px;
+                    }
+                    li {
+                        padding: 0 0 2px 0;
+                        border: none;
+                        word-wrap: break-word;
+                    }
 
     /* switches panel */
     .switches {
