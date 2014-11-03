@@ -1,5 +1,5 @@
 <section
-    ng-controller="PaneTopicsCtrl"
+    ng-controller="PaneSwitchesCtrl"
     class="tabcontent switches-panel">
 
   <div class="panel-title">
@@ -8,37 +8,14 @@
 
   <div class="switches-list">
     <ul>      
-      <li><input name="f_on_front_page" id="f_on_front_page" class="input_checkbox" type="checkbox">
-        <label for="f_on_front_page">Show article on front page</label>
+      <li ng-repeat="switch in switches">
+        <input
+            type="checkbox" class="input_checkbox"
+            name="{{::switch.name}}" id="{{::switch.name}}"
+            ng-model="switch.enabled"
+            ng-change="valueChanged()"/>
+          <label for="{{::switch.name}}">{{::switch.name}}</label>
       </li>
-      <li><input name="f_on_section_page" id="f_on_section_page" class="input_checkbox" type="checkbox">
-        <label for="f_on_section_page">Show article on section page</label>
-      </li>
-      <li><input name="f_rating_enabled" id="f_rating_enabled" class="input_checkbox" checked="" type="checkbox">
-        <label for="f_rating_enabled">Enable Rating</label>
-      </li>
-      <li><input name="f_is_public" id="f_is_public" class="input_checkbox" checked="" type="checkbox"> <label for="f_is_public">Visible to non-subscribers</label> </li>
-          <li>
-        <input name="Fshow_big_map_on_front" id="Fshow_big_map_on_front" class="input_checkbox db" value="on" type="checkbox">
-        <label for="Fshow_big_map_on_front">Teaser mit Karte auf Startseite</label>
-      </li>
-          <li>
-        <input name="FDisable_Article_Image" id="FDisable_Article_Image" class="input_checkbox db" value="on" type="checkbox">
-        <label for="FDisable_Article_Image">Artikelbild ausblenden</label>
-      </li>
-          <li>
-        <input name="Ffull_width_element" id="Ffull_width_element" class="input_checkbox db" value="on" type="checkbox">
-        <label for="Ffull_width_element">full_width_element</label>
-      </li>
-          <li>
-        <input name="FiPad_prominent" id="FiPad_prominent" class="input_checkbox db" value="on" type="checkbox">
-        <label for="FiPad_prominent">iPad_prominent</label>
-      </li>
-          <li>
-        <input name="Fcopyrighted" id="Fcopyrighted" class="input_checkbox db" value="on" type="checkbox">
-        <label for="Fcopyrighted">copyrighted</label>
-      </li>
-                      
     </ul>
   </div>
 
