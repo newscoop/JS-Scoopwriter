@@ -54,27 +54,32 @@
 .authoring-environment .main-article-container p {
     margin-bottom: 10px;
 }
+
 /* Heading 1 */
 .authoring-environment .main-article-container h1 {
     font-size: 40px;
     font-weight: normal;
     font-style: normal;
 }
+
 /* Heading 2 */
 .authoring-environment .main-article-container h2 {
     font-size: 34px;
     font-weight: normal;
 }
+
 /* Heading 3 */
 .authoring-environment .main-article-container h3 {
     font-size: 26px;
     font-weight: normal;
 }
+
 /* Heading 4 */
 .authoring-environment .main-article-container h4 {
     font-size: 22px;
     font-weight: normal;
 }
+
 /* Heading 4 */
 .authoring-environment .main-article-container h5 {
     font-size: 18px;
