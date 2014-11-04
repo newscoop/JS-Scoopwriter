@@ -36,7 +36,6 @@ angular.module('authoringEnvironmentApp').controller('PaneSwitchesCtrl', [
         *
         * @method valueChanged
         */
-        // TODO: tests
         self.valueChanged = function () {
             self.modified = true;
         };
@@ -46,7 +45,6 @@ angular.module('authoringEnvironmentApp').controller('PaneSwitchesCtrl', [
         *
         * @method save
         */
-        // TODO: tests
         self.save = function () {
             self.saveInProgress = true;
 
