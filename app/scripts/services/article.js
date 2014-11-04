@@ -319,7 +319,6 @@ angular.module('authoringEnvironmentApp').service('article', [
         *     {name: 'Disable_Article_Image', value: false}
         * @return {Object} promise object.
         */
-        // TODO; tests
         // XXX: get rid of explicitly passing articleData
         function saveSwitches(articleData) {
             var deferred = $q.defer(),
