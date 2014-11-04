@@ -191,6 +191,87 @@ describe('Service: article', function () {
         });
     });
 
+
+    describe('saveSwitches() method', function () {
+        var articleObj,
+            switchNames,
+            url;
+
+        beforeEach(function () {
+            articleObj = {
+                number: 8,
+                language: 'en',
+                fields: {
+                    'switch_1': false,
+                    'switch_2': true,
+                    'content_field': 'foobar'
+                }
+            };
+
+            switchNames = ['switch_1', 'switch_2'];
+
+            url = Routing.generate(
+                // XXX: should be the patcharticle path, but there is a bug in
+                // Routing object, thus we use another path that gives us the
+                // same result
+                'newscoop_gimme_articles_linkarticle',
+                {number: 8, language: 'en'},
+                true
+            );
+            $httpBackend.expectPATCH(url).respond(204);
+        });
+
+        afterEach(function () {
+            $httpBackend.verifyNoOutstandingExpectation();
+        });
+
+        it('invokes correct API endpoint', function () {
+            articleService.saveSwitches(articleObj, switchNames);
+        });
+
+        it('sends correct data to server', function () {
+            var requestData = {
+                fields: {
+                    'switch_1': false,
+                    'switch_2': true
+                }
+            };
+            $httpBackend.resetExpectations();
+            $httpBackend.expectPATCH(url, requestData).respond(204);
+
+            articleService.saveSwitches(articleObj, switchNames);
+        });
+
+        it('resolves given promise on successful server response',
+            function () {
+                var successSpy = jasmine.createSpy();
+
+                articleService.saveSwitches(
+                    articleObj, switchNames
+                ).then(successSpy);
+                $httpBackend.flush(1);
+
+                expect(successSpy).toHaveBeenCalled();
+            }
+        );
+
+        it('rejects given promise on server error response',
+            function () {
+                var errorSpy = jasmine.createSpy();
+
+                $httpBackend.resetExpectations();
+                $httpBackend.expectPATCH(url).respond(500);
+
+                articleService.saveSwitches(
+                    articleObj, switchNames
+                ).catch(errorSpy);
+                $httpBackend.flush(1);
+
+                expect(errorSpy).toHaveBeenCalled();
+            }
+        );
+    });
+
     describe('deserializeAlohaBlocks() method', function () {
         it('returns null if text is null as well', function () {
             var converted = articleService.deserializeAlohaBlocks(null);

@@ -1,0 +1,31 @@
+<section
+    ng-controller="PaneSwitchesCtrl as psCtrl"
+    class="tabcontent switches-panel">
+
+  <div class="panel-title">
+    Switches
+  </div>
+
+  <div class="switches-list">
+    <ul>      
+      <li ng-repeat="switchName in psCtrl.switchNames">
+        <input
+            type="checkbox" class="input_checkbox"
+            name="{{::switchName}}" id="{{::switchName}}"
+            ng-model="psCtrl.articleObj.fields[switchName]"
+            ng-change="psCtrl.valueChanged()"
+            ng-disabled="psCtrl.saveInProgress"/>
+          <label for="{{::switchName}}">{{::switchName}}</label>
+      </li>
+    </ul>
+
+    <div class="controls clearfix">
+      <button
+        class="btn btn-primary btn-sm save-button"
+        ng-disabled="!psCtrl.modified || psCtrl.saveInProgress"
+        ng-click="psCtrl.save()"
+        >Save</button>
+    </div>
+  </div>
+
+</section>
