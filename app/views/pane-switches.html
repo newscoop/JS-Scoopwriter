@@ -1,5 +1,5 @@
 <section
-    ng-controller="PaneSwitchesCtrl"
+    ng-controller="PaneSwitchesCtrl as psCtrl"
     class="tabcontent switches-panel">
 
   <div class="panel-title">
@@ -8,13 +8,13 @@
 
   <div class="switches-list">
     <ul>      
-      <li ng-repeat="switch in switches">
+      <li ng-repeat="switch in psCtrl.switches">
         <input
             type="checkbox" class="input_checkbox"
             name="{{::switch.name}}" id="{{::switch.name}}"
             ng-model="switch.value"
-            ng-change="valueChanged()"
-            ng-disabled="saveInProgress"/>
+            ng-change="psCtrl.valueChanged()"
+            ng-disabled="psCtrl.saveInProgress"/>
           <label for="{{::switch.name}}">{{::switch.name}}</label>
       </li>
     </ul>
@@ -22,8 +22,8 @@
     <div class="controls clearfix">
       <button
         class="btn btn-primary btn-sm save-button"
-        ng-disabled="!pendingChange || saveInProgress"
-        ng-click="save()"
+        ng-disabled="!psCtrl.modified || psCtrl.saveInProgress"
+        ng-click="psCtrl.save()"
         >Save</button>
     </div>
   </div>

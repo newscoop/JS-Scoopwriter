@@ -6,11 +6,10 @@
 * @class PaneSwitchesCtrl
 */
 angular.module('authoringEnvironmentApp').controller('PaneSwitchesCtrl', [
-    '$scope',
     '$q',
     'article',
     'ArticleType',
-    function ($scope, $q, article, ArticleType) {
+    function ($q, article, ArticleType) {
         var self = this;
 
         // load article's switches' values
@@ -26,7 +25,7 @@ angular.module('authoringEnvironmentApp').controller('PaneSwitchesCtrl', [
                 if (field.type === 'switch') {
                     // convert raw data to boolean
                     value = !!parseInt(self.articleData.fields[field.name]);
-                    $scope.switches.push({
+                    self.switches.push({
                         name: field.name,
                         value: value
                     });
@@ -40,8 +39,8 @@ angular.module('authoringEnvironmentApp').controller('PaneSwitchesCtrl', [
         * @method valueChanged
         */
         // TODO: tests
-        $scope.valueChanged = function () {
-            $scope.pendingChange = true;
+        self.valueChanged = function () {
+            self.modified = true;
         };
 
         /**
@@ -50,26 +49,26 @@ angular.module('authoringEnvironmentApp').controller('PaneSwitchesCtrl', [
         * @method save
         */
         // TODO: tests
-        $scope.save = function () {
+        self.save = function () {
             var articleData;
 
-            $scope.saveInProgress = true;
+            self.saveInProgress = true;
 
             articleData = {
                 articleId: self.articleData.number,
                 language: self.articleData.language,
-                switches: $scope.switches
+                switches: self.switches
             }
 
             article.saveSwitches(articleData)
             .finally(function () {
-                $scope.pendingChange = false;
-                $scope.saveInProgress = false;
+                self.modified = false;
+                self.saveInProgress = false;
             });
         };
 
-        $scope.switches = [];
-        $scope.pendingChange = false;  // are there any unsaved changes?
-        $scope.saveInProgress = false;  // saving to server in progress?
+        self.switches = [];
+        self.modified = false;  // are there any unsaved changes?
+        self.saveInProgress = false;  // saving to server in progress?
     }
 ]);
