@@ -193,18 +193,22 @@ describe('Service: article', function () {
 
 
     describe('saveSwitches() method', function () {
-        var articleData,
+        var articleObj,
+            switchNames,
             url;
 
         beforeEach(function () {
-            articleData = {
-                articleId: 8,
+            articleObj = {
+                number: 8,
                 language: 'en',
-                switches: [
-                    {name: 'switch_1', value: false},
-                    {name: 'switch_2', value: true}
-                ]
+                fields: {
+                    'switch_1': false,
+                    'switch_2': true,
+                    'content_field': 'foobar'
+                }
             };
+
+            switchNames = ['switch_1', 'switch_2'];
 
             url = Routing.generate(
                 // XXX: should be the patcharticle path, but there is a bug in
@@ -222,7 +226,7 @@ describe('Service: article', function () {
         });
 
         it('invokes correct API endpoint', function () {
-            articleService.saveSwitches(articleData);
+            articleService.saveSwitches(articleObj, switchNames);
         });
 
         it('sends correct data to server', function () {
@@ -235,15 +239,18 @@ describe('Service: article', function () {
             $httpBackend.resetExpectations();
             $httpBackend.expectPATCH(url, requestData).respond(204);
 
-            articleService.saveSwitches(articleData);
+            articleService.saveSwitches(articleObj, switchNames);
         });
 
         it('resolves given promise on successful server response',
             function () {
                 var successSpy = jasmine.createSpy();
 
-                articleService.saveSwitches(articleData).then(successSpy);
+                articleService.saveSwitches(
+                    articleObj, switchNames
+                ).then(successSpy);
                 $httpBackend.flush(1);
+
                 expect(successSpy).toHaveBeenCalled();
             }
         );
@@ -255,8 +262,11 @@ describe('Service: article', function () {
                 $httpBackend.resetExpectations();
                 $httpBackend.expectPATCH(url).respond(500);
 
-                articleService.saveSwitches(articleData).catch(errorSpy);
+                articleService.saveSwitches(
+                    articleObj, switchNames
+                ).catch(errorSpy);
                 $httpBackend.flush(1);
+
                 expect(errorSpy).toHaveBeenCalled();
             }
         );

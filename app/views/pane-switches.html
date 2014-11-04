@@ -8,14 +8,14 @@
 
   <div class="switches-list">
     <ul>      
-      <li ng-repeat="switch in psCtrl.switches">
+      <li ng-repeat="switchName in psCtrl.switchNames">
         <input
             type="checkbox" class="input_checkbox"
-            name="{{::switch.name}}" id="{{::switch.name}}"
-            ng-model="switch.value"
+            name="{{::switchName}}" id="{{::switchName}}"
+            ng-model="psCtrl.articleObj.fields[switchName]"
             ng-change="psCtrl.valueChanged()"
             ng-disabled="psCtrl.saveInProgress"/>
-          <label for="{{::switch.name}}">{{::switch.name}}</label>
+          <label for="{{::switchName}}">{{::switchName}}</label>
       </li>
     </ul>
 
