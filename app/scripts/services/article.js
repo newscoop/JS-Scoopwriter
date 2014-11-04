@@ -307,6 +307,43 @@ angular.module('authoringEnvironmentApp').service('article', [
             return deferred.promise;
         }
 
+        /**
+        * Saves current values of article's switches to the server.
+        *
+        * @method saveSwitches
+        * @param articleData {Object} object containing all needed data
+        *   @param articleData.articleId {Number} article's ID
+        *   @param articleData.number {String} article's language code
+        *   @param articleData.switches {Array} list of objects representing
+        *     article's switches. Example:
+        *     {name: 'Disable_Article_Image', value: false}
+        * @return {Object} promise object.
+        */
+        // TODO; tests
+        // XXX: get rid of explicitly passing articleData
+        function saveSwitches(articleData) {
+            var deferred = $q.defer(),
+                postData = {
+                    fields: {}
+                };
+
+            articleData.switches.forEach(function (item) {
+                postData.fields[item.name] = item.value;
+            });
+
+            resource.save({
+                articleId: articleData.articleId,
+                language: articleData.language
+            }, postData,
+            function () {
+                deferred.resolve();
+            }, function () {
+                deferred.reject();
+            });
+
+            return deferred.promise;
+        }
+
 
         return {
             commenting: commenting,
@@ -316,6 +353,7 @@ angular.module('authoringEnvironmentApp').service('article', [
             resource: resource,
             promise: deferred.promise,
             save: save,
+            saveSwitches: saveSwitches,
             // XXX: this deserialization shouldn't be public...?
             // Should be hidden here in this service to simplify ArticleCtrl
             deserializeAlohaBlocks: deserializeAlohaBlocks,

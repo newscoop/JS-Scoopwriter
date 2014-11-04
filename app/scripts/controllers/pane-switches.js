@@ -13,8 +13,7 @@ angular.module('authoringEnvironmentApp').controller('PaneSwitchesCtrl', [
     function ($scope, $q, article, ArticleType) {
         var self = this;
 
-        $scope.switches = [];
-
+        // load article's switches' values
         article.promise.then(
             function (articleData) {
                 self.articleData = articleData;
@@ -22,24 +21,55 @@ angular.module('authoringEnvironmentApp').controller('PaneSwitchesCtrl', [
             }, $q.reject
         ).then(function (articleType) {
             articleType.fields.forEach(function (field) {
-                var enabled;
+                var value;
 
                 if (field.type === 'switch') {
                     // convert raw data to boolean
-                    enabled = !!parseInt(self.articleData.fields[field.name]);
+                    value = !!parseInt(self.articleData.fields[field.name]);
                     $scope.switches.push({
                         name: field.name,
-                        enabled: enabled
+                        value: value
                     });
                 }
             });
         });
 
+        /**
+        * Checkbox value changed event handler. Sets the dirty flag.
+        *
+        * @method valueChanged
+        */
+        // TODO: tests
         $scope.valueChanged = function () {
-            // TODO: set dirty flag to true! "modified"
-            //this is just for debug, later remove
-            console.debug('switches:', $scope.switches);
+            $scope.pendingChange = true;
         };
 
+        /**
+        * Updates article's switches' values on the server.
+        *
+        * @method save
+        */
+        // TODO: tests
+        $scope.save = function () {
+            var articleData;
+
+            $scope.saveInProgress = true;
+
+            articleData = {
+                articleId: self.articleData.number,
+                language: self.articleData.language,
+                switches: $scope.switches
+            }
+
+            article.saveSwitches(articleData)
+            .finally(function () {
+                $scope.pendingChange = false;
+                $scope.saveInProgress = false;
+            });
+        };
+
+        $scope.switches = [];
+        $scope.pendingChange = false;  // are there any unsaved changes?
+        $scope.saveInProgress = false;  // saving to server in progress?
     }
 ]);
