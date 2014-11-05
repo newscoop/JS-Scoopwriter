@@ -398,12 +398,21 @@ describe('Service: Images', function () {
     });
 
     describe('loadAttached() method', function () {
-        var getAllResponse,
-            NcImage;
+        var getAllDeferred,
+            getAllResponse,
+            NcImage,
+            $rootScope;
 
-        beforeEach(inject(function (_NcImage_) {
+        beforeEach(inject(function ($q, _$rootScope_, _NcImage_) {
             NcImage = _NcImage_;
-            getAllResponse = [{id: 2}, {id: 5}, {id: 1}];
+            $rootScope = _$rootScope_;
+
+            getAllResponse = [
+                {id: 2}, {id: 5}, {id: 1}
+            ];
+            getAllDeferred = $q.defer();
+            getAllResponse.$promise = getAllDeferred.promise;
+
             spyOn(NcImage, 'getAllByArticle').andReturn(getAllResponse);
         }));
 
@@ -416,6 +425,28 @@ describe('Service: Images', function () {
             images.attached = [];
             images.loadAttached({number: 17, language: 'it'});
             expect(images.attached).toEqual(getAllResponse);
+        });
+
+        it('resolves attachedLoaded promise on successful load', function () {
+            var onSuccessSpy = jasmine.createSpy();
+            images.attachedLoaded.then(onSuccessSpy);
+
+            images.loadAttached({number: 17, language: 'it'});
+            getAllDeferred.resolve();
+            $rootScope.$apply();
+
+            expect(onSuccessSpy).toHaveBeenCalled();
+        });
+
+        it('rejects attachedLoaded promise on load error', function () {
+            var onErrorSpy = jasmine.createSpy();
+            images.attachedLoaded.catch(onErrorSpy);
+
+            images.loadAttached({number: 17, language: 'it'});
+            getAllDeferred.reject();
+            $rootScope.$apply();
+
+            expect(onErrorSpy).toHaveBeenCalled();
         });
     });
 
