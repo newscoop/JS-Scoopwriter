@@ -16,8 +16,8 @@ angular.module('authoringEnvironmentApp').service('images', [
         getFileReader, formDataFactory, imageFactory, NcImage,
         $upload, $rootScope, $q
     ) {
-        /* more info about the page tracker in its tests */
-        var self = this,
+        var loadAttachedDeferred,
+            self = this,
             ITEMS_PER_PAGE_DEFAULT = 50;
 
         article.promise.then(function (article) {
@@ -38,6 +38,9 @@ angular.module('authoringEnvironmentApp').service('images', [
         self.itemsFound = 0;
         self.searchFilter = '';
         self.canLoadMore = false;  // is there another page to fetch?
+
+        loadAttachedDeferred = $q.defer();
+        self.attachedLoaded = loadAttachedDeferred.promise;
 
         /**
         * Fetches and displays the first page of results using the given search
@@ -131,7 +134,8 @@ angular.module('authoringEnvironmentApp').service('images', [
 
         /**
         * Loads image objects attached to the article and initializes
-        *  the `attached` array (NOTE: any existing items are discarded).
+        * the `attached` array (NOTE: any existing items are discarded).
+        * It resolves/rejects the attachedLoaded promise on success/failure.
         *
         * @method loadAttached
         * @param article {Object} article object for which to load the
@@ -140,6 +144,11 @@ angular.module('authoringEnvironmentApp').service('images', [
         self.loadAttached = function (article) {
             self.attached = NcImage.getAllByArticle(
                 article.number, article.language);
+
+            self.attached.$promise.then(
+                loadAttachedDeferred.resolve,
+                loadAttachedDeferred.reject
+            );
         };
 
         /**
