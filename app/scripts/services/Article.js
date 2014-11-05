@@ -186,6 +186,7 @@ angular.module('authoringEnvironmentApp').factory('Article', [
         Article = function (data) {
             var self = this;
             // TODO: add any data conversions necessary...
+            data = data || {};
             Object.keys(data).forEach(function (key) {
                 self[key] = data[key];
             });
@@ -265,7 +266,6 @@ angular.module('authoringEnvironmentApp').factory('Article', [
         * @param text {String} text for which to calculate the stats
         * @return {Object} text statistics (e.g. {chars: 15, words:4})
         */
-        // TODO: tests
         Article.textStats = function (text) {
             var match,
                 stats = {};
@@ -359,7 +359,6 @@ angular.module('authoringEnvironmentApp').factory('Article', [
         *   object.
         * @return {Object} promise object.
         */
-        // TODO: tests
         Article.prototype.changeCommentingSetting = function (newValue) {
             var deferred = $q.defer(),
                 postData,
@@ -371,7 +370,6 @@ angular.module('authoringEnvironmentApp').factory('Article', [
                 true
             );
 
-            // TODO: booleans fine? or need to convert to 1 or 0?
             postData = {
                 comments_enabled: (newValue === Article.commenting.ENABLED),
                 comments_locked: (newValue === Article.commenting.LOCKED)
@@ -391,16 +389,12 @@ angular.module('authoringEnvironmentApp').factory('Article', [
         /**
         * Updates article's workflow status on the server.
         *
-        * @method updateWorkflowStatus
+        * @method setWorkflowStatus
         * @param status {String} article's new workflow status
         * @return {Object} the underlying $http object's promise
         */
-        // TODO: tests
-        Article.prototype.updateWorkflowStatus = function (status) {
-            var promise,
-                url;
-
-            url = Routing.generate(
+        Article.prototype.setWorkflowStatus = function (status) {
+            var url = Routing.generate(
                 'newscoop_gimme_articles_changearticlestatus',
                 {
                     number: this.articleId,
@@ -410,13 +404,10 @@ angular.module('authoringEnvironmentApp').factory('Article', [
                 true
             );
 
-            promise = $http({
-                method: 'PATCH',
-                url: url
-            });
-            return promise;
+            return $http.patch(url);
         };
 
+        // XXX: what about the internal modified flag?
         return Article;
     }
 ]);
