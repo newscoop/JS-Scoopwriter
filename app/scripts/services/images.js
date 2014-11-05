@@ -17,28 +17,27 @@ angular.module('authoringEnvironmentApp').service('images', [
         $upload, $rootScope, $q
     ) {
         /* more info about the page tracker in its tests */
-        var service = this,
-            self = this,
+        var self = this,
             ITEMS_PER_PAGE_DEFAULT = 50;
 
         article.promise.then(function (article) {
-            service.article = article;
-            service.loadAttached(article);
+            self.article = article;
+            self.loadAttached(article);
         });
 
-        this.tracker = pageTracker.getTracker({ max: 100 });
-        this.loaded = [];
-        this.displayed = [];
-        this.collected = [];  // list of collected images (those in basket)
-        this.attached = [];  // list of images attached to the article
-        this.images2upload = [];  // list of images to upload
-        this.includedIndex = -1;
-        this.inArticleBody = {};  // list of img IDs in article body
-        this.itemsPerPage = ITEMS_PER_PAGE_DEFAULT;
+        self.tracker = pageTracker.getTracker({ max: 100 });
+        self.loaded = [];
+        self.displayed = [];
+        self.collected = [];  // list of collected images (those in basket)
+        self.attached = [];  // list of images attached to the article
+        self.images2upload = [];  // list of images to upload
+        self.includedIndex = -1;
+        self.inArticleBody = {};  // list of img IDs in article body
+        self.itemsPerPage = ITEMS_PER_PAGE_DEFAULT;
 
-        this.itemsFound = 0;
-        this.searchFilter = '';
-        this.canLoadMore = false;  // is there another page to fetch?
+        self.itemsFound = 0;
+        self.searchFilter = '';
+        self.canLoadMore = false;  // is there another page to fetch?
 
         /**
         * Fetches and displays the first page of results using the given search
@@ -55,11 +54,11 @@ angular.module('authoringEnvironmentApp').service('images', [
             self.searchFilter = filter;
 
             // not so pretty, but it's the fastest way to clear an Array
-            while(service.displayed.length > 0) {
-                service.displayed.pop();
+            while(self.displayed.length > 0) {
+                self.displayed.pop();
             }
-            while(service.loaded.length > 0) {
-                service.loaded.pop();
+            while(self.loaded.length > 0) {
+                self.loaded.pop();
             }
             self.tracker.reset();
             self.itemsFound = 0;
@@ -68,20 +67,20 @@ angular.module('authoringEnvironmentApp').service('images', [
             self.load(
                 self.tracker.next(), self.searchFilter
             ).then(function (data) {
-                service.displayed = data.items;
+                self.displayed = data.items;
 
                 if (data.pagination) {
-                    service.itemsPerPage = data.pagination.itemsPerPage;
-                    service.itemsFound = data.pagination.itemsCount;
+                    self.itemsPerPage = data.pagination.itemsPerPage;
+                    self.itemsFound = data.pagination.itemsCount;
                 } else {
-                    service.itemsPerPage = ITEMS_PER_PAGE_DEFAULT;
-                    service.itemsFound = data.items.length;
+                    self.itemsPerPage = ITEMS_PER_PAGE_DEFAULT;
+                    self.itemsFound = data.items.length;
                 }
 
-                service.canLoadMore = !pageTracker.isLastPage(data.pagination);
+                self.canLoadMore = !pageTracker.isLastPage(data.pagination);
 
-                if (service.canLoadMore) {
-                    service.more();
+                if (self.canLoadMore) {
+                    self.more();
                 }
             });
         };
@@ -97,15 +96,15 @@ angular.module('authoringEnvironmentApp').service('images', [
             var additional = self.loaded.splice(0, self.itemsPerPage);
             self.displayed = self.displayed.concat(additional);
 
-            if (!service.canLoadMore) {
+            if (!self.canLoadMore) {
                 return;
             }
 
             self.load(
                 self.tracker.next(), self.searchFilter
             ).then(function (data) {
-                service.loaded = service.loaded.concat(data.items);
-                service.canLoadMore = !pageTracker.isLastPage(data.pagination);
+                self.loaded = self.loaded.concat(data.items);
+                self.canLoadMore = !pageTracker.isLastPage(data.pagination);
             });
         };
 
@@ -138,8 +137,8 @@ angular.module('authoringEnvironmentApp').service('images', [
         * @param article {Object} article object for which to load the
         *     attached images.
         */
-        this.loadAttached = function (article) {
-            service.attached = NcImage.getAllByArticle(
+        self.loadAttached = function (article) {
+            self.attached = NcImage.getAllByArticle(
                 article.number, article.language);
         };
 
@@ -155,21 +154,21 @@ angular.module('authoringEnvironmentApp').service('images', [
         * @param [loadFromServer=false] {Boolean} whether or not to retrieve
         *     image info from the server
         */
-        this.collect = function (id, loadFromServer) {
+        self.collect = function (id, loadFromServer) {
             var image;
 
-            if (this.isCollected(id)) {
+            if (self.isCollected(id)) {
                 return;
             }
 
             if (!loadFromServer) {
-                image = _.find(this.displayed, {id: id});
+                image = _.find(self.displayed, {id: id});
                 if (image) {
-                    service.collected.push(image);
+                    self.collected.push(image);
                 }
             } else {
                 NcImage.getById(id).then(function (image) {
-                    service.collected.push(image);
+                    self.collected.push(image);
                 });
             }
         };
@@ -180,8 +179,8 @@ angular.module('authoringEnvironmentApp').service('images', [
         * @method discard
         * @param id {Number} ID of an image to remove
         */
-        this.discard = function (id) {
-            _.remove(this.collected, {id: id});
+        self.discard = function (id) {
+            _.remove(self.collected, {id: id});
         };
 
         /**
@@ -189,13 +188,13 @@ angular.module('authoringEnvironmentApp').service('images', [
         *¸
         * @method discardAll
         */
-        this.discardAll = function () {
-            while (service.collected.length > 0) {
-                service.collected.pop();
+        self.discardAll = function () {
+            while (self.collected.length > 0) {
+                self.collected.pop();
             }
 
-            while (service.images2upload.length > 0) {
-                service.images2upload.pop();
+            while (self.images2upload.length > 0) {
+                self.images2upload.pop();
             }
         };
 
@@ -209,8 +208,8 @@ angular.module('authoringEnvironmentApp').service('images', [
 
             // skip already attached images (this should generally not happen,
             // but if it does, it might be some bug in the basket logic)
-            service.collected.forEach(function (image) {
-                if (!_.find(service.attached, image)) {
+            self.collected.forEach(function (image) {
+                if (!_.find(self.attached, image)) {
                     notYetAttached.push(image);
                 }
             });
@@ -236,18 +235,18 @@ angular.module('authoringEnvironmentApp').service('images', [
         * @method detach
         * @param id {Number} ID of an image to detach
         */
-        this.detach = function (id) {
-            var image = _.find(this.attached, {id: id});
+        self.detach = function (id) {
+            var image = _.find(self.attached, {id: id});
 
             if (!image) {
                 return;  // image not attached, nothing to do
             }
 
             image.removeFromArticle(
-                service.article.number, service.article.language
+                self.article.number, self.article.language
             )
             .then(function () {
-                _.remove(service.attached, {id: id});
+                _.remove(self.attached, {id: id});
             });
         };
 
@@ -258,8 +257,8 @@ angular.module('authoringEnvironmentApp').service('images', [
         * @method addToIncluded
         * @param imageId {Number} ID of the image
         */
-        this.addToIncluded = function (imageId) {
-            this.inArticleBody[imageId] = true;
+        self.addToIncluded = function (imageId) {
+            self.inArticleBody[imageId] = true;
         };
 
         /**
@@ -269,8 +268,8 @@ angular.module('authoringEnvironmentApp').service('images', [
         * @method removeFromIncluded
         * @param imageId {Number} ID of the image
         */
-        this.removeFromIncluded = function (imageId) {
-            delete this.inArticleBody[imageId];
+        self.removeFromIncluded = function (imageId) {
+            delete self.inArticleBody[imageId];
         };
 
         /**
@@ -282,8 +281,8 @@ angular.module('authoringEnvironmentApp').service('images', [
         * @return {Object|undefined} image object (undefined if image is not
         *     found)
         */
-        this.findAttached = function (id) {
-            return _.find(this.attached, {id: id});
+        self.findAttached = function (id) {
+            return _.find(self.attached, {id: id});
         };
 
         /**
@@ -295,8 +294,8 @@ angular.module('authoringEnvironmentApp').service('images', [
         * @return {Object|undefined} image object (undefined if image is not
         *     found)
         */
-        this.findCollected = function (id) {
-            return _.find(this.collected, {id: id});
+        self.findCollected = function (id) {
+            return _.find(self.collected, {id: id});
         };
 
         /**
@@ -307,8 +306,8 @@ angular.module('authoringEnvironmentApp').service('images', [
         * @param id {Number} ID of the image
         * @return {Object} image object
         */
-        this.byId = function (id) {
-            var i = this.findAttached(id);
+        self.byId = function (id) {
+            var i = self.findAttached(id);
             if (i) {
                 return i;
             } else {
@@ -325,8 +324,8 @@ angular.module('authoringEnvironmentApp').service('images', [
         * @return {String} true if image is attached to the article,
         *     false otherwise
         */
-        this.isAttached = function (id) {
-            return typeof this.findAttached(id) !== 'undefined';
+        self.isAttached = function (id) {
+            return typeof self.findAttached(id) !== 'undefined';
         };
 
         /**
@@ -336,8 +335,8 @@ angular.module('authoringEnvironmentApp').service('images', [
         * @param id {Number} ID of the image
         * @return {String} true if image is in the basket, false otherwise
         */
-        this.isCollected = function (id) {
-            return typeof this.findCollected(id) !== 'undefined';
+        self.isCollected = function (id) {
+            return typeof self.findCollected(id) !== 'undefined';
         };
 
         /**
@@ -348,8 +347,8 @@ angular.module('authoringEnvironmentApp').service('images', [
         * @param id {Number} ID of the image
         * @return {String} CSS class name
         */
-        this.togglerClass = function (id) {
-            return this.isCollected(id) ? 'glyphicon-minus' : 'glyphicon-plus';
+        self.togglerClass = function (id) {
+            return self.isCollected(id) ? 'glyphicon-minus' : 'glyphicon-plus';
         };
 
         /**
@@ -359,11 +358,11 @@ angular.module('authoringEnvironmentApp').service('images', [
         * @method toggleCollect
         * @param id {Number} ID of the image
         */
-        this.toggleCollect = function (id) {
-            if (this.isCollected(id)) {
-                this.discard(id);
+        self.toggleCollect = function (id) {
+            if (self.isCollected(id)) {
+                self.discard(id);
             } else {
-                this.collect(id);
+                self.collect(id);
             }
         };
 
@@ -375,13 +374,13 @@ angular.module('authoringEnvironmentApp').service('images', [
         * @param newImages {Object} array with objects cointaining image Files
         *     that user wants to upload
         */
-        this.addToUploadList = function (newImages) {
+        self.addToUploadList = function (newImages) {
             var i,
                 image;
 
             for (i = 0; i < newImages.length; i++) {
-                image = this.decorate(newImages[i]);
-                this.images2upload.push(image);
+                image = self.decorate(newImages[i]);
+                self.images2upload.push(image);
                 image.readRawData();
             }
         };
@@ -392,8 +391,8 @@ angular.module('authoringEnvironmentApp').service('images', [
         * @method removeFromUploadList
         * @param image {Object} image to remove
         */
-        this.removeFromUploadList = function (image) {
-            _.remove(this.images2upload, image);
+        self.removeFromUploadList = function (image) {
+            _.remove(self.images2upload, image);
         };
 
         /**
@@ -402,9 +401,9 @@ angular.module('authoringEnvironmentApp').service('images', [
         *
         * @method clearUploadList
         */
-        this.clearUploadList = function () {
-            while (this.images2upload.length > 0) {
-                this.images2upload.pop();
+        self.clearUploadList = function () {
+            while (self.images2upload.length > 0) {
+                self.images2upload.pop();
             }
         };
 
@@ -415,11 +414,11 @@ angular.module('authoringEnvironmentApp').service('images', [
         * @method uploadAll
         * @return {Object} array of upload promises objects
         */
-        this.uploadAll = function () {
+        self.uploadAll = function () {
             var uploadPromise,
                 promiseList = [];
 
-            service.images2upload.forEach(function (image) {
+            self.images2upload.forEach(function (image) {
                 uploadPromise = image.startUpload();
                 promiseList.push(uploadPromise);
             });
@@ -435,7 +434,7 @@ angular.module('authoringEnvironmentApp').service('images', [
         * @param image {Object} image File object that user wants to upload
         * @return {Object} Decorated image object
         */
-        this.decorate = function (image) {
+        self.decorate = function (image) {
             /**
             * @class image
             */
