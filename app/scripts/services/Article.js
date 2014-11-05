@@ -319,6 +319,36 @@ angular.module('authoringEnvironmentApp').factory('Article', [
             return deferred.promise;
         };
 
+        // TODO: comments & tests
+        Article.prototype.saveSwitches = function (switchNames) {
+            var deferred = $q.defer(),
+                postData,
+                url;
+
+            url = Routing.generate(
+                'newscoop_gimme_articles_patcharticle',
+                {number: this.articleId, language: this.language},
+                true
+            );
+
+            postData = {
+                fields: {}
+            };
+            switchNames.forEach(function (name) {
+                postData.fields[name] = this.fields[name];
+            });
+
+            $http.patch(
+                url, postData
+            ).success(function () {
+                deferred.resolve();
+            }).error(function (responseBody) {
+                deferred.reject(responseBody);
+            });
+
+            return deferred.promise;
+        };
+
         /**
         * Changes the value of the article's commenting setting and updates
         * it on the server.
