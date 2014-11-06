@@ -50,7 +50,7 @@ describe('Controller: DroppedImageCtrl', function () {
     );
 
     describe('init() method', function () {
-        var deferredAttached,
+        var deferredAttachedLoaded,
             mockedImage;
 
         beforeEach(inject(function ($q) {
@@ -60,15 +60,15 @@ describe('Controller: DroppedImageCtrl', function () {
             };
             spyOn(images, 'byId').andReturn(mockedImage);
 
-            deferredAttached = $q.defer();
-            images.attached.$promise = deferredAttached.promise;
+            deferredAttachedLoaded = $q.defer();
+            images.attachedLoaded = deferredAttachedLoaded.promise;
         }));
 
         it('exposes correct image object in scope', function () {
             scope.image = null;
 
             DroppedImageCtrl.init(5);
-            deferredAttached.resolve();
+            deferredAttachedLoaded.resolve();
             scope.$digest();
 
             expect(scope.image).toBe(mockedImage);  // test for identity!
@@ -76,7 +76,7 @@ describe('Controller: DroppedImageCtrl', function () {
 
         it('adds image to the list of images in article body', function () {
             DroppedImageCtrl.init(5);
-            deferredAttached.resolve();
+            deferredAttachedLoaded.resolve();
             scope.$digest();
 
             expect(images.addToIncluded).toHaveBeenCalledWith(5);
@@ -88,7 +88,7 @@ describe('Controller: DroppedImageCtrl', function () {
                 scope.newCaption = '';
 
                 DroppedImageCtrl.init(5);
-                deferredAttached.resolve();
+                deferredAttachedLoaded.resolve();
                 scope.$digest();
 
                 expect(scope.newCaption).toEqual('My image');
@@ -102,7 +102,7 @@ describe('Controller: DroppedImageCtrl', function () {
             promise = DroppedImageCtrl.init(5);
             promise.then(onSuccessSpy);
 
-            deferredAttached.resolve();
+            deferredAttachedLoaded.resolve();
             scope.$digest();
 
             expect(onSuccessSpy).toHaveBeenCalledWith(mockedImage);

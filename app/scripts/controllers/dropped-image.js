@@ -19,7 +19,7 @@ angular.module('authoringEnvironmentApp').controller('DroppedImageCtrl', [
         this.init = function (imageId) {
             var deferred = $q.defer();
 
-            images.attached.$promise.then(function () {
+            images.attachedLoaded.then(function () {
                 $scope.image = images.byId(imageId);
                 images.addToIncluded($scope.image.id);
                 $scope.newCaption = $scope.image.description;

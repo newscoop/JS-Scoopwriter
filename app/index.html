@@ -28,7 +28,7 @@
     <meta name="viewport" content="width=device-width">
     <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
 
-        <link href='http://fonts.googleapis.com/css?family=Roboto:400,500,700' rel='stylesheet' type='text/css'>
+        <link href='http://fonts.googleapis.com/css?family=Roboto:300,300italic,400,400italic,500,500italic,700,700italic' rel='stylesheet' type='text/css'>
 
         <link rel="stylesheet" href="bower_components/ng-aloha-editor/libs/alohaeditor-0.26.4/aloha/css/aloha.css">
         <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
@@ -36,6 +36,10 @@
         <!-- build:css(.tmp) styles/main.css -->
         <link rel="stylesheet" href="styles/main.css">
         <!-- endbuild -->
+
+        <!-- custom content stylesheet -->
+         <link rel="stylesheet" href="css/aes-custom-styles.css">
+
 </head>
   <body ng-app="authoringEnvironmentApp">
     <!--[if lt IE 7]>
@@ -141,13 +145,16 @@
         <script src="scripts/services/Topic.js"></script>
         <script src="scripts/controllers/sf-panes.js"></script>
         <script src="scripts/controllers/pane-authors.js"></script>
+        <script src="scripts/controllers/pane-info.js"></script>
         <script src="scripts/controllers/pane-topics.js"></script>
+        <script src="scripts/controllers/pane-switches.js"></script>
         <script src="scripts/services/panes.js"></script>
         <script src="scripts/controllers/panes-config.js"></script>
         <script src="scripts/controllers/article.js"></script>
         <script src="scripts/controllers/articleActions.js"></script>
         <script src="scripts/services/AlohaFormattingFactory.js"></script>
         <script src="scripts/directives/sf-aloha-format-generic.js"></script>
+        <script src="scripts/directives/sf-aloha-format-link.js"></script>
         <script src="scripts/directives/sf-aloha-format-style.js"></script>
         <script src="scripts/controllers/Toolbar.js"></script>
         <script src="scripts/services/article.js"></script>
@@ -172,6 +179,7 @@
         <script src="scripts/controllers/attach-image.js"></script>
         <script src="scripts/controllers/upload-from-comp.js"></script>
         <script src="scripts/services/page-tracker.js"></script>
+        <script src="scripts/directives/dropped-images-container.js"></script>
         <script src="scripts/directives/dropped-image.js"></script>
         <script src="scripts/controllers/dropped-image.js"></script>
         <script src="scripts/services/configuration.js"></script>
@@ -191,6 +199,7 @@
         <script src="scripts/services/nested-sort.js"></script>
         <script src="scripts/services/current-time.js"></script>
         <script src="scripts/filters/nice-date.js"></script>
+        <script src="scripts/filters/strip-html.js"></script>
         <script src="scripts/directives/drop-images.js"></script>
         <script src="scripts/directives/file-upload.js"></script>
         <script src="scripts/services/Author.js"></script>

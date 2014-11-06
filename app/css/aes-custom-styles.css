@@ -1,0 +1,98 @@
+/*!
+ *
+ * AES custom stylesheet
+ * Adapt the look and feel of the article content in the AES
+ *
+ * Important! This only works with default set of fields defined in config
+ *
+ */
+
+
+/* Date line */
+.authoring-environment .article-field.dateline {
+    font-family: 'Roboto', Arial, Helvetica, sans-serif;
+    font-size: 16px;
+    font-weight: 300; /* Roboto: 300,400,500 or 700 */
+    font-style: normal; /* normal, italic */
+    color: #333;
+    line-height: 140%;
+}
+
+/* Title */
+.authoring-environment .article-field.title {
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    font-size: 38px;
+    font-weight: normal;
+    font-style: normal;
+    color: #333;
+    line-height: 140%;
+}
+
+/* Lead */
+.authoring-environment .article-field.lede {
+    font-family: 'Roboto', Arial, Helvetica, sans-serif;
+    font-size: 20px;
+    font-weight: 500; /* Roboto: 300,400,500 or 700 */
+    font-style: normal; /* normal, italic */
+    color: #333;
+    line-height: 140%;
+}
+
+/*  Body text - Normal */
+.authoring-environment .article-field.body {
+    font-family: 'Roboto', Arial, Helvetica, sans-serif;
+    font-size: 16px; /* body text size (normal) */
+    font-weight: 400; /* Roboto: 300,400,500 or 700 */
+    font-style: normal; /* normal, italic */
+    color: #333;
+    line-height: 150%;
+}
+
+/* space between paragraphs */
+.authoring-environment .main-article-container p {
+    margin-bottom: 10px;
+}
+
+/* Headings in article body - font family */
+.authoring-environment .main-article-container h1,
+.authoring-environment .main-article-container h2,
+.authoring-environment .main-article-container h3,
+.authoring-environment .main-article-container h4,
+.authoring-environment .main-article-container h5 {
+    font-family: 'Roboto', Arial, Helvetica, sans-serif;
+}
+
+/* Heading 1 */
+.authoring-environment .main-article-container h1 {
+    font-size: 40px;
+    font-weight: normal; /* Roboto: 300,400,500 or 700 */
+    font-style: normal; /* normal, italic */
+}
+
+/* Heading 2 */
+.authoring-environment .main-article-container h2 {
+    font-size: 34px;
+    font-weight: normal; /* Roboto: 300,400,500 or 700 */
+    font-style: normal; /* normal, italic */ 
+}
+
+/* Heading 3 */
+.authoring-environment .main-article-container h3 {
+    font-size: 26px;
+    font-weight: normal; /* Roboto: 300,400,500 or 700 */
+    font-style: normal; /* normal, italic */
+}
+
+/* Heading 4 */
+.authoring-environment .main-article-container h4 {
+    font-size: 22px;
+    font-weight: normal; /* Roboto: 300,400,500 or 700 */
+    font-style: normal; /* normal, italic */
+}
+
+/* Heading 4 */
+.authoring-environment .main-article-container h5 {
+    font-size: 18px;
+    font-weight: normal; /* Roboto: 300,400,500 or 700 */
+    font-style: normal; /* normal, italic */
+}
