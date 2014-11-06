@@ -10,6 +10,16 @@
     <ul>
       <li>
         <div class="field-description">
+          Created:
+        </div>
+        <div class="field-value">
+          <ul>
+            <li>{{(article.created | date : 'yyyy-MM-dd') || '-'}}</li>
+          </ul>
+        </div>
+      </li>
+      <li>
+        <div class="field-description">
           Last updated:
         </div>
         <div class="field-value">
