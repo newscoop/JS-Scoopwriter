@@ -1,6 +1,4 @@
-<div
-   ng-controller="ArticleActionsCtrl"
-   >
+<div ng-controller="ArticleActionsCtrl">
 
   <div class="article-status"
       ng-class="{
@@ -31,11 +29,14 @@
     </div>
   </div>
 
-  <div class="preview-btn" ng-controller="ArticlePreviewCtrl as previewCtrl">
+  <div
+      ng-controller="ArticlePreviewCtrl as previewCtrl"
+      class="preview-btn">
     <button
       type="button"
       class="btn btn-default btn-sm"
       title="Preview article"
+      ng-click="previewCtrl.openPreview()"
     >
       <i class="fa fa-eye"></i>
     </button>
