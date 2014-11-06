@@ -21,7 +21,10 @@ angular.module('authoringEnvironmentApp').controller('PaneSwitchesCtrl', [
         ).then(function (articleType) {
             articleType.fields.forEach(function (field) {
                 if (field.type === 'switch') {
-                    self.switchNames.push(field.name);
+                    self.switches.push({
+                        name: field.name,
+                        text: field.phrase || field.name
+                    });
 
                     // convert all switch values to boolean (undefined
                     // field values get converted to false)
@@ -46,17 +49,19 @@ angular.module('authoringEnvironmentApp').controller('PaneSwitchesCtrl', [
         * @method save
         */
         self.save = function () {
+            var switchNames = _.map(self.switches, 'name');
+
             self.saveInProgress = true;
 
             article.saveSwitches(
-                self.articleObj, self.switchNames
+                self.articleObj, switchNames
             ).finally(function () {
                 self.modified = false;
                 self.saveInProgress = false;
             });
         };
 
-        self.switchNames = [];
+        self.switches = [];
         self.modified = false;  // are there any unsaved changes?
         self.saveInProgress = false;  // saving to server in progress?
     }

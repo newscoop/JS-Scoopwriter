@@ -68,9 +68,31 @@ describe('Controller: PaneSwitchesCtrl', function () {
             });
             $rootScope.$apply();
 
-            expect(PaneSwitchesCtrl.switchNames).toEqual(
-                ['switch_1', 'switch_2']
-            );
+            expect(PaneSwitchesCtrl.switches).toEqual([
+                {name: 'switch_1', text: 'switch_1'},
+                {name: 'switch_2', text: 'switch_2'}
+            ]);
+        }
+    );
+
+    it('uses human-friendly switch names, if available', function () {
+            articleDeferred.resolve({
+                number: 8, language: 'it', type: 'news', fields: {}
+            });
+            articleTypeDeferred.resolve({
+                fields: [
+                    {name: 'switch_1', type: 'switch', phrase: '1st switch'},
+                    {name: 'switch_2', type: 'switch', phrase: '2nd switch'},
+                    {name: 'switch_3', type: 'switch'}
+                ]
+            });
+            $rootScope.$apply();
+
+            expect(PaneSwitchesCtrl.switches).toEqual([
+                {name: 'switch_1', text: '1st switch'},
+                {name: 'switch_2', text: '2nd switch'},
+                {name: 'switch_3', text: 'switch_3'}
+            ]);
         }
     );
 
@@ -184,7 +206,10 @@ describe('Controller: PaneSwitchesCtrl', function () {
                     language: 'fr',
                     fields: {}
                 };
-                PaneSwitchesCtrl.switchNames = ['switch_1', 'switch_2'];
+                PaneSwitchesCtrl.switches = [
+                    {name: 'switch_1', text: 'First Switch'},
+                    {name: 'switch_2', text: 'Second Switch'}
+                ];
 
                 PaneSwitchesCtrl.save();
 
