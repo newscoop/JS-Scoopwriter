@@ -82,13 +82,20 @@ a:hover {
     /* there is also a not editable one, probably it will be removed */
     .article-editable-title {
     }
-    .save-button {
+    .save-close {
         float: right;
-        margin: 4px 12px 0 0;
+        margin: 4px 8px 0 10px;
+        .btn+.btn {
+            margin-left: 8px;
+        }
+    }
+    .preview-btn {
+        float: right;
+        margin: 4px 10px 0 10px;
     }
     .article-status {
         float: right;
-        margin: 4px 12px 0 12px;
+        margin: 4px 0 0 10px;
         line-height: 2em;
 
         .btn-primary {
@@ -932,6 +939,15 @@ a:hover {
 
     /* ZEN MODE */
 
+    .zen-trigger {
+        position: absolute;
+        top: 6px;
+        right: 10px;
+        .btn {
+            padding: 4px 8px;
+        }
+    }
+
     .zen-buttons {
         display:none;  
     }
@@ -956,7 +972,16 @@ a:hover {
             top: 5px;
             z-index: 100;
             .zen-close {
-                padding: 0 9px;
+                padding: 4px 9px 1px 9px;
+                font-size: 18px;
+                color: #808080;
+                &:hover {
+                    color: #333;
+                }
+                &:active {
+                    .box-shadow(inset 0px 1px 3px #ccc);
+                    .border-radius(2px);
+                }
             }
         }
         .subnav-fixed {
@@ -1976,6 +2001,7 @@ a:hover {
     }
     .sf-lower-toolbar {
         padding: 6px 5px 8px 5px;
+        position: relative;
     }
     /* centered nav bar http://stackoverflow.com/a/18538412/393758 */
     .sf-navbar-center {
@@ -3327,7 +3353,7 @@ a:hover {
             &::-webkit-scrollbar-thumb:hover { background: #6e6e6e; border-left: 6px solid rgba(0,0,0,0);background-clip: padding-box; }
             ul {
                 list-style-type: none;
-                margin: 0;
+                margin: 0 0 20px 0;
                 padding: 0;
                 li {
                     padding: 4px 0px;                    
@@ -3639,6 +3665,74 @@ a:hover {
                         }
                     }
                 }
+            }
+        }
+        /* Modal Preview Article */
+        &.modal.modalPreview {
+            position: fixed;
+            width: auto;
+            height: auto;
+            margin: 0 10px 10px;
+            left: 0!important;
+            top: 0!important;
+            right: 0!important;
+            bottom: 0!important;
+            padding: 0!important;
+            overflow: hidden!important;
+            border-radius: 0 0 6px 6px;
+            .modal-dialog {
+                width: auto;
+                height: 100%;
+                margin: 0;
+                padding-top: 10px;
+                .modal-content {
+                    height:100%;
+                    border: 1px solid #222;
+                    .modal-header {
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        right: 0;
+                        padding: 10px 15px;
+                        h4 {
+                            margin: 5px 0;
+                        }
+                    }
+                    .modal-body {                     
+                        position: initial;
+                        height: 100%;
+                    }
+                    .modal-footer {
+                        position: absolute;
+                        bottom: 0;
+                        left: 0;
+                        right: 0;
+                        padding: 10px 15px;
+                    }
+                }
+                .close {
+                    position: absolute;
+                    top: 8px;
+                    right: 8px;
+                    z-index: 10000;
+                    opacity: .4;
+                    padding: 5px;
+                    width: 30px;
+                    height: 30px;
+                    &:hover {
+                        opacity: .8;
+                    }
+                }
+            }
+            iframe {
+                border: none;
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                border-radius: 6px;
+                padding: 50px 0 51px 0;
             }
         }
     }

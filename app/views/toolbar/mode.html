@@ -1,6 +1,4 @@
-<div
-   ng-controller="ArticleActionsCtrl"
-   >
+<div ng-controller="ArticleActionsCtrl">
 
   <div class="article-status"
       ng-class="{
@@ -31,25 +29,44 @@
     </div>
   </div>
 
-  <div class="controls">
+  <div
+      ng-controller="ArticlePreviewCtrl as previewCtrl"
+      class="preview-btn">
     <button
-       class="btn btn-default btn-sm"
-       id="zen-mode"
-       ng-click="mode.goZen()"
-       >
-      Zen mode
+      type="button"
+      class="btn btn-default btn-sm"
+      title="Preview article"
+      ng-click="previewCtrl.openPreview()"
+    >
+      <i class="fa fa-eye"></i>
     </button>
-   
+    
+    <!-- if article is published, switch button to -->
+    <!--button
+      type="button"
+      class="btn btn-default btn-sm"
+      title="Go to live article"
+    >
+       <i class="fa fa-external-link"></i>
+    </button-->
+
   </div>
 
-  <button
-     class="btn btn-primary btn-sm save-button"
-     ng-disabled="!articleService.modified"
-     ng-click="save()"
-     >
-    Save
-  </button>
-
+  <div class="btn-group save-close">
+    <button
+      class="btn btn-default btn-sm"
+      >
+      Close
+    </button>
+    <button
+      class="btn btn-primary btn-sm"
+      ng-disabled="!articleService.modified"
+      ng-click="save()"
+      >
+      Save
+    </button>
+  </div>
+  
   <div
      class="main-article-title aloha-editable"
      id="article-title-fixed"
