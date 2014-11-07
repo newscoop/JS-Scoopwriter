@@ -17,6 +17,20 @@
        ><span class="glyphicon glyphicon-plus-sign"></span>
       Attach image
     </button>
+
+    <div
+        ng-controller="RenditionsEditorCtrl as renditionsCtrl"
+        class="preview-btn">
+      <button
+        type="button"
+        class="btn btn-default btn-sm"
+        title="Edit Renditions"
+        ng-click="renditionsCtrl.openRenditionsEditor()"
+      >
+        <i class="fa fa-eye"></i>
+      </button>
+    </div>
+
   </div>
   <div class="images-wrapper">
     <div class="attached-title">Attached Images</div>
