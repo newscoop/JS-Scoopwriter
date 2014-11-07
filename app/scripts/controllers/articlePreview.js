@@ -7,7 +7,7 @@
     * @class ModalCtrl
     */
     function ModalCtrl(
-        $sce, $scope, $modalInstance, articleInfo, configuration
+        $modalInstance, $sce, articleInfo, configuration
     ) {
         var self = this,
             url;
@@ -26,6 +26,7 @@
 
         /**
         * Closes the modal.
+        *
         * @method close
         */
         self.close = function () {
@@ -34,7 +35,7 @@
     }
 
     ModalCtrl.$inject = [
-        '$sce', '$scope', '$modalInstance', 'articleInfo', 'configuration'
+        '$modalInstance', '$sce', 'articleInfo', 'configuration'
     ];
 
 
@@ -50,25 +51,42 @@
         function ($modal, article) {
             var self = this;
 
-            // TODO: need to wait until the article is loaded...
-            // article.promise.then
-            self.openPreview = function () {
+            /**
+            * Opens the article preview modal.
+            *
+            * @function openPreviewModal
+            * @param articleData {Object} object containing article data
+            */
+            function openPreviewModal(articleData) {
                 $modal.open({
                     templateUrl: 'views/modal-article-preview.html',
                     controller: ModalCtrl,
                     controllerAs: 'modalPreviewCtrl',
                     resolve: {
                         articleInfo: function () {
-                            // TODO: feed real data
+                            // TODO: add real languageId and publicationId
+                            // when available
                             return {
-                                articleId: 533522,
+                                articleId: articleData.number,
                                 languageId: 5,
                                 publicationId: 1,
-                                issueId: 119,
-                                sectionId: 10
+                                issueId: articleData.issue.number,
+                                sectionId: articleData.section.number
                             };
-                        },
+                        }
                     }
+                });
+            }
+
+
+            /**
+            * Opens the article preview modal, providing article data to it.
+            *
+            * @method openPreview
+            */
+            self.openPreview = function () {
+                article.promise.then(function (articleData) {
+                    openPreviewModal(articleData);
                 });
             };
         }
