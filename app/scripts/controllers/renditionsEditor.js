@@ -11,7 +11,7 @@
             url;
 
         // TODO: correct URL
-        url = 'http://tageswoche-dev.lab.sourcefabric.org/admin/image/article/';
+        url = 'http://tageswoche-dev.lab.sourcefabric.org/admin/image/article/article_number/652995/language_id/5?';
 
         self.url = $sce.trustAsResourceUrl(url);
 
@@ -48,7 +48,8 @@
                 $modal.open({
                     templateUrl: 'views/modal-renditions-editor.html',
                     controller: ModalCtrl,
-                    controllerAs: 'modalRenditionsCtrl'
+                    controllerAs: 'modalRenditionsCtrl',
+                    windowClass: 'renditionsModal'
                 });
             };
         }
