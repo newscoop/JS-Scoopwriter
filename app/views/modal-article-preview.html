@@ -1,15 +1,15 @@
-<div class="modal-article-preview">
-
     <div class="modal-header">
-      <h3>Article Preview</h3>
+       <button type="button" class="close"
+          ng-click="modalPreviewCtrl.close()">
+          <span aria-hidden="true">&times;</span></button>
+      <h4>Article Preview</h4>
     </div>
 
     <div class="modal-body">
-       <iframe src="{{modalPreviewCtrl.url}}"></iframe>
+       <iframe src="{{modalPreviewCtrl.url}}" width="100%" height="100%"></iframe>
     </div>
 
     <div class="modal-footer">
       <button class="btn btn-primary"
           ng-click="modalPreviewCtrl.close()">Close</button>
     </div>
-</div>

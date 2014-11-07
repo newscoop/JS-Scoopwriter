@@ -62,6 +62,7 @@
                     templateUrl: 'views/modal-article-preview.html',
                     controller: ModalCtrl,
                     controllerAs: 'modalPreviewCtrl',
+                    windowClass: 'modalPreview',
                     resolve: {
                         articleInfo: function () {
                             // TODO: add real languageId and publicationId
