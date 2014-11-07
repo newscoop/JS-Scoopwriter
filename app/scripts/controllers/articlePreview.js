@@ -6,10 +6,23 @@
     *
     * @class ModalCtrl
     */
-    function ModalCtrl($scope, $modalInstance, articleInfo) {
-        var self = this;
+    function ModalCtrl(
+        $sce, $scope, $modalInstance, articleInfo, configuration
+    ) {
+        var self = this,
+            url;
 
-        self.articleInfo = articleInfo;
+        url = [
+            configuration.API.rootURI, '/admin/articles/preview.php?',
+            'f_publication_id=', articleInfo.publicationId,
+            '&f_issue_number=', articleInfo.issueId,
+            '&f_section_number=', articleInfo.sectionId,
+            '&f_article_number=', articleInfo.articleId,
+            '&f_language_id=', articleInfo.languageId,
+            '&f_language_selected=', articleInfo.languageId
+        ].join('');
+
+        self.url = $sce.trustAsResourceUrl(url);
 
         /**
         * Closes the modal.
@@ -20,7 +33,9 @@
         };
     }
 
-    ModalCtrl.$inject = ['$scope', '$modalInstance', 'articleInfo'];
+    ModalCtrl.$inject = [
+        '$sce', '$scope', '$modalInstance', 'articleInfo', 'configuration'
+    ];
 
 
     /**
@@ -44,10 +59,13 @@
                     controllerAs: 'modalPreviewCtrl',
                     resolve: {
                         articleInfo: function () {
+                            // TODO: feed real data
                             return {
-                                articleId: article.articleId,
-                                language: article.language,
-                                foo: 'bar'
+                                articleId: 533522,
+                                languageId: 5,
+                                publicationId: 1,
+                                issueId: 119,
+                                sectionId: 10
                             };
                         },
                     }
