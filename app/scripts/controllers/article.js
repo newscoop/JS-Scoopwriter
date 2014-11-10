@@ -108,6 +108,8 @@ angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
 
                 if (field.name in cfgFields) {
                     if (value) {
+                        // XXX: deserialization is now hidden transparent with
+                        // the new Article model
                         $scope.article.fields[field.name] =
                             articleService.deserializeAlohaBlocks(value);
                     } else {

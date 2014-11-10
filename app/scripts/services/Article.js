@@ -13,59 +13,6 @@ angular.module('authoringEnvironmentApp').factory('Article', [
             unicodeWords = new XRegExp('(\\p{Letter}|\\d)+', 'g');
 
         /**
-        * Converts images' and snippets' HTML in article text (Aloha blocks) to
-        * special placeholders, allowing to later convert those placeholders
-        * back to original content.
-        *
-        * @method serializeAlohaBlocks
-        * @param type {String} the type of Aloha blocks to search for and
-        *   convert ('snippet' or 'image')
-        * @param text {String} text to convert
-        * @return {String} converted text
-        */
-        function serializeAlohaBlocks(type, text) {
-            var content,
-                matches,
-                sep;
-
-            if ((type !== 'snippet' && type !== 'image') || text === null) {
-                return text;
-            }
-
-            sep = {snippet: '--', image: '**'};
-            content = $('<div/>').html(text);
-
-            matches = content.contents().filter('div.' + type);
-
-            // replace each matching div with its serialized version
-            matches.replaceWith(function() {
-                var serialized,
-                    $match = $(this);
-
-                serialized = [
-                    '<', sep[type], ' ',
-                    type.charAt(0).toUpperCase(), type.slice(1), ' ',
-                    parseInt($match.data('id'), 10)
-                ];
-
-                $.each($match.data(), function (name, value) {
-                    if (name !== 'id') {
-                        serialized.push(' ', name, '="', value, '"');
-                    }
-                });
-
-                serialized.push(' ', sep[type], '>');
-                return serialized.join('');
-            });
-
-            return content.html()
-                .replace(/\&lt\;\*\*/g,'<**')   // replace &lt;** with <**
-                .replace(/\*\*\&gt\;/g, '**>')  // replace **&gt; with **>
-                .replace(/\&lt\;\-\-/g,'<--')   // replace &lt;-- with <--
-                .replace(/\-\-\&gt\;/g, '-->'); // replace --&gt; with -->
-        }
-
-        /**
         * Finds snippets placeholders in text and converts them to
         * snippets HTML (this can be later converted to Aloha blocks).
         *
@@ -177,18 +124,91 @@ angular.module('authoringEnvironmentApp').factory('Article', [
         }
 
         /**
+        * Converts images' and snippets' HTML in article text (Aloha blocks) to
+        * special placeholders, allowing to later convert those placeholders
+        * back to original content.
+        *
+        * @function serializeAlohaBlocks
+        * @param type {String} the type of Aloha blocks to search for and
+        *   convert ('snippet' or 'image')
+        * @param text {String} text to convert
+        * @return {String} converted text
+        */
+        function serializeAlohaBlocks(type, text) {
+            var content,
+                matches,
+                sep;
+
+            if ((type !== 'snippet' && type !== 'image') || text === null) {
+                return text;
+            }
+
+            sep = {snippet: '--', image: '**'};
+            content = $('<div/>').html(text);
+
+            matches = content.contents().filter('div.' + type);
+
+            // replace each matching div with its serialized version
+            matches.replaceWith(function() {
+                var serialized,
+                    $match = $(this);
+
+                serialized = [
+                    '<', sep[type], ' ',
+                    type.charAt(0).toUpperCase(), type.slice(1), ' ',
+                    parseInt($match.data('id'), 10)
+                ];
+
+                $.each($match.data(), function (name, value) {
+                    if (name !== 'id') {
+                        serialized.push(' ', name, '="', value, '"');
+                    }
+                });
+
+                serialized.push(' ', sep[type], '>');
+                return serialized.join('');
+            });
+
+            return content.html()
+                .replace(/\&lt\;\*\*/g,'<**')   // replace &lt;** with <**
+                .replace(/\*\*\&gt\;/g, '**>')  // replace **&gt; with **>
+                .replace(/\&lt\;\-\-/g,'<--')   // replace &lt;-- with <--
+                .replace(/\-\-\&gt\;/g, '-->');  // replace --&gt; with -->
+        }
+
+        /**
+        * Converts placeholders in text to images and snippets HTML.
+        *
+        * @function deserializeAlohaBlocks
+        * @param text {String} text to convert
+        * @return {String} converted text
+        */
+        function deserializeAlohaBlocks(text) {
+            return imageCommentsToDivs(snippetCommentsToDivs(text));
+        }
+
+        /**
         * Article constructor function.
         *
         * @function Article
         * @param data {Object} object containing article data
         */
-        // TODO: tests
         Article = function (data) {
             var self = this;
-            // TODO: add any data conversions necessary...
+
             data = data || {};
-            Object.keys(data).forEach(function (key) {
-                self[key] = data[key];
+            data.fields = data.fields || {};
+
+            angular.extend(self, data);
+
+            // rename "number" to "articleId"
+            self.articleId = self.number;
+            delete self.number;
+
+            Object.keys(self.fields).forEach(function (key) {
+                // XXX: it would be beneficial if API returned fields' metadata
+                // so that we can deserialize blocks in content fields only
+                self.fields[key] = deserializeAlohaBlocks(self.fields[key]);
             });
         };
 
@@ -242,20 +262,6 @@ angular.module('authoringEnvironmentApp').factory('Article', [
             });
 
             return deferredGet.promise;
-        };
-
-        /**
-        * Converts placeholders in text to images and snippets HTML.
-        *
-        * @method deserializeAlohaBlocks
-        * @param text {String} text to convert
-        * @return {String} converted text
-        */
-        // TODO: tests
-        // XXX: this deserialization shouldn't be public...?
-        // Should be hidden here in this service to simplify ArticleCtrl
-        Article.deserializeAlohaBlocks = function (text) {
-            return imageCommentsToDivs(snippetCommentsToDivs(text));
         };
 
         /**

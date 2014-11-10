@@ -69,7 +69,80 @@ describe('Factory: Article', function () {
     );
 
     describe('constructor', function () {
-        // TODO
+        var articleData;
+
+        beforeEach(function () {
+            articleData = {
+                fields: {}
+            };
+        });
+
+        it('initializes instance with given data', function () {
+            var article;
+
+            articleData.field_1 = true;
+            articleData.field_2 = 'foobar';
+            articleData.issue = {
+                issueId: 5,
+                title: '5th issue'
+            };
+
+            article = new Article(articleData);
+
+            expect(article.field_1).toBe(true);
+            expect(article.field_2).toEqual('foobar');
+            expect(article.issue).toEqual({
+                issueId: 5,
+                title: '5th issue'
+            });
+        });
+
+        it('converts the "number" field in data to "articleId" property',
+            function () {
+                var article;
+                articleData.number = 123;
+
+                article = new Article(articleData);
+
+                expect(article.articleId).toEqual(123);
+                expect(article.number).toBeUndefined();
+            }
+        );
+
+        it('initializes null fields to null', function () {
+            var article;
+            articleData.fields.null_field = null;
+
+            article = new Article(articleData);
+            expect(article.fields.null_field).toBe(null);
+        });
+
+        it('converts image placeholders in fields to HTML', function () {
+            var article;
+            articleData.fields.body = 'Foo <** Image 12 size="small" **> bar.';
+
+            article = new Article(articleData);
+
+            expect(article.fields.body).toEqual([
+                'Foo ',
+                '<div class="image" dropped-image ',
+                    'data-id="12" data-size="small"></div>',
+                ' bar.'
+            ].join(''));
+        });
+
+        it('converts snippets placeholders in fields to HTML', function () {
+            var article;
+            articleData.fields.body = 'Foo <-- Snippet 10 --> bar.';
+
+            article = new Article(articleData);
+
+            expect(article.fields.body).toEqual([
+                'Foo ',
+                '<div class="snippet" data-id="10"></div>',
+                ' bar.'
+            ].join(''));
+        });
     });
 
 
@@ -133,7 +206,6 @@ describe('Factory: Article', function () {
         });
     });
 
-    // TODO: describe('deserializeAlohaBlocks() method', function () {
 
     describe('textStats() method', function () {
         it('it returns zero count for null value', function () {
