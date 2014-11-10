@@ -189,8 +189,136 @@ describe('Factory: Article', function () {
         });
     });
 
+
     describe('save() method', function () {
-        // TODO:
+        var article,
+            url;
+
+        beforeEach(function () {
+            article = new Article();
+            article.articleId = 8;
+            article.language = 'de';
+            article.fields = {};
+
+            url = Routing.generate(
+                // XXX: should be the patcharticle path, but there is a bug in
+                // Routing object, thus we use another path that gives us the
+                // same result
+                'newscoop_gimme_articles_linkarticle',
+                {number: 8, language: 'de'},
+                true
+            );
+            $httpBackend.expectPATCH(url).respond(204);
+        });
+
+        afterEach(function () {
+            $httpBackend.verifyNoOutstandingExpectation();
+        });
+
+        it('invokes correct API endpoint', function () {
+            article.save();
+        });
+
+        it('resolves given promise on successful server response',
+            function () {
+                var successSpy = jasmine.createSpy();
+
+                article.save().then(successSpy);
+                $httpBackend.flush(1);
+                expect(successSpy).toHaveBeenCalled();
+            }
+        );
+
+        it('rejects given promise on server error response',
+            function () {
+                var errorSpy = jasmine.createSpy();
+
+                $httpBackend.resetExpectations();
+                $httpBackend.expectPATCH(url).respond(500);
+
+                article.save().catch(errorSpy);
+                $httpBackend.flush(1);
+                expect(errorSpy).toHaveBeenCalled();
+            }
+        );
+
+        describe('building request data', function () {
+            var checkPostData;
+
+            beforeEach(function () {
+                var dataValid;
+
+                checkPostData = jasmine.createSpy();
+                dataValid = function (data) {
+                    return checkPostData(data);
+                };
+                $httpBackend.resetExpectations();
+                $httpBackend.expectPATCH(url, dataValid).respond(204);
+            });
+
+            it('does not modify normal HTML text (no special content)',
+                function () {
+                    article.fields.body = [
+                        '<p>This is <b>bold</b>, really.&nbsp;</p>',
+                    ].join('');
+
+                    checkPostData.andCallFake(function (data) {
+                        var jsonData = JSON.parse(data);
+                        return jsonData.fields.body ===
+                            '<p>This is <b>bold</b>, really.&nbsp;</p>';
+                    });
+
+                    article.save();
+                }
+            );
+
+            it('does not convert empty (null) content fields', function () {
+                article.fields.teaser = null;
+
+                checkPostData.andCallFake(function (data) {
+                    var jsonData = JSON.parse(data);
+                    return jsonData.fields.teaser === null;  // still null?
+                });
+
+                article.save();
+            });
+
+            it('serializes images in article body', function () {
+                article.fields.body = [
+                    'Body text',
+                    '<div class="image" data-id="123" data-size="small">',
+                        '<img src="http://foo.com/bar.jpg" />',
+                    '</div>',
+                    'End of text.'
+                ].join('');
+
+                checkPostData.andCallFake(function (data) {
+                    var jsonData = JSON.parse(data);
+                    return (jsonData.fields.body ===
+                        'Body text<** Image 123 size="small" **>End of text.');
+                });
+
+                article.save();
+            });
+
+            it('serializes snippets in article body', function () {
+                article.fields.body = [
+                    'Body text',
+                    '<div class="snippet" data-id="99">',
+                        '<div>Some<b>bold</b> text</div>',
+                    '</div>',
+                    'End of text.'
+                ].join('');
+
+                checkPostData.andCallFake(function (data) {
+                    var jsonData = JSON.parse(data);
+                    return (jsonData.fields.body ===
+                        'Body text<-- Snippet 99 -->End of text.');
+                });
+
+                article.save();
+            });
+        });
     });
 
 

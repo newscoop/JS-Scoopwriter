@@ -283,20 +283,28 @@ angular.module('authoringEnvironmentApp').factory('Article', [
             return stats;
         };
 
-        // TODO: comments & tests
+        /**
+        * Saves all changes in article content to the server.
+        *
+        * @method save
+        * @return {Object} promise object.
+        */
         Article.prototype.save = function () {
             var deferred = $q.defer(),
                 postData,
+                self = this,
                 url;
 
             url = Routing.generate(
-                'newscoop_gimme_articles_patcharticle',
-                {number: this.articleId, language: this.language},
+                // XXX: should be the patcharticle path, but there is a bug in
+                // Routing object, thus we use another path that gives us the
+                // same result
+                'newscoop_gimme_articles_linkarticle',
+                {number: self.articleId, language: self.language},
                 true
             );
 
-            // TODO: copy only data, not functions?
-            postData = angular.copy(this);
+            postData = angular.copy(self);
 
             // serialize objects (images, snippets) in all article fields
             Object.keys(postData.fields).forEach(function (key) {
