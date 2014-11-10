@@ -189,9 +189,86 @@ describe('Factory: Article', function () {
         });
     });
 
-    // TODO: describe('save() method', function () {
+    describe('save() method', function () {
+        // TODO:
+    });
 
-    // TODO: describe('saveSwitches() method', function () {
+
+    describe('saveSwitches() method', function () {
+        var article,
+            switchNames,
+            url;
+
+        beforeEach(function () {
+            article = new Article();
+            article.articleId = 8;
+            article.language = 'de';
+            article.fields = {
+                'switch_1': false,
+                'switch_2': true,
+                'content_field': 'foobar'
+            };
+
+            switchNames = ['switch_1', 'switch_2'];
+
+            url = Routing.generate(
+                // XXX: should be the patcharticle path, but there is a bug in
+                // Routing object, thus we use another path that gives us the
+                // same result
+                'newscoop_gimme_articles_linkarticle',
+                {number: 8, language: 'de'},
+                true
+            );
+            $httpBackend.expectPATCH(url).respond(204);
+        });
+
+        afterEach(function () {
+            $httpBackend.verifyNoOutstandingExpectation();
+        });
+
+        it('invokes correct API endpoint', function () {
+            article.saveSwitches(switchNames);
+        });
+
+        it('sends correct data to server', function () {
+            var requestData = {
+                fields: {
+                    'switch_1': false,
+                    'switch_2': true
+                }
+            };
+            $httpBackend.resetExpectations();
+            $httpBackend.expectPATCH(url, requestData).respond(204);
+
+            article.saveSwitches(switchNames);
+        });
+
+        it('resolves given promise on successful server response',
+            function () {
+                var successSpy = jasmine.createSpy();
+
+                article.saveSwitches(switchNames).then(successSpy);
+                $httpBackend.flush(1);
+
+                expect(successSpy).toHaveBeenCalled();
+            }
+        );
+
+        it('rejects given promise on server error response',
+            function () {
+                var errorSpy = jasmine.createSpy();
+
+                $httpBackend.resetExpectations();
+                $httpBackend.expectPATCH(url).respond(500, 'Timeout.');
+
+                article.saveSwitches(switchNames).catch(errorSpy);
+                $httpBackend.flush(1);
+
+                expect(errorSpy).toHaveBeenCalledWith('Timeout.');
+            }
+        );
+    });
+
 
     describe('changeCommentingSetting() method', function () {
         var article,
