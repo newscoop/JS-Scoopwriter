@@ -6,12 +6,16 @@
     *
     * @class ModalCtrl
     */
-    function ModalCtrl($modalInstance, $sce) {
+    function ModalCtrl($modalInstance, $sce, articleInfo) {
         var self = this,
             url;
 
-        // TODO: correct URL
-        url = 'http://tageswoche-dev.lab.sourcefabric.org/admin/image/article/article_number/652995/language_id/5?';
+        url = [
+            'http://tageswoche-dev.lab.sourcefabric.org',
+            '/admin/image/article',
+            '/article_number/', articleInfo.articleId,
+            '/language_id/5'
+        ].join('');
 
         self.url = $sce.trustAsResourceUrl(url);
 
@@ -25,7 +29,7 @@
         };
     }
 
-    ModalCtrl.$inject = ['$modalInstance', '$sce'];
+    ModalCtrl.$inject = ['$modalInstance', '$sce', 'articleInfo'];
 
 
     /**
@@ -36,7 +40,8 @@
     angular.module('authoringEnvironmentApp')
     .controller('RenditionsEditorCtrl', [
         '$modal',
-        function ($modal) {
+        'article',
+        function ($modal, article) {
             var self = this;
 
             /**
@@ -45,11 +50,22 @@
             * @method openRenditionsEditor
             */
             self.openRenditionsEditor = function () {
-                $modal.open({
-                    templateUrl: 'views/modal-renditions-editor.html',
-                    controller: ModalCtrl,
-                    controllerAs: 'modalRenditionsCtrl',
-                    windowClass: 'renditionsModal'
+                article.promise.then(function (articleData) {
+                    $modal.open({
+                        templateUrl: 'views/modal-renditions-editor.html',
+                        controller: ModalCtrl,
+                        controllerAs: 'modalRenditionsCtrl',
+                        windowClass: 'renditionsModal',
+                        resolve: {
+                            articleInfo: function () {
+                                // TODO: add real languageId when available
+                                return {
+                                    articleId: articleData.number,
+                                    languageId: 5
+                                };
+                            }
+                        }
+                    });
                 });
             };
         }
