@@ -114,7 +114,7 @@ describe('Controller: RenditionsEditorCtrl', function () {
 
         it('exposes correct preview URL', function () {
             var expectedUrl = [
-                'http://tageswoche-dev.lab.sourcefabric.org',
+                'http://newscoop.aes.sourcefabric.net',
                 '/admin/image/article',
                 '/article_number/111',
                 '/language_id/5'
