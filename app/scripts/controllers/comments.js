@@ -10,15 +10,18 @@ angular.module('authoringEnvironmentApp').controller('CommentsCtrl', [
     '$scope',
     'comments',
     'article',
+    'Article',
     'modalFactory',
     '$log',
-    function ($scope, comments, article, modalFactory, $log) {
+    function ($scope, comments, articleService, Article, modalFactory, $log) {
 
-        var others = [
+        var article = articleService.articleInstance,
+            others = [
                 'pending',
                 'approved',
                 'hidden'
             ];
+
         $scope.sortings = [
             { text: 'Nested' },
             { text: 'Chronological' },
@@ -55,45 +58,46 @@ angular.module('authoringEnvironmentApp').controller('CommentsCtrl', [
             }
         };
 
-        $scope.commentingSettingSrv = article.commenting.ENABLED;  // default
+        $scope.commentingSettingSrv = Article.commenting.ENABLED;  // default
         $scope.commentingSetting = $scope.commentingSettingSrv;
         $scope.commentingOptDirty = false;  // commentingSetting changed?
         $scope.isChangingCommenting = false;  // currently submitting change?
 
-        $scope.commenting = article.commenting;
+        $scope.commenting = Article.commenting;
 
         $scope.commentingOpts = [
             {
-                value: article.commenting.ENABLED,
+                value: Article.commenting.ENABLED,
                 text: 'Enabled'
             },
             {
-                value: article.commenting.DISABLED,
+                value: Article.commenting.DISABLED,
                 text: 'Disabled'
             },
             {
-                value: article.commenting.LOCKED,
+                value: Article.commenting.LOCKED,
                 text: 'Locked'
             }
         ];
+
         /**
-        * Stores the current value of the `commenting` setting of the article
+        * Stores the current value of the "commenting" setting of the article
         * to which the comments belong.
+        *
         * @method initCommenting
         */
         this.initCommenting = function () {
-            article.promise.then(function (data) {
-                if (parseInt(data.comments_locked, 10) > 0) {
-                    $scope.commentingSettingSrv = article.commenting.LOCKED;
-                } else if (parseInt(data.comments_enabled, 10) > 0) {
-                    $scope.commentingSettingSrv = article.commenting.ENABLED;
-                } else {
-                    $scope.commentingSettingSrv = article.commenting.DISABLED;
-                }
-                $scope.commentingSetting = $scope.commentingSettingSrv;
-            });
+            if (article.comments_locked) {
+                $scope.commentingSettingSrv = Article.commenting.LOCKED;
+            } else if (article.comments_enabled) {
+                $scope.commentingSettingSrv = Article.commenting.ENABLED;
+            } else {
+                $scope.commentingSettingSrv = Article.commenting.DISABLED;
+            }
+            $scope.commentingSetting = $scope.commentingSettingSrv;
         };
         this.initCommenting();
+
         $scope.statuses = {
             all: true,
             pending: false,
@@ -163,7 +167,7 @@ angular.module('authoringEnvironmentApp').controller('CommentsCtrl', [
 
             $scope.isChangingCommenting = true;
 
-            article.changeCommentingSetting(newValue).then(function (data) {
+            article.changeCommentingSetting(newValue).then(function () {
                 // value on the server successfully changed
                 $scope.commentingSettingSrv = newValue;
             }, function () {
@@ -176,6 +180,7 @@ angular.module('authoringEnvironmentApp').controller('CommentsCtrl', [
                 $scope.isChangingCommenting = false;
             });
         };
+
         /**
         * Changes global comments display status from expanded to collapsed or
         * vice versa.
