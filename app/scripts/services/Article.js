@@ -210,6 +210,9 @@ angular.module('authoringEnvironmentApp').factory('Article', [
                 // so that we can deserialize blocks in content fields only
                 self.fields[key] = deserializeAlohaBlocks(self.fields[key]);
             });
+
+            self.comments_locked = !!parseInt(self.comments_locked);
+            self.comments_enabled = !!parseInt(self.comments_enabled);
         };
 
         // all possible values for the article commenting setting
@@ -432,7 +435,6 @@ angular.module('authoringEnvironmentApp').factory('Article', [
             return $http.patch(url);
         };
 
-        // XXX: what about the internal modified flag?
         return Article;
     }
 ]);

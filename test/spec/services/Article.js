@@ -143,6 +143,54 @@ describe('Factory: Article', function () {
                 ' bar.'
             ].join(''));
         });
+
+        it('converts comments_locked flag to boolean', function () {
+            var article;
+
+            articleData.comments_locked = undefined;
+            article = new Article(articleData);
+            expect(article.comments_locked).toBe(false);
+
+            articleData.comments_locked = '';
+            article = new Article(articleData);
+            expect(article.comments_locked).toBe(false);
+
+            articleData.comments_locked = '0';
+            article = new Article(articleData);
+            expect(article.comments_locked).toBe(false);
+
+            articleData.comments_locked = '1';
+            article = new Article(articleData);
+            expect(article.comments_locked).toBe(true);
+
+            articleData.comments_locked = 1;
+            article = new Article(articleData);
+            expect(article.comments_locked).toBe(true);
+        });
+
+        it('converts comments_enabled flag to boolean', function () {
+            var article;
+
+            articleData.comments_enabled = undefined;
+            article = new Article(articleData);
+            expect(article.comments_enabled).toBe(false);
+
+            articleData.comments_enabled = '';
+            article = new Article(articleData);
+            expect(article.comments_enabled).toBe(false);
+
+            articleData.comments_enabled = '0';
+            article = new Article(articleData);
+            expect(article.comments_enabled).toBe(false);
+
+            articleData.comments_enabled = '1';
+            article = new Article(articleData);
+            expect(article.comments_enabled).toBe(true);
+
+            articleData.comments_enabled = 1;
+            article = new Article(articleData);
+            expect(article.comments_enabled).toBe(true);
+        });
     });
 
 
