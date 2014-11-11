@@ -48,16 +48,16 @@
     .controller('ArticlePreviewCtrl', [
         '$modal',
         'article',
-        function ($modal, article) {
+        function ($modal, articleService) {
             var self = this;
 
             /**
             * Opens the article preview modal.
             *
             * @function openPreviewModal
-            * @param articleData {Object} object containing article data
+            * @param article {Object} article instance
             */
-            function openPreviewModal(articleData) {
+            function openPreviewModal(article) {
                 $modal.open({
                     templateUrl: 'views/modal-article-preview.html',
                     controller: ModalCtrl,
@@ -68,17 +68,16 @@
                             // TODO: add real languageId and publicationId
                             // when available
                             return {
-                                articleId: articleData.number,
+                                articleId: article.articleId,
                                 languageId: 5,
                                 publicationId: 1,
-                                issueId: articleData.issue.number,
-                                sectionId: articleData.section.number
+                                issueId: article.issue.number,
+                                sectionId: article.section.number
                             };
                         }
                     }
                 });
             }
-
 
             /**
             * Opens the article preview modal, providing article data to it.
@@ -86,9 +85,7 @@
             * @method openPreview
             */
             self.openPreview = function () {
-                article.promise.then(function (articleData) {
-                    openPreviewModal(articleData);
-                });
+                openPreviewModal(articleService.articleInstance);
             };
         }
     ]);
