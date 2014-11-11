@@ -11,7 +11,7 @@
             url;
 
         url = [
-            'http://tageswoche-dev.lab.sourcefabric.org',
+            'http://newscoop.aes.sourcefabric.net',
             '/admin/image/article',
             '/article_number/', articleInfo.articleId,
             '/language_id/5'
