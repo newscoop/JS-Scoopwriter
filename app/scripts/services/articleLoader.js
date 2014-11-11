@@ -13,7 +13,6 @@ angular.module('authoringEnvironmentApp').factory('articleLoader', [
     'article',
     function ($route, $q, Article, articleService) {
 
-        // TODO: comments (and tests)
         return function () {
             var deferred = $q.defer(),
                 params = $route.current.params;
