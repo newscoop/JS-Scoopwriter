@@ -9,13 +9,12 @@ angular.module('authoringEnvironmentApp').controller('PaneTopicsCtrl', [
     '$scope',
     'article',
     'Topic',
-    function ($scope, article, Topic) {
+    function ($scope, articleService, Topic) {
+        var article = articleService.articleInstance;
 
         // retrieve all topics assigned to the article
-        article.promise.then(function (articleData) {
-            $scope.assignedTopics = Topic.getAllByArticle(
-                articleData.number, articleData.language
-            );
-        });
+        $scope.assignedTopics = Topic.getAllByArticle(
+            article.articleId, article.language
+        );
     }
 ]);
