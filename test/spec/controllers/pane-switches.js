@@ -7,7 +7,6 @@
 */
 describe('Controller: PaneSwitchesCtrl', function () {
     var articleService,
-        articleDeferred,
         articleTypeDeferred,
         ArticleType,
         PaneSwitchesCtrl,
@@ -24,8 +23,12 @@ describe('Controller: PaneSwitchesCtrl', function () {
         articleService = _article_;
         ArticleType = _ArticleType_;
 
-        articleDeferred = $q.defer();
-        articleService.promise = articleDeferred.promise;
+        articleService.articleInstance = {
+            articleId: 8,
+            language: 'it',
+            type: 'news',
+            fields: {}
+        };
 
         articleTypeDeferred = $q.defer();
         spyOn(ArticleType, 'getByName').andReturn(articleTypeDeferred.promise);
@@ -46,19 +49,12 @@ describe('Controller: PaneSwitchesCtrl', function () {
 
     it('retrieves fields\' metadata for the correct article type',
         function () {
-            articleDeferred.resolve({
-                number: 8, language: 'it', type: 'news', fields: {}
-            });
-            $rootScope.$apply();
             expect(ArticleType.getByName).toHaveBeenCalledWith('news');
         }
     );
 
     it('initializes the list of switch fields\' names when data is retrieved',
         function () {
-            articleDeferred.resolve({
-                number: 8, language: 'it', type: 'news', fields: {}
-            });
             articleTypeDeferred.resolve({
                 fields: [
                     {name: 'switch_1', type: 'switch'},
@@ -66,7 +62,7 @@ describe('Controller: PaneSwitchesCtrl', function () {
                     {name: 'switch_2', type: 'switch'}
                 ]
             });
-            $rootScope.$apply();
+            $rootScope.$digest();
 
             expect(PaneSwitchesCtrl.switches).toEqual([
                 {name: 'switch_1', text: 'switch_1'},
@@ -76,9 +72,6 @@ describe('Controller: PaneSwitchesCtrl', function () {
     );
 
     it('uses human-friendly switch names, if available', function () {
-            articleDeferred.resolve({
-                number: 8, language: 'it', type: 'news', fields: {}
-            });
             articleTypeDeferred.resolve({
                 fields: [
                     {name: 'switch_1', type: 'switch', phrase: '1st switch'},
@@ -86,7 +79,7 @@ describe('Controller: PaneSwitchesCtrl', function () {
                     {name: 'switch_3', type: 'switch'}
                 ]
             });
-            $rootScope.$apply();
+            $rootScope.$digest();
 
             expect(PaneSwitchesCtrl.switches).toEqual([
                 {name: 'switch_1', text: '1st switch'},
@@ -99,15 +92,13 @@ describe('Controller: PaneSwitchesCtrl', function () {
     it('converts article\'s switch fields\' values to booleans ' +
         'when data is retrieved',
         function () {
-            articleDeferred.resolve({
-                number: 8, language: 'it', type: 'news',
-                fields: {
-                    'switch_1': '0',
-                    'teaser': 'foobar',
-                    'switch_2': '1'
-                    // switch_3 is undefined
-                }
-            });
+            PaneSwitchesCtrl.article.fields = {
+                'switch_1': '0',
+                'teaser': 'foobar',
+                'switch_2': '1'
+                // switch_3 is undefined
+            };
+
             articleTypeDeferred.resolve({
                 fields: [
                     {name: 'switch_1', type: 'switch'},
@@ -116,9 +107,9 @@ describe('Controller: PaneSwitchesCtrl', function () {
                     {name: 'switch_2', type: 'switch'}
                 ]
             });
-            $rootScope.$apply();
+            $rootScope.$digest();
 
-            expect(PaneSwitchesCtrl.articleObj.fields).toEqual({
+            expect(PaneSwitchesCtrl.article.fields).toEqual({
                 'switch_1': false,
                 'switch_2': true,
                 'switch_3': false,
@@ -144,12 +135,12 @@ describe('Controller: PaneSwitchesCtrl', function () {
     });
 
     describe('save() method', function () {
-        var saveSwitchesDeferred
+        var saveSwitchesDeferred;
 
         beforeEach(inject(function ($q) {
             saveSwitchesDeferred = $q.defer();
-            spyOn(articleService, 'saveSwitches').andReturn(
-                saveSwitchesDeferred.promise);
+            PaneSwitchesCtrl.article.saveSwitches = jasmine.createSpy()
+                .andReturn(saveSwitchesDeferred.promise);
         }));
 
         it('sets the saveInProgress flag before doing anything', function () {
@@ -163,7 +154,7 @@ describe('Controller: PaneSwitchesCtrl', function () {
 
             PaneSwitchesCtrl.save();
             saveSwitchesDeferred.resolve();
-            $rootScope.$apply();
+            $rootScope.$digest();
 
             expect(PaneSwitchesCtrl.saveInProgress).toBe(false);
         });
@@ -173,7 +164,7 @@ describe('Controller: PaneSwitchesCtrl', function () {
 
             PaneSwitchesCtrl.save();
             saveSwitchesDeferred.reject();
-            $rootScope.$apply();
+            $rootScope.$digest();
 
             expect(PaneSwitchesCtrl.saveInProgress).toBe(false);
         });
@@ -183,7 +174,7 @@ describe('Controller: PaneSwitchesCtrl', function () {
 
             PaneSwitchesCtrl.save();
             saveSwitchesDeferred.resolve();
-            $rootScope.$apply();
+            $rootScope.$digest();
 
             expect(PaneSwitchesCtrl.modified).toBe(false);
         });
@@ -193,7 +184,7 @@ describe('Controller: PaneSwitchesCtrl', function () {
 
             PaneSwitchesCtrl.save();
             saveSwitchesDeferred.reject();
-            $rootScope.$apply();
+            $rootScope.$digest();
 
             expect(PaneSwitchesCtrl.modified).toBe(false);
         });
@@ -201,11 +192,6 @@ describe('Controller: PaneSwitchesCtrl', function () {
         it('invokes article service\'s saveSwitches() method ' +
             'with correct parameters',
             function () {
-                PaneSwitchesCtrl.articleObj= {
-                    number: 8,
-                    language: 'fr',
-                    fields: {}
-                };
                 PaneSwitchesCtrl.switches = [
                     {name: 'switch_1', text: 'First Switch'},
                     {name: 'switch_2', text: 'Second Switch'}
@@ -213,10 +199,9 @@ describe('Controller: PaneSwitchesCtrl', function () {
 
                 PaneSwitchesCtrl.save();
 
-                expect(articleService.saveSwitches).toHaveBeenCalledWith(
-                    {number: 8, language: 'fr', fields: {}},
-                    ['switch_1', 'switch_2']
-                );
+                expect(
+                    PaneSwitchesCtrl.article.saveSwitches
+                ).toHaveBeenCalledWith(['switch_1', 'switch_2']);
             }
         );
     });

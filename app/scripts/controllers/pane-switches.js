@@ -9,16 +9,18 @@ angular.module('authoringEnvironmentApp').controller('PaneSwitchesCtrl', [
     '$q',
     'article',
     'ArticleType',
-    function ($q, article, ArticleType) {
+    function ($q, articleService, ArticleType) {
         var self = this;
 
+        self.article = articleService.articleInstance;
+
+        self.switches = [];
+        self.modified = false;  // are there any unsaved changes?
+        self.saveInProgress = false;  // saving to server in progress?
+
         // load article's switches' values
-        article.promise.then(
-            function (articleData) {
-                self.articleObj = articleData;
-                return ArticleType.getByName(articleData.type);
-            }, $q.reject
-        ).then(function (articleType) {
+        ArticleType.getByName(self.article.type)
+        .then(function (articleType) {
             articleType.fields.forEach(function (field) {
                 if (field.type === 'switch') {
                     self.switches.push({
@@ -28,8 +30,8 @@ angular.module('authoringEnvironmentApp').controller('PaneSwitchesCtrl', [
 
                     // convert all switch values to boolean (undefined
                     // field values get converted to false)
-                    self.articleObj.fields[field.name] =
-                        !!parseInt(self.articleObj.fields[field.name]);
+                    self.article.fields[field.name] =
+                        !!parseInt(self.article.fields[field.name]);
                 }
             });
         });
@@ -53,16 +55,11 @@ angular.module('authoringEnvironmentApp').controller('PaneSwitchesCtrl', [
 
             self.saveInProgress = true;
 
-            article.saveSwitches(
-                self.articleObj, switchNames
-            ).finally(function () {
+            self.article.saveSwitches(switchNames)
+            .finally(function () {
                 self.modified = false;
                 self.saveInProgress = false;
             });
         };
-
-        self.switches = [];
-        self.modified = false;  // are there any unsaved changes?
-        self.saveInProgress = false;  // saving to server in progress?
     }
 ]);
