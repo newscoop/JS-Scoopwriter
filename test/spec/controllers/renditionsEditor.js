@@ -7,31 +7,24 @@
 */
 
 describe('Controller: RenditionsEditorCtrl', function () {
-    var articleData,
-        articleDeferred,
-        articleService,
+    var articleService,
         renditionsEditorCtrl,
         $httpBackend,
-        $modal,
-        $rootScope;
+        $modal;
 
     beforeEach(module('authoringEnvironmentApp'));
 
     beforeEach(inject(function (
-        $controller, _$modal_, _$httpBackend_, $q, _$rootScope_,
-        $templateCache, article
+        $controller, _$modal_, _$httpBackend_, $q, $templateCache, article
     ) {
         var modalTemplate;
 
-        $httpBackend = _$httpBackend_
+        $httpBackend = _$httpBackend_;
         $modal = _$modal_;
-        $rootScope = _$rootScope_;
         articleService = article;
 
-        articleDeferred = $q.defer();
-        articleService.promise = articleDeferred.promise;
-        articleData = {
-            number: 123,
+        articleService.articleInstance = {
+            articleId: 123,
             language: 'de'
         };
 
@@ -53,8 +46,6 @@ describe('Controller: RenditionsEditorCtrl', function () {
                 expectedArticleInfo;
 
             renditionsEditorCtrl.openRenditionsEditor();
-            articleDeferred.resolve(articleData);
-            $rootScope.$apply();
 
             expect($modal.open).toHaveBeenCalled();
             callArgs = $modal.open.mostRecentCall.args[0];
@@ -82,9 +73,6 @@ describe('Controller: RenditionsEditorCtrl', function () {
                 ModalCtrl;
 
             renditionsEditorCtrl.openRenditionsEditor();
-            articleDeferred.resolve(articleData);
-            $httpBackend.flush();
-            $rootScope.$apply();
 
             // XXX: this is not ideal, since obtaining a reference to the
             // modal controller depends on the openPreview() method to provide
@@ -99,7 +87,7 @@ describe('Controller: RenditionsEditorCtrl', function () {
 
             fakeSCE = {
                 trustAsResourceUrl: function (url) {
-                    return url
+                    return url;
                 }
             };
 
@@ -109,7 +97,6 @@ describe('Controller: RenditionsEditorCtrl', function () {
             };
 
             ctrl = new ModalCtrl(fakeModalInstance, fakeSCE, articleInfoParam);
-
         });
 
         it('exposes correct preview URL', function () {
