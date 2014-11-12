@@ -7,9 +7,7 @@
 */
 
 describe('Service: snippets', function () {
-    var articleServiceMock,
-        articleDeferred,
-        Snippet,
+    var Snippet,
         snippets,
         snippetsResponse,
         $rootScope;
@@ -18,12 +16,14 @@ describe('Service: snippets', function () {
     beforeEach(module('authoringEnvironmentApp'));
 
     beforeEach(module(function ($provide) {
-        // create a fake article service to be injected around
-        articleServiceMock = {};
+        // create a fake article service to inject around into other services
+        var articleServiceMock = {
+            articleInstance: {articleId: 55, language: 'pl'}
+        };
         $provide.value('article', articleServiceMock);
     }));
 
-    beforeEach(inject(function ($q, _$rootScope_, _Snippet_) {
+    beforeEach(inject(function (_$rootScope_, _Snippet_) {
         // NOTE: snippets is not injected here yet, because we first need
         // to tailor our fake article service here
         $rootScope = _$rootScope_;
@@ -31,20 +31,16 @@ describe('Service: snippets', function () {
 
         snippetsResponse = [{id: 5}, {id: 2}, {id: 12}];
         spyOn(Snippet, 'getAllByArticle').andReturn(snippetsResponse);
-
-        articleDeferred = $q.defer();
-        articleServiceMock.promise = articleDeferred.promise;
     }));
 
+    // article service and Snippet service are mocket at this point,
+    // snippets service can now be injected
     beforeEach(inject(function (_snippets_) {
-        snippets = _snippets_;  // article service is mocket at this point
-        articleDeferred.resolve({number: 55, language: 'pl'});
-        $rootScope.$apply();
+        snippets = _snippets_;
     }));
-
 
     it('stores retrieved article data', function () {
-        expect(snippets.article).toEqual({number: 55, language: 'pl'});
+        expect(snippets.article).toEqual({articleId: 55, language: 'pl'});
     });
 
     it('initializes the list of attached snippets', function () {
@@ -83,7 +79,7 @@ describe('Service: snippets', function () {
             snippetObj;
 
         beforeEach(inject(function ($q) {
-            articleInfo = {number: 35, language: 'pl'};
+            articleInfo = {articleId: 35, language: 'pl'};
             snippetObj = {
                 id: 7,
                 addToArticle: function () {}
@@ -123,7 +119,7 @@ describe('Service: snippets', function () {
             snippetObj;
 
         beforeEach(inject(function ($q) {
-            articleInfo = {number: 35, language: 'pl'};
+            articleInfo = {articleId: 35, language: 'pl'};
             snippetObj = {
                 id: 7,
                 removeFromArticle: function () {}

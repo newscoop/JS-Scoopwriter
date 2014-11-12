@@ -10,13 +10,12 @@ describe('Controller: DroppedSnippetCtrl', function () {
         snippetsService,
         scope;
 
-    // Initialize the controller and a mock scope
-    beforeEach(inject(function (
-        $controller, $rootScope, _Snippet_, snippets
-    ) {
+    beforeEach(inject(function ($controller, $rootScope, _Snippet_) {
         Snippet = _Snippet_;
-        snippetsService = snippets;
         scope = $rootScope.$new();
+
+        snippetsService = {};
+
         DroppedSnippetCtrl = $controller('DroppedSnippetCtrl', {
             $scope: scope,
             snippets: snippetsService
@@ -39,7 +38,7 @@ describe('Controller: DroppedSnippetCtrl', function () {
             spyOn(Snippet, 'getById').andCallFake(function () {
                 return deferredGet.promise;
             });
-            spyOn(snippetsService, 'addToIncluded');
+            snippetsService.addToIncluded = jasmine.createSpy();
         }));
 
         it('tries to retrieve the right snippet', function () {
@@ -61,7 +60,7 @@ describe('Controller: DroppedSnippetCtrl', function () {
 
         it('initializes marked-as-trusted snippet HTML in scope',
             inject(function ($sce) {
-                var expected = $sce.trustAsHtml('<iframe>foo</iframe>');1
+                var expected = $sce.trustAsHtml('<iframe>foo</iframe>');
                 scope.snippetHtml = null;
 
                 DroppedSnippetCtrl.init(8);
@@ -91,7 +90,7 @@ describe('Controller: DroppedSnippetCtrl', function () {
         it('removes ID of the deleted snippet from the list of snippets ' +
             'in article body',
             function () {
-                spyOn(snippetsService, 'removeFromIncluded');
+                snippetsService.removeFromIncluded = jasmine.createSpy();
                 DroppedSnippetCtrl.snippetRemoved(8);
                 expect(
                     snippetsService.removeFromIncluded
