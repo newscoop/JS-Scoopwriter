@@ -87,7 +87,7 @@ describe('Controller: ImagepaneCtrl', function () {
             spyOn(modalFactory, 'confirmLight').andCallFake(function () {
                 return {
                     result: resultPromise
-                }
+                };
             });
         }));
 
@@ -113,7 +113,7 @@ describe('Controller: ImagepaneCtrl', function () {
             deferred.reject(false);
             scope.$apply();
 
-            expect(images.detach).not.toHaveBeenCalled;
+            expect(images.detach).not.toHaveBeenCalled();
         });
     });
 });
