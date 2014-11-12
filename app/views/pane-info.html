@@ -1,6 +1,6 @@
 <section
     class="tabcontent info-pane"
-    ng-controller="PaneInfoCtrl">
+    ng-controller="PaneInfoCtrl as infoCtrl">
 
   <div class="panel-title">
     Article Info
@@ -14,7 +14,7 @@
         </div>
         <div class="field-value">
           <ul>
-            <li>{{(article.created | date : 'yyyy-MM-dd') || '-'}}</li>
+            <li>{{(infoCtrl.article.created | date : 'yyyy-MM-dd') || '-'}}</li>
           </ul>
         </div>
       </li>
@@ -24,7 +24,7 @@
         </div>
         <div class="field-value">
           <ul>
-            <li>{{(article.updated | date : 'yyyy-MM-dd') || '-'}}</li>
+            <li>{{(infoCtrl.article.updated | date : 'yyyy-MM-dd') || '-'}}</li>
           </ul>
         </div>
       </li>
@@ -34,7 +34,7 @@
         </div>
         <div class="field-value">
           <ul>
-            <li>{{(article.published | date : 'yyyy-MM-dd') || '-'}}</li>
+            <li>{{(infoCtrl.article.published | date : 'yyyy-MM-dd') || '-'}}</li>
           </ul>
         </div>
       </li>
@@ -44,7 +44,7 @@
         </div>
         <div class="field-value">
           <ul>
-            <li>{{::article.type}}</li>
+            <li>{{::infoCtrl.article.type}}</li>
           </ul>
         </div>
       </li>
@@ -54,7 +54,7 @@
         </div>
         <div class="field-value">
           <ul>
-            <li>{{::article.webcode}}</li>
+            <li>{{::infoCtrl.article.webcode}}</li>
           </ul>
         </div>
       </li>

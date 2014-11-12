@@ -6,30 +6,20 @@
 * @module PaneInfoCtrl controller tests
 */
 describe('Controller: PaneInfoCtrl', function () {
-    var articleDeferred,
-        PaneInfoCtrl,
-        scope;
+    var PaneInfoCtrl;
 
     beforeEach(module('authoringEnvironmentApp'));
 
-    beforeEach(inject(function (
-        $controller, $rootScope, $q, article
-    ) {
-        articleDeferred = $q.defer();
-        article.promise = articleDeferred.promise;
+    beforeEach(inject(
+        function ($controller, article) {
+            article.articleInstance = {number: 17, language: 'it'};
+            PaneInfoCtrl = $controller('PaneInfoCtrl', {
+                article: article
+            });
+        }
+    ));
 
-        scope = $rootScope.$new();
-        PaneInfoCtrl = $controller('PaneInfoCtrl', {
-            $scope: scope,
-            article: article
-        });
-    }));
-
-    it('exposes article in scope when article data is retrieved', function () {
-        expect(scope.article).toBeUndefined();
-        articleDeferred.resolve({number: 17, language: 'it'});
-        scope.$digest();
-        expect(scope.article).toEqual({number: 17, language: 'it'});
+    it('exposes the article object', function () {
+        expect(PaneInfoCtrl.article).toEqual({number: 17, language: 'it'});
     });
-
 });
