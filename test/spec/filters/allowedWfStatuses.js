@@ -8,22 +8,22 @@
 
 describe('Filter: allowedWfStatuses', function () {
 
-    var article,
+    var Article,
         filter,
         statuses;
 
     beforeEach(module('authoringEnvironmentApp'));
 
-    beforeEach(inject(function ($filter, _article_) {
+    beforeEach(inject(function ($filter, _Article_) {
         filter = $filter('allowedWfStatuses');
-        article = _article_;
+        Article = _Article_;
 
         statuses = [
-            {value: article.wfStatus.NEW, text: 'New'},
-            {value: article.wfStatus.SUBMITTED, name: 'Submitted'},
-            {value: article.wfStatus.PUBLISHED, name: 'Published'},
+            {value: Article.wfStatus.NEW, text: 'New'},
+            {value: Article.wfStatus.SUBMITTED, name: 'Submitted'},
+            {value: Article.wfStatus.PUBLISHED, name: 'Published'},
             {
-                value: article.wfStatus.PUBLISHED_W_ISS,
+                value: Article.wfStatus.PUBLISHED_W_ISS,
                 name: 'Published with issue'
             }
         ];
@@ -36,8 +36,8 @@ describe('Filter: allowedWfStatuses', function () {
 
             filteredStatuses = filter(
                 statuses,
-                article.wfStatus.PUBLISHED,
-                article.issueWfStatus.NOT_PUBLISHED
+                Article.wfStatus.PUBLISHED,
+                Article.issueWfStatus.NOT_PUBLISHED
             );
             expect(filteredStatuses).toEqual(expected);
         }
@@ -51,8 +51,8 @@ describe('Filter: allowedWfStatuses', function () {
 
             filteredStatuses = filter(
                 statuses,
-                article.wfStatus.NEW,
-                article.issueWfStatus.PUBLISHED
+                Article.wfStatus.NEW,
+                Article.issueWfStatus.PUBLISHED
             );
             expect(filteredStatuses).toEqual(expected);
         }
@@ -66,8 +66,8 @@ describe('Filter: allowedWfStatuses', function () {
 
             filteredStatuses = filter(
                 statuses,
-                article.wfStatus.SUBMITTED,
-                article.issueWfStatus.NOT_PUBLISHED
+                Article.wfStatus.SUBMITTED,
+                Article.issueWfStatus.NOT_PUBLISHED
             );
             expect(filteredStatuses).toEqual(expected);
         }
