@@ -135,13 +135,13 @@ angular.module('authoringEnvironmentApp').factory('NcImage', [
         * rejected depending on the server response.
         *
         * @method getAllByArticle
-        * @param number {Number} article ID
+        * @param articleId {Number} article ID
         * @param language {String} article language code, e.g. 'de'
         * @return {Object} "future" array of NcImage objects - initially
         *   an empty array is returned, which is later populated with the
         *   actual data (once the http promise has been successfully resolved)
         */
-        NcImage.getAllByArticle = function (number, language) {
+        NcImage.getAllByArticle = function (articleId, language) {
             var deferredGet = $q.defer(),
                 requestOptions,
                 images = [];
@@ -158,7 +158,7 @@ angular.module('authoringEnvironmentApp').factory('NcImage', [
             $http.get(
                 Routing.generate(
                     'newscoop_gimme_images_getimagesforarticle',
-                    {number: number, language: language},
+                    {number: articleId, language: language},
                     true
                 ),
                 requestOptions
@@ -269,12 +269,12 @@ angular.module('authoringEnvironmentApp').factory('NcImage', [
         * Detaches the image from an article.
         *
         * @method removeFromArticle
-        * @param number {Number} article ID
+        * @param articleId {Number} article ID
         * @param language {String} article language code (e.g. 'de')
         * @return {Object} promise object that is resolved on successful server
         *   response and rejected on server error response
         */
-        NcImage.prototype.removeFromArticle = function(number, language) {
+        NcImage.prototype.removeFromArticle = function(articleId, language) {
             var self = this,
                 deferred = $q.defer(),
                 linkHeader;
@@ -290,7 +290,7 @@ angular.module('authoringEnvironmentApp').factory('NcImage', [
             $http({
                 url: Routing.generate(
                     'newscoop_gimme_articles_unlinkarticle',
-                    {number: number, language:language},
+                    {number: articleId, language: language},
                     true
                 ),
                 method: 'UNLINK',

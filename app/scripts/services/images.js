@@ -12,35 +12,13 @@ angular.module('authoringEnvironmentApp').service('images', [
     '$rootScope',
     '$q',
     function images(
-        pageTracker, configuration, $log, article,
+        pageTracker, configuration, $log, articleService,
         getFileReader, formDataFactory, imageFactory, NcImage,
         $upload, $rootScope, $q
     ) {
         var loadAttachedDeferred,
             self = this,
             ITEMS_PER_PAGE_DEFAULT = 50;
-
-        article.promise.then(function (article) {
-            self.article = article;
-            self.loadAttached(article);
-        });
-
-        self.tracker = pageTracker.getTracker({ max: 100 });
-        self.loaded = [];
-        self.displayed = [];
-        self.collected = [];  // list of collected images (those in basket)
-        self.attached = [];  // list of images attached to the article
-        self.images2upload = [];  // list of images to upload
-        self.includedIndex = -1;
-        self.inArticleBody = {};  // list of img IDs in article body
-        self.itemsPerPage = ITEMS_PER_PAGE_DEFAULT;
-
-        self.itemsFound = 0;
-        self.searchFilter = '';
-        self.canLoadMore = false;  // is there another page to fetch?
-
-        loadAttachedDeferred = $q.defer();
-        self.attachedLoaded = loadAttachedDeferred.promise;
 
         /**
         * Fetches and displays the first page of results using the given search
@@ -143,7 +121,7 @@ angular.module('authoringEnvironmentApp').service('images', [
         */
         self.loadAttached = function (article) {
             self.attached = NcImage.getAllByArticle(
-                article.number, article.language);
+                article.articleId, article.language);
 
             self.attached.$promise.then(
                 loadAttachedDeferred.resolve,
@@ -228,7 +206,7 @@ angular.module('authoringEnvironmentApp').service('images', [
             }
 
             NcImage.addAllToArticle(
-                self.article.number, self.article.language, notYetAttached
+                self.article.articleId, self.article.language, notYetAttached
             )
             .then(function () {
                 notYetAttached.forEach(function (image) {
@@ -252,7 +230,7 @@ angular.module('authoringEnvironmentApp').service('images', [
             }
 
             image.removeFromArticle(
-                self.article.number, self.article.language
+                self.article.articleId, self.article.language
             )
             .then(function () {
                 _.remove(self.attached, {id: id});
@@ -601,5 +579,24 @@ angular.module('authoringEnvironmentApp').service('images', [
             return image;
         };
 
+        /// service initialization code ///
+        loadAttachedDeferred = $q.defer();
+        self.attachedLoaded = loadAttachedDeferred.promise;
+
+        self.article = articleService.articleInstance;
+        self.loadAttached(self.article);
+
+        self.tracker = pageTracker.getTracker({ max: 100 });
+        self.loaded = [];
+        self.displayed = [];
+        self.collected = [];  // list of collected images (those in basket)
+        self.images2upload = [];  // list of images to upload
+        self.includedIndex = -1;
+        self.inArticleBody = {};  // list of img IDs in article body
+        self.itemsPerPage = ITEMS_PER_PAGE_DEFAULT;
+
+        self.itemsFound = 0;
+        self.searchFilter = '';
+        self.canLoadMore = false;  // is there another page to fetch?
     }
 ]);
