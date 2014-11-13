@@ -15,13 +15,14 @@ angular.module('authoringEnvironmentApp').service('comments', [
     '$log',
     'nestedSort',
     function comments(
-        article, $http, $q, $resource, transform, pageTracker,
+        articleService, $http, $q, $resource, transform, pageTracker,
         $log, nestedSort
     ) {
         /* max number of comments per page, decrease it in order to
          * test pagination, and sorting change with paginated
          * comments */
-        var itemsPerPage = 50,
+        var article = articleService.articleInstance,
+            itemsPerPage = 50,
             self = this,  // alias for the comments service itself
             sorting = 'nested';
 
@@ -116,30 +117,30 @@ angular.module('authoringEnvironmentApp').service('comments', [
         */
         self.add = function (par) {
             var deferred = $q.defer();
-            article.promise.then(function (article) {
-                self.resource.create({
-                    articleNumber: article.number,
-                    languageCode: article.language
-                }, par, function (data, headers) {
-                    var url = headers('X-Location');
-                    if (url) {
-                        $http.get(url).success(function (data) {
-                            // just add the new comment to the end and filters
-                            // will take care of the correct ordering
-                            self.displayed.push(decorate(data));
-                            nestedSort.sort(self.displayed);
-                        });
-                    } else {
-                        // the header may not be available if the server
-                        // is on a different domain (we are in this
-                        // situation at the beginning of dev) and it is
-                        // not esplicitely enabled
-                        // http://stackoverflow.com/a/18178524/393758
-                        self.init();
-                    }
-                    deferred.resolve();
-                });
+
+            self.resource.create({
+                articleNumber: article.articleId,
+                languageCode: article.language
+            }, par, function (data, headers) {
+                var url = headers('X-Location');
+                if (url) {
+                    $http.get(url).success(function (data) {
+                        // just add the new comment to the end and filters
+                        // will take care of the correct ordering
+                        self.displayed.push(decorate(data));
+                        nestedSort.sort(self.displayed);
+                    });
+                } else {
+                    // the header may not be available if the server
+                    // is on a different domain (we are in this
+                    // situation at the beginning of dev) and it is
+                    // not esplicitely enabled
+                    // http://stackoverflow.com/a/18178524/393758
+                    self.init();
+                }
+                deferred.resolve();
             });
+
             return deferred.promise;
         };
 
@@ -211,39 +212,38 @@ angular.module('authoringEnvironmentApp').service('comments', [
         * @return {Object} A promise object
         */
         self.load = function (page) {
-            var deferred = $q.defer();
-            article.promise.then(function (article) {
-                var sortingPart,
-                    url;
+            var deferred = $q.defer(),
+                sortingPart,
+                url;
 
-                if (sorting === 'nested') {
-                    sortingPart = 'nested';
-                } else {
-                    sortingPart = '';
+            if (sorting === 'nested') {
+                sortingPart = 'nested';
+            } else {
+                sortingPart = '';
+            }
+
+            url = Routing.generate(
+                'newscoop_gimme_comments_getcommentsforarticle_1',
+                {
+                    number: article.articleId,
+                    language: article.language,
+                    order: sortingPart,
+                    items_per_page: itemsPerPage,
+                    page: page
+                },
+                true
+            );
+
+            $http.get(url).success(function (data) {
+                deferred.resolve(data);
+                if (pageTracker.isLastPage(data.pagination)) {
+                    self.canLoadMore = false;
                 }
-
-                url = Routing.generate(
-                    'newscoop_gimme_comments_getcommentsforarticle_1',
-                    {
-                        number: article.number,
-                        language: article.language,
-                        order: sortingPart,
-                        items_per_page: itemsPerPage,
-                        page: page
-                    },
-                    true
-                );
-
-                $http.get(url).success(function (data) {
-                    deferred.resolve(data);
-                    if (pageTracker.isLastPage(data.pagination)) {
-                        self.canLoadMore = false;
-                    }
-                }).error(function () {
-                    // in case of failure remove the page from the tracker
-                    self.tracker.remove(page);
-                });
+            }).error(function () {
+                // in case of failure remove the page from the tracker
+                self.tracker.remove(page);
             });
+
             return deferred.promise;
         };
         /**
@@ -493,16 +493,15 @@ angular.module('authoringEnvironmentApp').service('comments', [
             */
             comment.save = function () {
                 var comment = this;
-                article.promise.then(function (article) {
-                    self.resource.save({
-                        articleNumber: article.number,
-                        languageCode: article.language,
-                        commentId: comment.id
-                    }, { comment: comment.editing }, function () {
-                        comment.subject = comment.editing.subject;
-                        comment.message = comment.editing.message;
-                        comment.isEdited = false;
-                    });
+
+                self.resource.save({
+                    articleNumber: article.articleId,
+                    languageCode: article.language,
+                    commentId: comment.id
+                }, { comment: comment.editing }, function () {
+                    comment.subject = comment.editing.subject;
+                    comment.message = comment.editing.message;
+                    comment.isEdited = false;
                 });
             };
 
@@ -512,17 +511,16 @@ angular.module('authoringEnvironmentApp').service('comments', [
             */
             comment.remove = function () {
                 var comment = this;
-                article.promise.then(function (article) {
-                    self.resource.delete({
-                        articleNumber: article.number,
-                        languageCode: article.language,
-                        commentId: comment.id
-                    }).$promise.then(function () {
-                        _.remove(
-                            self.displayed,
-                            self.matchMaker(comment.id)
-                        );
-                    });
+
+                self.resource.delete({
+                    articleNumber: article.articleId,
+                    languageCode: article.language,
+                    commentId: comment.id
+                }).$promise.then(function () {
+                    _.remove(
+                        self.displayed,
+                        self.matchMaker(comment.id)
+                    );
                 });
             };
 
@@ -585,19 +583,18 @@ angular.module('authoringEnvironmentApp').service('comments', [
             */
             comment.changeStatus = function (newStatus) {
                 var comment = this;
-                article.promise.then(function (article) {
-                    self.resource.patch({
-                        articleNumber: article.number,
-                        languageCode: article.language,
-                        commentId: comment.id
-                    }, { comment: { status: newStatus } }, function () {
-                        // success
-                        comment.status = newStatus;
-                    }, function () {
-                        // failure
-                        $log.debug(
-                            'error changing the status for the comment');
-                    });
+
+                self.resource.patch({
+                    articleNumber: article.articleId,
+                    languageCode: article.language,
+                    commentId: comment.id
+                }, { comment: { status: newStatus } }, function () {
+                    // success
+                    comment.status = newStatus;
+                }, function () {
+                    // failure
+                    $log.debug(
+                        'error changing the status for the comment');
                 });
             };
 
