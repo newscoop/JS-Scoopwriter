@@ -18,6 +18,7 @@ angular.module('authoringEnvironmentApp').controller('ArticleActionsCtrl', [
         $scope.mode = mode;
         $scope.articleService = articleService;
         $scope.article = articleService.articleInstance;
+        $scope.Article = Article;
 
         // list of possible article workflow status options to choose from
         $scope.workflowStatuses = [

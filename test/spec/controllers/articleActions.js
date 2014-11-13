@@ -50,6 +50,10 @@ describe('Controller: ArticleActionsCtrl', function () {
         expect(scope.articleService).toBe(articleService);
     });
 
+    it('exposes article constructor in scope', function () {
+        expect(scope.Article).toBe(Article);
+    });
+
     it('initializes article workflow status options in scope', function () {
         var expected = [
             {value: 'N', text: 'New'},
