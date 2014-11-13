@@ -7,25 +7,31 @@
 */
 
 describe('Controller: ArticleActionsCtrl', function () {
-    var ArticleActionsCtrl,
+    var Article,
+        ArticleActionsCtrl,
         articleService,
-        getArticleDeferred,
         modeService,
         scope;
 
     // load the controller's module
     beforeEach(module('authoringEnvironmentApp'));
 
-    beforeEach(inject(function ($controller, $rootScope, $q, article) {
-        articleService = article;
-
+    beforeEach(inject(function ($controller, $rootScope, $q, _Article_) {
         scope = $rootScope.$new();
+        Article = _Article_;
         modeService = {};
 
-        getArticleDeferred = $q.defer();
-        articleService.promise = getArticleDeferred.promise;
-        spyOn(articleService, 'setWorkflowStatus');
-        spyOn(articleService, 'save');
+        articleService = {};
+        articleService.articleInstance = {
+            id: 1234,
+            fields: {
+                dateline: '1st Aug 2010',
+                body: 'Body text.'
+            },
+            status: Article.wfStatus.SUBMITTED,
+            setWorkflowStatus: jasmine.createSpy(),
+            save: jasmine.createSpy()
+        };
 
         ArticleActionsCtrl = $controller('ArticleActionsCtrl', {
             $scope: scope,
@@ -54,85 +60,68 @@ describe('Controller: ArticleActionsCtrl', function () {
         expect(scope.workflowStatuses).toEqual(expected);
     });
 
-    it('sets the selected article workflow status option to NEW by default',
-        function () {
-            expect(scope.wfStatus).toEqual({value: 'N', text: 'New'});
-        }
-    );
-
     it('sets scope\'s changingWfStatus flag to false by default', function () {
         expect(scope.changingWfStatus).toBe(false);
     });
 
-    describe('when article is retrieved', function () {
-        it('exposes the article in scope', function () {
-            scope.article = undefined;
-            getArticleDeferred.resolve({id: 1234});
-            scope.$digest();
-            expect(scope.article).toEqual({id: 1234});
+    it('exposes the article object in scope', function () {
+        expect(scope.article).toBe(articleService.articleInstance);
+    });
+
+
+    describe('on editor content change', function () {
+        var alohaEditable;
+
+        beforeEach(function () {
+            alohaEditable = {
+                triggerType: 'keypress',
+                editable: {
+                    originalObj: {
+                        data: function () {
+                            return 'body';  // return changed field's name
+                        }
+                    }
+                }
+            };
         });
 
-        it('sets the article modified flag from the 2nd article change on',
+        it('sets the article modified flag on article change',
             function () {
-                var article = {
-                    id: 1234,
-                    fields: {
-                        dateline: '1st Aug 2010',
-                        body: 'Body text.'
-                    }
-                };
-
-                getArticleDeferred.resolve(article);
-                scope.$digest();
-
                 articleService.modified = false;
-                article.fields.body = 'New body text.';
-                scope.$digest();
-                article.fields.body = 'New body text (2).';
-                scope.$digest();
+
+                scope.article.fields.body = 'New body text.';
+                scope.$emit('texteditor-content-changed', {}, alohaEditable);
 
                 expect(articleService.modified).toBe(true);
             }
         );
 
-        it('does not set the article modified on the first article change',
+        it('does *not* set the article modified flag if event\'s trigger ' +
+            'type is "blur"',
             function () {
-                var article = {
-                    id: 1234,
-                    fields: {
-                        dateline: '1st Aug 2010',
-                        body: 'Body text.'
-                    }
-                };
-
-                getArticleDeferred.resolve(article);
-                scope.$digest();
 
                 articleService.modified = false;
-                article.fields.body = 'New body text.';
-                scope.$digest();
+
+                scope.article.fields.body = 'Whatever.';
+                alohaEditable.triggerType = 'blur';
+                scope.$emit('texteditor-content-changed', {}, alohaEditable);
 
                 expect(articleService.modified).toBe(false);
             }
         );
-
-        it('sets workflow status in scope to the actual article status ' +
-           'when the article is retrieved',
-            function () {
-                scope.workflowStatuses = [
-                    {value: 'A', text: 'Status A'},
-                    {value: 'B', text: 'Status B'},
-                    {value: 'C', text: 'Status C'}
-                ];
-                scope.wfStatus = {value: 'A', text: 'Status A'};
-
-                getArticleDeferred.resolve({id: 123, status: 'B'});
-                scope.$digest();
-
-                expect(scope.wfStatus).toEqual({value: 'B', text: 'Status B'});
-            }
-        );
     });
+
+
+    it('sets workflow status in scope to the actual article status ' +
+       'when the article is retrieved',
+        function () {
+            expect(scope.wfStatus).toEqual({
+                value: Article.wfStatus.SUBMITTED,
+                text: 'Submitted'
+            });
+        }
+    );
+
 
     describe('scope\'s setWorkflowStatus() method', function () {
         var deferredStatus;
@@ -147,7 +136,7 @@ describe('Controller: ArticleActionsCtrl', function () {
             ];
             scope.wfStatus = {value: 'A', text: 'Status A'};
 
-            articleService.setWorkflowStatus.andReturn(deferredStatus.promise);
+            scope.article.setWorkflowStatus.andReturn(deferredStatus.promise);
         }));
 
         it('sets changingWfStatus flag before sending a request', function () {
@@ -192,14 +181,13 @@ describe('Controller: ArticleActionsCtrl', function () {
 
         beforeEach(inject(function ($q) {
             deferredSave = $q.defer();
-            articleService.save.andReturn(deferredSave.promise);
+            scope.article.save.andReturn(deferredSave.promise);
         }));
 
         it('invokes article service with the article object as a parameter',
             function () {
-                scope.article = {id: 1234};
                 scope.save();
-                expect(articleService.save).toHaveBeenCalledWith({id: 1234});
+                expect(scope.article.save).toHaveBeenCalled();
             }
         );
 

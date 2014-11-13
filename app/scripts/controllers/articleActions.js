@@ -7,71 +7,61 @@
 * @class ArticleActionsCtrl
 */
 angular.module('authoringEnvironmentApp').controller('ArticleActionsCtrl', [
+    '$rootScope',
     '$scope',
     'article',
+    'Article',
     'mode',
-    function ($scope, article, mode) {
-
-        // a flag indicating if article content has been changed at most
-        // once (after the watch on the article is set)
-        var firstArticleChange = true;
+    function ($rootScope, $scope, articleService, Article, mode) {
+        var statusObj;
 
         $scope.mode = mode;
-        $scope.articleService = article;
+        $scope.articleService = articleService;
+        $scope.article = articleService.articleInstance;
 
         // list of possible article workflow status options to choose from
         $scope.workflowStatuses = [
             {
-                value: article.wfStatus.NEW,
+                value: Article.wfStatus.NEW,
                 text: 'New'
             },
             {
-                value: article.wfStatus.SUBMITTED,
+                value: Article.wfStatus.SUBMITTED,
                 text: 'Submitted'
             },
             {
-                value: article.wfStatus.PUBLISHED,
+                value: Article.wfStatus.PUBLISHED,
                 text: 'Published'
             },
             {
-                value: article.wfStatus.PUBLISHED_W_ISS,
+                value: Article.wfStatus.PUBLISHED_W_ISS,
                 text: 'Published with issue'
             }
         ];
 
-        $scope.wfStatus = $scope.workflowStatuses[0];  // default value is New
         $scope.changingWfStatus = false;
 
-        $scope.articleService.promise.then(function (article) {
-            var statusObj;
+        // listen for article content changes
+        $rootScope.$on('texteditor-content-changed', function (
+            eventObj, jqEvent, alohaEditable
+        ) {
+            var fieldName,
+                reactOnTypes = {'keypress': true, 'paste': true, 'idle': true};
 
-            $scope.article = article;
+            if (!(alohaEditable.triggerType in reactOnTypes)) {
+                return;
+            }
 
-            // set a watch on article's content changes
-            // XXX: better listen on editor-content-changed event?
-            $scope.$watch('article', function (newValue, oldValue) {
-                if (newValue === oldValue) {
-                    return;  // called due to watcher initialization, skip
-                }
-                // The first article change is triggered when any images and
-                // snippets placeholders in article fields get deserialized to
-                // the actual HTML code. This happens soon after the article is
-                // retrieved from the API (initialization phase) and we don't
-                // consider that as a "real" article content change. Therefore
-                // we ignore the event on its first occurrence.
-                if (firstArticleChange) {
-                    firstArticleChange = false;
-                    return;
-                }
-                $scope.setModified(true);
-            }, true);
+            fieldName = alohaEditable.editable.originalObj.data('field-name');
 
-            // set workflow status to the actual article's workflow status
-            statusObj = _.find(
-                $scope.workflowStatuses, {value: article.status}
-            );
-            $scope.wfStatus = statusObj;
+            $scope.setModified(true);
         });
+
+        // set workflow status to the actual article's workflow status
+        statusObj = _.find(
+            $scope.workflowStatuses, {value: $scope.article.status}
+        );
+        $scope.wfStatus = statusObj;
 
         /**
         * Changes article's workflow status. It also disables the corresponding
@@ -81,19 +71,18 @@ angular.module('authoringEnvironmentApp').controller('ArticleActionsCtrl', [
         * @param newStatus {String} new article workflow status
         */
         $scope.setWorkflowStatus = function (newStatus) {
-
             $scope.changingWfStatus = true;
 
-            article.setWorkflowStatus(newStatus)
-                .then(function () {
-                    var statusObj = _.find(
-                        $scope.workflowStatuses, {value: newStatus}
-                    );
-                    $scope.wfStatus = statusObj;
-                })
-                .finally(function () {
-                    $scope.changingWfStatus = false;
-                });
+            $scope.article.setWorkflowStatus(newStatus)
+            .then(function () {
+                var statusObj = _.find(
+                    $scope.workflowStatuses, {value: newStatus}
+                );
+                $scope.wfStatus = statusObj;
+            })
+            .finally(function () {
+                $scope.changingWfStatus = false;
+            });
         };
 
         /**
@@ -105,7 +94,7 @@ angular.module('authoringEnvironmentApp').controller('ArticleActionsCtrl', [
         $scope.save = function () {
             // XXX: disable save button during saving? to prevent double
             // saving?
-            $scope.articleService.save($scope.article).then(function () {
+            $scope.article.save().then(function () {
                 $scope.setModified(false);
             });
         };
