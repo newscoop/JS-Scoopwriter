@@ -3,13 +3,13 @@
   <div class="article-status"
       ng-class="{
           disabled: changingWfStatus,
-          new: !changingWfStatus && wfStatus.value === articleService.wfStatus.NEW,
+          new: !changingWfStatus && wfStatus.value === Article.wfStatus.NEW,
           submitted: !changingWfStatus &&
-              wfStatus.value === articleService.wfStatus.SUBMITTED,
+              wfStatus.value === Article.wfStatus.SUBMITTED,
           published: !changingWfStatus &&
-              wfStatus.value === articleService.wfStatus.PUBLISHED,
+              wfStatus.value === Article.wfStatus.PUBLISHED,
           published_w_iss: !changingWfStatus &&
-              wfStatus.value === articleService.wfStatus.PUBLISHED_W_ISS
+              wfStatus.value === Article.wfStatus.PUBLISHED_W_ISS
         }">
     <div class="btn-group" dropdown>
       <button

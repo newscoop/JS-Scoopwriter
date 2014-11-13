@@ -7,8 +7,8 @@
 * @class allowedWfStatuses
 */
 angular.module('authoringEnvironmentApp').filter('allowedWfStatuses', [
-    'article',
-    function (article) {
+    'Article',
+    function (Article) {
 
         /**
         * From the given list of article workflow statuses it filters out all
@@ -30,10 +30,10 @@ angular.module('authoringEnvironmentApp').filter('allowedWfStatuses', [
             // issue" which has a special condition
             wfStatuses.forEach(function (status) {
                 var allowed = true;
-                if (status.value === article.wfStatus.PUBLISHED_W_ISS) {
+                if (status.value === Article.wfStatus.PUBLISHED_W_ISS) {
                     allowed = (
-                        articleStatus !== article.wfStatus.PUBLISHED &&
-                        issueStatus !== article.issueWfStatus.PUBLISHED
+                        articleStatus !== Article.wfStatus.PUBLISHED &&
+                        issueStatus !== Article.issueWfStatus.PUBLISHED
                     );
                 }
                 if (allowed) {

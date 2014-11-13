@@ -41,8 +41,9 @@
     .controller('RenditionsEditorCtrl', [
         '$modal',
         'article',
-        function ($modal, article) {
-            var self = this;
+        function ($modal, articleService) {
+            var article = articleService.articleInstance,
+                self = this;
 
             /**
             * Opens a modal containing the renditions editor.
@@ -50,22 +51,20 @@
             * @method openRenditionsEditor
             */
             self.openRenditionsEditor = function () {
-                article.promise.then(function (articleData) {
-                    $modal.open({
-                        templateUrl: 'views/modal-renditions-editor.html',
-                        controller: ModalCtrl,
-                        controllerAs: 'modalRenditionsCtrl',
-                        windowClass: 'renditionsModal',
-                        resolve: {
-                            articleInfo: function () {
-                                // TODO: add real languageId when available
-                                return {
-                                    articleId: articleData.number,
-                                    languageId: 5
-                                };
-                            }
+                $modal.open({
+                    templateUrl: 'views/modal-renditions-editor.html',
+                    controller: ModalCtrl,
+                    controllerAs: 'modalRenditionsCtrl',
+                    windowClass: 'renditionsModal',
+                    resolve: {
+                        articleInfo: function () {
+                            // TODO: add real languageId when available
+                            return {
+                                articleId: article.articleId,
+                                languageId: 5
+                            };
                         }
-                    });
+                    }
                 });
             };
         }

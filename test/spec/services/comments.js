@@ -9,58 +9,58 @@
 describe('Service: Comments', function () {
 
     var items = [{
-            "id":24,
-            "author":"Boom-boom Boba",
-            "subject":"I approve",
-            "message":"I approve this choice, and I do congratulate. Cheers!",
-            "thread_level":0,
-            "thread_order":1,
-            "status":"approved",
-            "created":"2013-05-02T10:11:13+0200",
-            "updated":"-0001-11-30T00:00:00+0100",
-            "recommended":0
+            id: 24,
+            author: 'Boom-boom Boba',
+            subject: 'I approve',
+            message: 'I approve this choice, and I do congratulate. Cheers!',
+            thread_level: 0,
+            thread_order: 1,
+            status: 'approved',
+            created: '2013-05-02T10:11:13+0200',
+            updated: '-0001-11-30T00:00:00+0100',
+            recommended: 0
         }, {
-            "id":25,
-            "author":"Black Persona",
-            "subject":"",
-            "message":"no screw that!",
-            "thread_level":0,
-            "thread_order":3,
-            "status":"approved",
-            "created":"2013-05-02T10:13:28+0200",
-            "updated":"2014-03-06T11:57:11+0100",
-            "recommended":0
+            id: 25,
+            author: 'Black Persona',
+            subject: '',
+            message: 'no screw that!',
+            thread_level: 0,
+            thread_order: 3,
+            status: 'approved',
+            created: '2013-05-02T10:13:28+0200',
+            updated: '2014-03-06T11:57:11+0100',
+            recommended: 0
         }, {
-            "id":58,
-            "author":"yorick",
-            "parent":41,
-            "subject":"ahfadfh",
-            "message":"adfhadhg",
-            "thread_level":2,
-            "thread_order":2,
-            "status":"approved",
-            "created":"2014-03-04T14:37:55+0100",
-            "updated":"2014-03-04T14:37:55+0100",
-            "recommended":0
+            id: 58,
+            author: 'yorick',
+            parent: 41,
+            subject: 'ahfadfh',
+            message: 'adfhadhg',
+            thread_level: 2,
+            thread_order: 2,
+            status: 'approved',
+            created: '2014-03-04T14:37:55+0100',
+            updated: '2014-03-04T14:37:55+0100',
+            recommended: 0
         }
     ];
 
     // load the service's module
     beforeEach(module('authoringEnvironmentApp'));
 
+    beforeEach(module(function ($provide) {
+        // create a fake article service to inject around into other services
+        var articleServiceMock = {
+            articleInstance: {articleId: 64, language: 'de'}
+        };
+        $provide.value('article', articleServiceMock);
+    }));
+
     describe('the resource', function() {
         var $httpBackend, comments;
-        beforeEach(inject(function (_comments_, _$httpBackend_, _article_) {
+        beforeEach(inject(function (_comments_, _$httpBackend_) {
             $httpBackend = _$httpBackend_;
             comments = _comments_;
-            _article_.promise = {
-                then: function(f) {
-                    f({
-                        number: 64,
-                        language: 'de'
-                    });
-                }
-            };
         }));
         afterEach(function() {
             $httpBackend.verifyNoOutstandingExpectation();
@@ -271,7 +271,7 @@ describe('Service: Comments', function () {
             $log,
             $q;
 
-        beforeEach(inject(function (_comments_, _$httpBackend_, _article_, _$q_, _$log_) {
+        beforeEach(inject(function (_comments_, _$httpBackend_, _$q_, _$log_) {
             $q = _$q_;
             $log = _$log_;
             response = {
@@ -289,14 +289,6 @@ describe('Service: Comments', function () {
 
             $httpBackend.expect('GET', getAllUrl).respond(response);
             comments = _comments_;
-            _article_.promise = {
-                then: function(f) {
-                    f({
-                        number: 64,
-                        language: 'de'
-                    });
-                }
-            };
             comments.init();
         }));
 
@@ -823,14 +815,6 @@ describe('Service: Comments', function () {
             $httpBackend.expectGET(createUrl(1)).respond(response);
             $httpBackend.expectGET(createUrl(2)).respond(response);
             comments = _comments_;
-            _article_.promise = {
-                then: function(f) {
-                    f({
-                        number: 64,
-                        language: 'de'
-                    });
-                }
-            };
             comments.init();
             $httpBackend.flush();
         }));

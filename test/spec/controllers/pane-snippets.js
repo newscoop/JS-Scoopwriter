@@ -5,33 +5,32 @@ describe('Controller: PaneSnippetsCtrl', function () {
     // load the controller's module
     beforeEach(module('authoringEnvironmentApp'));
 
-    var article,
-        articleDeferred,
-        Snippet,
+    var Snippet,
         SnippetTemplate,
         SnippetsCtrl,
         snippetsService,
         scope,
         $q;
 
-    // Initialize the controller and a mock scope
+    beforeEach(module(function ($provide) {
+        // create a fake article service to inject around into other services
+        var articleServiceMock = {
+            articleInstance: {articleId: 25, language: 'de'}
+        };
+        $provide.value('article', articleServiceMock);
+    }));
+
     beforeEach(inject(
         function (
-            $controller, $rootScope, _$q_, _article_, _Snippet_,
-            _SnippetTemplate_, snippets
+            $controller, $rootScope, _$q_, article, _Snippet_,
+            _SnippetTemplate_
         ) {
+            var articleService;
+
             $q = _$q_;
-            article = _article_;
+            articleService = article;
             Snippet = _Snippet_;
             SnippetTemplate = _SnippetTemplate_;
-            snippetsService = snippets;
-
-            articleDeferred = $q.defer();
-            article.promise = articleDeferred.promise;
-
-            spyOn(Snippet, 'getAllByArticle').andCallFake(function () {
-                return [{id:1}, {id:2}];
-            });
 
             spyOn(SnippetTemplate, 'getAll').andCallFake(function () {
                 return [
@@ -41,12 +40,14 @@ describe('Controller: PaneSnippetsCtrl', function () {
                 ];
             });
 
-            snippetsService.attached = [{id:5}];
+            snippetsService = {
+                attached: [{id:5}]
+            };
 
             scope = $rootScope.$new();
             SnippetsCtrl = $controller('PaneSnippetsCtrl', {
                 $scope: scope,
-                article: article,
+                article: articleService,
                 Snippet: Snippet,
                 SnippetTemplate: SnippetTemplate,
                 snippets: snippetsService
@@ -175,7 +176,7 @@ describe('Controller: PaneSnippetsCtrl', function () {
             createdSnippet = {id: 42};
 
             deferredAddToArticle = $q.defer();
-            spyOn(snippetsService, 'addToArticle')
+            snippetsService.addToArticle = jasmine.createSpy()
                 .andReturn(deferredAddToArticle.promise);
 
             spyOn(scope, 'clearNewSnippetForm');
@@ -194,7 +195,6 @@ describe('Controller: PaneSnippetsCtrl', function () {
                 scope.addNewSnippetToArticle(snippetData);
 
                 deferredCreate.resolve(createdSnippet);
-                articleDeferred.resolve({number: 25, language: 'de'});
                 deferredAddToArticle.resolve();
                 scope.$digest();
 
@@ -207,7 +207,6 @@ describe('Controller: PaneSnippetsCtrl', function () {
                 scope.addNewSnippetToArticle(snippetData);
 
                 deferredCreate.resolve(createdSnippet);
-                articleDeferred.resolve({number: 25, language: 'de'});
                 deferredAddToArticle.resolve();
                 scope.$digest();
 
@@ -241,7 +240,6 @@ describe('Controller: PaneSnippetsCtrl', function () {
                 scope.addingNewSnippet = true;
 
                 deferredCreate.resolve(createdSnippet);
-                articleDeferred.resolve({number: 25, language: 'de'});
                 deferredAddToArticle.resolve();
                 scope.$digest();
 
@@ -272,13 +270,13 @@ describe('Controller: PaneSnippetsCtrl', function () {
 
         it('attaches created snippet to article', function () {
             scope.addNewSnippetToArticle(snippetData);
+
             deferredCreate.resolve(createdSnippet);
-            articleDeferred.resolve({number: 25, language: 'de'});
             scope.$digest();
 
             expect(snippetsService.addToArticle).toHaveBeenCalledWith(
                 createdSnippet,
-                {number: 25, language: 'de'}
+                {articleId: 25, language: 'de'}
             );
         });
     });
@@ -300,7 +298,7 @@ describe('Controller: PaneSnippetsCtrl', function () {
             });
             snippet = {id: 42};
 
-            spyOn(snippetsService, 'removeFromArticle');
+            snippetsService.removeFromArticle = jasmine.createSpy();
         }));
 
         it('opens a "light" confirmation dialog', function () {
@@ -311,25 +309,19 @@ describe('Controller: PaneSnippetsCtrl', function () {
         it('invokes snippets service\'s removeFromArticle() method ' +
            'with correct parameters on action confirmation',
            function () {
-                articleDeferred.resolve({number: 25, language: 'de'});
-                scope.$apply();
-
                 scope.confirmRemoveSnippet(snippet);
                 modalDeferred.resolve(true);
-                scope.$apply();
+                scope.$digest();
 
                 expect(snippetsService.removeFromArticle).toHaveBeenCalledWith(
-                    snippet, {number: 25, language: 'de'});
+                    snippet, {articleId: 25, language: 'de'});
             }
         );
 
         it('does not remove anything on action cancellation', function () {
-            articleDeferred.resolve({number: 25, language: 'de'});
-            scope.$apply();
-
             scope.confirmRemoveSnippet(snippet);
             modalDeferred.reject(true);
-            scope.$apply();
+            scope.$digest();
 
             expect(snippetsService.removeFromArticle).not.toHaveBeenCalled();
         });

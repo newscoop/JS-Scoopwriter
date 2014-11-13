@@ -10,17 +10,18 @@ angular.module('authoringEnvironmentApp').service('snippets', [
     '$log',
     'article',
     'Snippet',
-    function ($log, article, Snippet) {
-        var self = this;
+    function ($log, articleService, Snippet) {
+        var article = articleService.articleInstance,
+            self = this;
 
-        article.promise.then(function (article) {
-            self.article = article;
-            self.attached = Snippet.getAllByArticle(
-                article.number, article.language);
-        });
+        self.article = article;
 
-        self.attached = [];  // list of snippets attached to the article
-        self.inArticleBody = {};  // list of snippet IDs in article body
+        // list of snippets attached to the article
+        self.attached = Snippet.getAllByArticle(
+            article.articleId, article.language);
+
+        // list of snippet IDs in article body
+        self.inArticleBody = {};
 
         /**
         * Adds a particular snippet to the list of snippets included in
@@ -74,9 +75,6 @@ angular.module('authoringEnvironmentApp').service('snippets', [
         * @param snippet {Object} Snippet instance to attach
         * @param article {Object} article to which the snippet should
         *   be attached.
-        *   @param article.number {Number} ID of the article
-        *   @param article.language {String} article language code (e.g. 'de')
-        *
         * @return {Object} promise object that is resolved when the snippet
         *   has been successfully attached to the article
         */
@@ -89,7 +87,9 @@ angular.module('authoringEnvironmentApp').service('snippets', [
                 return;
             }
 
-            promise = snippet.addToArticle(article.number, article.language);
+            promise = snippet.addToArticle(
+                article.articleId, article.language);
+
             promise.then(function () {
                 self.attached.push(snippet);
             });
@@ -102,11 +102,9 @@ angular.module('authoringEnvironmentApp').service('snippets', [
         * attached to the article, it does not do anything.
         *
         * @method removeFromArticle
-        * @param snippet {Object} Snippet instance to attach
-        * @param article {Object} article to which the snippet should
-        *   be attached.
-        *   @param article.number {Number} ID of the article
-        *   @param article.language {String} article language code (e.g. 'de')
+        * @param snippet {Object} Snippet instance to detach
+        * @param article {Object} article from which the snippet should
+        *   be detached.
         * @return {Object} promise object that is resolved when the snippet
         *   has been successfully detached from the article
         */
@@ -121,7 +119,7 @@ angular.module('authoringEnvironmentApp').service('snippets', [
             // XXX: perhaps add an extra check if snippet is in article body?
 
             promise = snippet.removeFromArticle(
-                article.number, article.language);
+                article.articleId, article.language);
 
             promise.then(function () {
                 _.remove(self.attached, match);

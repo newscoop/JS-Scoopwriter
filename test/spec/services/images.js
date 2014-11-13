@@ -74,21 +74,36 @@ describe('Service: Images', function () {
         place: ''
     };
 
+    // instantiate service
+    var getAllImagesDeferred,
+        images,
+        NcImage,
+        $httpBackend;
+
     // load the service's module
     beforeEach(module('authoringEnvironmentApp'));
 
-    // instantiate service
-    var images,
-        $httpBackend;
+    beforeEach(module(function ($provide) {
+        // create a fake article service to inject around into other services
+        var articleServiceMock = {
+            articleInstance: {articleId: 64, language: 'de'}
+        };
+        $provide.value('article', articleServiceMock);
+    }));
 
-    beforeEach(inject(function (_article_, _images_, _$httpBackend_) {
+    beforeEach(inject(function ($q, _NcImage_) {
+        var articleImages = [];
+
+        getAllImagesDeferred = $q.defer();
+        articleImages.$promise = getAllImagesDeferred.promise;
+
+        NcImage = _NcImage_;
+        spyOn(NcImage, 'getAllByArticle').andReturn(articleImages);
+    }));
+
+    beforeEach(inject(function (_images_, _$httpBackend_) {
         images = _images_;
         $httpBackend = _$httpBackend_;
-
-        images.article = {
-            number: 64,
-            language: 'de'
-        };
     }));
 
     it('sets itemsPerPage to 50 by default', function () {
@@ -364,13 +379,10 @@ describe('Service: Images', function () {
     });
 
     describe('load() method', function () {
-        var NcImage,
-            queryDeferred,
+        var queryDeferred,
             searchResults;
 
-        beforeEach(inject(function ($q, _NcImage_) {
-            NcImage = _NcImage_;
-
+        beforeEach(inject(function ($q) {
             searchResults = [];
             queryDeferred = $q.defer()
             searchResults.$promise = queryDeferred.promise;
@@ -398,32 +410,29 @@ describe('Service: Images', function () {
     });
 
     describe('loadAttached() method', function () {
-        var getAllDeferred,
-            getAllResponse,
-            NcImage,
+        var getAllResponse,
             $rootScope;
 
-        beforeEach(inject(function ($q, _$rootScope_, _NcImage_) {
-            NcImage = _NcImage_;
+        beforeEach(inject(function ($q, _$rootScope_) {
             $rootScope = _$rootScope_;
 
             getAllResponse = [
                 {id: 2}, {id: 5}, {id: 1}
             ];
-            getAllDeferred = $q.defer();
-            getAllResponse.$promise = getAllDeferred.promise;
+            getAllResponse.$promise = getAllImagesDeferred.promise;
 
-            spyOn(NcImage, 'getAllByArticle').andReturn(getAllResponse);
+            NcImage.getAllByArticle.andReturn(getAllResponse);
+            NcImage.getAllByArticle.reset();  // forget any previous calls
         }));
 
         it('retrieves attached images for the right article', function () {
-            images.loadAttached({number: 17, language: 'it'});
+            images.loadAttached({articleId: 17, language: 'it'});
             expect(NcImage.getAllByArticle).toHaveBeenCalledWith(17, 'it');
         });
 
         it('initializes the list of article\'s attached images', function () {
             images.attached = [];
-            images.loadAttached({number: 17, language: 'it'});
+            images.loadAttached({articleId: 17, language: 'it'});
             expect(images.attached).toEqual(getAllResponse);
         });
 
@@ -431,9 +440,9 @@ describe('Service: Images', function () {
             var onSuccessSpy = jasmine.createSpy();
             images.attachedLoaded.then(onSuccessSpy);
 
-            images.loadAttached({number: 17, language: 'it'});
-            getAllDeferred.resolve();
-            $rootScope.$apply();
+            images.loadAttached({articleId: 17, language: 'it'});
+            getAllImagesDeferred.resolve();
+            $rootScope.$digest();
 
             expect(onSuccessSpy).toHaveBeenCalled();
         });
@@ -442,9 +451,9 @@ describe('Service: Images', function () {
             var onErrorSpy = jasmine.createSpy();
             images.attachedLoaded.catch(onErrorSpy);
 
-            images.loadAttached({number: 17, language: 'it'});
-            getAllDeferred.reject();
-            $rootScope.$apply();
+            images.loadAttached({articleId: 17, language: 'it'});
+            getAllImagesDeferred.reject();
+            $rootScope.$digest();
 
             expect(onErrorSpy).toHaveBeenCalled();
         });

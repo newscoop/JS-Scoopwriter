@@ -7,12 +7,14 @@
 */
 angular.module('authoringEnvironmentApp').controller('PaneAuthorsCtrl', [
     '$scope',
+    '$q',
     'article',
     'Author',
     'modalFactory',
-    function ($scope, article, Author, modalFactory) {
+    function ($scope, $q, articleService, Author, modalFactory) {
 
-        var self = this;
+        var article = articleService.articleInstance,
+            self = this;
 
         /**
         * Sets a watch on the author object for its article role changes.
@@ -56,32 +58,30 @@ angular.module('authoringEnvironmentApp').controller('PaneAuthorsCtrl', [
         * @param author {Object} author resource object itself
         */
         self.authorRoleChanged = function (newRole, oldRole, author) {
-            article.promise.then(function (articleData) {
-                author.updatingRole = true;
+            author.updatingRole = true;
 
-                author.updateRole({
-                    number: articleData.number,
-                    language: articleData.language,
-                    oldRoleId: oldRole.id,
-                    newRoleId: author.articleRole.id
-                })
-                .then(
-                    null,
-                    function () {
-                        // on error simply revert back to old role...
+            author.updateRole({
+                number: article.articleId,
+                language: article.language,
+                oldRoleId: oldRole.id,
+                newRoleId: author.articleRole.id
+            })
+            .then(
+                null,
+                function () {
+                    // on error simply revert back to old role...
 
-                        // NOTE: before the change we need to disable the watch
-                        // so that the change is not detected and a new request
-                        // is not sent to the server - which would result in
-                        // another error, another role revert --> infinite loop
-                        author.stopRoleChangeWatch();
-                        author.articleRole = oldRole;
-                        self.setRoleChangeWatch(author);
-                    }
-                )
-                .finally(function () {
-                    author.updatingRole = false;
-                });
+                    // NOTE: before the change we need to disable the watch
+                    // so that the change is not detected and a new request
+                    // is not sent to the server - which would result in
+                    // another error, another role revert --> infinite loop
+                    author.stopRoleChangeWatch();
+                    author.articleRole = oldRole;
+                    self.setRoleChangeWatch(author);
+                }
+            )
+            .finally(function () {
+                author.updatingRole = false;
             });
         };
 
@@ -122,19 +122,17 @@ angular.module('authoringEnvironmentApp').controller('PaneAuthorsCtrl', [
 
             $scope.addingNewAuthor = true;
 
-            article.promise.then(function (articleData) {
-                author.addToArticle(
-                    articleData.number, articleData.language, roleId
-                )
-                .then(function () {
-                    // append to the end, since this is the same way as it
-                    // works on the server
-                    $scope.authors.push(author);
-                    self.setRoleChangeWatch(author);
-                })
-                .finally(function () {
-                    $scope.addingNewAuthor = false;
-                });
+            author.addToArticle(
+                article.articleId, article.language, roleId
+            )
+            .then(function () {
+                // append to the end, since this is the same way as it
+                // works on the server
+                $scope.authors.push(author);
+                self.setRoleChangeWatch(author);
+            })
+            .finally(function () {
+                $scope.addingNewAuthor = false;
             });
         };
 
@@ -157,15 +155,15 @@ angular.module('authoringEnvironmentApp').controller('PaneAuthorsCtrl', [
             modal = modalFactory.confirmLight(title, text);
 
             modal.result.then(function (data) {
-                article.promise.then(function (articleData) {
-                    return author.removeFromArticle(
-                        articleData.number, articleData.language,
-                        author.articleRole.id
-                    );
-                }).then(function () {
-                    _.remove($scope.authors, function (item) {
-                        return item === author;
-                    });
+                return author.removeFromArticle(
+                    article.articleId,
+                    article.language,
+                    author.articleRole.id
+                );
+            }, $q.reject)
+            .then(function () {
+                _.remove($scope.authors, function (item) {
+                    return item === author;
                 });
             });
         };
@@ -178,20 +176,16 @@ angular.module('authoringEnvironmentApp').controller('PaneAuthorsCtrl', [
         * @method orderChanged
         */
         $scope.orderChanged = function () {
-            article.promise.then(function (articleData) {
-                Author.setOrderOnArticle(
-                    articleData.number, articleData.language, $scope.authors);
-            });
+            Author.setOrderOnArticle(
+                article.articleId, article.language, $scope.authors);
         };
 
         // retrieve all article auhors from server
-        article.promise.then(function (articleData) {
-            $scope.authors = Author.getAllByArticle(
-                articleData.number, articleData.language
-            );
-            return $scope.authors.$promise;
-        })
-        .then(function () {
+        $scope.authors = Author.getAllByArticle(
+            article.articleId, article.language
+        );
+
+        $scope.authors.$promise.then(function () {
             $scope.authors.forEach(function (author) {
                 self.setRoleChangeWatch(author);
             });

@@ -6,11 +6,9 @@
 * @class PaneInfoCtrl
 */
 angular.module('authoringEnvironmentApp').controller('PaneInfoCtrl', [
-    '$scope',
     'article',
-    function ($scope, article) {
-        article.promise.then(function (articleData) {
-            $scope.article = articleData;
-        });
+    function (articleService) {
+        var self = this;
+        self.article = articleService.articleInstance;
     }
 ]);

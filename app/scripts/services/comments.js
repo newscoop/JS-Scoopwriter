@@ -15,14 +15,15 @@ angular.module('authoringEnvironmentApp').service('comments', [
     '$log',
     'nestedSort',
     function comments(
-        article, $http, $q, $resource, transform, pageTracker,
+        articleService, $http, $q, $resource, transform, pageTracker,
         $log, nestedSort
     ) {
         /* max number of comments per page, decrease it in order to
          * test pagination, and sorting change with paginated
          * comments */
-        var itemsPerPage = 50,
-            service = this,  // alias for the comments service itself
+        var article = articleService.articleInstance,
+            itemsPerPage = 50,
+            self = this,  // alias for the comments service itself
             sorting = 'nested';
 
         /**
@@ -31,7 +32,7 @@ angular.module('authoringEnvironmentApp').service('comments', [
         * @type Boolean
         * @default true
         */
-        this.canLoadMore = true;
+        self.canLoadMore = true;
 
         /**
         * A list of all comments loaded so far.
@@ -39,7 +40,7 @@ angular.module('authoringEnvironmentApp').service('comments', [
         * @type Array
         * @default []
         */
-        this.loaded = [];
+        self.loaded = [];
 
         /**
         * A list of currently displayed comments.
@@ -47,21 +48,21 @@ angular.module('authoringEnvironmentApp').service('comments', [
         * @type Array
         * @default []
         */
-        this.displayed = [];
+        self.displayed = [];
 
         /**
         * Helper service for tracking which comments pages have been loaded.
         * @property tracker
         * @type Object (instance of pageTracker)
         */
-        this.tracker = pageTracker.getTracker();
+        self.tracker = pageTracker.getTracker();
 
         /**
         * Helper object for communication with the backend API.
         * @property tracker
         * @type Object (as created by Angular's $resource factory)
         */
-        this.resource = $resource(
+        self.resource = $resource(
             Routing.generate(
                 'newscoop_gimme_comments_getcommentsforarticle_1', {}, true
             ) + '/:articleNumber/:languageCode',
@@ -107,39 +108,39 @@ angular.module('authoringEnvironmentApp').service('comments', [
         * @method add
         * @param par {Object} A wrapper around the object containing
         *   comment data. As such it can be directly passed to the relevant
-        *   method of this.resource object.
+        *   method of self.resource object.
         *   @param par.comment {Object} The actual object with comment data.
         *     @param par.comment.subject {String} Comment's subject
         *     @param par.comment.message {String} Comment's body
         *     @param [par.comment.parent] {Number} ID of the parent comment
         * @return {Object} A promise object
         */
-        this.add = function (par) {
+        self.add = function (par) {
             var deferred = $q.defer();
-            article.promise.then(function (article) {
-                service.resource.create({
-                    articleNumber: article.number,
-                    languageCode: article.language
-                }, par, function (data, headers) {
-                    var url = headers('X-Location');
-                    if (url) {
-                        $http.get(url).success(function (data) {
-                            // just add the new comment to the end and filters
-                            // will take care of the correct ordering
-                            service.displayed.push(decorate(data));
-                            nestedSort.sort(service.displayed);
-                        });
-                    } else {
-                        // the header may not be available if the server
-                        // is on a different domain (we are in this
-                        // situation at the beginning of dev) and it is
-                        // not esplicitely enabled
-                        // http://stackoverflow.com/a/18178524/393758
-                        service.init();
-                    }
-                    deferred.resolve();
-                });
+
+            self.resource.create({
+                articleNumber: article.articleId,
+                languageCode: article.language
+            }, par, function (data, headers) {
+                var url = headers('X-Location');
+                if (url) {
+                    $http.get(url).success(function (data) {
+                        // just add the new comment to the end and filters
+                        // will take care of the correct ordering
+                        self.displayed.push(decorate(data));
+                        nestedSort.sort(self.displayed);
+                    });
+                } else {
+                    // the header may not be available if the server
+                    // is on a different domain (we are in this
+                    // situation at the beginning of dev) and it is
+                    // not esplicitely enabled
+                    // http://stackoverflow.com/a/18178524/393758
+                    self.init();
+                }
+                deferred.resolve();
             });
+
             return deferred.promise;
         };
 
@@ -149,27 +150,27 @@ angular.module('authoringEnvironmentApp').service('comments', [
         *
         * @method init
         */
-        this.init = function (opt) {
+        self.init = function (opt) {
             // XXX: from user experience perspective current behavior might
             // not be ideal (to reload everything, e.g. after adding a new
             // comment), but for now we stick with it as a reasonable
             // compromise between UX and complexity of the logic in code
-            service.tracker = pageTracker.getTracker();
-            service.canLoadMore = true;
-            service.loaded = [];
-            service.displayed = [];
+            self.tracker = pageTracker.getTracker();
+            self.canLoadMore = true;
+            self.loaded = [];
+            self.displayed = [];
             if (opt && opt.sorting) {
                 sorting = opt.sorting;
             } else {
                 sorting = 'nested';
             }
-            this.load(this.tracker.next()).then(function (data) {
-                service.displayed = data.items.map(decorate);
-                nestedSort.sort(service.displayed);
-                if (service.canLoadMore) {
+            self.load(self.tracker.next()).then(function (data) {
+                self.displayed = data.items.map(decorate);
+                nestedSort.sort(self.displayed);
+                if (self.canLoadMore) {
                     // prepare the next batch
-                    service.load(service.tracker.next()).then(function (data) {
-                        service.loaded = service.loaded.concat(data.items);
+                    self.load(self.tracker.next()).then(function (data) {
+                        self.loaded = self.loaded.concat(data.items);
                     });
                 }
             });
@@ -184,14 +185,14 @@ angular.module('authoringEnvironmentApp').service('comments', [
         *
         * @method more
         */
-        this.more = function () {
-            if (this.canLoadMore) {
-                var additional = this.loaded.splice(0, itemsPerPage);
+        self.more = function () {
+            if (self.canLoadMore) {
+                var additional = self.loaded.splice(0, itemsPerPage);
                 additional = additional.map(decorate);
-                this.displayed = this.displayed.concat(additional);
-                var next = this.tracker.next();
-                this.load(next).then(function (data) {
-                    service.loaded = service.loaded.concat(data.items);
+                self.displayed = self.displayed.concat(additional);
+                var next = self.tracker.next();
+                self.load(next).then(function (data) {
+                    self.loaded = self.loaded.concat(data.items);
                 });
             } else {
                 $log.error(
@@ -210,40 +211,39 @@ angular.module('authoringEnvironmentApp').service('comments', [
         *     (NOTE: page indices start with 1)
         * @return {Object} A promise object
         */
-        this.load = function (page) {
-            var deferred = $q.defer();
-            article.promise.then(function (article) {
-                var sortingPart,
-                    url;
+        self.load = function (page) {
+            var deferred = $q.defer(),
+                sortingPart,
+                url;
 
-                if (sorting === 'nested') {
-                    sortingPart = 'nested';
-                } else {
-                    sortingPart = '';
+            if (sorting === 'nested') {
+                sortingPart = 'nested';
+            } else {
+                sortingPart = '';
+            }
+
+            url = Routing.generate(
+                'newscoop_gimme_comments_getcommentsforarticle_1',
+                {
+                    number: article.articleId,
+                    language: article.language,
+                    order: sortingPart,
+                    items_per_page: itemsPerPage,
+                    page: page
+                },
+                true
+            );
+
+            $http.get(url).success(function (data) {
+                deferred.resolve(data);
+                if (pageTracker.isLastPage(data.pagination)) {
+                    self.canLoadMore = false;
                 }
-
-                url = Routing.generate(
-                    'newscoop_gimme_comments_getcommentsforarticle_1',
-                    {
-                        number: article.number,
-                        language: article.language,
-                        order: sortingPart,
-                        items_per_page: itemsPerPage,
-                        page: page
-                    },
-                    true
-                );
-
-                $http.get(url).success(function (data) {
-                    deferred.resolve(data);
-                    if (pageTracker.isLastPage(data.pagination)) {
-                        service.canLoadMore = false;
-                    }
-                }).error(function () {
-                    // in case of failure remove the page from the tracker
-                    service.tracker.remove(page);
-                });
+            }).error(function () {
+                // in case of failure remove the page from the tracker
+                self.tracker.remove(page);
             });
+
             return deferred.promise;
         };
         /**
@@ -264,7 +264,7 @@ angular.module('authoringEnvironmentApp').service('comments', [
         *
         * @return {Function} Generated comparison function.
         */
-        this.matchMaker = function (id) {
+        self.matchMaker = function (id) {
             return function (needle) {
                 return parseInt(needle.id) === parseInt(id);
             };
@@ -283,9 +283,9 @@ angular.module('authoringEnvironmentApp').service('comments', [
         * @param [commentId] {Number} ID of a specific comment to change
         *     status for
         */
-        this.changeSelectedStatus = function (status, deep, commentId) {
+        self.changeSelectedStatus = function (status, deep, commentId) {
             var comment = null,
-                displayed = this.displayed, // just an alias
+                displayed = self.displayed, // just an alias
                 i = 0,
                 len = displayed.length,
                 toChange = [];  // list of comments for which to change status
@@ -493,16 +493,15 @@ angular.module('authoringEnvironmentApp').service('comments', [
             */
             comment.save = function () {
                 var comment = this;
-                article.promise.then(function (article) {
-                    service.resource.save({
-                        articleNumber: article.number,
-                        languageCode: article.language,
-                        commentId: comment.id
-                    }, { comment: comment.editing }, function () {
-                        comment.subject = comment.editing.subject;
-                        comment.message = comment.editing.message;
-                        comment.isEdited = false;
-                    });
+
+                self.resource.save({
+                    articleNumber: article.articleId,
+                    languageCode: article.language,
+                    commentId: comment.id
+                }, { comment: comment.editing }, function () {
+                    comment.subject = comment.editing.subject;
+                    comment.message = comment.editing.message;
+                    comment.isEdited = false;
                 });
             };
 
@@ -512,17 +511,16 @@ angular.module('authoringEnvironmentApp').service('comments', [
             */
             comment.remove = function () {
                 var comment = this;
-                article.promise.then(function (article) {
-                    service.resource.delete({
-                        articleNumber: article.number,
-                        languageCode: article.language,
-                        commentId: comment.id
-                    }).$promise.then(function () {
-                        _.remove(
-                            service.displayed,
-                            service.matchMaker(comment.id)
-                        );
-                    });
+
+                self.resource.delete({
+                    articleNumber: article.articleId,
+                    languageCode: article.language,
+                    commentId: comment.id
+                }).$promise.then(function () {
+                    _.remove(
+                        self.displayed,
+                        self.matchMaker(comment.id)
+                    );
                 });
             };
 
@@ -553,7 +551,7 @@ angular.module('authoringEnvironmentApp').service('comments', [
                     replyData = angular.copy(comment.reply);
                 replyData.parent = comment.id;
                 comment.sendingReply = true;
-                service.add({ 'comment': replyData }).then(function () {
+                self.add({ 'comment': replyData }).then(function () {
                     comment.sendingReply = false;
                     comment.isReplyMode = false;
                     comment.reply = {
@@ -570,7 +568,7 @@ angular.module('authoringEnvironmentApp').service('comments', [
             */
             comment.toggleRecommended = function () {
                 var comment = this, newStatus = !comment.recommended;
-                service.resource.toggleRecommended(
+                self.resource.toggleRecommended(
                     {commentId: comment.id},
                     {comment: {recommended: newStatus ? 1 : 0 }},
                     function () {
@@ -585,19 +583,18 @@ angular.module('authoringEnvironmentApp').service('comments', [
             */
             comment.changeStatus = function (newStatus) {
                 var comment = this;
-                article.promise.then(function (article) {
-                    service.resource.patch({
-                        articleNumber: article.number,
-                        languageCode: article.language,
-                        commentId: comment.id
-                    }, { comment: { status: newStatus } }, function () {
-                        // success
-                        comment.status = newStatus;
-                    }, function () {
-                        // failure
-                        $log.debug(
-                            'error changing the status for the comment');
-                    });
+
+                self.resource.patch({
+                    articleNumber: article.articleId,
+                    languageCode: article.language,
+                    commentId: comment.id
+                }, { comment: { status: newStatus } }, function () {
+                    // success
+                    comment.status = newStatus;
+                }, function () {
+                    // failure
+                    $log.debug(
+                        'error changing the status for the comment');
                 });
             };
 

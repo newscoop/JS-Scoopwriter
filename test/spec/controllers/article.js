@@ -7,25 +7,26 @@
 */
 
 describe('Controller: ArticleCtrl', function () {
-    var ArticleCtrl,
+    var Article,
+        ArticleCtrl,
         articleService,
         ArticleType,
         fakeTextStats,
-        getArticleDeferred,
         getArticleTypeDeferred,
         modeService,
         panesService,
         platformService,
         saveArticleDeferred,
-        scope;
+        scope,
+        $rootScope;
 
     // load the controller's module
     beforeEach(module('authoringEnvironmentApp'));
 
-    beforeEach(inject(function ($controller, $rootScope, $q, article) {
-        articleService = article;
-
+    beforeEach(inject(function ($controller, _$rootScope_, $q, _Article_) {
+        $rootScope = _$rootScope_;
         scope = $rootScope.$new();
+
         modeService = {};
         platformService = {};
         panesService = {
@@ -34,15 +35,26 @@ describe('Controller: ArticleCtrl', function () {
             )
         };
 
-        getArticleDeferred = $q.defer();
-        spyOn(articleService, 'init');
-        articleService.promise = getArticleDeferred.promise;
+        articleService = {};
+        articleService.articleInstance = {
+            articleId: 123,
+            language: 'en',
+            type: 'news',
+            fields: {
+                dateline: '1st Aug 2010',
+                body: 'Body text.'
+            },
+            setWorkflowStatus: jasmine.createSpy(),
+            save: jasmine.createSpy()
+        };
 
         saveArticleDeferred = $q.defer();
-        spyOn(articleService, 'save').andReturn(saveArticleDeferred.promise);
+        articleService.articleInstance.save.andReturn(
+            saveArticleDeferred.promise);
 
+        Article = _Article_;
         fakeTextStats = {chars: 0, words: 0};
-        spyOn(articleService, 'textStats').andCallFake(function () {
+        spyOn(Article, 'textStats').andCallFake(function () {
             return fakeTextStats;
         });
 
@@ -54,21 +66,14 @@ describe('Controller: ArticleCtrl', function () {
 
         ArticleCtrl = $controller('ArticleCtrl', {
             $scope: scope,
-            $routeParams: {article: 123, language: 'en'},
             article: articleService,
+            Article: Article,
             ArticleType: ArticleType,
             mode: modeService,
             panes: panesService,
             platform: platformService
         });
     }));
-
-    it('invokes article service initialization with correct parameters',
-        function () {
-            expect(articleService.init).toHaveBeenCalledWith(
-                {articleId: 123, language: 'en'});
-        }
-    );
 
     it('exposes mode service in scope', function () {
         expect(scope.mode).toBe(modeService);
@@ -95,20 +100,15 @@ describe('Controller: ArticleCtrl', function () {
 
     describe('fieldStatsText() helper method', function () {
         beforeEach(function () {
-            scope.article = {
-                title: 'Article Title',
-                fields: {
-                    body: 'Body text.'
-                }
-            };
+            scope.article.title = 'The Title';
+            scope.article.fields.body = 'Body text.';
         });
 
         it('invokes textStats() service method with correct parameters ' +
            'for a regular article field',
             function () {
                 ArticleCtrl.fieldStatsText('body');
-                expect(articleService.textStats)
-                    .toHaveBeenCalledWith('Body text.');
+                expect(Article.textStats).toHaveBeenCalledWith('Body text.');
             }
         );
 
@@ -116,8 +116,7 @@ describe('Controller: ArticleCtrl', function () {
            'for the article title',
             function () {
                 ArticleCtrl.fieldStatsText('title');
-                expect(articleService.textStats)
-                    .toHaveBeenCalledWith('Article Title');
+                expect(Article.textStats).toHaveBeenCalledWith('The Title');
             }
         );
 
@@ -183,20 +182,12 @@ describe('Controller: ArticleCtrl', function () {
         );
     });
 
-    it('exposes retrieved article in scope', function () {
-        var retrievedArticle = {id: 123, type: 'news'};
-        scope.article = undefined;
-
-        getArticleDeferred.resolve(retrievedArticle);
-        scope.$digest();
-
-        expect(scope.article).toEqual(retrievedArticle);
+    it('exposes article instance in scope', function () {
+        expect(scope.article).toBe(articleService.articleInstance);
     });
 
     it('retrieves info on retrieved article\'s type', function () {
-        getArticleDeferred.resolve({id: 123, type: 'blog'});
-        scope.$digest();
-        expect(ArticleType.getByName).toHaveBeenCalledWith('blog');
+        expect(ArticleType.getByName).toHaveBeenCalledWith('news');
     });
 
     describe('when article\'s type info is retrieved', function () {
@@ -211,15 +202,9 @@ describe('Controller: ArticleCtrl', function () {
                 }
             };
 
-            article = {
-                id: 123,
-                language: 'en',
-                type: 'news',
-                title: 'Article title',
-                fields: {
-                    body: '<p>Paragraph 1</p>\n<p>Paragraph 2</p>',
-                    printsection: 'Sports'
-                }
+            scope.article.fields = {
+                body: '<p>Paragraph 1</p>\n<p>Paragraph 2</p>',
+                printsection: 'Sports'
             };
 
             articleTypeNews = {
@@ -229,14 +214,11 @@ describe('Controller: ArticleCtrl', function () {
                     {name: '_internal'}
                 ]
             };
-
-            spyOn(articleService, 'deserializeAlohaBlocks');
         }));
 
         it('exposes all article fields from config in scope', function () {
             var match;
 
-            getArticleDeferred.resolve(article);
             getArticleTypeDeferred.resolve(articleTypeNews);
             scope.$digest();
 
@@ -250,7 +232,6 @@ describe('Controller: ArticleCtrl', function () {
             function () {
                 var match;
 
-                getArticleDeferred.resolve(article);
                 getArticleTypeDeferred.resolve(articleTypeNews);
                 scope.$digest();
 
@@ -259,20 +240,9 @@ describe('Controller: ArticleCtrl', function () {
             }
         );
 
-        it('deserializes Aloha blocks in article fields', function () {
-            articleService.deserializeAlohaBlocks.andReturn('<deserialized>');
-
-            getArticleDeferred.resolve(article);
-            getArticleTypeDeferred.resolve(articleTypeNews);
-            scope.$digest();
-
-            expect(scope.article.fields.body).toEqual('<deserialized>');
-        });
-
         it('sets empty article fields to their default text', function () {
-            article.fields.body = null;
+            scope.article.fields.body = null;
 
-            getArticleDeferred.resolve(article);
             getArticleTypeDeferred.resolve(articleTypeNews);
             scope.$digest();
 
@@ -288,9 +258,7 @@ describe('Controller: ArticleCtrl', function () {
             ];
             spyOn(ArticleCtrl, 'fieldStatsText').andReturn('foo / bar');
 
-            getArticleDeferred.resolve(article);
             getArticleTypeDeferred.resolve(articleTypeNews);
-
             scope.$digest();
 
             field = _(scope.editableFields).find({name: 'title'});
@@ -303,9 +271,8 @@ describe('Controller: ArticleCtrl', function () {
     describe('scope\'s save() method', function () {
         it('invokes article service with the article object as a parameter',
             function () {
-                scope.article = {id: 1234};
                 scope.save();
-                expect(articleService.save).toHaveBeenCalledWith({id: 1234});
+                expect(scope.article.save).toHaveBeenCalled();
             }
         );
 

@@ -44,21 +44,8 @@ describe('Controller: CommentsCtrl', function () {
         }
     },
 
-    article = {
-        commenting: {
-            ENABLED: 0,
-            DISABLED: 1,
-            LOCKED: 2
-        },
-        changeCommentingSetting: function () {
-            return {
-                then: function () {}
-            };
-        },
-        promise: {
-            then: jasmine.createSpy('promise mock')
-        }
-    },
+    article,
+    Article,
 
     log = {
         debug: jasmine.createSpy('debug mock')
@@ -66,15 +53,43 @@ describe('Controller: CommentsCtrl', function () {
 
 
     // Initialize the controller and a mock scope
-    beforeEach(inject(function ($controller, $rootScope) {
+    beforeEach(inject(function ($controller, $rootScope, _Article_) {
+        var articleService
+
+        Article = _Article_;
+
+        article = {
+            commenting: Object.freeze({
+                ENABLED: 0,
+                DISABLED: 1,
+                LOCKED: 2
+            }),
+            changeCommentingSetting: function () {
+                return {
+                    then: function () {}
+                };
+            },
+            promise: {
+                then: jasmine.createSpy('promise mock')
+            },
+            comments_locked: false,
+            comments_enabled: true
+        };
+
+        articleService = {
+            articleInstance: article
+        };
+
         scope = $rootScope.$new();
+
         CommentsCtrl = $controller('CommentsCtrl', {
             $scope: scope,
             comments: commentsService,
-            article: article,
+            article: articleService,
             $log: log
         });
     }));
+
     it('proxies comments', function () {
         expect(scope.comments).toBeDefined();
     });
@@ -88,11 +103,8 @@ describe('Controller: CommentsCtrl', function () {
         expect(scope.sorting.text).toBe('Nested');
     });
 
-    it('has article commenting enabled by default', function () {
-        // initCommenting() reads the actual article data, thus we have to
-        // disable it for the purpose of the test
-        spyOn(CommentsCtrl, 'initCommenting');
-        expect(scope.commentingSettingSrv).toBe(article.commenting.ENABLED);
+    it('initializes commenting setting to article\'s setting', function () {
+        expect(scope.commentingSettingSrv).toBe(Article.commenting.ENABLED);
     });
 
     it('has commenting option dirty flag *not* set by default', function () {
@@ -107,82 +119,69 @@ describe('Controller: CommentsCtrl', function () {
         expect(scope.commenting).toEqual(article.commenting);
     });
 
+
     describe('initCommenting() method', function () {
-        var deferred,
-            $q;
-
-        beforeEach(inject(function (_$q_) {
-            $q = _$q_;
-            deferred = $q.defer();
-            article.promise = deferred.promise;
-        }));
-
         it('correctly sets commenting to "enabled"', function () {
-            scope.commentingSetting = article.commenting.DISABLED;
-            scope.commentingSettingSrv = article.commenting.DISABLED;
+            scope.commentingSetting = Article.commenting.DISABLED;
+            scope.commentingSettingSrv = Article.commenting.DISABLED;
+            article.comments_enabled = true;
+            article.comments_locked = false;
 
             CommentsCtrl.initCommenting();
-            deferred.resolve({
-                comments_enabled: 1,
-                comments_locked: 0
-            });
-            scope.$apply();
 
-            expect(scope.commentingSetting).toBe(article.commenting.ENABLED);
+            expect(scope.commentingSetting).toBe(Article.commenting.ENABLED);
             expect(scope.commentingSettingSrv).toBe(
-                article.commenting.ENABLED);
+                Article.commenting.ENABLED);
         });
 
         it('correctly sets commenting to "disabled"', function () {
-            scope.commentingSetting = article.commenting.ENABLED;
-            scope.commentingSettingSrv = article.commenting.ENABLED;
+            scope.commentingSetting = Article.commenting.ENABLED;
+            scope.commentingSettingSrv = Article.commenting.ENABLED;
+            article.comments_enabled = false;
+            article.comments_locked = false;
 
             CommentsCtrl.initCommenting();
-            deferred.resolve({
-                comments_enabled: 0,
-                comments_locked: 0
-            });
-            scope.$apply();
 
-            expect(scope.commentingSetting).toBe(article.commenting.DISABLED);
+            expect(scope.commentingSetting).toBe(Article.commenting.DISABLED);
             expect(scope.commentingSettingSrv).toBe(
-                article.commenting.DISABLED);
+                Article.commenting.DISABLED);
         });
 
         it('correctly sets commenting to "locked"', function () {
-            scope.commentingSetting = article.commenting.ENABLED;
-            scope.commentingSettingSrv = article.commenting.ENABLED;
+            scope.commentingSetting = Article.commenting.ENABLED;
+            scope.commentingSettingSrv = Article.commenting.ENABLED;
+            article.comments_enabled = false;
+            article.comments_locked = true;
 
             CommentsCtrl.initCommenting();
-            deferred.resolve({
-                comments_enabled: 0,
-                comments_locked: 1
-            });
-            scope.$apply();
 
-            expect(scope.commentingSetting).toBe(article.commenting.LOCKED);
+            expect(scope.commentingSetting).toBe(Article.commenting.LOCKED);
             expect(scope.commentingSettingSrv).toBe(
-                article.commenting.LOCKED);
+                Article.commenting.LOCKED);
         });
     });
 
-    describe('scope\'s updateCommentingDirtyFlag() method', function () {
 
+    describe('scope\'s updateCommentingDirtyFlag() method', function () {
         it('sets dirty flag when there IS a change in commenting ' +
-           'option value"', function () {
-                scope.commentingSetting = article.commenting.DISABLED;
-                scope.commentingSettingSrv = article.commenting.LOCKED;
+           'option value"',
+           function () {
+                scope.commentingSetting = Article.commenting.DISABLED;
+                scope.commentingSettingSrv = Article.commenting.LOCKED;
                 scope.updateCommentingDirtyFlag();
                 expect(scope.commentingOptDirty).toBe(true);
-        });
+            }
+        );
 
         it('clears dirty flag when there IS NO no change in commenting ' +
-           'option value', function () {
-                scope.commentingSetting = article.commenting.LOCKED;
-                scope.commentingSettingSrv = article.commenting.LOCKED;
+           'option value',
+           function () {
+                scope.commentingSetting = Article.commenting.LOCKED;
+                scope.commentingSettingSrv = Article.commenting.LOCKED;
                 scope.updateCommentingDirtyFlag();
                 expect(scope.commentingOptDirty).toBe(false);
-        });
+            }
+        );
     });
 
     describe('scope\'s changeCommentingSetting() method', function () {
@@ -207,17 +206,17 @@ describe('Controller: CommentsCtrl', function () {
         describe('on server success response', function () {
             it('sets scope\'s commenting setting (server) to new value',
                 function () {
-                    scope.commentingSetting = article.commenting.LOCKED;
-                    scope.commentingSettingSrv = article.commenting.DISABLED;
+                    scope.commentingSetting = Article.commenting.LOCKED;
+                    scope.commentingSettingSrv = Article.commenting.DISABLED;
 
                     scope.changeCommentingSetting();
                     expect(scope.commentingSettingSrv).toBe(
-                        article.commenting.DISABLED);
+                        Article.commenting.DISABLED);
 
                     deferred.resolve();
                     scope.$apply();
                     expect(scope.commentingSettingSrv).toBe(
-                        article.commenting.LOCKED);
+                        Article.commenting.LOCKED);
             });
 
             it('clears commenting option dirty flag', function () {
@@ -240,20 +239,19 @@ describe('Controller: CommentsCtrl', function () {
         });
 
         describe('on server error response', function () {
-
             it('sets scope\'s commenting setting back to original value',
                 function () {
-                    scope.commentingSetting = article.commenting.LOCKED;
+                    scope.commentingSettingSrv = Article.commenting.ENABLED;
+                    scope.commentingSetting = Article.commenting.LOCKED;
 
                     scope.changeCommentingSetting();
-                    expect(scope.commentingSetting).toBe(
-                        article.commenting.LOCKED);
 
                     deferred.reject('server timeout');
                     scope.$apply();
                     expect(scope.commentingSetting).toBe(
-                        article.commenting.ENABLED);
-            });
+                        Article.commenting.ENABLED);
+                }
+            );
 
             it('clears commenting option dirty flag', function () {
                 scope.commentingOptDirty = true;

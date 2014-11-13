@@ -12,18 +12,20 @@ describe('Controller: AttachImageCtrl', function () {
     beforeEach(module('authoringEnvironmentApp'));
 
     var AttachImageCtrl,
-        images,
+        fakeImagesService,
         modal,
         scope;
 
     // Initialize the controller and a mock scope
-    beforeEach(inject(function ($controller, $rootScope, _images_, _modal_) {
+    beforeEach(inject(function ($controller, $rootScope, _modal_) {
         scope = $rootScope.$new();
-        images = _images_;
         modal = _modal_;
 
+        fakeImagesService = {};
+
         AttachImageCtrl = $controller('AttachImageCtrl', {
-            $scope: scope
+            $scope: scope,
+            images: fakeImagesService
         });
     }));
 
@@ -57,19 +59,19 @@ describe('Controller: AttachImageCtrl', function () {
 
     describe('scope\'s attachCollected() method', function () {
         beforeEach(function () {
-            spyOn(images, 'attachAllCollected');
-            spyOn(images, 'discardAll');
+            fakeImagesService.attachAllCollected = jasmine.createSpy();
+            fakeImagesService.discardAll = jasmine.createSpy();
             spyOn(modal, 'hide');
         });
 
         it('triggers attaching all images currently in basket', function () {
             scope.attachCollected();
-            expect(images.attachAllCollected).toHaveBeenCalled();
+            expect(fakeImagesService.attachAllCollected).toHaveBeenCalled();
         });
 
         it('triggers clearing the basket and upload list', function () {
             scope.attachCollected();
-            expect(images.discardAll).toHaveBeenCalled();
+            expect(fakeImagesService.discardAll).toHaveBeenCalled();
         });
 
         it('closes the modal', function () {
@@ -82,7 +84,7 @@ describe('Controller: AttachImageCtrl', function () {
         var eventObj;
 
         beforeEach(function () {
-            spyOn(images, 'discardAll');
+            fakeImagesService.discardAll = jasmine.createSpy();
             spyOn(modal, 'hide');
             eventObj = {
                 preventDefault: function () {},
@@ -92,7 +94,7 @@ describe('Controller: AttachImageCtrl', function () {
 
         it('triggers discarding all the changes', function () {
             scope.discardChanges(eventObj);
-            expect(images.discardAll).toHaveBeenCalled();
+            expect(fakeImagesService.discardAll).toHaveBeenCalled();
         });
 
         it('closes the modal', function () {

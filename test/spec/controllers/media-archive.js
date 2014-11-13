@@ -11,14 +11,18 @@ describe('Controller: MediaArchiveCtrl', function () {
     // load the controller's module
     beforeEach(module('authoringEnvironmentApp'));
 
-    var MediaArchiveCtrl,
+    var fakeImagesService,
+        MediaArchiveCtrl,
         scope;
 
     // Initialize the controller and a mock scope
     beforeEach(inject(function ($controller, $rootScope) {
+        fakeImagesService = {};
         scope = $rootScope.$new();
+
         MediaArchiveCtrl = $controller('MediaArchiveCtrl', {
-            $scope: scope
+            $scope: scope,
+            images: fakeImagesService
         });
     }));
 
@@ -27,18 +31,15 @@ describe('Controller: MediaArchiveCtrl', function () {
     });
 
     it('updates scope\'s appliedFilter property on changes in images service',
-        inject(function (images) {
+        function () {
             scope.appliedFilter = 'foo';
-
-            images.searchFilter = 'bar';
-            scope.$apply();
-
+            fakeImagesService.searchFilter = 'bar';
+            scope.$digest();
             expect(scope.appliedFilter).toEqual('bar');
-    }));
+    });
 
-    it('should attach a list of images to the scope', function () {
-        expect(scope.images).toBeDefined();
-        expect(scope.images.displayed.length).toBe(0);
+    it('exposes imagesservice in scope', function () {
+        expect(scope.images).toBe(fakeImagesService);
     });
 
     it('sets `root` property on scope holding API root URL', function () {
@@ -46,53 +47,50 @@ describe('Controller: MediaArchiveCtrl', function () {
     });
 
     describe('scope\'s thumbnailClicked() method', function () {
-        var images;
-
-        beforeEach(inject(function (_images_) {
-            images = _images_;
-            spyOn(images, 'toggleCollect');
-        }));
+        beforeEach(function () {
+            fakeImagesService.toggleCollect = jasmine.createSpy();
+            fakeImagesService.isAttached = jasmine.createSpy();
+            fakeImagesService.isCollected = jasmine.createSpy();
+        });
 
         it('does nothing if clicked image is already attached', function () {
-            spyOn(images, 'isAttached').andReturn(true);
-            spyOn(images, 'isCollected').andReturn(false);
+            fakeImagesService.isAttached.andReturn(true);
+            fakeImagesService.isCollected.andReturn(false);
             scope.thumbnailClicked(123);
-            expect(images.toggleCollect).not.toHaveBeenCalled();
+            expect(fakeImagesService.toggleCollect).not.toHaveBeenCalled();
         });
 
         it('does nothing if clicked image is in the basket', function () {
-            spyOn(images, 'isAttached').andReturn(false);
-            spyOn(images, 'isCollected').andReturn(true);
+            fakeImagesService.isAttached.andReturn(false);
+            fakeImagesService.isCollected.andReturn(true);
             scope.thumbnailClicked(123);
-            expect(images.toggleCollect).not.toHaveBeenCalled();
+            expect(fakeImagesService.toggleCollect).not.toHaveBeenCalled();
         });
 
         it('calls a method to add image to the basket', function () {
-            spyOn(images, 'isAttached').andReturn(false);
-            spyOn(images, 'isCollected').andReturn(false);
+            fakeImagesService.isAttached.andReturn(false);
+            fakeImagesService.isCollected.andReturn(false);
             scope.thumbnailClicked(123);
-            expect(images.toggleCollect).toHaveBeenCalledWith(123);
+            expect(fakeImagesService.toggleCollect).toHaveBeenCalledWith(123);
         });
     });
 
     describe('scope\'s searchArchive() method', function () {
-        it('delegates search action to images service', inject(
-            function (images) {
-                spyOn(images, 'query');
-                scope.searchArchive('flower');
-                expect(images.query).toHaveBeenCalledWith('flower');
-            }
-        ));
+        it('delegates search action to images service', function () {
+            fakeImagesService.query = jasmine.createSpy();
+            scope.searchArchive('flower');
+            expect(fakeImagesService.query).toHaveBeenCalledWith('flower');
+        });
     });
 
     describe('scope\'s loadMore() method', function () {
-        it('delegates loading more images action to images service', inject(
-            function (images) {
-                spyOn(images, 'more');
+        it('delegates loading more images action to images service',
+            function () {
+                fakeImagesService.more = jasmine.createSpy();
                 scope.loadMore();
-                expect(images.more).toHaveBeenCalled();
+                expect(fakeImagesService.more).toHaveBeenCalled();
             }
-        ));
+        );
     });
 
 });

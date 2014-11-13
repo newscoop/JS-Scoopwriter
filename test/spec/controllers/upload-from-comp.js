@@ -16,12 +16,15 @@ describe('Controller: UploadFromCompCtrl', function () {
         scope;
 
     // Initialize the controller and a mock scope
-    beforeEach(inject(function ($controller, $rootScope, _images_) {
+    beforeEach(inject(function ($controller, $rootScope) {
         scope = $rootScope.$new();
-        images = _images_;
+        images = {
+            images2upload: []
+        };
 
         UploadFromCompCtrl = $controller('UploadFromCompCtrl', {
-            $scope: scope
+            $scope: scope,
+            images: images
         });
     }));
 
@@ -34,21 +37,25 @@ describe('Controller: UploadFromCompCtrl', function () {
     });
 
     describe('scope\'s addToUploadList() method', function () {
-        beforeEach(inject(function (_images_) {
-            spyOn(images, 'addToUploadList');
-        }));
+        beforeEach(function () {
+            images.addToUploadList = jasmine.createSpy();
+        });
 
         it('proxies the call to add images to upload list', function () {
-            var newImages = [{}, {}, {}];
+            var newImages = [
+                {id: 5}, {id: 2}, {id: 6}
+            ];
             scope.addToUploadList(newImages);
-            expect(images.addToUploadList).toHaveBeenCalledWith([{}, {}, {}]);
+            expect(images.addToUploadList).toHaveBeenCalledWith(
+                [{id: 5}, {id: 2}, {id: 6}]
+            );
         });
     });
 
     describe('scope\'s removeFromStaging() method', function () {
-        beforeEach(inject(function (_images_) {
-            spyOn(images, 'removeFromUploadList');
-        }));
+        beforeEach(function () {
+            images.removeFromUploadList = jasmine.createSpy();
+        });
 
         it('proxies the call to remove image from upload list', function () {
             scope.removeFromStaging();
@@ -60,15 +67,15 @@ describe('Controller: UploadFromCompCtrl', function () {
         var deferred,
             deferred2;
 
-        beforeEach(inject(function (_images_, $q) {
+        beforeEach(inject(function ($q) {
             deferred = $q.defer();
             deferred2 = $q.defer();
 
-            spyOn(images, 'uploadAll').andCallFake(function () {
+            images.uploadAll = jasmine.createSpy().andCallFake(function () {
                 return [deferred.promise, deferred2.promise];
             });
-            spyOn(images, 'collect');
-            spyOn(images, 'clearUploadList');
+            images.collect = jasmine.createSpy();
+            images.clearUploadList = jasmine.createSpy();
         }));
 
         it('sets uploading flag before doing anything', function () {
@@ -128,7 +135,7 @@ describe('Controller: UploadFromCompCtrl', function () {
     describe('scope\'s clearStaged() method', function () {
         it('clears the images2upload list by using the images service',
             function () {
-                spyOn(images, 'clearUploadList');
+                images.clearUploadList = jasmine.createSpy();
                 scope.clearStaged();
                 expect(images.clearUploadList).toHaveBeenCalled();
         });

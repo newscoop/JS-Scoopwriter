@@ -8,17 +8,20 @@
 
 describe('Controller: ImagepaneCtrl', function () {
 
-    var ImagepaneCtrl,
+    var fakeImagesService,
+        ImagepaneCtrl,
         scope;
 
     // load the controller's module
     beforeEach(module('authoringEnvironmentApp'));
 
-    // Initialize the controller with mocked scope
     beforeEach(inject(function ($controller, $rootScope) {
+        fakeImagesService = {};
         scope = $rootScope.$new();
+
         ImagepaneCtrl = $controller('ImagePaneCtrl', {
-            $scope: scope
+            $scope: scope,
+            images: fakeImagesService
         });
     }));
 
@@ -73,13 +76,13 @@ describe('Controller: ImagepaneCtrl', function () {
 
     describe('scope\'s detachImage() method', function () {
         var deferred,
-            images,
             modalFactory,
             resultPromise;
 
-        beforeEach(inject(function ($q, _modalFactory_, _images_) {
+        beforeEach(inject(function ($q, _modalFactory_) {
             modalFactory = _modalFactory_;
-            images = _images_;
+
+            fakeImagesService.detach = jasmine.createSpy();
 
             deferred = $q.defer();
             resultPromise = deferred.promise;
@@ -87,7 +90,7 @@ describe('Controller: ImagepaneCtrl', function () {
             spyOn(modalFactory, 'confirmLight').andCallFake(function () {
                 return {
                     result: resultPromise
-                }
+                };
             });
         }));
 
@@ -97,23 +100,21 @@ describe('Controller: ImagepaneCtrl', function () {
         });
 
         it('detaches image on action confirmation"', function () {
-            spyOn(images, 'detach');
             scope.detachImage(123);
 
             deferred.resolve(true);
-            scope.$apply();
+            scope.$digest();
 
-            expect(images.detach).toHaveBeenCalledWith(123);
+            expect(fakeImagesService.detach).toHaveBeenCalledWith(123);
         });
 
         it('does *not* detach image on action rejection"', function () {
-            spyOn(images, 'detach');
             scope.detachImage(123);
 
             deferred.reject(false);
-            scope.$apply();
+            scope.$digest();
 
-            expect(images.detach).not.toHaveBeenCalled;
+            expect(fakeImagesService.detach).not.toHaveBeenCalled();
         });
     });
 });

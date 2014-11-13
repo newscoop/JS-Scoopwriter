@@ -8,8 +8,10 @@ angular.module('authoringEnvironmentApp').controller('PaneSnippetsCtrl', [
     'snippets',
     'modalFactory',
     function (
-        $scope, $q, article, Snippet, SnippetTemplate, snippets, modalFactory
+        $scope, $q, articleService, Snippet, SnippetTemplate, snippets,
+        modalFactory
     ) {
+        var article = articleService.articleInstance;
 
         /**
         * Resets all new snippet form fields.
@@ -57,10 +59,7 @@ angular.module('authoringEnvironmentApp').controller('PaneSnippetsCtrl', [
             )
             .then(function (snippet) {
                 newSnippet = snippet;
-                return article.promise;
-            }, $q.reject)
-            .then(function (articleData) {
-                return snippets.addToArticle(newSnippet, articleData);
+                return snippets.addToArticle(newSnippet, article);
             }, $q.reject)
             .then(function () {
                 // hide form on successful add and clear its field
@@ -94,13 +93,10 @@ angular.module('authoringEnvironmentApp').controller('PaneSnippetsCtrl', [
             modal = modalFactory.confirmLight(title, text);
 
             modal.result.then(function () {
-                return article.promise;
-            }, $q.reject)
-            .then(function (articleData) {
                 // NOTE: detach snippet from article but don't delete it,
                 // because it might be attached to some other article, too
                 // (in theory at least)
-                snippets.removeFromArticle(snippet, articleData);
+                snippets.removeFromArticle(snippet, article);
             });
         };
 

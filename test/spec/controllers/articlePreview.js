@@ -7,31 +7,25 @@
 */
 
 describe('Controller: ArticlePreviewCtrl', function () {
-    var articleData,
-        articleDeferred,
-        articleService,
-        articlePreviewCtrl,
+    var articlePreviewCtrl,
         $httpBackend,
-        $modal,
-        $rootScope;
+        $modal;
 
     beforeEach(module('authoringEnvironmentApp'));
 
     beforeEach(inject(function (
-        $controller, _$modal_, _$httpBackend_, $q, _$rootScope_,
+        $controller, _$modal_, _$httpBackend_,
         $templateCache, article
     ) {
-        var modalTemplate;
+        var articleService,
+            modalTemplate;
 
-        $httpBackend = _$httpBackend_
+        $httpBackend = _$httpBackend_;
         $modal = _$modal_;
-        $rootScope = _$rootScope_;
         articleService = article;
 
-        articleDeferred = $q.defer();
-        articleService.promise = articleDeferred.promise;
-        articleData = {
-            number: 123,
+        articleService.articleInstance = {
+            articleId: 123,
             language: 'de',
             issue: {
                 number: 129
@@ -59,8 +53,6 @@ describe('Controller: ArticlePreviewCtrl', function () {
                 expectedArticleInfo;
 
             articlePreviewCtrl.openPreview();
-            articleDeferred.resolve(articleData);
-            $rootScope.$apply();
 
             expect($modal.open).toHaveBeenCalled();
             callArgs = $modal.open.mostRecentCall.args[0];
@@ -68,6 +60,7 @@ describe('Controller: ArticlePreviewCtrl', function () {
             expect(callArgs.templateUrl).toEqual(
                 'views/modal-article-preview.html');
             expect(callArgs.controllerAs).toEqual('modalPreviewCtrl');
+            expect(callArgs.windowClass).toEqual('modalPreview');
 
             expectedArticleInfo = {
                 articleId: 123,
@@ -92,9 +85,6 @@ describe('Controller: ArticlePreviewCtrl', function () {
                 ModalCtrl;
 
             articlePreviewCtrl.openPreview();
-            articleDeferred.resolve(articleData);
-            $httpBackend.flush();
-            $rootScope.$apply();
 
             // XXX: this is not ideal, since obtaining a reference to the
             // modal controller depends on the openPreview() method to provide
@@ -109,7 +99,7 @@ describe('Controller: ArticlePreviewCtrl', function () {
 
             fakeSCE = {
                 trustAsResourceUrl: function (url) {
-                    return url
+                    return url;
                 }
             };
 

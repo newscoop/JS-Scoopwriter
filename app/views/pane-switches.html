@@ -12,7 +12,7 @@
         <input
             type="checkbox" class="input_checkbox"
             name="{{::switch.name}}" id="{{::switch.name}}"
-            ng-model="psCtrl.articleObj.fields[switch.name]"
+            ng-model="psCtrl.article.fields[switch.name]"
             ng-change="psCtrl.valueChanged()"
             ng-disabled="psCtrl.saveInProgress"/>
           <label for="{{::switch.name}}">{{::switch.text}}</label>
