@@ -1,28 +1,28 @@
 <!-- devcode: newscoop -->
-<div
-   ng-controller="MainCtrl"
-   >
+<div ng-controller="MainCtrl" >
 <!-- endcode -->
 <!-- devcode: !newscoop -->
-<div
-   ng-controller="MainWithTokenCtrl"
-   >
+<div ng-controller="MainWithTokenCtrl">
 <!-- endcode -->
-<div 
-   class="authoring-environment"
-   ng-class="{'zen-mode': mode.zen}"
-   ng-if="auth"
-   >
-    <div ng-include src="'views/toolbar.html'"></div>
-    <div ng-include src="'views/panes.html'"></div>
-    <div ng-include src="'views/article.html'"
-         class="main-article-container-container"
-         ></div>
-    <div ng-include src="'views/modal.html'"></div>
+
+  <div
+     class="authoring-environment"
+     ng-class="{'zen-mode': mode.zen}"
+     ng-if="auth"
+     >
+      <div ng-include src="'views/toolbar.html'"></div>
+      <div ng-include src="'views/panes.html'"></div>
+      <div ng-include src="'views/article.html'"
+           class="main-article-container-container"
+           ></div>
+      <div ng-include src="'views/modal.html'"></div>
+
+  </div>
+  <div
+      class="auth"
+      ng-if="!auth">
+      Authenticating
+  </div>
 </div>
-<div
-    class="auth"
-    ng-if="!auth">
-    Authenticating
-</div>
-</div>
+
+<toaster-container toaster-options=""></toaster-container>

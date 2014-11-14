@@ -14,6 +14,7 @@ angular.module('authoringEnvironmentApp', [
     'ui.bootstrap.dropdown',
     'ui.bootstrap.modal',
     'ui.select2',
+    'gc.toaster',
     'angularFileUpload',
     'angularOauth'
 ]).config([
