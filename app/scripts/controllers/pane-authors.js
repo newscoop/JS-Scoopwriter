@@ -11,7 +11,8 @@ angular.module('authoringEnvironmentApp').controller('PaneAuthorsCtrl', [
     'article',
     'Author',
     'modalFactory',
-    function ($scope, $q, articleService, Author, modalFactory) {
+    'toaster',
+    function ($scope, $q, articleService, Author, modalFactory, toaster) {
 
         var article = articleService.articleInstance,
             self = this;
@@ -130,6 +131,34 @@ angular.module('authoringEnvironmentApp').controller('PaneAuthorsCtrl', [
                 // works on the server
                 $scope.authors.push(author);
                 self.setRoleChangeWatch(author);
+
+                toaster.add({
+                    type:'info',
+                    title: 'Info',
+                    message: 'Author added.',
+                    timeout: 60000
+                });
+
+                toaster.add({
+                    type:'error',
+                    title: 'Error',
+                    message: 'Error adding author.',
+                    timeout: 60000
+                });
+            })
+            .catch(function () {
+                toaster.add({
+                    type:'success',
+                    title: 'Success',
+                    message: 'Author removed.',
+                    timeout: 60000
+                });
+                toaster.add({
+                    type:'error',
+                    title: 'Error',
+                    message: 'Error removing author.',
+                    timeout: 60000
+                });
             })
             .finally(function () {
                 $scope.addingNewAuthor = false;
@@ -164,6 +193,32 @@ angular.module('authoringEnvironmentApp').controller('PaneAuthorsCtrl', [
             .then(function () {
                 _.remove($scope.authors, function (item) {
                     return item === author;
+                });
+
+                toaster.add({
+                    type:'success',
+                    title: 'Success',
+                    message: 'Author removed.',
+                    timeout: 60000
+                });
+                toaster.add({
+                    type:'error',
+                    title: 'Error',
+                    message: 'Error removing author.',
+                    timeout: 60000
+                });
+            }, function () {
+                toaster.add({
+                    type:'success',
+                    title: 'Success',
+                    message: 'Author removed.',
+                    timeout: 60000
+                });
+                toaster.add({
+                    type:'error',
+                    title: 'Error',
+                    message: 'Error removing author.',
+                    timeout: 60000
                 });
             });
         };
