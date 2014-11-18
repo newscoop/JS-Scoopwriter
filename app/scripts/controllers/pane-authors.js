@@ -131,30 +131,6 @@ angular.module('authoringEnvironmentApp').controller('PaneAuthorsCtrl', [
                 // works on the server
                 $scope.authors.push(author);
                 self.setRoleChangeWatch(author);
-
-                toaster.add({
-                    type:'sf-info',
-                    //title: 'Info',
-                    message: 'Author added.'
-                });
-
-                toaster.add({
-                    type:'sf-error',
-                    //title: 'Error',
-                    message: 'Error adding author.'
-                });
-            })
-            .catch(function () {
-                toaster.add({
-                    type:'sf-success',
-                    //title: 'Success',
-                    message: 'Author removed.'
-                });
-                toaster.add({
-                    type:'sf-error',
-                    //title: 'Error',
-                    message: 'Error removing author.'
-                });
             })
             .finally(function () {
                 $scope.addingNewAuthor = false;
@@ -189,38 +165,6 @@ angular.module('authoringEnvironmentApp').controller('PaneAuthorsCtrl', [
             .then(function () {
                 _.remove($scope.authors, function (item) {
                     return item === author;
-                });
-
-                toaster.add({
-                    type:'sf-success',
-                    //title: 'Success',
-                    message: 'Author removed.'
-                });
-                toaster.add({
-                    type:'sf-error',
-                    //title: 'Error',
-                    message: 'Error removing author.'
-                });
-                toaster.add({
-                    type:'sf-info',
-                    //title: 'Error',
-                    message: 'Author has a nice picture.'
-                });
-            }, function () {
-                toaster.add({
-                    type:'sf-success',
-                    //title: 'Success',
-                    message: 'Author removed.'
-                });
-                toaster.add({
-                    type:'sf-error',
-                    //title: 'Error',
-                    message: 'Error removing author.'
-                });
-                toaster.add({
-                    type:'sf-info',
-                    //title: 'Error',
-                    message: 'Author has a nice picture.'
                 });
             });
         };
