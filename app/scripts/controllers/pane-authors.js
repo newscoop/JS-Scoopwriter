@@ -11,7 +11,8 @@ angular.module('authoringEnvironmentApp').controller('PaneAuthorsCtrl', [
     'article',
     'Author',
     'modalFactory',
-    function ($scope, $q, articleService, Author, modalFactory) {
+    'toaster',
+    function ($scope, $q, articleService, Author, modalFactory, toaster) {
 
         var article = articleService.articleInstance,
             self = this;
