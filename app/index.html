@@ -109,6 +109,17 @@
     var ngAlohaEditorConfig = { baseUrl: 'bower_components/ng-aloha-editor/' };
     </script>
 
+    <!-- devcode: !dist -->
+    <script type="text/javascript">
+        // In production mode this is provided by the PHP code responsible for
+        // generating the index.html template. An explanation on why this
+        // hack is needed can be found in RedirectToArticleCtrl.
+        var articleInfo = {
+            articleNumber: 533522,
+            language: 'de'
+        };
+    </script>
+    <!-- endcode -->
 
         <!-- build:js scripts/modules.js -->
         <script src="bower_components/angular-resource/angular-resource.js"></script>
@@ -149,6 +160,7 @@
         <script src="scripts/controllers/main-with-token.js"></script>
         <!-- endcode -->
 
+        <script src="scripts/controllers/redirectToArticle.js"></script>
         <script src="scripts/services/articleLoader.js"></script>
         <script src="scripts/services/Topic.js"></script>
         <script src="scripts/controllers/sf-panes.js"></script>
