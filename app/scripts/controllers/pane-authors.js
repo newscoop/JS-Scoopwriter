@@ -133,31 +133,27 @@ angular.module('authoringEnvironmentApp').controller('PaneAuthorsCtrl', [
                 self.setRoleChangeWatch(author);
 
                 toaster.add({
-                    type:'info',
-                    title: 'Info',
-                    message: 'Author added.',
-                    timeout: 60000
+                    type:'sf-info',
+                    //title: 'Info',
+                    message: 'Author added.'
                 });
 
                 toaster.add({
-                    type:'error',
-                    title: 'Error',
-                    message: 'Error adding author.',
-                    timeout: 60000
+                    type:'sf-error',
+                    //title: 'Error',
+                    message: 'Error adding author.'
                 });
             })
             .catch(function () {
                 toaster.add({
-                    type:'success',
-                    title: 'Success',
-                    message: 'Author removed.',
-                    timeout: 60000
+                    type:'sf-success',
+                    //title: 'Success',
+                    message: 'Author removed.'
                 });
                 toaster.add({
-                    type:'error',
-                    title: 'Error',
-                    message: 'Error removing author.',
-                    timeout: 60000
+                    type:'sf-error',
+                    //title: 'Error',
+                    message: 'Error removing author.'
                 });
             })
             .finally(function () {
@@ -196,29 +192,35 @@ angular.module('authoringEnvironmentApp').controller('PaneAuthorsCtrl', [
                 });
 
                 toaster.add({
-                    type:'success',
-                    title: 'Success',
-                    message: 'Author removed.',
-                    timeout: 60000
+                    type:'sf-success',
+                    //title: 'Success',
+                    message: 'Author removed.'
                 });
                 toaster.add({
-                    type:'error',
-                    title: 'Error',
-                    message: 'Error removing author.',
-                    timeout: 60000
+                    type:'sf-error',
+                    //title: 'Error',
+                    message: 'Error removing author.'
+                });
+                toaster.add({
+                    type:'sf-info',
+                    //title: 'Error',
+                    message: 'Author has a nice picture.'
                 });
             }, function () {
                 toaster.add({
-                    type:'success',
-                    title: 'Success',
-                    message: 'Author removed.',
-                    timeout: 60000
+                    type:'sf-success',
+                    //title: 'Success',
+                    message: 'Author removed.'
                 });
                 toaster.add({
-                    type:'error',
-                    title: 'Error',
-                    message: 'Error removing author.',
-                    timeout: 60000
+                    type:'sf-error',
+                    //title: 'Error',
+                    message: 'Error removing author.'
+                });
+                toaster.add({
+                    type:'sf-info',
+                    //title: 'Error',
+                    message: 'Author has a nice picture.'
                 });
             });
         };
