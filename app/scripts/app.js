@@ -35,12 +35,20 @@ angular.module('authoringEnvironmentApp', [
                     ]
                 }
             }
-        ).when(
+        )
+        .when(
+            '/', {
+                template: '',
+                controller: 'RedirectToArticleCtrl'
+            }
+        )
+        .when(
             '/:callback*', {
                 templateUrl:'views/oAuthCallback.html',
                 controller: 'CallbackCtrl'
             }
         ).otherwise(
+            // TODO: what here?
             {redirectTo: '/de/533522'}
         );
 
