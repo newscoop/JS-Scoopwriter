@@ -65,12 +65,10 @@
                     windowClass: 'modalPreview',
                     resolve: {
                         articleInfo: function () {
-                            // TODO: add real languageId and publicationId
-                            // when available
                             return {
                                 articleId: article.articleId,
-                                languageId: 5,
-                                publicationId: 1,
+                                languageId: article.languageData.id,
+                                publicationId: article.publication.id,
                                 issueId: article.issue.number,
                                 sectionId: article.section.number
                             };
