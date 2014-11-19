@@ -14,7 +14,7 @@
             'http://newscoop.aes.sourcefabric.net',
             '/admin/image/article',
             '/article_number/', articleInfo.articleId,
-            '/language_id/5'
+            '/language_id/', articleInfo.languageId
         ].join('');
 
         self.url = $sce.trustAsResourceUrl(url);
@@ -58,10 +58,9 @@
                     windowClass: 'renditionsModal',
                     resolve: {
                         articleInfo: function () {
-                            // TODO: add real languageId when available
                             return {
                                 articleId: article.articleId,
-                                languageId: 5
+                                languageId: article.languageData.id
                             };
                         }
                     }
