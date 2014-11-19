@@ -25,7 +25,11 @@ describe('Controller: RenditionsEditorCtrl', function () {
 
         articleService.articleInstance = {
             articleId: 123,
-            language: 'de'
+            language: 'de',
+            languageData: {
+                id: 5,
+                name: 'German'
+            }
         };
 
         spyOn($modal, 'open').andCallThrough();
