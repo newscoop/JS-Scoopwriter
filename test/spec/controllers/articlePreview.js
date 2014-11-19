@@ -27,8 +27,15 @@ describe('Controller: ArticlePreviewCtrl', function () {
         articleService.articleInstance = {
             articleId: 123,
             language: 'de',
+            languageData: {
+                id: 5,
+                name: 'German'
+            },
             issue: {
                 number: 129
+            },
+            publication: {
+                id: 7
             },
             section: {
                 number: 10
@@ -65,7 +72,7 @@ describe('Controller: ArticlePreviewCtrl', function () {
             expectedArticleInfo = {
                 articleId: 123,
                 languageId: 5,
-                publicationId: 1,
+                publicationId: 7,
                 issueId: 129,
                 sectionId: 10
             };
