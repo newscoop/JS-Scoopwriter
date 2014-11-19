@@ -15,17 +15,6 @@ angular.module('authoringEnvironmentApp').factory('panes', [
                     selected: true
                 },
                 {
-                    name: 'Topics',
-                    id: 'topics',
-                    icon: 'topics',
-                    template: 'views/pane-topics.html',
-                    position: 'right',
-                    size: 'small',
-                    visible: false,
-                    active: false,
-                    selected: true
-                },
-                {
                     name: 'Authors',
                     id: 'authors',
                     icon: 'authors',
@@ -41,6 +30,17 @@ angular.module('authoringEnvironmentApp').factory('panes', [
                     id: 'switches',
                     icon: 'switches',
                     template: 'views/pane-switches.html',
+                    position: 'right',
+                    size: 'small',
+                    visible: false,
+                    active: false,
+                    selected: true
+                },
+                {
+                    name: 'Topics',
+                    id: 'topics',
+                    icon: 'topics',
+                    template: 'views/pane-topics.html',
                     position: 'right',
                     size: 'small',
                     visible: false,
