@@ -53,8 +53,22 @@ describe('Controller: PaneSwitchesCtrl', function () {
         }
     );
 
-    it('initializes the list of switch fields\' names when data is retrieved',
+    it('initializes the list of switch fields\' names with built-in switches',
         function () {
+            expect(PaneSwitchesCtrl.switches).toEqual([
+                {name: 'show_on_front_page', text: 'Show on Front Page'},
+                {name: 'show_on_section_page', text: 'Show on Section Page'}
+            ]);
+        }
+    );
+
+    it('adds field names of user-defined switches to the list of switch ' +
+        'names when data is retrieved',
+        function () {
+            PaneSwitchesCtrl.switches = [
+                {name: 'foo', text: 'bar'}
+            ];
+
             articleTypeDeferred.resolve({
                 fields: [
                     {name: 'switch_1', type: 'switch'},
@@ -65,6 +79,7 @@ describe('Controller: PaneSwitchesCtrl', function () {
             $rootScope.$digest();
 
             expect(PaneSwitchesCtrl.switches).toEqual([
+                {name: 'foo', text: 'bar'},
                 {name: 'switch_1', text: 'switch_1'},
                 {name: 'switch_2', text: 'switch_2'}
             ]);
@@ -72,31 +87,34 @@ describe('Controller: PaneSwitchesCtrl', function () {
     );
 
     it('uses human-friendly switch names, if available', function () {
-            articleTypeDeferred.resolve({
-                fields: [
-                    {name: 'switch_1', type: 'switch', phrase: '1st switch'},
-                    {name: 'switch_2', type: 'switch', phrase: '2nd switch'},
-                    {name: 'switch_3', type: 'switch'}
-                ]
-            });
-            $rootScope.$digest();
+        PaneSwitchesCtrl.switches = [];
 
-            expect(PaneSwitchesCtrl.switches).toEqual([
-                {name: 'switch_1', text: '1st switch'},
-                {name: 'switch_2', text: '2nd switch'},
-                {name: 'switch_3', text: 'switch_3'}
-            ]);
-        }
-    );
+        articleTypeDeferred.resolve({
+            fields: [
+                {name: 'switch_1', type: 'switch', phrase: '1st switch'},
+                {name: 'switch_2', type: 'switch', phrase: '2nd switch'},
+                {name: 'switch_3', type: 'switch'}
+            ]
+        });
+        $rootScope.$digest();
+
+        expect(PaneSwitchesCtrl.switches).toEqual([
+            {name: 'switch_1', text: '1st switch'},
+            {name: 'switch_2', text: '2nd switch'},
+            {name: 'switch_3', text: 'switch_3'}
+        ]);
+    });
 
     it('converts article\'s switch fields\' values to booleans ' +
         'when data is retrieved',
         function () {
             PaneSwitchesCtrl.article.fields = {
-                'switch_1': '0',
-                'teaser': 'foobar',
-                'switch_2': '1'
+                switch_1: '0',
+                teaser: 'foobar',
+                switch_2: '1',
                 // switch_3 is undefined
+                show_on_front_page: 0,
+                show_on_section_page: 1
             };
 
             articleTypeDeferred.resolve({
@@ -110,10 +128,12 @@ describe('Controller: PaneSwitchesCtrl', function () {
             $rootScope.$digest();
 
             expect(PaneSwitchesCtrl.article.fields).toEqual({
-                'switch_1': false,
-                'switch_2': true,
-                'switch_3': false,
-                'teaser': 'foobar'
+                show_on_front_page: false,
+                show_on_section_page: true,
+                switch_1: false,
+                switch_2: true,
+                switch_3: false,
+                teaser: 'foobar'
             });
         }
     );

@@ -14,9 +14,14 @@ angular.module('authoringEnvironmentApp').controller('PaneSwitchesCtrl', [
 
         self.article = articleService.articleInstance;
 
-        self.switches = [];
         self.modified = false;  // are there any unsaved changes?
         self.saveInProgress = false;  // saving to server in progress?
+
+        // some switches are predefined and always exist in the article object
+        self.switches = [
+            {name: 'show_on_front_page', text: 'Show on Front Page'},
+            {name: 'show_on_section_page', text: 'Show on Section Page'}
+        ];
 
         // load article's switches' values
         ArticleType.getByName(self.article.type)
@@ -34,6 +39,14 @@ angular.module('authoringEnvironmentApp').controller('PaneSwitchesCtrl', [
                         !!parseInt(self.article.fields[field.name]);
                 }
             });
+
+            // convert values of the pre-defined switches to booleans, too
+            ['show_on_front_page', 'show_on_section_page'].forEach(
+                function (switchName) {
+                    self.article.fields[switchName] =
+                        !!parseInt(self.article.fields[switchName]);
+                }
+            );
         });
 
         /**
