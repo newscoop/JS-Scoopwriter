@@ -24,9 +24,6 @@ angular.module('authoringEnvironmentApp').factory('Article', [
         * @return {String} converted text
         */
         function snippetCommentsToDivs(text) {
-            if (text === null) {
-                return text;
-            }
             // the extra backslash (\) is because of Javascript being picky
             var snippetRex  = '<--';     // exact match
             snippetRex     += '\\s';      // single whitespace
@@ -72,9 +69,6 @@ angular.module('authoringEnvironmentApp').factory('Article', [
         * @return {String} converted text
         */
         function imageCommentsToDivs(text) {
-            if (text === null) {
-                return text;
-            }
             // the extra backslash (\) is because of Javascript being picky
             var imageReg  = '<';         // exact match
             imageReg     += '\\*\\*';    // exact match on **
@@ -208,7 +202,11 @@ angular.module('authoringEnvironmentApp').factory('Article', [
             Object.keys(self.fields).forEach(function (key) {
                 // XXX: it would be beneficial if API returned fields' metadata
                 // so that we can deserialize blocks in content fields only
-                self.fields[key] = deserializeAlohaBlocks(self.fields[key]);
+                // As a temporary fix, skip deserializing non-string fields
+                var fieldValue = self.fields[key];
+                if (typeof fieldValue === 'string') {
+                    self.fields[key] = deserializeAlohaBlocks(fieldValue);
+                }
             });
 
             self.comments_locked = !!parseInt(self.comments_locked);

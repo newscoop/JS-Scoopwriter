@@ -144,6 +144,21 @@ describe('Factory: Article', function () {
             ].join(''));
         });
 
+        it('leaves non-string fields intact', function () {
+            var article;
+            articleData.fields.fieldInt = 1;
+            articleData.fields.fieldBool = true;
+            articleData.fields.fieldNull = null;
+            articleData.fields.fieldUndefined = undefined;
+
+            article = new Article(articleData);
+
+            expect(article.fields.fieldInt).toEqual(1);
+            expect(article.fields.fieldBool).toBe(true);
+            expect(article.fields.fieldNull).toBe(null);
+            expect(article.fields.fieldUndefined).toBeUndefined();
+        });
+
         it('converts comments_locked flag to boolean', function () {
             var article;
 
