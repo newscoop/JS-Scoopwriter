@@ -55,6 +55,8 @@
   <div class="btn-group save-close">
     <button
       class="btn btn-default btn-sm"
+      ng-disabled="articleService.modified"
+      ng-click="close()"
       >
       Close
     </button>

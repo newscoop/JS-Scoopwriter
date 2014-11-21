@@ -433,6 +433,48 @@ angular.module('authoringEnvironmentApp').factory('Article', [
             return $http.patch(url);
         };
 
+        /**
+        * Removes the lock on article.
+        *
+        * @method releaseLock
+        * @return {Object} promise object
+        */
+        Article.prototype.releaseLock = function () {
+            var deferred = $q.defer(),
+                self = this,
+                url;
+
+            url = Routing.generate(
+                'newscoop_gimme_articles_changearticlelockstatus',
+                {
+                    number: this.articleId,
+                    language: this.language
+                },
+                true
+            );
+
+            // helper function for handling "success" to avoid code duplication
+            function onSuccess() {
+                self.isLocked = false;
+                deferred.resolve();
+            }
+
+            $http.delete(url)
+            .success(onSuccess)
+            .error(function (data, status) {
+                // Status 403 means that article is already unlocked, which we
+                // do not interpret as an error - we know that the lock is now
+                // lifted which is exactly what we wanted to achieve.
+                if (status === 403) {
+                    onSuccess();
+                } else {
+                    deferred.reject(data);
+                }
+            });
+
+            return deferred.promise;
+        };
+
         return Article;
     }
 ]);

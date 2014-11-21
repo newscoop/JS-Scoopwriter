@@ -9,10 +9,16 @@
 angular.module('authoringEnvironmentApp').controller('ArticleActionsCtrl', [
     '$rootScope',
     '$scope',
+    '$window',
     'article',
     'Article',
+    'configuration',
     'mode',
-    function ($rootScope, $scope, articleService, Article, mode) {
+    'toaster',
+    function (
+        $rootScope, $scope, $window, articleService, Article, configuration,
+        mode, toaster
+    ) {
         var statusObj;
 
         $scope.mode = mode;
@@ -83,6 +89,34 @@ angular.module('authoringEnvironmentApp').controller('ArticleActionsCtrl', [
             })
             .finally(function () {
                 $scope.changingWfStatus = false;
+            });
+        };
+
+        /**
+        * Releases the lock on article and closes the article edit screen
+        * (redirecting user to the list of articles).
+        *
+        * @method close
+        */
+        $scope.close = function () {
+            var redirectUrl = [
+                configuration.API.rootURI, '/',
+                'admin/articles/index.php?',
+                'f_publication_id=', $scope.article.publication.id,
+                '&f_issue_number=', $scope.article.issue.number,
+                '&f_language_id=', $scope.article.languageData.id,
+                '&f_section_number=', $scope.article.section.number
+            ].join('');
+
+            $scope.article.releaseLock()
+            .then(function () {
+                $window.location.href = redirectUrl;
+            })
+            .catch(function () {
+                toaster.add({
+                    type: 'sf-error',
+                    message: 'Unlocking the article failed.'
+                });
             });
         };
 

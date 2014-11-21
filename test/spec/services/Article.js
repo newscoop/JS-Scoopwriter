@@ -673,4 +673,77 @@ describe('Factory: Article', function () {
         });
     });
 
+
+    describe('releaseLock() method', function () {
+        var article;
+
+        beforeEach(inject(function (_$httpBackend_) {
+            var url,
+                $httpBackend;
+
+            $httpBackend = _$httpBackend_;
+
+            article = new Article();
+            article.articleId = 25;
+            article.language = 'de';
+        }));
+
+        it ('sends a correct request to API', function () {
+            var url = Routing.generate(
+                'newscoop_gimme_articles_changearticlelockstatus',
+                {number: 25, language: 'de'}, true
+            );
+            $httpBackend.expect('DELETE', url).respond(204, '');
+
+            article.releaseLock();
+
+            $httpBackend.verifyNoOutstandingExpectation();
+        });
+
+        it ('clears the isLocked flag on success', function () {
+            $httpBackend.whenDELETE(/.*/).respond(204, '');
+            article.isLocked = true;
+
+            article.releaseLock();
+            $httpBackend.flush();
+
+            expect(article.isLocked).toBe(false);
+        });
+
+        it ('resolves given promise on success', function () {
+            var onSuccessSpy = jasmine.createSpy();
+            $httpBackend.whenDELETE(/.*/).respond(204, '');
+
+            article.releaseLock().then(onSuccessSpy);
+            $httpBackend.flush();
+
+            expect(onSuccessSpy).toHaveBeenCalled();
+        });
+
+        it ('resolves given promise even if article is already unlocked',
+            function () {
+                var onSuccessSpy = jasmine.createSpy();
+                $httpBackend.whenDELETE(/.*/).respond(403, '');
+                // NOTE: when trying to unlock an already unlocked article,
+                // the API retuns status 403
+
+                article.releaseLock().then(onSuccessSpy);
+                $httpBackend.flush();
+
+                expect(onSuccessSpy).toHaveBeenCalled();
+            }
+        );
+
+        it ('rejects given promise with error message on failure',
+            function () {
+                var onErrorSpy = jasmine.createSpy();
+                $httpBackend.whenDELETE(/.*/).respond(500, 'DB Error');
+
+                article.releaseLock().catch(onErrorSpy);
+                $httpBackend.flush();
+
+                expect(onErrorSpy).toHaveBeenCalledWith('DB Error');
+            }
+        );
+    });
 });
