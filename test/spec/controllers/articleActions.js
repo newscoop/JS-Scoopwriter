@@ -10,15 +10,21 @@ describe('Controller: ArticleActionsCtrl', function () {
     var Article,
         ArticleActionsCtrl,
         articleService,
+        configService,
         modeService,
-        scope;
+        scope,
+        toaster,
+        $window;
 
     // load the controller's module
     beforeEach(module('authoringEnvironmentApp'));
 
-    beforeEach(inject(function ($controller, $rootScope, $q, _Article_) {
+    beforeEach(inject(function (
+        $controller, $rootScope, $q, _Article_, _toaster_
+    ) {
         scope = $rootScope.$new();
         Article = _Article_;
+        toaster = _toaster_;
         modeService = {};
 
         articleService = {};
@@ -28,14 +34,34 @@ describe('Controller: ArticleActionsCtrl', function () {
                 dateline: '1st Aug 2010',
                 body: 'Body text.'
             },
+            publication: {id: 11},
+            issue: {number: 22},
+            languageData: {id: 33},
+            section: {number: 44},
             status: Article.wfStatus.SUBMITTED,
             setWorkflowStatus: jasmine.createSpy(),
-            save: jasmine.createSpy()
+            save: jasmine.createSpy(),
+            releaseLock: jasmine.createSpy()
+        };
+
+        // mock $window to avoid "full page reload" error in tests
+        $window = {
+            location: {
+                href: 'foo'
+            }
+        };
+
+        configService = {
+            API: {
+                rootURI: 'http://server.com/newscoop'
+            }
         };
 
         ArticleActionsCtrl = $controller('ArticleActionsCtrl', {
             $scope: scope,
+            $window: $window,
             article: articleService,
+            configuration: configService,
             mode: modeService
         });
 
@@ -177,6 +203,53 @@ describe('Controller: ArticleActionsCtrl', function () {
 
             expect(scope.wfStatus).toEqual(
                 {value: 'B', text: 'Status B'});
+        });
+    });
+
+    describe('scope\'s close() method', function () {
+        var unlockDelay;
+
+        beforeEach(inject(function ($q) {
+            unlockDelay = $q.defer();
+            scope.article.releaseLock.andReturn(unlockDelay.promise);
+        }));
+
+        it('tries to release the lock on article', function () {
+            scope.close();
+            expect(scope.article.releaseLock).toHaveBeenCalled();
+        });
+
+        it('redirects to the list of articles when lock is released',
+            function () {
+                var expectedUrl = [
+                    configService.API.rootURI, '/',
+                    'admin/articles/index.php?',
+                    'f_publication_id=11',
+                    '&f_issue_number=22',
+                    '&f_language_id=33',
+                    '&f_section_number=44'
+                ].join('');
+
+                $window.location.href = 'abc';
+
+                scope.close();
+                unlockDelay.resolve();
+                scope.$digest();
+
+                expect($window.location.href).toEqual(expectedUrl);
+            }
+        );
+
+        it('displays an error message if unlocking fails', function () {
+            spyOn(toaster, 'add');
+
+            scope.close();
+            unlockDelay.reject();
+            scope.$digest();
+
+            expect(toaster.add).toHaveBeenCalledWith(
+                {type: 'sf-error', message: 'Unlocking the article failed.'}
+            );
         });
     });
 
