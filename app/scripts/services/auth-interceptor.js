@@ -30,6 +30,26 @@ angular.module('authoringEnvironmentApp').factory('authInterceptor', [
                 }
 
                 return config;
+            },
+
+            responseError: function (response) {
+                console.debug('response error', response);  // TODO: remove
+
+                if (response.status !== 401) {
+                    return $q.reject(response);
+                }
+
+                // ELSE:
+                // handle 401 unauthorized cases
+                // config, data, headers, status
+
+                // 1. request a token
+
+                // if successful, set token in sessionStorage
+                // AND repeat the last request?
+
+                // else (if no successful) show modal dialog to login
+                    // and then if login successful? redirect to front page?
             }
         };
     }

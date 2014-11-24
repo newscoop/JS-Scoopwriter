@@ -16,6 +16,8 @@ controller('MainCtrl', [
                     $window.sessionStorage.token = userAuth.access_token;
                     $scope.auth = true;
                 });
+                // TODO: and what if obtaining the token fails? login modal
+                // should be displayed ...
             } else {
                 $scope.auth = true;
             }
