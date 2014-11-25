@@ -7,9 +7,10 @@
 * @class authInterceptor
 */
 angular.module('authoringEnvironmentApp').factory('authInterceptor', [
+    '$injector',
     '$q',
     '$window',
-    function ($q, $window) {
+    function ($injector, $q, $window) {
         return {
             request: function (config) {
                 var endpoint = Routing.generate(
@@ -32,24 +33,71 @@ angular.module('authoringEnvironmentApp').factory('authInterceptor', [
                 return config;
             },
 
+            // TODO: extensive comments on how this works (tokens, logins etc.)
             responseError: function (response) {
-                console.debug('response error', response);  // TODO: remove
+                var userAuth = $injector.get('userAuth');
 
-                if (response.status !== 401) {
-                    return $q.reject(response);
+                var lastRequestConfig = response.config;
+
+                if (response.config._NEW_TOKEN_REQ_) {
+                    // we requested a new authentication token but that
+                    // request failed ---> open a modal or something?
+                    console.debug('--- itc: obtaining new token failed',
+                        'need to show a login modal');
+
+                    // something like ...userAuth.modalLogin().then(...)
+                    var loginDeferred = $q.defer();
+
+                    var modalPromise = userAuth.newTokenByLoginModal();
+
+                    modalPromise.then(function () {
+                        console.debug('modalLogin success, what now?',
+                            'repeat lastRequestConfig?');
+                        modalPromise.resolve();
+                    })
+                    .catch(function () {
+                        console.debug('modalLogin FAIL');
+                        modalPromise.reject(response);
+                    });
+
+                    return loginDeferred.promise;
                 }
 
-                // ELSE:
-                // handle 401 unauthorized cases
-                // config, data, headers, status
+                // TODO: when API is fixed, revert back to checking the
+                // status code
+                // if (response.status === 401) {
+                if (response.statusText === 'OAuth2 authentication required') {
+                    // oAuth token expired, obtain a new one and then repeat
+                    // the last  request on success
 
-                // 1. request a token
+                    console.debug('--- itc: token is not valid,',
+                        'will obtain a new one');
 
-                // if successful, set token in sessionStorage
-                // AND repeat the last request?
+                    // 1. request a token
+                    return userAuth.obtainNewToken(true)
+                    .then(function () {
+                        // success, successful repeat the last request
+                        // you have response.config for that
+                        console.debug('--- itc: re-obtaining token success');
+                        debugger;
+                    })
+                    .catch(function () {
+                        // TODO: obtaining new token failed,
+                        // show modal dialog to login and then, if login
+                        // success, repeat the last request
 
-                // else (if no successful) show modal dialog to login
-                    // and then if login successful? redirect to front page?
+                        // XXX: 
+                        console.debug('--- itc: re-obtaining token failed');
+                        debugger;
+                    });
+                }
+
+                if (response.status !== 401) {
+                    // general non-authentication error occured, we don't
+                    // handle this here
+                    console.debug('--- itc: general non-authentication err.');
+                    return $q.reject(response);
+                }
             }
         };
     }
