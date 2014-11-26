@@ -1,11 +1,12 @@
 <div class="modal-login">
-  <form name="loginForm">
+  <form name="loginForm" ng-submit="ctrl.submit()">
 
     <div class="modal-header">
       <h3 id="modalLoginTitle">Login</h3>
     </div>
 
     <div class="modal-body">
+        <p class="error-msg">{{ctrl.errorMsg || '&nbsp;'}}</p>
         <input type="text" ng-model="ctrl.formData.username" required
             placeholder="username" class="form-control">
         <input type="password" ng-model="ctrl.formData.password" required
@@ -13,8 +14,7 @@
     </div>
 
     <div class="modal-footer">
-      <button class="btn btn-primary"
-          ng-click="loginForm.$valid && submit()">OK</button>
+      <button type="submit" class="btn btn-primary">OK</button>
     </div>
 
   </form>

@@ -21,6 +21,7 @@ controller('MainCtrl', [
                 })
                 .catch(function () {
                     console.debug('mainCtrl: obtaining token failed');
+                    // TODO: show toast message?
                 });
             } else {
                 $scope.auth = true;

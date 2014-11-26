@@ -9,13 +9,13 @@
     * Constructor function for the login modal controller
     *
     * @class ModalLoginCtrl
-    * @param $modalInstance {Object} AngularJS UI instance of the modal
-    *     window the coontroller controls.
     */
-    function ModalLoginCtrl($modalInstance) {
+    // TODO: tests
+    function ModalLoginCtrl($modalInstance, userAuth) {
         var self = this;
 
         self.formData = {};
+        self.errorMsg = '';
 
         /**
         * Form submit handler. Tries to login user and, if successful, closes
@@ -24,19 +24,29 @@
         * @method submit
         */
         self.submit = function () {
-            console.debug('loign form submitted');
+            self.errorMsg = 'Authenticating...';
 
-            // $modalInstance.close();
-            // $modalInstance.dismiss();
+            userAuth.loginUser(
+                self.formData.username, self.formData.password
+            )
+            .then(function () {
+                $modalInstance.close();
+            })
+            .catch(function () {
+                self.formData.password = '';
+                self.errorMsg =
+                    'Login failed, please check your username/password.';
+            });
         };
 
-        // TODO: closing the modal without logging in simply
-        // rejects the promise? then other parts ofthe app should display
-        // some "not logged in" message, informing the user that action that
-        // tiriggered the modal opening failed (e.g. saving the article)
+        // XXX: add a way to close the modal without logging in?
+        // in this case call $modalInstance.dismiss();
+        // Other parts of the application should then display some
+        // "not logged in" toast message, informing the user that action that
+        // triggered the modal opening failed (e.g. saving the article)
     }
 
-    ModalLoginCtrl.$inject = ['$modalInstance'];
+    ModalLoginCtrl.$inject = ['$modalInstance', 'userAuth'];
 
 
     /**
@@ -44,6 +54,7 @@
     *
     * @class userAuth
     */
+    // TODO: comments, tests
     angular.module('authoringEnvironmentApp').service('userAuth', [
         '$http',
         '$modal',
@@ -51,8 +62,6 @@
         '$window',
         function ($http, $modal, $q, $window) {
             var self = this;
-
-            ///////// NEW CODE /////////////
 
             self.token = function () {
                 return $window.sessionStorage.token;
@@ -94,7 +103,7 @@
             };
 
             self.newTokenByLoginModal = function () {
-                var loginDeferred = $q.defer();
+                var deferred = $q.defer();
 
                 console.debug('inside of newTokenByLoginModal() method');
 
@@ -107,18 +116,46 @@
                 });
 
                 dialog.result.then(function () {
-                    // login success
+                    console.debug('uAuth: login through modal success',
+                        'will obtain new token');
                     return self.obtainNewToken();
-                })
-                .catch(function () {
+                }, function (reason) {
                     // login failed
+                    console.debug('uAuth: login through modal failed');
+                    deferred.reject(reason);
+                })
+                .then(function (authToken) {
+                    console.debug('uAuth: re-obtaining token success!');
+                    deferred.resolve(authToken);
+                })
+                .catch(function (reason) {
+                    // re-obtaining token failed
+                    console.debug('uAuth: re-obtaining token failed');
+                    deferred.reject(reason);
                 });
 
-                // TODO: open a modal for username and password,
-                // return a promise
+                return deferred.promise;
+            };
 
-                // on success login obtain a new token and return that promise
-                return loginDeferred.promise;
+            self.loginUser = function (username, password) {
+                var deferredLogin = $q.defer(),
+                    requestConfig = {},
+                    url;
+
+                url = Routing.generate(
+                    'newscoop_gimme_users_login',
+                    {username: username, password:password},
+                    true
+                );
+
+                $http.post(url, {})
+                .success(function (response) {
+                    deferredLogin.resolve();
+                }).error(function (response) {
+                    deferredLogin.reject();
+                });
+
+                return deferredLogin.promise;
             };
         }
     ]);

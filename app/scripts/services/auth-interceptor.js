@@ -53,11 +53,13 @@ angular.module('authoringEnvironmentApp').factory('authInterceptor', [
                     modalPromise.then(function () {
                         console.debug('modalLogin success, what now?',
                             'repeat lastRequestConfig?');
-                        modalPromise.resolve();
+                        loginDeferred.resolve();
                     })
                     .catch(function () {
-                        console.debug('modalLogin FAIL');
-                        modalPromise.reject(response);
+                        console.debug('--- itc: modalLogin FAIL');
+                        // XXX: reject with some other response?
+                        // probably with original, right? yes, that's correct
+                        loginDeferred.reject(response);
                     });
 
                     return loginDeferred.promise;
@@ -80,6 +82,7 @@ angular.module('authoringEnvironmentApp').factory('authInterceptor', [
                         // you have response.config for that
                         console.debug('--- itc: re-obtaining token success');
                         debugger;
+                        // TODO:return success promise or what?
                     })
                     .catch(function () {
                         // TODO: obtaining new token failed,
@@ -89,6 +92,7 @@ angular.module('authoringEnvironmentApp').factory('authInterceptor', [
                         // XXX: 
                         console.debug('--- itc: re-obtaining token failed');
                         debugger;
+                        return $q.reject(response);
                     });
                 }
 
