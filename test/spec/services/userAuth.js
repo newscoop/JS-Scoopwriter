@@ -1,21 +1,21 @@
 'use strict';
 
 /**
-* Module with tests for the UserAuth factory.
+* Module with tests for the userAuth factory.
 *
-* @module UserAuth factory tests
+* @module userAuth factory tests
 */
 
-describe('Factory: UserAuth', function () {
+describe('Factory: userAuth', function () {
 
     var responseData,
-        UserAuth,
+        userAuth,
         $httpBackend;
 
     beforeEach(module('authoringEnvironmentApp'));
 
-    beforeEach(inject(function (_UserAuth_, _$httpBackend_) {
-        UserAuth = _UserAuth_;
+    beforeEach(inject(function (_userAuth_, _$httpBackend_) {
+        userAuth = _userAuth_;
         $httpBackend = _$httpBackend_;
         responseData = {
             access_token: 'fOoBaR123',
@@ -27,10 +27,10 @@ describe('Factory: UserAuth', function () {
 
 
     describe('createFromApiData() method', function () {
-        it('creates UserAuth instance from data object', function () {
-            var instance = UserAuth.createFromApiData(responseData);
+        it('creates userAuth instance from data object', function () {
+            var instance = userAuth.createFromApiData(responseData);
 
-            expect(instance instanceof UserAuth).toEqual(true);
+            expect(instance instanceof userAuth).toEqual(true);
             expect(instance.access_token).toBe('fOoBaR123');
             expect(instance.expires_in).toBe(1800);
             expect(instance.token_type).toBe('blahblah');
@@ -56,21 +56,21 @@ describe('Factory: UserAuth', function () {
         });
 
         it('sends a correct request to API', function () {
-            UserAuth.getToken('123_qwertz');
+            userAuth.getToken('123_qwertz');
         });
 
-        it('resolves given promise with UserAuth instance on successful ' +
+        it('resolves given promise with userAuth instance on successful ' +
             'server response',
             function () {
                 var expected,
                     promise,
                     spy = jasmine.createSpy();
 
-                promise = UserAuth.getToken('123_qwertz');
+                promise = userAuth.getToken('123_qwertz');
                 promise.then(spy);
                 $httpBackend.flush(1);
 
-                expected = new UserAuth();
+                expected = new userAuth();
                 expected.access_token = responseData.access_token;
                 expected.expires_in = responseData.expires_in;
                 expected.token_type = responseData.token_type;
@@ -88,7 +88,7 @@ describe('Factory: UserAuth', function () {
                 $httpBackend.resetExpectations();
                 $httpBackend.expectGET(url).respond(500, 'Server error');
 
-                promise = UserAuth.getToken('123_qwertz');
+                promise = userAuth.getToken('123_qwertz');
                 promise.catch(function (reason) {
                     spy(reason);
                 });
