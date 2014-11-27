@@ -67,7 +67,7 @@ angular.module('authoringEnvironmentApp').factory('authInterceptor', [
 
                 // TODO: when API is fixed, revert back to checking the
                 // status code
-                // if (response.status === 401) {
+                //if (response.status === 401) {
                 if (response.statusText === 'OAuth2 authentication required') {
                     // oAuth token expired, obtain a new one and then repeat
                     // the last  request on success

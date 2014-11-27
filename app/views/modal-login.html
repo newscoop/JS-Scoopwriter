@@ -6,7 +6,7 @@
     </div>
 
     <div class="modal-body">
-        <p class="error-msg">{{ctrl.errorMsg || '&nbsp;'}}</p>
+        <p class="user-message">{{ctrl.message || '&nbsp;'}}</p>
         <input type="text" ng-model="ctrl.formData.username" required
             placeholder="username" class="form-control">
         <input type="password" ng-model="ctrl.formData.password" required

@@ -15,7 +15,7 @@
         var self = this;
 
         self.formData = {};
-        self.errorMsg = '';
+        self.message = '';
 
         /**
         * Form submit handler. Tries to login user and, if successful, closes
@@ -24,7 +24,7 @@
         * @method submit
         */
         self.submit = function () {
-            self.errorMsg = 'Authenticating...';
+            self.message = 'Authenticating...';
 
             userAuth.loginUser(
                 self.formData.username, self.formData.password
@@ -34,7 +34,7 @@
             })
             .catch(function () {
                 self.formData.password = '';
-                self.errorMsg =
+                self.message =
                     'Login failed, please check your username/password.';
             });
         };
@@ -54,7 +54,6 @@
     *
     * @class userAuth
     */
-    // TODO: comments, tests
     angular.module('authoringEnvironmentApp').service('userAuth', [
         '$http',
         '$modal',
@@ -63,14 +62,34 @@
         function ($http, $modal, $q, $window) {
             var self = this;
 
+            /**
+            * Returns the current oAuth token in sessionStorage.
+            *
+            * @method token
+            * @return {String} the token itself or null if does not exist
+            */
             self.token = function () {
-                return $window.sessionStorage.token;
+                return $window.sessionStorage.getItem('token');
             };
 
+            /**
+            * Returns true if the current user is authenticated (=has a token),
+            * otherwise false.
+            *
+            * @method isAuthenticated
+            * @return {Boolean}
+            */
             self.isAuthenticated = function () {
-                return !!$window.sessionStorage.token;
+                return !!$window.sessionStorage.getItem('token');
             };
 
+            /**
+            * Returns the current token article's workflow status on the server.
+            *
+            * @method token
+            * @param status {String} article's new workflow status
+            * @return {Object} the underlying $http object's promise
+            */
             self.obtainNewToken = function (addRequestMarker) {
                 var deferredGet = $q.defer(),
                     requestConfig = {},
@@ -78,7 +97,8 @@
 
                 addRequestMarker = !!addRequestMarker;
                 // XXX: should this marker be always set? probably!
-                // remove parameter then ...
+                // remove parameter then ... maybe rename to
+                // "firstTokenRequest" or something?
 
                 url = Routing.generate(
                     'newscoop_gimme_users_getuseraccesstoken',
@@ -144,14 +164,14 @@
 
                 url = Routing.generate(
                     'newscoop_gimme_users_login',
-                    {username: username, password:password},
+                    {username: username, password: password},
                     true
                 );
 
                 $http.post(url, {})
-                .success(function (response) {
+                .success(function () {
                     deferredLogin.resolve();
-                }).error(function (response) {
+                }).error(function () {
                     deferredLogin.reject();
                 });
 
