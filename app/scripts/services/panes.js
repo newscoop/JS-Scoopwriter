@@ -26,6 +26,17 @@ angular.module('authoringEnvironmentApp').factory('panes', [
                     selected: true
                 },
                 {
+                    name: 'Related Articles',
+                    id: 'relatedarticles',
+                    icon: 'relatedarticles',
+                    template: 'views/pane-related-articles.html',
+                    position: 'right',
+                    size: 'small',
+                    visible: false,
+                    active: false,
+                    selected: true
+                },
+                {
                     name: 'Switches',
                     id: 'switches',
                     icon: 'switches',
