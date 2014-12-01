@@ -46,109 +46,21 @@ describe('Factory: userAuth', function () {
     });
 
 
-    describe('obtainNewToken() method', function () {
-
-        it('invokes correct API endpoint', function () {
-            var url = Routing.generate(
-                'newscoop_gimme_users_getuseraccesstoken',
-                {clientId: CSClientId}, true
-            );
-            $httpBackend.expectGET(url).respond(200, {});
-            userAuth.obtainNewToken();
-            $httpBackend.verifyNoOutstandingExpectation();
-        });
-
-        it('adds a special market to request config if instructed to do so',
-            inject(function ($http) {
-                var callArgs;
-
-                spyOn($http, 'get').andCallThrough();
-                userAuth.obtainNewToken(true);
-
-                callArgs = $http.get.mostRecentCall.args;
-                expect(callArgs[1]._NEW_TOKEN_REQ_).toBe(true);
-            })
-        );
-
-        describe('on success response',function () {
-            var responseData,
-                url;
-
-            beforeEach(function () {
-                url = Routing.generate(
-                    'newscoop_gimme_users_getuseraccesstoken',
-                    {clientId: CSClientId}, true
-                );
-
-                responseData = {
-                    access_token: 'foo',
-                    expires_in: 1800,
-                    token_type: 'bar',
-                    refresh_token: 'baz'
-                };
-
-                $httpBackend.whenGET(/.*/).respond(200, responseData);
-            });
-
-            it('stores new token into session storage', function () {
-                $window.sessionStorage.setItem('token', 'foobar');
-                responseData.access_token = 'newToken';
-
-                userAuth.obtainNewToken();
-                $httpBackend.flush(1);
-
-                expect(
-                    $window.sessionStorage.getItem('token')
-                ).toEqual('newToken');
-            });
-
-            it('resolves given promise with obtained token', function () {
-                var promise,
-                    onSuccessSpy = jasmine.createSpy();
-
-                responseData.access_token = 'someToken';
-
-                promise = userAuth.obtainNewToken();
-                promise.then(onSuccessSpy);
-                $httpBackend.flush(1);
-
-                expect(onSuccessSpy).toHaveBeenCalledWith('someToken');
-            });
-        });
-
-        it('rejects given promise with server error message on failure',
-            function () {
-                var promise,
-                    onErrorSpy = jasmine.createSpy();
-
-                $httpBackend.whenGET(/.*/).respond(500, 'Some Error');
-
-                promise = userAuth.obtainNewToken();
-                promise.catch(onErrorSpy);
-                $httpBackend.flush(1);
-
-                expect(onErrorSpy).toHaveBeenCalledWith('Some Error');
-            }
-        );
-    });
-
-
     describe('newTokenByLoginModal() method', function () {
-        var getTokenDelay,
-            modalResult,
+        var modalResult,
+            toaster,
             $modal,
             $rootScope;
 
-        beforeEach(inject(function ($q,  _$modal_, _$rootScope_) {
+        beforeEach(inject(function ($q,  _$modal_, _$rootScope_, _toaster_) {
             $modal = _$modal_;
             $rootScope= _$rootScope_;
+            toaster = _toaster_;
 
             modalResult = $q.defer();
             spyOn($modal, 'open').andReturn({result: modalResult.promise});
 
-            getTokenDelay= $q.defer();
-            spyOn(userAuth, 'obtainNewToken').andReturn(
-                getTokenDelay.promise);
+            spyOn(toaster, 'add');
         }));
 
         it('opens a modal dialog', function () {
@@ -156,8 +68,43 @@ describe('Factory: userAuth', function () {
             expect($modal.open).toHaveBeenCalled();
         });
 
-        it('rejects given promise if dialog is closed without user logging in',
-            function () {
+        describe('when login through the modal succeeds', function () {
+            it('resolves given promise with a new token', function () {
+                var promise,
+                    onSuccessSpy = jasmine.createSpy();
+
+                promise = userAuth.newTokenByLoginModal();
+                promise.then(onSuccessSpy);
+                modalResult.resolve('newToken');
+                 $rootScope.$digest();
+
+                expect(onSuccessSpy).toHaveBeenCalledWith('newToken');
+            });
+
+            it('stores new token into session storage', function () {
+                $window.sessionStorage.token = 'existingToken';
+
+                userAuth.newTokenByLoginModal();
+                modalResult.resolve('newToken');
+                 $rootScope.$digest();
+
+                expect($window.sessionStorage.token).toEqual('newToken');
+            });
+
+            it('displays a toast with info message', function () {
+                userAuth.newTokenByLoginModal();
+                modalResult.resolve('newToken');
+                 $rootScope.$digest();
+
+                expect(toaster.add).toHaveBeenCalledWith({
+                    type: 'sf-info',
+                    message: 'Successfully refreshed authentication token.'
+                });
+            });
+        });
+
+        describe('when login through the modal fails', function () {
+            it('rejects given promise with an error message', function () {
                 var promise,
                     onErrorSpy = jasmine.createSpy();
 
@@ -167,111 +114,26 @@ describe('Factory: userAuth', function () {
                  $rootScope.$digest();
 
                 expect(onErrorSpy).toHaveBeenCalledWith('No login');
-            }
-        );
+            });
 
-        it('tries to retrieve a new token if user logs through the modal',
-            function () {
+            it('displays a toast with error message', function () {
                 userAuth.newTokenByLoginModal();
-                modalResult.resolve();
+                modalResult.reject('No login');
                  $rootScope.$digest();
 
-                expect(userAuth.obtainNewToken).toHaveBeenCalled();
-            }
-        );
-
-        it('resolves given promise with a new token if user logs in and ' +
-            'a new token is successfully obtained',
-            function () {
-                var promise,
-                    onSuccessSpy = jasmine.createSpy();
-
-                promise = userAuth.newTokenByLoginModal();
-                promise.then(onSuccessSpy);
-                modalResult.resolve();
-                getTokenDelay.resolve('newToken')
-                 $rootScope.$digest();
-
-                expect(onSuccessSpy).toHaveBeenCalledWith('newToken');
-            }
-        );
-
-        it('rejects given promise with a new token if user logs in but ' +
-            'obtaining a new token fails',
-            function () {
-                var promise,
-                    onErrorSpy = jasmine.createSpy();
-
-                promise = userAuth.newTokenByLoginModal();
-                promise.catch(onErrorSpy);
-                modalResult.resolve();
-                getTokenDelay.reject('some error')
-                 $rootScope.$digest();
-
-                expect(onErrorSpy).toHaveBeenCalledWith('some error');
-            }
-        );
-    });
-
-
-    describe('loginUser() method', function () {
-        var $httpBackend;
-
-        beforeEach(inject(function (_$httpBackend_) {
-            $httpBackend = _$httpBackend_;
-
-            // var url = Routing.generate(
-            //     'newscoop_gimme_users_getuseraccesstoken',
-            //     {clientId: CSClientId}, true
-            // );
-            // $httpBackend.expectGET(url).respond(200, {});
-            // userAuth.obtainNewToken();
-            // $httpBackend.verifyNoOutstandingExpectation();
-        }));
-
-        it('invokes correct API endpoint', function () {
-            var url = Routing.generate(
-                'newscoop_gimme_users_login',
-                {username: 'user', password: 'pass'}, true
-            );
-            $httpBackend.expectPOST(url).respond(200, 'response');
-            userAuth.loginUser('user', 'pass');
-            $httpBackend.verifyNoOutstandingExpectation();
+                expect(toaster.add).toHaveBeenCalledWith({
+                    type: 'sf-error',
+                    message: 'Failed to refresh authentication token.'
+                });
+            });
         });
 
-        it('resolves given promise on success', function () {
-            var promise,
-                onSuccessSpy = jasmine.createSpy();
-
-            $httpBackend.whenPOST(/.*/).respond(200, '');
-
-            promise = userAuth.loginUser('user', 'pass');
-            promise.then(onSuccessSpy);
-            $httpBackend.flush(1);
-
-            expect(onSuccessSpy).toHaveBeenCalled();
-        });
-
-        it('rejects given promise on failure', function () {
-            var promise,
-                onErrorSpy = jasmine.createSpy();
-
-            $httpBackend.whenPOST(/.*/).respond(500, 'Some Error');
-
-            promise = userAuth.loginUser('user', 'pass');
-            promise.catch(onErrorSpy);
-            $httpBackend.flush(1);
-
-            expect(onErrorSpy).toHaveBeenCalled();
-        });
     });
 
 
     describe('login modal\'s controller', function () {
         var ctrl,
             fakeModalInstance,
-            fakeUserAuth,
-            getUserDelay,
             $rootScope;
 
         beforeEach(inject(function ($modal,$q, _$rootScope_) {
@@ -296,64 +158,40 @@ describe('Factory: userAuth', function () {
                 close: jasmine.createSpy()
             };
 
-            getUserDelay = $q.defer();
-            fakeUserAuth = {
-                loginUser: jasmine.createSpy().andReturn(getUserDelay.promise)
-            };
-
-            ctrl = new ModalCtrl(fakeModalInstance, fakeUserAuth);
+            ctrl = new ModalCtrl(fakeModalInstance);
         }));
 
-        it('initializes message to an empty string', function () {
-            expect(ctrl.message).toEqual('');
-        });
-
-        it('initializes form data to empty values', function () {
-            expect(ctrl.formData).toEqual({
-                username: undefined,
-                password: undefined
-            });
-        });
-
-        describe('submit() method', function () {
-            beforeEach(function () {
-                fakeUserAuth.loginUser
+        describe('iframeLoadedHandler() method', function () {
+            it('closes the modal, providing the new token', function () {
+                var location = {
+                    hash: '#token_type=bearer' +
+                        '&access_token=xYz123' +
+                        '&expires_in=3600'
+                };
+                ctrl.iframeLoadedHandler(location);
+                expect(fakeModalInstance.close).toHaveBeenCalledWith('xYz123');
             });
 
-            it('changes message to inform the user that authentication ' +
-                'is in progress',
+            it('keeps the modal open locations\'s hash part does not exist',
                 function () {
-                    ctrl.submit();
-                    expect(ctrl.message).toEqual('Authenticating...');
+                    var location = {
+                        hash: undefined
+                    };
+                    ctrl.iframeLoadedHandler(location);
+                    expect(fakeModalInstance.close).not.toHaveBeenCalled();
                 }
             );
 
-            it('closes the modal on successful login', function () {
-                ctrl.submit();
-                getUserDelay.resolve();
-                $rootScope.$digest();
-                expect(fakeModalInstance.close).toHaveBeenCalled();
-            });
-
-            it('clears the password on failed login', function () {
-                ctrl.formData = {
-                    password: 'secret'
-                };
-
-                ctrl.submit();
-                getUserDelay.reject();
-                $rootScope.$digest();
-
-                expect(ctrl.formData.password).toEqual('');
-            });
-
-            it('sets the error message on failed login', function () {
-                ctrl.submit();
-                getUserDelay.reject();
-                $rootScope.$digest();
-                expect(ctrl.message).toEqual(
-                    'Login failed, please check your username/password.');
-            });
+            it('keeps the modal open if token is not found in locations\'s' +
+                'hash part',
+                function () {
+                    var location = {
+                        hash: '#login_failed=true&retry'
+                    };
+                    ctrl.iframeLoadedHandler(location);
+                    expect(fakeModalInstance.close).not.toHaveBeenCalled();
+                }
+            );
         });
     });
 });

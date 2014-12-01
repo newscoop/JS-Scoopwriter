@@ -1,4 +1,3 @@
-
 (function () {
     'use strict';
 
@@ -7,35 +6,42 @@
     *
     * @class ModalLoginCtrl
     */
-    // TODO: tests
-    function ModalLoginCtrl($modalInstance, userAuth) {
-        var self = this;
+    function ModalLoginCtrl($modalInstance) {
+        var self = this,
+            tokenRegex = new RegExp('access_token=(\\w+)');
 
-        // XXX: add a way to close the modal without logging in?
-        // in this case call $modalInstance.dismiss();
-        // Other parts of the application should then display some
-        // "not logged in" toast message, informing the user that action that
-        // triggered the modal opening failed (e.g. saving the article)
+        // On successful login, Newscoop login form redirects user to some
+        // redirect URL and that URL contains the new authentication token.
+        // Upon redirect, the iframe in modal body is reloaded and we catch
+        // its onLoad event, giving us a chance to extract new token from URL.
 
-        // TODO: explain why this loaded handler... b/c redirect occurs
+        /**
+        * Updates article's workflow status on the server.
+        *
+        * @method iframeLoadedHandler
+        * @param location {Object} window.location object of the page
+        *   loaded in the modal's iframe
+        */
         self.iframeLoadedHandler = function (location) {
+            var matches,
+                token;
+
             if (typeof location.hash !== 'string') {
-                return;  // empty TODO: test on server instance (same origin)
+                return;
             }
 
-            var rex = new RegExp('access_token=(\\w+)');
-            var matches = rex.exec(location.hash);
-            if (matches.length > 1) {
-                var token = matches[1];
-                console.debug('modal: token parsed!', token);
+            matches = tokenRegex.exec(location.hash);
+
+            if (matches !== null) {
+                token = matches[1];
                 $modalInstance.close(token);
-            } else {
-                console.debug('modal: no token found');
             }
+            // if token is not found (perhaps due to the failed login),
+            // nothing happens and the modal stays open
         };
     }
 
-    ModalLoginCtrl.$inject = ['$modalInstance', 'userAuth'];
+    ModalLoginCtrl.$inject = ['$modalInstance'];
 
 
     /**
@@ -73,10 +79,19 @@
                 return !!$window.sessionStorage.getItem('token');
             };
 
+            /**
+            * Opens a modal with Newscoop login form. On successful login it
+            * stores the new authentication token into session storage and
+            * resolves given promise with it.
+            *
+            * @method newTokenByLoginModal
+            * @return {Object} promise object
+            */
             self.newTokenByLoginModal = function () {
-                var deferred = $q.defer();
+                var deferred = $q.defer(),
+                    dialog;
 
-                var dialog = $modal.open({
+                dialog = $modal.open({
                     templateUrl: 'views/modal-login.html',
                     controller: ModalLoginCtrl,
                     controllerAs: 'ctrl',
@@ -85,25 +100,19 @@
                 });
 
                 dialog.result.then(function (token) {
-                    console.debug('uAuth: login through modal success',
-                        'we have new token', token);
-
                     $window.sessionStorage.setItem('token', token);
-                    deferred.resolve(token);
-
                     toaster.add({
                         type: 'sf-info',
                         message: 'Successfully refreshed authentication token.'
                     });
+                    deferred.resolve(token);
                 })
                 .catch(function (reason) {
-                    console.debug('uAuth: login through modal failed');
-                    deferred.reject(reason);
-
                     toaster.add({
                         type: 'sf-error',
                         message: 'Failed to refresh authentication token.'
                     });
+                    deferred.reject(reason);
                 });
 
                 return deferred.promise;
