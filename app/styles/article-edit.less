@@ -2675,6 +2675,179 @@ a:hover {
         }
     }
 
+    .related-articles-panel {
+        .add-element {
+            overflow: auto;
+            background-color: @add-element-gray;
+            margin: 10px 0;
+            .heading {
+                padding: 0px;
+                button {
+                    line-height: 1em;
+                    box-shadow: none;
+                    padding: 8px 8px 10px 8px;
+                    margin: 0;
+                    width: 100%;
+                    text-align: left;
+                    .add-text {
+                        font-size: 12px;
+                        padding: 0 5px;
+                    }
+                    &:hover {
+                        background:#e6e6e6;
+                    }
+                }
+            }
+            .filters {
+                padding: 10px;
+                select {
+                    width:100%;
+                    padding:3px 4px;
+                    border: 1px solid #ccc;
+                    .border-radius(2px);
+                    background-color: white;
+                    &:focus {
+                        border: 1px solid #5897fb;
+                        outline:none;
+                        -webkit-box-shadow: none;
+                        box-shadow: none;
+                    }
+                    &+ select {
+                        margin-top: 10px;
+                    }
+                }
+            }
+        }
+        .wrapper {
+            position: absolute;
+            &.low {
+                top: 225px;
+            }
+            &.high {
+                top: 100px;
+            }
+            bottom: 18px;
+            left: 0;
+            right: 0px;
+            .list {
+                position: absolute;
+                top: 0px;
+                right: 12px;
+                bottom: 0;
+                left: 12px;
+                overflow: auto;
+                padding: 0;
+                &::-webkit-scrollbar { width: 14px; height: 8px; margin: -1px 0; }
+                &::-webkit-scrollbar-thumb { background: #949494; 
+                 border-left: 6px solid rgba(0,0,0,0);background-clip: padding-box;
+                }
+                &::-webkit-scrollbar-thumb:hover { background: #6e6e6e; border-left: 6px solid rgba(0,0,0,0);background-clip: padding-box; }
+
+                .title {
+                    position:relative;
+                    clear:both;
+                    padding: 0;
+                    background-color: @tabpane-background;
+                    margin: 20px 0 0;
+                    &:before {
+                        content: " ";
+                        position: absolute;
+                        top: 10px;
+                        left: 100px;
+                        right: 0px;
+                        background: #dcdcdc;
+                        height: 1px;
+                    }
+                }
+
+                /* single item */
+                .related-article {
+                    padding: 12px 0 12px 0;
+                    border-bottom: 1px solid #d6d6d6;
+                    position: relative;
+                    overflow: hidden;
+                    .article-metadata {
+                        .date {
+                            font-size: 11px;
+                            font-style: italic;
+                            color: #949494;
+                        }
+                        .status {
+                            font-size: 10px;
+                            text-transform: uppercase;
+                            font-weight: 500;
+                            margin-left: 6px;
+                            padding-left: 4px;
+                            border-style: solid;
+                            border-width: 0 0 0 3px;
+                            border-color: transparent;
+                            &.published {
+                                border-color: #85b63b;
+                            }
+                            &.new {
+                                border-color: #61aece;
+                            }
+                            &.submitted {
+                                border-color: #b5b5b5;
+                            } 
+                        }
+                    }
+                    .article-title {
+                        line-height: 120%;
+                        margin-top: 6px;
+                        a {
+                            font-size: 13px;
+                            color: #007fb3;
+                        }       
+                    }
+
+                    /* pinned */
+                    &.pinned {
+                        border: 1px solid #e0e0e0;
+                        padding: 8px 10px 10px 12px;
+                        background: #fff;
+                        .box-shadow(0 1px 0px #e0e0e0);
+                        .border-radius(4px);
+                         margin-top: 10px;
+                        .drag-bar {
+                            position: absolute;
+                            left: -2px;
+                            top: 0px;
+                            bottom: 0px;
+                            width: 9px;
+                            border: 3px solid #ccc;
+                            border-width: 2px 0;
+                            background: #ccc url(../images/drag_bg.png) repeat-y 3px 1px;
+                            visibility:hidden;
+                        }
+
+                        &:hover {
+                            border: 1px solid #ccc;
+                            .box-shadow(0 1px 0px #ccc);
+                            cursor:move;
+                            .drag-bar {
+                                visibility:visible;
+                            }
+                        }
+
+                        .remove {
+                            position: absolute;
+                            right: 3px;
+                            top: 2px;
+                            color: gainsboro;
+                            cursor: pointer;
+                            &:hover {
+                                color: gray;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
+
     /* how to make a div vertically scrollable if the height is variable?
        this is not so easy, and thus we decided that the only way is
        javascript. these classes provide the relevant stop points for

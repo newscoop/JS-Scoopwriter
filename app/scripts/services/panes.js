@@ -27,13 +27,13 @@ angular.module('authoringEnvironmentApp').factory('panes', [
                 },
                 {
                     name: 'Related Articles',
-                    id: 'relatedarticles',
+                    id: 'related-articles-panel',
                     icon: 'relatedarticles',
                     template: 'views/pane-related-articles.html',
                     position: 'right',
                     size: 'small',
-                    visible: false,
-                    active: false,
+                    visible: true,
+                    active: true,
                     selected: true
                 },
                 {
