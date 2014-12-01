@@ -15,8 +15,7 @@ angular.module('authoringEnvironmentApp', [
     'ui.bootstrap.modal',
     'ui.select2',
     'gc.toaster',
-    'angularFileUpload',
-    'angularOauth'
+    'angularFileUpload'
 ]).config([
     '$routeProvider',
     '$httpProvider',

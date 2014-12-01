@@ -3,7 +3,52 @@
 (function () {
     'use strict';
 
-    // TODO: also move authInterceptor interceptor here?
+    var iframeTpl = '<iframe></iframe>';
+
+    // TODO: move this to a separate file
+    angular.module('authoringEnvironmentApp').directive('sfIframeLogin', [
+        'configuration',
+        function (configuration) {
+            return {
+                template: iframeTpl,
+                replace: true,
+                restrict: 'E',
+                scope: {
+                    onLoadHandler: '&onLoad'
+                },
+                link: function(scope, $element, attrs) {
+                    var url;
+
+                    if (!attrs.onLoad) {
+                        throw 'sfIframeLogin: missing onLoad handler';
+                    }
+
+                    url = [
+                        configuration.auth.server,
+                        '?client_id=', configuration.auth.client_id,
+                        '&redirect_uri=', configuration.auth.redirect_uri,
+                        '&response_type=token'
+                    ].join('');
+
+                    $element.attr('src', url);
+
+                    $element.attr('width', attrs.width || 570);
+                    $element.attr('height', attrs.height || 510);
+
+                    $element.on('load', function () {
+                        try {
+                            scope.onLoadHandler({
+                                location: $element[0].contentWindow.location
+                            });
+                        } catch (e) {
+                            // TODO: explain why this
+                            console.log('Exception iframeLoaded', e);
+                        }
+                    });
+                }
+            };
+        }
+    ]);
 
     /**
     * Constructor function for the login modal controller
@@ -14,36 +59,28 @@
     function ModalLoginCtrl($modalInstance, userAuth) {
         var self = this;
 
-        self.formData = {};
-        self.message = '';
-
-        /**
-        * Form submit handler. Tries to login user and, if successful, closes
-        * the modal, otherwise displays a failed login message.
-        *
-        * @method submit
-        */
-        self.submit = function () {
-            self.message = 'Authenticating...';
-
-            userAuth.loginUser(
-                self.formData.username, self.formData.password
-            )
-            .then(function () {
-                $modalInstance.close();
-            })
-            .catch(function () {
-                self.formData.password = '';
-                self.message =
-                    'Login failed, please check your username/password.';
-            });
-        };
-
         // XXX: add a way to close the modal without logging in?
         // in this case call $modalInstance.dismiss();
         // Other parts of the application should then display some
         // "not logged in" toast message, informing the user that action that
         // triggered the modal opening failed (e.g. saving the article)
+
+        // TODO: explain why this loaded handler... b/c redirect occurs
+        self.iframeLoadedHandler = function (location) {
+            if (typeof location.hash !== 'string') {
+                return;  // empty TODO: test on server instance (same origin)
+            }
+
+            var rex = new RegExp('access_token=(\\w+)');
+            var matches = rex.exec(location.hash);
+            if (matches.length > 1) {
+                var token = matches[1];
+                console.debug('modal: token parsed!', token);
+                $modalInstance.close(token);
+            } else {
+                console.debug('modal: no token found');
+            }
+        }
     }
 
     ModalLoginCtrl.$inject = ['$modalInstance', 'userAuth'];
@@ -59,7 +96,8 @@
         '$modal',
         '$q',
         '$window',
-        function ($http, $modal, $q, $window) {
+        'toaster',
+        function ($http, $modal, $q, $window, toaster) {
             var self = this;
 
             /**
@@ -83,49 +121,8 @@
                 return !!$window.sessionStorage.getItem('token');
             };
 
-            /**
-            * Returns the current token article's workflow status on the server.
-            *
-            * @method token
-            * @param status {String} article's new workflow status
-            * @return {Object} the underlying $http object's promise
-            */
-            self.obtainNewToken = function (addRequestMarker) {
-                var deferredGet = $q.defer(),
-                    requestConfig = {},
-                    url;
-
-                addRequestMarker = !!addRequestMarker;
-                // XXX: should this marker be always set? probably!
-                // remove parameter then ... maybe rename to
-                // "firstTokenRequest" or something?
-
-                url = Routing.generate(
-                    'newscoop_gimme_users_getuseraccesstoken',
-                    {'clientId': CSClientId}, true
-                );
-
-                if (addRequestMarker) {
-                    // mark this request for a token with a special marker
-                    // so that response interceptor can recognize it
-                    requestConfig._NEW_TOKEN_REQ_ = true;
-                }
-
-                $http.get(url, requestConfig)
-                .success(function (response) {
-                    $window.sessionStorage.token = response.access_token;
-                    deferredGet.resolve(response.access_token);
-                }).error(function (response) {
-                    deferredGet.reject(response);
-                });
-
-                return deferredGet.promise;
-            };
-
             self.newTokenByLoginModal = function () {
                 var deferred = $q.defer();
-
-                console.debug('inside of newTokenByLoginModal() method');
 
                 var dialog = $modal.open({
                     templateUrl: 'views/modal-login.html',
@@ -135,48 +132,31 @@
                     backdrop: 'static'
                 });
 
-                dialog.result.then(function () {
+                dialog.result.then(function (token) {
                     console.debug('uAuth: login through modal success',
-                        'will obtain new token');
-                    return self.obtainNewToken();
-                }, function (reason) {
-                    // login failed
-                    console.debug('uAuth: login through modal failed');
-                    deferred.reject(reason);
-                })
-                .then(function (authToken) {
-                    console.debug('uAuth: re-obtaining token success!');
-                    deferred.resolve(authToken);
+                        'we have new token', token);
+
+                    $window.sessionStorage.setItem('token', token);
+                    deferred.resolve(token);
+
+                    toaster.add({
+                        type: 'sf-info',
+                        message: 'Successfully refreshed authentication token.'
+                    });
                 })
                 .catch(function (reason) {
-                    // re-obtaining token failed
-                    console.debug('uAuth: re-obtaining token failed');
+                    console.debug('uAuth: login through modal failed');
                     deferred.reject(reason);
+
+                    toaster.add({
+                        type: 'sf-error',
+                        message: 'Failed to refresh authentication token.'
+                    });
                 });
 
                 return deferred.promise;
             };
 
-            self.loginUser = function (username, password) {
-                var deferredLogin = $q.defer(),
-                    requestConfig = {},
-                    url;
-
-                url = Routing.generate(
-                    'newscoop_gimme_users_login',
-                    {username: username, password: password},
-                    true
-                );
-
-                $http.post(url, {})
-                .success(function () {
-                    deferredLogin.resolve();
-                }).error(function () {
-                    deferredLogin.reject();
-                });
-
-                return deferredLogin.promise;
-            };
         }
     ]);
 

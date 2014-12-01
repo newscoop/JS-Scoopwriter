@@ -35,54 +35,57 @@ angular.module('authoringEnvironmentApp').factory('authInterceptor', [
 
             // TODO: extensive comments on how this works (tokens, logins etc.)
             responseError: function (response) {
+                // TODO: explain that this is used for avoiding
+                // cricular dependency
                 var userAuth = $injector.get('userAuth');
 
                 var lastRequestConfig = response.config;
 
-                if (response.config._NEW_TOKEN_REQ_) {
-                    // we requested a new authentication token but that
-                    // request failed ---> open a modal or something?
-                    console.debug('--- itc: obtaining new token failed',
-                        'need to show a login modal');
-
-                    // something like ...userAuth.modalLogin().then(...)
-                    var loginDeferred = $q.defer();
-
-                    var modalPromise = userAuth.newTokenByLoginModal();
-
-                    modalPromise.then(function () {
-                        console.debug('modalLogin success, what now?',
-                            'repeat lastRequestConfig?');
-                        loginDeferred.resolve();
-                    })
-                    .catch(function () {
-                        console.debug('--- itc: modalLogin FAIL');
-                        // XXX: reject with some other response?
-                        // probably with original, right? yes, that's correct
-                        loginDeferred.reject(response);
-                    });
-
-                    return loginDeferred.promise;
+                if (response.status !== 401) {
+                    // general non-authentication error occured, we don't
+                    // handle this here
+                    console.debug('--- itc: general non-authentication err.');
+                    return $q.reject(response);
                 }
 
-                // TODO: when API is fixed, revert back to checking the
-                // status code
-                //if (response.status === 401) {
-                if (response.statusText === 'OAuth2 authentication required') {
+                if (response.config.IS_RETRY) {
+                    console.debug('--- itc: retry failed, aborting');
+
+                    // delete response.config.IS_RETRY;
+                    return $q.reject(response);
+                }
+
+                if (response.status === 401 ||
+                    response.statusText === 'OAuth2 authentication required') {
                     // oAuth token expired, obtain a new one and then repeat
                     // the last  request on success
+
+                    var retryDeferred = $q.defer();
 
                     console.debug('--- itc: token is not valid,',
                         'will obtain a new one');
 
                     // 1. request a token
-                    return userAuth.obtainNewToken(true)
+                    userAuth.newTokenByLoginModal()
                     .then(function () {
                         // success, successful repeat the last request
                         // you have response.config for that
-                        console.debug('--- itc: re-obtaining token success');
-                        debugger;
+                        console.debug('--- itc: re-login w/ modal success');
+                        //debugger;
+
                         // TODO:return success promise or what?
+                        var $http = $injector.get('$http');
+                        var configToRepeat = angular.copy(response.config);
+
+                        configToRepeat.IS_RETRY = true;
+                        console.debug('--- itc: repeating request', configToRepeat);
+                        $http(configToRepeat)
+                        .success(function () {
+                            retryDeferred.resolve(response);
+                        })
+                        .error(function () {
+                            retryDeferred.reject(response);
+                        });
                     })
                     .catch(function () {
                         // TODO: obtaining new token failed,
@@ -90,17 +93,13 @@ angular.module('authoringEnvironmentApp').factory('authInterceptor', [
                         // success, repeat the last request
 
                         // XXX: 
-                        console.debug('--- itc: re-obtaining token failed');
-                        debugger;
-                        return $q.reject(response);
+                        console.debug('--- itc: re-login w/ modal failed');
+                        // debugger;
+                        retryDeferred.reject(response);
                     });
-                }
 
-                if (response.status !== 401) {
-                    // general non-authentication error occured, we don't
-                    // handle this here
-                    console.debug('--- itc: general non-authentication err.');
-                    return $q.reject(response);
+                    // TODO: return my own promise
+                    return retryDeferred.promise
                 }
             }
         };
