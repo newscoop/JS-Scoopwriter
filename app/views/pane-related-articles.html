@@ -1,11 +1,130 @@
 <section
     ng-controller="PaneTopicsCtrl"
-    class="tabcontent topics-panel">
+    class="tabcontent">
 
-  <div class="panel-title">
-    Related Articles
-  </div>
+    <div class="panel-title">
+        Related Articles
+    </div>
+    
+    <div class="add-element" ng-class="{expanded: showAddFilter}">
+        <div class="heading">
+            <button class="btn btn-sf-invisible"
+              ng-click="showAddFilter = !showAddFilter">
+            <span class="glyphicon"
+              ng-class="{'glyphicon-plus': !showAddFilter,
+                         'glyphicon-minus': showAddFilter}"
+              ></span>
+            <span class="add-text">FILTER ARTICLES</span>
+            </button>
+        </div>
 
-  
+        <div ng-show="showAddFilter" class="filters">
+            <select>
+                <option value="" class="">-- Publication --</option>
+                <option value="option1">Option1</option>
+                <option value="option2">Option2</option>
+                <option value="option3">Option3</option>
+                <option value="option4">Option4</option>
+            </select>
+            <select>
+                <option value="" class="">-- Issue --</option>
+                <option value="option1">Option1</option>
+                <option value="option2">Option2</option>
+                <option value="option3">Option3</option>
+                <option value="option4">Option4</option>
+            </select>
+            <select>
+                <option value="" class="">-- Section --</option>
+                <option value="option1">Option1</option>
+                <option value="option2">Option2</option>
+                <option value="option3">Option3</option>
+                <option value="option4">Option4</option>
+            </select>
+        </div>
+    </div><!-- end add element -->
+
+    <div class="wrapper"
+        ng-class="{low: showAddFilter, high: !showAddFilter}">    
+
+        <div class="list">
+
+            <!-- pinned -->
+            <div class="title">Pinned articles</div>
+
+            <div class="related-article pinned">
+                <div class="drag-bar"></div>
+                <div
+                    class="remove"
+                    title="Remove"
+                    ng-click=""
+                    >
+                    <span class="glyphicon glyphicon-remove"></span>
+                </div>                
+                <div class="article-metadata">
+                    <span class="date">01.03.2012 at 22:15:06</span>
+                    <span class="status new">New</span>
+                </div>
+                <div class="article-title">
+                    <a href="#" target="_blank">Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu.</a>
+                </div>
+            </div>
+            <div class="related-article pinned">
+                <div class="drag-bar"></div>
+                <div
+                    class="remove"
+                    title="Remove"
+                    ng-click=""
+                    >
+                    <span class="glyphicon glyphicon-remove"></span>
+                </div>
+                <div class="article-metadata">
+                    <span class="date">01.03.2012 at 22:15:06</span>
+                    <span class="status submitted">Submitted</span>
+                </div>
+                <div class="article-title">
+                    <a href="#" target="_blank">Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium,</a>
+                </div>
+            </div>
+            <!-- end pinned -->
+
+            <div class="title">Search results</div>
+            <div class="related-article">
+                <div class="article-metadata">
+                    <span class="date">01.03.2012 at 22:15:06</span>
+                    <span class="status published">Published</span>
+                </div>
+                <div class="article-title">
+                    <a href="#" target="_blank">Lorem ipsum dolor sit amet, consectetuer adipiscing elit.</a>
+                </div>
+            </div>
+            <div class="related-article">
+                <div class="article-metadata">
+                    <span class="date">01.03.2012 at 22:15:06</span>
+                    <span class="status published">Published</span>
+                </div>
+                <div class="article-title">
+                    <a href="#" target="_blank">Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit</a>
+                </div>
+            </div>
+            <div class="related-article">
+                <div class="article-metadata">
+                    <span class="date">01.03.2012 at 22:15:06</span>
+                    <span class="status new">New</span>
+                </div>
+                <div class="article-title">
+                    <a href="#" target="_blank">Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu.</a>
+                </div>
+            </div>
+            <div class="related-article">
+                <div class="article-metadata">
+                    <span class="date">01.03.2012 at 22:15:06</span>
+                    <span class="status submitted">Submitted</span>
+                </div>
+                <div class="article-title">
+                    <a href="#" target="_blank">Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium,</a>
+                </div>
+            </div>
+        </div>
+    </div>
 
 </section>
