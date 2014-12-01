@@ -1,54 +1,6 @@
-/* global CSClientId */
 
 (function () {
     'use strict';
-
-    var iframeTpl = '<iframe></iframe>';
-
-    // TODO: move this to a separate file
-    angular.module('authoringEnvironmentApp').directive('sfIframeLogin', [
-        'configuration',
-        function (configuration) {
-            return {
-                template: iframeTpl,
-                replace: true,
-                restrict: 'E',
-                scope: {
-                    onLoadHandler: '&onLoad'
-                },
-                link: function(scope, $element, attrs) {
-                    var url;
-
-                    if (!attrs.onLoad) {
-                        throw 'sfIframeLogin: missing onLoad handler';
-                    }
-
-                    url = [
-                        configuration.auth.server,
-                        '?client_id=', configuration.auth.client_id,
-                        '&redirect_uri=', configuration.auth.redirect_uri,
-                        '&response_type=token'
-                    ].join('');
-
-                    $element.attr('src', url);
-
-                    $element.attr('width', attrs.width || 570);
-                    $element.attr('height', attrs.height || 510);
-
-                    $element.on('load', function () {
-                        try {
-                            scope.onLoadHandler({
-                                location: $element[0].contentWindow.location
-                            });
-                        } catch (e) {
-                            // TODO: explain why this
-                            console.log('Exception iframeLoaded', e);
-                        }
-                    });
-                }
-            };
-        }
-    ]);
 
     /**
     * Constructor function for the login modal controller
@@ -80,7 +32,7 @@
             } else {
                 console.debug('modal: no token found');
             }
-        }
+        };
     }
 
     ModalLoginCtrl.$inject = ['$modalInstance', 'userAuth'];
