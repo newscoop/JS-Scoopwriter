@@ -6,7 +6,6 @@
 *
 * @class sfIframeLogin
 */
-// TODO: tests.. and explain that CSClientId is set in html template
 angular.module('authoringEnvironmentApp').directive('sfIframeLogin', [
     'configuration',
     function (configuration) {
@@ -24,6 +23,9 @@ angular.module('authoringEnvironmentApp').directive('sfIframeLogin', [
                     throw 'sfIframeLogin: missing onLoad handler';
                 }
 
+                // NOTE: when bundled into a Newscoop plugin, CSClientId is
+                // available as a global variable (it is set by the PHP code
+                // that produces the index.html file containing our app)
                 url = [
                     configuration.auth.server,
                     '?client_id=', CSClientId,
@@ -32,7 +34,6 @@ angular.module('authoringEnvironmentApp').directive('sfIframeLogin', [
                 ].join('');
 
                 $element.attr('src', url);
-
                 $element.attr('width', attrs.width || 570);
                 $element.attr('height', attrs.height || 510);
 
@@ -42,8 +43,12 @@ angular.module('authoringEnvironmentApp').directive('sfIframeLogin', [
                             location: $element[0].contentWindow.location
                         });
                     } catch (e) {
-                        // TODO: explain why this
-                        console.log('Exception iframeLoaded', e);
+                        // A security exception occurs when trying to access
+                        // iframe's contents when login comes from a different
+                        // origin. We simply silence such exceptions, because
+                        // the only load event we are interested in is when
+                        // the login form redirects us back to our own
+                        // domain - that redirection URL contains auth. token.
                     }
                 });
             }
