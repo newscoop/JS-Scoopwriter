@@ -41,13 +41,6 @@ angular.module('authoringEnvironmentApp').factory('authInterceptor', [
 
                 var lastRequestConfig = response.config;
 
-                if (response.status !== 401) {
-                    // general non-authentication error occured, we don't
-                    // handle this here
-                    console.debug('--- itc: general non-authentication err.');
-                    return $q.reject(response);
-                }
-
                 if (response.config.IS_RETRY) {
                     console.debug('--- itc: retry failed, aborting');
 
@@ -100,6 +93,14 @@ angular.module('authoringEnvironmentApp').factory('authInterceptor', [
 
                     // TODO: return my own promise
                     return retryDeferred.promise
+                }
+
+                // XXX: this should be "else"
+                if (response.status !== 401) {
+                    // general non-authentication error occured, we don't
+                    // handle this here
+                    console.debug('--- itc: general non-authentication err.');
+                    return $q.reject(response);
                 }
             }
         };
