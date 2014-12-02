@@ -9,17 +9,21 @@
 describe('Service: AuthInterceptor', function () {
 
     var authInterceptor,
-        $window;
+        userAuth;
 
     // load the service's module
     beforeEach(module('authoringEnvironmentApp'));
 
-    beforeEach(inject(function (_authInterceptor_, _$window_) {
+    beforeEach(inject(function (_authInterceptor_, _userAuth_) {
         authInterceptor = _authInterceptor_;
-        $window = _$window_;
+        userAuth = _userAuth_;
     }));
 
     describe('request interceptor', function () {
+        beforeEach(function () {
+            spyOn(userAuth, 'token');
+        });
+
         it('implements request() method', function () {
             expect(typeof authInterceptor.request).toBe('function');
         });
@@ -44,7 +48,7 @@ describe('Service: AuthInterceptor', function () {
                 config = {
                     url: 'http://backend.com/content-api/articles/8/en'
                 };
-                $window.sessionStorage.token = undefined;
+                userAuth.token.andReturn(undefined);
 
                 returned = authInterceptor.request(config);
                 expect(returned).toEqual(config);
@@ -61,7 +65,7 @@ describe('Service: AuthInterceptor', function () {
                     url: 'http://backend.com/content-api/articles/8/en',
                     headers: {}
                 };
-                $window.sessionStorage.token = 'abcd1234';
+                userAuth.token.andReturn('abcd1234');
 
                 returned = authInterceptor.request(config);
                 expect(returned.headers.Authorization).toEqual(

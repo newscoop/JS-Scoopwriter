@@ -9,13 +9,18 @@
 angular.module('authoringEnvironmentApp').factory('authInterceptor', [
     '$injector',
     '$q',
-    '$window',
-    function ($injector, $q, $window) {
+    function ($injector, $q) {
+        // TODO: explain that this is used for avoiding
+        // cricular dependency
+
         return {
             request: function (config) {
-                var endpoint = Routing.generate(
-                    'newscoop_gimme_articles_getarticles', {}, false);
+                var endpoint,
+                    token,
+                    userAuth = $injector.get('userAuth');
 
+                endpoint = Routing.generate(
+                    'newscoop_gimme_articles_getarticles', {}, false);
                 endpoint = endpoint.substring(1, endpoint.lastIndexOf('/'));
 
                 if (config.url.indexOf(endpoint + '/') === -1) {
@@ -25,9 +30,9 @@ angular.module('authoringEnvironmentApp').factory('authInterceptor', [
 
                 config.headers = config.headers || {};
 
-                if ($window.sessionStorage.token) {
-                    config.headers.Authorization = 'Bearer ' +
-                        $window.sessionStorage.token;
+                token = userAuth.token();
+                if (token) {
+                    config.headers.Authorization = 'Bearer ' + token;
                 }
 
                 return config;
