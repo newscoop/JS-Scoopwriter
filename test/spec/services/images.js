@@ -1021,8 +1021,9 @@ describe('Service: Images', function () {
         });
 
         describe('startUpload() method', function () {
-            var headersCheck,
-                postData,
+            var expectedPostData,
+                headersCheck,
+                postDataCheck,
                 url;
 
             beforeEach(inject(function (formDataFactory) {
@@ -1041,8 +1042,8 @@ describe('Service: Images', function () {
                     }
                 );
 
-                postData = formDataFactory.makeInstance();
-                postData.dict = {
+                expectedPostData = formDataFactory.makeInstance();
+                expectedPostData.dict = {
                     'image[image]': decoratedImg,
                     'image[photographer]': 'John Doe',
                     'image[description]': 'image description'
@@ -1055,10 +1056,14 @@ describe('Service: Images', function () {
                     return typeof headers['Content-Type'] === 'undefined';
                 };
 
+                postDataCheck = function (data) {
+                    return angular.equals(data, expectedPostData);
+                };
+
                 url = Routing.generate(
                     'newscoop_gimme_images_createimage', {}, true);
 
-                $httpBackend.expectPOST(url, postData, headersCheck)
+                $httpBackend.expectPOST(url, postDataCheck, headersCheck)
                 .respond(
                     201, null,
                     {'X-Location' : 'http://foo.com/images/4321'},
@@ -1083,11 +1088,11 @@ describe('Service: Images', function () {
             // XXX: how to test progress callbacks?
 
             it('converts undefined values to empty strings', function () {
-                postData.dict['image[photographer]']= '';
-                postData.dict['image[description]']= '';
+                expectedPostData.dict['image[photographer]'] = '';
+                expectedPostData.dict['image[description]'] = '';
 
                 $httpBackend.resetExpectations();
-                $httpBackend.expectPOST(url, postData, headersCheck)
+                $httpBackend.expectPOST(url, postDataCheck, headersCheck)
                 .respond(
                     201, null,
                     {'X-Location' : 'http://foo.com/images/4321'},
