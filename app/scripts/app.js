@@ -15,8 +15,7 @@ angular.module('authoringEnvironmentApp', [
     'ui.bootstrap.modal',
     'ui.select2',
     'gc.toaster',
-    'angularFileUpload',
-    'angularOauth'
+    'angularFileUpload'
 ]).config([
     '$routeProvider',
     '$httpProvider',
@@ -43,13 +42,15 @@ angular.module('authoringEnvironmentApp', [
             }
         )
         .when(
+            // loaded when the login form in performs a redirect (in modal's
+            // iframe)
             '/:callback*', {
                 templateUrl:'views/oAuthCallback.html',
-                controller: 'CallbackCtrl'
+                controller: ''
             }
-        ).otherwise(
-            // TODO: what here?
-            {redirectTo: '/de/533522'}
+        )
+        .otherwise(
+            {redirectTo: '/'}
         );
 
         $httpProvider.interceptors.push('authInterceptor');

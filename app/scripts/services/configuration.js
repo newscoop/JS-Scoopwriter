@@ -9,7 +9,7 @@ angular.module('authoringEnvironmentApp').factory('configuration', function () {
         auth: {
             client_id: '7_6203opwgvx8g4skgskksgkws8cs44ks8s4cw4sc8cg4wsk8c40',
             redirect_uri: 'http://localhost:9000',
-            server: 'http://newscoop.aes.sourcefabric.net/oauth/v2/auth?'
+            server: 'http://newscoop.aes.sourcefabric.net/oauth/v2/auth'
         },
         article: {
             width: {
