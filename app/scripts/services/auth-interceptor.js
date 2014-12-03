@@ -10,8 +10,11 @@ angular.module('authoringEnvironmentApp').factory('authInterceptor', [
     '$injector',
     '$q',
     function ($injector, $q) {
-        // TODO: explain that this is used for avoiding
-        // cricular dependency
+        // NOTE: userAuth service is not injected directly, because it depends
+        // on the $http service and the latter's provider uses this
+        // authInterceptor service --> circular dependency.
+        // We thus inject need to inject userAuth service on the fly (when it
+        // is actually needed).
 
         return {
             request: function (config) {
@@ -38,73 +41,71 @@ angular.module('authoringEnvironmentApp').factory('authInterceptor', [
                 return config;
             },
 
-            // TODO: extensive comments on how this works (tokens, logins etc.)
+            // If we receive an error response because authentication token
+            // is invalid/expired, we handle it by displaying a login modal.
+            //
+            // If login succeeds and a new token is obtained, the failed http
+            // request is transparently repeated with a correct token. If even
+            // this retried request (recognized by a special marker flag in
+            // request's http config) fails, the error is not further handled
+            // and is passed to through to the other parts of the application.
+            //
+            // Other types of http errors are not handled here and are simply
+            // passed through.
             responseError: function (response) {
-                // TODO: explain that this is used for avoiding
-                // cricular dependency
-                var userAuth = $injector.get('userAuth');
+                var configToRepeat,
+                    failedRequestConfig,
+                    retryDeferred,
+                    userAuth,
+                    $http;
 
-                var lastRequestConfig = response.config;
+                userAuth = $injector.get('userAuth');
 
                 if (response.config.IS_RETRY) {
-                    console.debug('--- itc: retry failed, aborting');
-
-                    // delete response.config.IS_RETRY;
+                    // Tried to retry the initial failed request but failed
+                    // again --> forward the error without another retry (to
+                    // avoid a possible infinite loop).
                     return $q.reject(response);
                 }
 
+                // NOTE: The API is not perfect yet and does not always return
+                // 401 on authentication errors, thus we must also rely on the
+                // error message (for now at least).
                 if (response.status === 401 ||
-                    response.statusText === 'OAuth2 authentication required') {
-                    // oAuth token expired, obtain a new one and then repeat
-                    // the last  request on success
+                    response.statusText === 'OAuth2 authentication required'
+                ) {
+                    // Request failed due to invalid oAuth token - try to
+                    // obtain a new token and then repeat the failed request.
+                    failedRequestConfig = response.config;
+                    retryDeferred = $q.defer();
 
-                    var retryDeferred = $q.defer();
-
-                    console.debug('--- itc: token is not valid,',
-                        'will obtain a new one');
-
-                    // 1. request a token
                     userAuth.newTokenByLoginModal()
                     .then(function () {
-                        // success, successful repeat the last request
-                        // you have response.config for that
-                        console.debug('--- itc: re-login w/ modal success');
-                        //debugger;
+                        // new token successfully obtained, repeat the request
+                        $http = $injector.get('$http');
 
-                        // TODO:return success promise or what?
-                        var $http = $injector.get('$http');
-                        var configToRepeat = angular.copy(response.config);
-
+                        configToRepeat = angular.copy(failedRequestConfig);
                         configToRepeat.IS_RETRY = true;
-                        console.debug('--- itc: repeating request', configToRepeat);
+
                         $http(configToRepeat)
-                        .success(function () {
-                            retryDeferred.resolve(response);
+                        .then(function (newResponse) {
+                            delete newResponse.config.IS_RETRY;
+                            retryDeferred.resolve(newResponse);
                         })
-                        .error(function () {
+                        .catch(function () {
                             retryDeferred.reject(response);
                         });
                     })
                     .catch(function () {
-                        // TODO: obtaining new token failed,
-                        // show modal dialog to login and then, if login
-                        // success, repeat the last request
-
-                        // XXX: 
-                        console.debug('--- itc: re-login w/ modal failed');
-                        // debugger;
+                        // obtaining new token failed, reject the request
                         retryDeferred.reject(response);
                     });
 
-                    // TODO: return my own promise
-                    return retryDeferred.promise
-                }
-
-                // XXX: this should be "else"
-                if (response.status !== 401) {
-                    // general non-authentication error occured, we don't
-                    // handle this here
-                    console.debug('--- itc: general non-authentication err.');
+                    return retryDeferred.promise;
+                } else {
+                    // some non-authentication error occured, these kind of
+                    // errors are not handled by this interceptor --> simply
+                    // forward the error
                     return $q.reject(response);
                 }
             }
