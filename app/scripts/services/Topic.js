@@ -87,14 +87,14 @@ angular.module('authoringEnvironmentApp').factory('Topic', [
             // through the article object. Later change this to a more
             // efficient call, when API support is added.
             url = Routing.generate(
-                'newscoop_gimme_articles_getarticle',
+                'newscoop_gimme_topics_getarticlestopics',
                 {number: number, language: language},
                 true
             );
 
             $http.get(url)
             .success(function (response) {
-                response.topics.forEach(function (item) {
+                response.items.forEach(function (item) {
                     item = Topic.createFromApiData(item);
                     topics.push(item);
                 });

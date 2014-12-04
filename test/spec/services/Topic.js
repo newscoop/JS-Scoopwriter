@@ -138,24 +138,19 @@ describe('Factory: Topic', function () {
 
     describe('getAllByArticle() method', function () {
         var url,
-            response,
-            topics;
+            response;
 
         beforeEach(function () {
-            topics = [
-                {id: 5, title: 'topic 5'},
-                {id: 2, title: 'topic 2'},
-                {id: 9, title: 'topic 9'}
-            ];
-
             response = {
-                title: 'Article title',
-                number: 7,
-                topics: topics
+                items: [
+                    {id: 5, title: 'topic 5'},
+                    {id: 2, title: 'topic 2'},
+                    {id: 9, title: 'topic 9'}
+                ]
             };
 
             url = Routing.generate(
-                'newscoop_gimme_articles_getarticle',
+                'newscoop_gimme_topics_getarticlestopics',
                 {number: 7, language: 'it'}, true
             );
 

@@ -6,9 +6,7 @@
 * @module PaneTopicsCtrl controller tests
 */
 describe('Controller: PaneTopicsCtrl', function () {
-    var article,
-        articleDeferred,
-        articleService,
+    var articleService,
         PaneTopicsCtrl,
         scope,
         Topic;
@@ -18,7 +16,7 @@ describe('Controller: PaneTopicsCtrl', function () {
     beforeEach(inject(function (
         $controller, $rootScope, _article_, _Topic_
     ) {
-        articleService = _article_,
+        articleService = _article_;
         Topic = _Topic_;
 
         articleService.articleInstance = {
@@ -164,9 +162,6 @@ describe('Controller: PaneTopicsCtrl', function () {
         });
 
         it('retrieves all topics list only once', function () {
-            var promise,
-                onSuccessSpy = jasmine.createSpy();
-
             scope.findTopics('Sport');
             deferredGetAll.resolve();
             scope.$digest();
