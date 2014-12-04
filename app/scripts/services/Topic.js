@@ -28,6 +28,43 @@ angular.module('authoringEnvironmentApp').factory('Topic', [
         };
 
         /**
+        * Retrieves a list of all existing topics.
+        *
+        * Initially, an empty array is returned, which is later filled with
+        * data on successful server response. At that point the given promise
+        * is resolved (exposed as a $promise property of the returned array).
+        *
+        * @method getAll
+        * @return {Object} array of topics
+        */
+        Topic.getAll = function () {
+            var topics = [],
+                deferredGet = $q.defer(),
+                url;
+
+            topics.$promise = deferredGet.promise;
+
+            url = Routing.generate(
+                'newscoop_gimme_topics_gettopics',
+                {items_per_page: 9999},  // de facto "all"
+                true
+            );
+
+            $http.get(url)
+            .success(function (response) {
+                response.items.forEach(function (item) {
+                    item = Topic.createFromApiData(item);
+                    topics.push(item);
+                });
+                deferredGet.resolve();
+            }).error(function (responseBody) {
+                deferredGet.reject(responseBody);
+            });
+
+            return topics;
+        };
+
+        /**
         * Retrieves a list of all topics assigned to a specific article.
         *
         * Initially, an empty array is returned, which is later filled with
@@ -46,18 +83,15 @@ angular.module('authoringEnvironmentApp').factory('Topic', [
 
             topics.$promise = deferredGet.promise;
 
-            // XXX: for now the only way to get article topics from API is
-            // through the article object. Later change this to a more
-            // efficient call, when API support is added.
             url = Routing.generate(
-                'newscoop_gimme_articles_getarticle',
+                'newscoop_gimme_topics_getarticlestopics',
                 {number: number, language: language},
                 true
             );
 
             $http.get(url)
             .success(function (response) {
-                response.topics.forEach(function (item) {
+                response.items.forEach(function (item) {
                     item = Topic.createFromApiData(item);
                     topics.push(item);
                 });
@@ -67,6 +101,56 @@ angular.module('authoringEnvironmentApp').factory('Topic', [
             });
 
             return topics;
+        };
+
+        /**
+        * Assignes all given topics to an article.
+        *
+        * @method addToArticle
+        * @param articleId {Number} article ID
+        * @param language {String} article language code (e.g. 'de')
+        * @param topics {Array} list of topics to assign
+        * @return {Object} promise object that is resolved on successful server
+        *   response and rejected on server error response
+        */
+        Topic.addToArticle = function (articleId, language, topics) {
+            var deferred = $q.defer(),
+                linkHeader = [];
+
+            if (topics.length < 1) {
+                throw new Error('Topics list is empty.');
+            }
+
+            topics.forEach(function (item) {
+                linkHeader.push(
+                    '<' +
+                    Routing.generate(
+                        'newscoop_gimme_topics_gettopicbyid',
+                        {topicId: item.id},
+                        false
+                    ) +
+                    '; rel="topic">'
+                );
+            });
+            linkHeader = linkHeader.join();
+
+            $http({
+                url: Routing.generate(
+                    'newscoop_gimme_articles_linkarticle',
+                    {number: articleId, language: language},
+                    true
+                ),
+                method: 'LINK',
+                headers: {link: linkHeader}
+            })
+            .success(function () {
+                deferred.resolve(topics);
+            })
+            .error(function (responseBody) {
+                deferred.reject(responseBody);
+            });
+
+            return deferred.promise;
         };
 
         return Topic;
