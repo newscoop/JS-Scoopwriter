@@ -9,14 +9,31 @@ angular.module('authoringEnvironmentApp').controller('PaneTopicsCtrl', [
     '$q',
     '$scope',
     'article',
+    'modalFactory',
     'Topic',
-    function ($q, $scope, articleService, Topic) {
+    function ($q, $scope, articleService, modalFactory, Topic) {
         var article = articleService.articleInstance,
             availableTopics = [],   // all existing topics to choose from
             topicListRetrieved = false;  // avilableTopics initialized yet?
 
         $scope.selectedTopics = [];
         $scope.assigningTopics = false;  // topic assignment in progress?
+
+        // retrieve all topics assigned to the article
+        $scope.assignedTopics = Topic.getAllByArticle(
+            article.articleId, article.language
+        );
+
+        /**
+        * Clears the list of currently selected topics.
+        *
+        * @method clearSelectedTopics
+        */
+        $scope.clearSelectedTopics = function () {
+            while ($scope.selectedTopics.length > 0) {
+                $scope.selectedTopics.pop();
+            }
+        };
 
         // retrieve all topics assigned to the article
         $scope.assignedTopics = Topic.getAllByArticle(
@@ -87,7 +104,6 @@ angular.module('authoringEnvironmentApp').controller('PaneTopicsCtrl', [
         * @method assignSelectedToArticle
         */
         $scope.assignSelectedToArticle = function () {
-
             $scope.assigningTopics = true;
 
             Topic.addToArticle(
@@ -102,6 +118,34 @@ angular.module('authoringEnvironmentApp').controller('PaneTopicsCtrl', [
             });
 
             // XXX: what about errors, e.g. 409 Conflict?
+        };
+
+        /**
+        * Asks user to confirm unassigning a topic from the article and then
+        * unassignes the topic, if the action is confirmed.
+        *
+        * @method confirmUnassignTopic
+        * @param topic {Object} topic to unassign
+        */
+        $scope.confirmUnassignTopic = function (topic) {
+            var modal,
+                title,
+                text;
+
+            title = 'Do you really want to unassign this topic from ' +
+                'the article?';
+            text = 'Should you change your mind, the topic can ' +
+                'always be re-assigned again.';
+
+            modal = modalFactory.confirmLight(title, text);
+
+            modal.result.then(function () {
+                return topic.removeFromArticle(
+                    article.articleId, article.language);
+            }, $q.reject)
+            .then(function () {
+                _.remove($scope.assignedTopics, {id: topic.id});
+            });
         };
     }
 ]);
