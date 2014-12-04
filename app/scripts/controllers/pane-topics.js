@@ -140,11 +140,8 @@ angular.module('authoringEnvironmentApp').controller('PaneTopicsCtrl', [
             modal = modalFactory.confirmLight(title, text);
 
             modal.result.then(function () {
-                return article.promise;
-            }, $q.reject)
-            .then(function (articleData) {
                 return topic.removeFromArticle(
-                    articleData.number, articleData.language);
+                    article.articleId, article.language);
             }, $q.reject)
             .then(function () {
                 _.remove($scope.assignedTopics, {id: topic.id});

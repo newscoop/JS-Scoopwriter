@@ -278,15 +278,16 @@ describe('Controller: PaneTopicsCtrl', function () {
             modalDeferred = $q.defer();
             modalFactory = _modalFactory_;
 
+            articleService.articleInstance.articleId = 25;
+            articleService.articleInstance.language = 'de';
+
             spyOn(modalFactory, 'confirmLight').andCallFake(function () {
                 return {
                     result: modalDeferred.promise
-                }
+                };
             });
 
-            spyOn(Topic, 'getAllByArticle').andCallFake(function () {
-                return [];
-            });
+            Topic.getAllByArticle.andReturn([]);
 
             topic = {
                 id: 20,
@@ -301,11 +302,8 @@ describe('Controller: PaneTopicsCtrl', function () {
         });
 
         it('invokes topic\'s removeFromArticle() method ' +
-           'with correct parameters on action confirmation',
-           function () {
-                articleDeferred.resolve({number: 25, language: 'de'});
-                scope.$apply();
-
+            'with correct parameters on action confirmation',
+            function () {
                 scope.confirmUnassignTopic(topic);
                 modalDeferred.resolve();
                 scope.$apply();
@@ -316,9 +314,6 @@ describe('Controller: PaneTopicsCtrl', function () {
 
         it('does not try to unassign topic on action cancellation',
             function () {
-                articleDeferred.resolve({number: 25, language: 'de'});
-                scope.$apply();
-
                 scope.confirmUnassignTopic(topic);
                 modalDeferred.reject();
                 scope.$apply();
@@ -330,8 +325,6 @@ describe('Controller: PaneTopicsCtrl', function () {
         it('removes the topic from the list of assigned topics ' +
            'on action confirmation',
            function () {
-                articleDeferred.resolve({number: 25, language: 'de'});
-                scope.$apply();
                 scope.assignedTopics= [
                     {id: 4, title: 'topic 4'},
                     {id: 20, title: 'topic 20'},
