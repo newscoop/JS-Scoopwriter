@@ -35,22 +35,6 @@ angular.module('authoringEnvironmentApp').controller('PaneTopicsCtrl', [
             }
         };
 
-        // retrieve all topics assigned to the article
-        $scope.assignedTopics = Topic.getAllByArticle(
-            article.articleId, article.language
-        );
-
-        /**
-        * Clears the list of currently selected topics.
-        *
-        * @method clearSelectedTopics
-        */
-        $scope.clearSelectedTopics = function () {
-            while ($scope.selectedTopics.length > 0) {
-                $scope.selectedTopics.pop();
-            }
-        };
-
         /**
         * Finds a list of topics that can be assigned to the article based on
         * the search query. Topics that are already selected or assigned to
