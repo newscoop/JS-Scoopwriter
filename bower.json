@@ -18,7 +18,6 @@
     "angular-bootstrap": "~0.11.0",
     "ng-file-upload": "~1.6.0",
     "angular-ui-select2": "~0.0.5",
-    "angular-oauth": "*",
     "gc-angular-toaster": "~1.0.0",
     "xregexp": "~2.0.0",
     "ng-tags-input": "~2.1.1"
