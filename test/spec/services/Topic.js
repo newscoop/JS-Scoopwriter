@@ -237,22 +237,24 @@ describe('Factory: Topic', function () {
             topics;
 
         beforeEach(function () {
-            var expectedLinkHeader;
+            var expectedLinkHeader,
+                topicUri2,
+                topicUri6;
 
             topics = [
                 {id: 2, name: 'topic 2'},
                 {id: 6, name: 'topic 6'}
             ];
 
-            // Routing.generate(
-            //     'newscoop_gimme_topics_gettopic', {topicId: 2}, false
-            // )
-            // Routing.generate(
-            //     'newscoop_gimme_topics_gettopic', {topicId: 6}, false
-            // );
+            topicUri2 = Routing.generate(
+                'newscoop_gimme_topics_gettopicbyid', {topicId: 2}, false
+            )
+            topicUri6 = Routing.generate(
+                'newscoop_gimme_topics_gettopicbyid', {topicId: 6}, false
+            );
             expectedLinkHeader = [
-                '</content-api/topics/2; rel="topic">,',
-                '</content-api/topics/6; rel="topic">'
+                '<', topicUri2, '; rel="topic">,',
+                '<', topicUri6, '; rel="topic">'
             ].join('');
 
             url = Routing.generate(

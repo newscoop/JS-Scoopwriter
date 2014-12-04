@@ -83,9 +83,6 @@ angular.module('authoringEnvironmentApp').factory('Topic', [
 
             topics.$promise = deferredGet.promise;
 
-            // XXX: for now the only way to get article topics from API is
-            // through the article object. Later change this to a more
-            // efficient call, when API support is added.
             url = Routing.generate(
                 'newscoop_gimme_topics_getarticlestopics',
                 {number: number, language: language},
@@ -126,13 +123,12 @@ angular.module('authoringEnvironmentApp').factory('Topic', [
 
             topics.forEach(function (item) {
                 linkHeader.push(
-                    // XXX: gettopic path does not exist (yet) in API!
-                    '</content-api/topics/' + item.id +
-                    // Routing.generate(
-                    //     'newscoop_gimme_topics_gettopic',
-                    //     {topicId: topic.id},
-                    //     false
-                    // ),
+                    '<' +
+                    Routing.generate(
+                        'newscoop_gimme_topics_gettopicbyid',
+                        {topicId: item.id},
+                        false
+                    ) +
                     '; rel="topic">'
                 );
             });
