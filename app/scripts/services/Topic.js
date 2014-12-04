@@ -169,13 +169,11 @@ angular.module('authoringEnvironmentApp').factory('Topic', [
 
             linkHeader = [
                 '<',
-                '/content-api/topics/',  // XXX: until API support is added
-                topic.id,
-                // Routing.generate(
-                //     'newscoop_gimme_topics_gettopic',
-                //     {topicId: topic.id},
-                //     false
-                // ),
+                Routing.generate(
+                    'newscoop_gimme_topics_gettopicbyid',
+                    {id: topic.id},
+                    false
+                ),
                 '; rel="topic">'
             ].join('');
 

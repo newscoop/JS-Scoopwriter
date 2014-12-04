@@ -337,10 +337,9 @@ describe('Factory: Topic', function () {
             var expectedLinkHeader,
                 topicUri;
 
-            // topicUri = Routing.generate(
-            //     'newscoop_gimme_topics_gettopic', {topicId: 1}, false
-            // );
-            topicUri = '/content-api/topics/1';
+            topicUri = Routing.generate(
+                'newscoop_gimme_topics_gettopicbyid', {id: 1}, false
+            );
             expectedLinkHeader = '<' + topicUri + '; rel="topic">';
 
             topic = Object.create(Topic.prototype, {
@@ -348,7 +347,7 @@ describe('Factory: Topic', function () {
             });
 
             url = Routing.generate(
-                'newscoop_gimme_articles_linkarticle',
+                'newscoop_gimme_articles_unlinkarticle',
                 {number: 25, language: 'en'}, true
             );
 
