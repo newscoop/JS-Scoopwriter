@@ -19,11 +19,9 @@ angular.module('authoringEnvironmentApp').controller('PaneTopicsCtrl', [
         $scope.assigningTopics = false;  // topic assignment in progress?
 
         // retrieve all topics assigned to the article
-        article.promise.then(function (articleData) {
-            $scope.assignedTopics = Topic.getAllByArticle(
-                articleData.number, articleData.language
-            );
-        });
+        $scope.assignedTopics = Topic.getAllByArticle(
+            article.articleId, article.language
+        );
 
         /**
         * Clears the list of currently selected topics.
@@ -81,11 +79,6 @@ angular.module('authoringEnvironmentApp').controller('PaneTopicsCtrl', [
 
             return deferred.promise;
         };
-
-        // retrieve all topics assigned to the article
-        $scope.assignedTopics = Topic.getAllByArticle(
-            article.articleId, article.language
-        );
 
         /**
         * Assigns all currently selected topics to the article and then clears

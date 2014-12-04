@@ -8,6 +8,7 @@
 describe('Controller: PaneTopicsCtrl', function () {
     var article,
         articleDeferred,
+        articleService,
         PaneTopicsCtrl,
         scope,
         Topic;
@@ -17,8 +18,6 @@ describe('Controller: PaneTopicsCtrl', function () {
     beforeEach(inject(function (
         $controller, $rootScope, _article_, _Topic_
     ) {
-        var articleService;
-
         articleService = _article_,
         Topic = _Topic_;
 
@@ -193,8 +192,8 @@ describe('Controller: PaneTopicsCtrl', function () {
             deferredAdd = $q.defer();
             spyOn(Topic, 'addToArticle').andReturn(deferredAdd.promise);
 
-            article.articleId = 18;
-            article.language = 'it';
+            articleService.articleInstance.articleId = 18;
+            articleService.articleInstance.language = 'it';
 
             scope.selectedTopics = angular.copy(topics);
             scope.assignedTopics = [{id: 4, title: 'topic 4'}];
