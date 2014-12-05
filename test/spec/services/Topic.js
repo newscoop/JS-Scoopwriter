@@ -23,7 +23,14 @@ describe('Factory: Topic', function () {
         var data;
 
         beforeEach(function () {
-            data = {id: 5, title: 'Sports'};
+            // NOTE: have integers as strings to test data conversion
+            data = {
+                id: '12',
+                title: 'Sports',
+                parent: '4',
+                level: '0',
+                order: '1'
+            };
         });
 
         it('returns a Topic instance', function () {
@@ -34,8 +41,11 @@ describe('Factory: Topic', function () {
         it('correctly initializes returned instance\'s attributes',
             function () {
                 var instance = Topic.createFromApiData(data);
-                expect(instance.id).toEqual(5);
+                expect(instance.id).toEqual(12);
                 expect(instance.title).toEqual('Sports');
+                expect(instance.parentId).toEqual(4);
+                expect(instance.level).toEqual(0);
+                expect(instance.order).toEqual(1);
             }
         );
     });
@@ -247,10 +257,10 @@ describe('Factory: Topic', function () {
             ];
 
             topicUri2 = Routing.generate(
-                'newscoop_gimme_topics_gettopicbyid', {topicId: 2}, false
+                'newscoop_gimme_topics_gettopicbyid', {id: 2}, false
             )
             topicUri6 = Routing.generate(
-                'newscoop_gimme_topics_gettopicbyid', {topicId: 6}, false
+                'newscoop_gimme_topics_gettopicbyid', {id: 6}, false
             );
             expectedLinkHeader = [
                 '<', topicUri2, '; rel="topic">,',

@@ -21,8 +21,11 @@ angular.module('authoringEnvironmentApp').factory('Topic', [
         Topic.createFromApiData = function (data) {
             var topic = new Topic();
 
-            topic.id = data.id;
+            topic.id = parseInt(data.id);
             topic.title = data.title;
+            topic.parentId = parseInt(data.parent);
+            topic.level = parseInt(data.level);
+            topic.order = parseInt(data.order);
 
             return topic;
         };
@@ -126,7 +129,7 @@ angular.module('authoringEnvironmentApp').factory('Topic', [
                     '<' +
                     Routing.generate(
                         'newscoop_gimme_topics_gettopicbyid',
-                        {topicId: item.id},
+                        {id: item.id},
                         false
                     ) +
                     '; rel="topic">'
