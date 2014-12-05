@@ -639,7 +639,6 @@ a:hover {
 
             /* custom fields styling */
             &.custom-fields {
-                /*border-top: 1px solid #e0e0e0;*/
                 margin: 60px -60px;
                 padding: 20px 0px;
 
@@ -703,8 +702,9 @@ a:hover {
                                 list-style: none;
                                 margin: 0;
                                 padding: 0;
+                                max-width: 400px;
                                 li {
-                                    margin-bottom: 10px;
+                                    margin-bottom: 20px;
                                     label {
                                         font-weight: 500;
                                         margin-bottom: 6px;
@@ -716,7 +716,7 @@ a:hover {
                                         }
                                     }
                                     textarea {
-                                        
+
                                     }
                                 }
                             }
@@ -1898,6 +1898,11 @@ a:hover {
                     margin-left: auto;
                     margin-right: 438px;
                }               
+            }
+            section {
+                &.custom-fields {
+                    margin: 60px -20px;
+                }
             }
         }        
     }
