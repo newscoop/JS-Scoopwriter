@@ -73,6 +73,52 @@
          >
       </div>
     </section>
+
+    <section 
+      class="custom-fields">
+      <header>
+        <span
+          ng-click="showCustomFields = !showCustomFields; iconOpenClose = !iconOpenClose">
+          <i class="fa fa-chevron-right" ng-show="iconOpenClose"></i>
+          <i class="fa fa-chevron-down" ng-hide="iconOpenClose"></i> Custom fields
+        </span></header>
+      <div class="wrapper" ng-hide="showCustomFields">
+        <ul class="group">
+          <li>
+            <h3>History</h3>
+            <ul class="fields">
+              <li>
+                <label>Field label</label>
+                <input type="text" class="form-control">
+              </li>
+              <li>
+                <label>Sed ut perspiciatis unde omnis iste natus error sit voluptatem </label>
+                <input type="text" class="form-control">
+              </li>
+              <li>
+                <label>Lorem ipsum dolor sit amet, consectetuer adipiscing elit.</label>
+                <input type="text" class="form-control">
+              </li>
+              <li>
+                <input type="checkbox" id="name1"/>
+                <label for="name1">Function name</label>
+              </li>
+              <li>
+                <input type="checkbox" id="name2"/>
+                <label for="name2">Function name</label>
+              </li>
+              <li>
+                <label>Field label</label>
+                <input type="text" class="form-control">
+              </li>
+            </ul>
+          </li>
+          <li>
+            <h3>Last update</h3>
+          </li>
+        </ul>
+      </div>
+    </section>
     <div ng-hide="editableFields.length">
       There are no editable fields for this type of article
     </div>
