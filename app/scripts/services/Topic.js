@@ -106,6 +106,46 @@ angular.module('authoringEnvironmentApp').factory('Topic', [
             return topics;
         };
 
+
+        /**
+        * Creates a new topic on the server and returns a Topic instance
+        * representing it.
+        *
+        * @method create
+        * @param title {String} new topics's name
+        * @param [parentId] {Number} ID of the parent topic
+        * @return {Object} promise object which is resolved with new Topic
+        *   instance on success and rejected on error
+        */
+        Topic.create = function (title, parentId) {
+            var deferredPost = $q.defer(),
+                requestData;
+
+            requestData = {'topic[title]': title};
+            if (typeof parentId !== 'undefined') {
+                requestData['topic[parent]'] = parentId;
+            }
+
+            $http.post(
+                Routing.generate(
+                    'newscoop_gimme_topics_createtopic', {}, true
+                ),
+                requestData
+            )
+            .then(function (response) {
+                var resourceUrl = response.headers('x-location');
+                return $http.get(resourceUrl);  // retrieve created topic
+            }, $q.reject)
+            .then(function (response) {
+                var topic = Topic.createFromApiData(response.data);
+                deferredPost.resolve(topic);
+            }, function () {
+                deferredPost.reject();
+            });
+
+            return deferredPost.promise;
+        };
+
         /**
         * Assignes all given topics to an article.
         *

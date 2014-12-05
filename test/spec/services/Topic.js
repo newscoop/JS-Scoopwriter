@@ -146,6 +146,7 @@ describe('Factory: Topic', function () {
         });
     });
 
+
     describe('getAllByArticle() method', function () {
         var url,
             response;
@@ -241,6 +242,122 @@ describe('Factory: Topic', function () {
             });
         });
     });
+
+
+
+    describe('create() method', function () {
+        var urlCreate,
+            urlGet;  // contents of the x-location header
+
+        beforeEach(function () {
+            urlCreate = Routing.generate(
+                'newscoop_gimme_topics_createtopic', {}, true
+            );
+            urlGet = 'http://foo.bar/api/topics/8';
+        });
+
+        it('sends correct request to API to create a topic ' +
+            'with no parent topic',
+            function () {
+                var expectedPostData = {'topic[title]': 'News'};
+
+                $httpBackend.expectPOST(urlCreate, expectedPostData)
+                    .respond(201, '', {'x-location': urlGet});
+
+                Topic.create('News');
+
+                $httpBackend.verifyNoOutstandingExpectation();
+            }
+        );
+
+        it('sends correct request to API to create a topic ' +
+            'with a parent topic',
+            function () {
+                var expectedPostData = {
+                    'topic[title]': 'News',
+                    'topic[parent]': 4
+                };
+
+                $httpBackend.expectPOST(urlCreate, expectedPostData)
+                    .respond(201, '', {'x-location': urlGet});
+
+                Topic.create('News', 4);
+
+                $httpBackend.verifyNoOutstandingExpectation();
+            }
+        );
+
+        it('requests created topic\'s data after successful creation',
+            function () {
+                $httpBackend.whenPOST(/.*/)
+                    .respond(201, '', {'x-location': urlGet});
+                $httpBackend.expectGET(urlGet).respond(200, '');
+
+                Topic.create('News');
+                $httpBackend.flush(1);  // respond only to topic creation
+
+                $httpBackend.verifyNoOutstandingExpectation();
+            }
+        );
+
+        it('resolves given promise with the new Topic instance on success',
+            function () {
+                var onSuccessSpy = jasmine.createSpy(),
+                    topic,
+                    topicData;
+
+                topicData = {
+                    id: 4,
+                    parent: 4,
+                    title: 'News',
+                    level: 0,
+                    order: 1
+                };
+
+                $httpBackend.whenPOST(/.*/)
+                    .respond(201, '',  {'x-location': urlGet});
+                $httpBackend.whenGET(/.*/).respond(200, topicData);
+
+                Topic.create('News').then(onSuccessSpy);
+                $httpBackend.flush();
+
+                expect(onSuccessSpy).toHaveBeenCalled();
+                topic = onSuccessSpy.mostRecentCall.args[0];
+
+                expect(topic instanceof Topic).toBe(true);
+                expect(topic.id).toEqual(4);
+            }
+        );
+
+        it('rejects given promise on topic creation error', function () {
+            var onErrorSpy = jasmine.createSpy(),
+                promise;
+
+            $httpBackend.whenPOST(/.*/).respond(500, 'Server error');
+
+            Topic.create(4).catch(onErrorSpy);
+
+            $httpBackend.flush();
+            expect(onErrorSpy).toHaveBeenCalled();
+        });
+
+        it('rejects given promise on created topic retrieval error',
+            function () {
+                var onErrorSpy = jasmine.createSpy(),
+                    promise;
+
+                $httpBackend.whenPOST(/.*/)
+                    .respond(201, '',  {'x-location': urlGet});
+                $httpBackend.whenGET(/.*/).respond(500, 'Server error');
+
+                Topic.create(4).catch(onErrorSpy);
+
+                $httpBackend.flush();
+                expect(onErrorSpy).toHaveBeenCalled();
+            }
+        );
+    });
+
 
     describe('addToArticle() method', function () {
         var url,
