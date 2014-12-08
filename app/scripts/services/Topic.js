@@ -8,8 +8,14 @@
 angular.module('authoringEnvironmentApp').factory('Topic', [
     '$http',
     '$q',
-    function ($http, $q) {
-        var Topic = function () {};  // topic constructor
+    '$timeout',
+    'dateFactory',
+    'pageTracker',
+    function ($http, $q, $timeout, dateFactory, pageTracker) {
+        var SEARCH_DELAY_MS = 250,  // after the last search term change
+            lastContext = null,  // most recent live search context
+            lastTermChange = 0,  // time of the most recent search term change
+            Topic = function () {};  // topic constructor
 
         /**
         * Converts raw data object to a Topic instance.
@@ -26,6 +32,10 @@ angular.module('authoringEnvironmentApp').factory('Topic', [
             topic.parentId = parseInt(data.parent);
             topic.level = parseInt(data.level);
             topic.order = parseInt(data.order);
+
+            // display text ... this property is expected by the select2 search
+            // widget for all results
+            topic.text = topic.title;
 
             return topic;
         };
@@ -106,6 +116,76 @@ angular.module('authoringEnvironmentApp').factory('Topic', [
             return topics;
         };
 
+        /**
+        * Retrieves a list of topics in a way that is suitable for use
+        * as a query function for the select2 widget.
+        *
+        * @method liveSearchQuery
+        * @param options {Object} options object provided by select2 on every
+        *   invocation.
+        * @param [isCallback=false] {Boolean} if the method is "manually"
+        *   invoked (i.e. not by the select2 machinery), this flag should be
+        *   set so that the method is aware of this fact
+        */
+        Topic.liveSearchQuery = function (options, isCallback) {
+            var isPaginationCall = (options.page > 1),
+                now = dateFactory.makeInstance(),
+                url;
+
+            if (!isCallback) {
+                // regular select2's onType event, input changed
+
+                if (!isPaginationCall) {
+                    lastTermChange = now;
+
+                    $timeout(function () {
+                        // NOTE: tests spy on self.authorResource object, thus
+                        // we don't call self.liveSearchQuery() but instead
+                        // invoke the method through self.authorResource object
+                        Topic.liveSearchQuery(options, true);
+                    }, SEARCH_DELAY_MS);
+                    return;
+                } else {
+                    if (angular.equals(options.context, lastContext)) {
+                        // select2 bug, same pagination page called twice:
+                        // https://github.com/ivaynberg/select2/issues/1610
+                        return;  // just skip it
+                    }
+                    lastContext = options.context;
+                }
+            }
+
+            if (!isPaginationCall && now - lastTermChange < SEARCH_DELAY_MS) {
+                return;  // search term changed, skip this obsolete call
+            }
+
+            url = Routing.generate(
+                'newscoop_gimme_topics_searchtopics',
+                {
+                    items_per_page: 10,
+                    page: options.page,
+                    query: options.term
+                },
+                true
+            );
+
+            $http.get(url)
+            .success(function (response) {
+                var topic,
+                    topicList = [];
+
+                response.items.forEach(function (item) {
+                    topic = Topic.createFromApiData(item);
+                    topicList.push(topic);
+                });
+
+                options.callback({
+                    results: topicList,
+                    more: !pageTracker.isLastPage(response.pagination),
+                    context: response.pagination
+                });
+            });
+        };
 
         /**
         * Creates a new topic on the server and returns a Topic instance
