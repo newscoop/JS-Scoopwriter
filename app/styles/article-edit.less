@@ -642,7 +642,7 @@ a:hover {
                 margin: 60px -60px;
                 padding: 20px 0px;
 
-                header {
+                .header {
                     position: relative;
                     display: block;
                     visibility: visible;
@@ -673,7 +673,8 @@ a:hover {
                     }
                     span {
                         background: #fff;
-                        display: inline-block;                  
+                        display: inline-block;       
+                        vertical-align: middle;           
                         &:hover {
                             cursor: pointer;
                         }
@@ -685,40 +686,25 @@ a:hover {
                 .wrapper {
                     padding: 0 60px;
                     margin: 30px 0;
-                    .group {
+                    ul.fields {
                         list-style: none;
                         margin: 0;
                         padding: 0;
+                        max-width: 420px;
                         li {
-                            margin-bottom: 40px;
-                            > h3 {
-                                font-weight: 400;
-                                border-bottom: 1px solid #efefef;
-                                font-size: 18px;
-                                padding-bottom: 6px;
-                                margin-bottom: 20px;
+                            margin-bottom: 20px;
+                            label {
+                                font-weight: 500;
+                                margin-bottom: 10px;                                        
+                                vertical-align: middle;
                             }
-                            ul.fields {
-                                list-style: none;
-                                margin: 0;
-                                padding: 0;
-                                max-width: 400px;
-                                li {
-                                    margin-bottom: 20px;
-                                    label {
-                                        font-weight: 500;
-                                        margin-bottom: 6px;
-                                        vertical-align: middle;
-                                    }
-                                    input {
-                                        + label {
-                                            margin-left: 5px;
-                                        }
-                                    }
-                                    textarea {
-
-                                    }
+                            input {
+                                + label {
+                                    margin-left: 5px;
                                 }
+                            }
+                            textarea {
+                                .border-radius(2px);
                             }
                         }
                     }
@@ -1902,6 +1888,15 @@ a:hover {
             section {
                 &.custom-fields {
                     margin: 60px -20px;
+                    header {
+                        padding: 0 20px;
+                        &:before {
+                            width:12px;
+                        }
+                        &:after {
+                            left: 135px;
+                        }
+                    }
                     .wrapper {
                         padding: 0 20px;
                     }
