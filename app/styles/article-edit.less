@@ -546,6 +546,21 @@ a:hover {
         }
         &.mobile {
             max-width: 320px;
+            .custom-fields {
+                margin: 40px -10px;
+                .header {
+                    padding: 0 10px;
+                    &:before {
+                        width: 5px;
+                    }
+                    &:after {
+                        left: 125px;
+                    }
+                }
+                .wrapper {
+                    padding: 0 10px;
+                }
+            }
         }
 
         .drag-drop-placeholder {
@@ -1888,7 +1903,7 @@ a:hover {
             section {
                 &.custom-fields {
                     margin: 60px -20px;
-                    header {
+                    .header {
                         padding: 0 20px;
                         &:before {
                             width:12px;
@@ -1899,6 +1914,9 @@ a:hover {
                     }
                     .wrapper {
                         padding: 0 20px;
+                        ul.fields {
+                            max-width: 100%;
+                        }
                     }
                 }
             }

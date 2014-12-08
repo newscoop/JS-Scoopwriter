@@ -79,11 +79,11 @@
       <div class="header">
         <span
           ng-click="showCustomFields = !showCustomFields; iconOpenClose = !iconOpenClose">
-          <i class="fa fa-chevron-right" ng-show="iconOpenClose"></i>
-          <i class="fa fa-chevron-down" ng-hide="iconOpenClose"></i> Custom fields
+          <i class="fa fa-chevron-right" ng-hide="iconOpenClose"></i>
+          <i class="fa fa-chevron-down" ng-show="iconOpenClose"></i> Custom fields
         </span>
       </div>
-      <div class="wrapper" ng-hide="showCustomFields">
+      <div class="wrapper" ng-show="showCustomFields">
             <ul class="fields">
               <li>
                 <label>Field label</label>
