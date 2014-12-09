@@ -66,6 +66,7 @@ describe('Controller: PaneTopicsCtrl', function () {
         expect(scope.addingNewTopic).toBe(false);
     });
 
+
     describe('initialization of article topics in scope', function () {
         it('invokes service\'s getAllByArticle() method with correct ' +
            'parameters',
@@ -81,9 +82,129 @@ describe('Controller: PaneTopicsCtrl', function () {
         });
     });
 
+
     describe('scope\'s addNewTopicToArticle() method', function () {
-        // TODO
+        var addToArticleDelay,
+            fakeNewTopic,
+            topicCreateDelay;
+
+        beforeEach(inject(function ($q) {
+            fakeNewTopic = {
+                id: 55,
+                title: 'New Topic',
+                parentId: 123
+            };
+
+            topicCreateDelay = $q.defer();
+            spyOn(Topic, 'create').andCallFake(function () {
+                return topicCreateDelay.promise;
+            });
+
+            addToArticleDelay = $q.defer();
+            spyOn(Topic, 'addToArticle').andCallFake(function () {
+                return addToArticleDelay.promise;
+            });
+        }));
+
+        it('sets addingNewTopic flag before doing anything', function () {
+            scope.addingNewTopic = false;
+            scope.addNewTopicToArticle({title: 'foo'});
+            expect(scope.addingNewTopic).toEqual(true);
+        });
+
+        it('tries to create a new topic with correct data (no parent topic)',
+            function () {
+                scope.addNewTopicToArticle({title: 'foo'});
+                expect(Topic.create).toHaveBeenCalledWith('foo', undefined);
+            }
+        );
+
+        it('tries to create a new topic with correct data (with parent topic)',
+            function () {
+                scope.addNewTopicToArticle({
+                    title: 'foo',
+                    parentTopic: {id: 17}
+                });
+                expect(Topic.create).toHaveBeenCalledWith('foo', 17);
+            }
+        );
+
+        it('tries to assign the newly created topic to article', function () {
+            scope.addNewTopicToArticle({title: 'New Topic'});
+            topicCreateDelay.resolve(fakeNewTopic);
+            scope.$digest();
+
+            expect(Topic.addToArticle).toHaveBeenCalledWith(
+                17, 'it', [fakeNewTopic]);
+        });
+
+        it('appends the new topic to assignedTopics list if topic\'s parent ' +
+            'is not present',
+            function () {
+                scope.assignedTopics = [{id: 2}, {id: 8}, {id: 4}];
+
+                scope.addNewTopicToArticle({
+                    title: 'New Topic',
+                    parentTopic: {id: 123}
+                });
+                topicCreateDelay.resolve(fakeNewTopic);
+                addToArticleDelay.resolve();
+                scope.$digest();
+
+                expect(scope.assignedTopics).toEqual(
+                    [{id: 2}, {id: 8}, {id: 4}, fakeNewTopic]
+                );
+            }
+        );
+
+        it('inserts the new topic into assignedTopics list immediately ' +
+            'after its parent if the parent is in the list',
+            function () {
+                scope.assignedTopics = [{id: 2}, {id: 123}, {id: 4}];
+
+                scope.addNewTopicToArticle({
+                    title: 'New Topic',
+                    parentTopic: {id: 123}
+                });
+                topicCreateDelay.resolve(fakeNewTopic);
+                addToArticleDelay.resolve();
+                scope.$digest();
+
+                expect(scope.assignedTopics).toEqual(
+                    [{id: 2}, {id: 123}, fakeNewTopic, {id: 4}]
+                );
+            }
+        );
+
+        it('clears the new topic form on successful assignment of the new ' +
+            'topic to article',
+            function () {
+                scope.newTopic = {title: 'New Topic', parentTopic: {id: 123}};
+
+                scope.addNewTopicToArticle({
+                    title: 'New Topic',
+                    parentTopic: {id: 123}
+                });
+                topicCreateDelay.resolve(fakeNewTopic);
+                addToArticleDelay.resolve();
+                scope.$digest();
+
+                expect(scope.newTopic).toEqual(
+                    {title: '', parentTopic: null}
+                );
+            }
+        );
+
+        it('clears the addingNewTopic flag on error', function () {
+            scope.addNewTopicToArticle({title: 'New Topic'});
+            scope.addingNewTopic = true;  // make sure it is indeed true
+            topicCreateDelay.reject();
+            scope.$digest();
+
+            expect(scope.addingNewTopic).toBe(false);
+        });
     });
+
 
     describe('scope\'s clearNewTopicForm() method', function () {
         it('clears all new topic form fields', function () {
@@ -96,6 +217,7 @@ describe('Controller: PaneTopicsCtrl', function () {
         });
     });
 
+
     describe('scope\'s clearSelectedTopics() method', function () {
         it('clears the selected topics list', function () {
             scope.selectedTopics = [
@@ -105,6 +227,7 @@ describe('Controller: PaneTopicsCtrl', function () {
             expect(scope.selectedTopics).toEqual([]);
         });
     });
+
 
     describe('scope\'s findTopics() method', function () {
         var deferredGetAll,

@@ -51,8 +51,7 @@ angular.module('authoringEnvironmentApp').controller('PaneTopicsCtrl', [
 
             Topic.create(
                 topicData.title,
-                (topicData.parentTopic !== null) ?
-                    topicData.parentTopic.id : undefined
+                topicData.parentTopic ? topicData.parentTopic.id : undefined
             )
             // TODO: add error if topic with the same name already exists
             // (error 409)
