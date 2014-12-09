@@ -19,10 +19,78 @@ angular.module('authoringEnvironmentApp').controller('PaneTopicsCtrl', [
         $scope.selectedTopics = [];
         $scope.assigningTopics = false;  // topic assignment in progress?
 
+        $scope.select2Options = {
+            minimumInputLength: 3,
+            query: Topic.liveSearchQuery
+        };
+
+        $scope.addingNewTopic = false;  // adding new topic in progress?
+
+        $scope.newTopic = {
+            title: '',
+            parentTopic: null
+        };
+
         // retrieve all topics assigned to the article
         $scope.assignedTopics = Topic.getAllByArticle(
             article.articleId, article.language
         );
+
+        /**
+        * Creates a new topic and then assigns it to the article.
+        *
+        * @method addNewTopicToArticle
+        * @param topicData {Object} object describing the new topic
+        *   @param topicData.title {String} topic's title
+        *   @param [topicData.parentTopic] {Object} parent topic
+        */
+        $scope.addNewTopicToArticle = function (topicData) {
+            var newTopic;
+
+            $scope.addingNewTopic = true;
+
+            Topic.create(
+                topicData.title,
+                (topicData.parentTopic !== null) ?
+                    topicData.parentTopic.id : undefined
+            )
+            // TODO: add error if topic with the same name already exists
+            // (error 409)
+            .then(function (topic) {
+                newTopic = topic;
+                return Topic.addToArticle(
+                    article.articleId, article.language, [newTopic]
+                );
+            }, $q.reject)
+            .then(function () {
+                var parentIdx = _.findIndex(
+                    $scope.assignedTopics, {id: newTopic.parentId}
+                );
+
+                // insert new topic right after its parent or at the end of
+                // array if parent is not present
+                if (parentIdx > -1) {
+                    $scope.assignedTopics.splice(parentIdx + 1, 0, newTopic);
+                } else {
+                    $scope.assignedTopics.push(newTopic);
+                }
+
+                $scope.clearNewTopicForm();
+            }, $q.reject)
+            .finally(function () {
+                $scope.addingNewTopic = false;
+            });
+        };
+
+        /**
+        * Resets all new topic form fields.
+        *
+        * @method clearNewTopicForm
+        */
+        $scope.clearNewTopicForm = function () {
+            $scope.newTopic.title = '';
+            $scope.newTopic.parentTopic = null;
+        };
 
         /**
         * Clears the list of currently selected topics.

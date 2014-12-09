@@ -17,24 +17,31 @@
       </button>
     </div>
 
-    <form name="addSnippet" class="body" ng-show="showAddNew">
+    <form name="addTopic" class="body" ng-show="showAddNew">
       <div class="input-name">Title</div>
-      <input name="snippetTitle" required
+      <input name="topicTitle" required
           class="editor-input"
           placeholder="Title"
-          ng-model="newSnippet.name">
+          ng-model="newTopic.title">
+
+      <input type="hidden" ui-select2="select2Options"
+        class="topicSearch"
+        ng-model="newTopic.parentTopic"
+        data-placeholder="-- select parent topic --"
+        ng-disabled="addingNewTopic"
+        />
+
       <div class="controls">
         <button
             class="btn btn-primary btn-sm pull-right"
-            data-test-button="new"
-            ng-click="addSnippet.$valid && addNewSnippetToArticle(newSnippet)"
-            ng-disabled="addingNewSnippet"
+            ng-click="addNewTopicToArticle(newTopic)"
+            ng-disabled="addTopic.$invalid || addingNewTopic"
             >Add</button>
         <button
             class="btn btn-default btn-sm pull-right"
-            ng-click="clearNewSnippetForm()"
-            ng-disabled="addingNewSnippet ||
-                        (!newSnippet.name && !newSnippet.template)"
+            ng-click="clearNewTopicForm()"
+            ng-disabled="addingNewTopic ||
+                        (!newTopic.title && !newTopic.parentTopic)"
             >Clear</button>
       </div>
     </form>
@@ -47,7 +54,7 @@
         <span class="glyphicon"
               ng-class="{'glyphicon-plus': !showAddExisting,
                          'glyphicon-minus': showAddExisting}"
-              ></span><span class="add-text">ADD EXISTING TOPIC</span>
+              ></span><span class="add-text">ADD EXISTING TOPIC(S)</span>
       </button>
     </div>
 

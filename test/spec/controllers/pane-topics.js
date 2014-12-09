@@ -46,9 +46,24 @@ describe('Controller: PaneTopicsCtrl', function () {
         expect(scope.assigningTopics).toBe(false);
     });
 
-
     it('initializes the assigningTopics flag in scope to false', function () {
         expect(scope.assigningTopics).toBe(false);
+    });
+
+    it('initializes options for the parent topic widget', function () {
+        expect(scope.select2Options).toEqual({
+            minimumInputLength: 3,
+            query: Topic.liveSearchQuery
+        });
+    });
+
+    it('initializes the new topic form\'s data to empty values', function () {
+        expect(scope.newTopic).toEqual({title: '', parentTopic: null});
+    });
+
+    // new topic object
+    it('initializes the addingNewTopic flag in scope to false', function () {
+        expect(scope.addingNewTopic).toBe(false);
     });
 
     describe('initialization of article topics in scope', function () {
@@ -63,6 +78,21 @@ describe('Controller: PaneTopicsCtrl', function () {
             expect(scope.assignedTopics).toEqual(
                 [{id: 1, title: 'foo'}, {id: 4, title: 'bar'}]
             );
+        });
+    });
+
+    describe('scope\'s addNewTopicToArticle() method', function () {
+        // TODO
+    });
+
+    describe('scope\'s clearNewTopicForm() method', function () {
+        it('clears all new topic form fields', function () {
+            scope.newTopic = {title: 'Economy', parentTopic: {id: 123}};
+
+            scope.clearNewTopicForm();
+
+            expect(scope.newTopic.title).toEqual('');
+            expect(scope.newTopic.parentTopic).toBe(null);
         });
     });
 

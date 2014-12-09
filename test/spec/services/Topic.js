@@ -431,6 +431,19 @@ describe('Factory: Topic', function () {
         var urlCreate,
             urlGet;  // contents of the x-location header
 
+        /**
+        * Helper function for verifying if Content-Type request header is
+        * correctly set.
+        *
+        * @function headersCheck
+        * @param headers {Object} request headers
+        * @return {Boolean} true if check passes, false otherwise
+        */
+        function headersCheck(headers) {
+            return headers['Content-Type'] ===
+                'application/x-www-form-urlencoded';
+        }
+
         beforeEach(function () {
             urlCreate = Routing.generate(
                 'newscoop_gimme_topics_createtopic', {}, true
@@ -441,10 +454,13 @@ describe('Factory: Topic', function () {
         it('sends correct request to API to create a topic ' +
             'with no parent topic',
             function () {
-                var expectedPostData = {'topic[title]': 'News'};
+                var expectedPostData = $.param({
+                    topic: {title: 'News'}
+                });
 
-                $httpBackend.expectPOST(urlCreate, expectedPostData)
-                    .respond(201, '', {'x-location': urlGet});
+                $httpBackend.expectPOST(
+                    urlCreate, expectedPostData, headersCheck
+                ).respond(201, '', {'x-location': urlGet});
 
                 Topic.create('News');
 
@@ -455,13 +471,13 @@ describe('Factory: Topic', function () {
         it('sends correct request to API to create a topic ' +
             'with a parent topic',
             function () {
-                var expectedPostData = {
-                    'topic[title]': 'News',
-                    'topic[parent]': 4
-                };
+                var expectedPostData = $.param({
+                    topic: {title: 'News', parent: 4}
+                });
 
-                $httpBackend.expectPOST(urlCreate, expectedPostData)
-                    .respond(201, '', {'x-location': urlGet});
+                $httpBackend.expectPOST(
+                    urlCreate, expectedPostData, headersCheck
+                ).respond(201, '', {'x-location': urlGet});
 
                 Topic.create('News', 4);
 

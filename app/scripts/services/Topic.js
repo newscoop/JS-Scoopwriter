@@ -11,7 +11,8 @@ angular.module('authoringEnvironmentApp').factory('Topic', [
     '$timeout',
     'dateFactory',
     'pageTracker',
-    function ($http, $q, $timeout, dateFactory, pageTracker) {
+    'transform',
+    function ($http, $q, $timeout, dateFactory, pageTracker, transform) {
         var SEARCH_DELAY_MS = 250,  // after the last search term change
             lastContext = null,  // most recent live search context
             lastTermChange = 0,  // time of the most recent search term change
@@ -199,20 +200,23 @@ angular.module('authoringEnvironmentApp').factory('Topic', [
         */
         Topic.create = function (title, parentId) {
             var deferredPost = $q.defer(),
-                requestData;
+                requestData = {topic: {}},
+                url;
 
-            requestData = {'topic[title]': title};
+            requestData.topic.title = title;
             if (typeof parentId !== 'undefined') {
-                requestData['topic[parent]'] = parentId;
+                requestData.topic.parent = parentId;
             }
 
+            url = Routing.generate(
+                'newscoop_gimme_topics_createtopic', {}, true
+            );
+
             $http.post(
-                Routing.generate(
-                    'newscoop_gimme_topics_createtopic', {}, true
-                ),
-                requestData
-            )
-            .then(function (response) {
+                url,
+                requestData,
+                {transformRequest: transform.formEncode}
+            ).then(function (response) {
                 var resourceUrl = response.headers('x-location');
                 return $http.get(resourceUrl);  // retrieve created topic
             }, $q.reject)
