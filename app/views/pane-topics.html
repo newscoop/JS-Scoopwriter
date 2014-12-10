@@ -24,6 +24,10 @@
           placeholder="Title"
           ng-model="newTopic.title">
 
+      <span class="error-msg" ng-show="addTopic.topicTitle.$error.duplicate">
+        A topic with the same name already exists.
+      </span>
+
       <input type="hidden" ui-select2="select2Options"
         class="topicSearch"
         ng-model="newTopic.parentTopic"

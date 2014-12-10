@@ -53,14 +53,19 @@ angular.module('authoringEnvironmentApp').controller('PaneTopicsCtrl', [
                 topicData.title,
                 topicData.parentTopic ? topicData.parentTopic.id : undefined
             )
-            // TODO: add error if topic with the same name already exists
-            // (error 409)
             .then(function (topic) {
                 newTopic = topic;
                 return Topic.addToArticle(
                     article.articleId, article.language, [newTopic]
                 );
-            }, $q.reject)
+            }, function (response) {
+                if (response.status === 409) {
+                    // failed due to a duplicate name
+                    $scope.addTopic.topicTitle.$setValidity(
+                        'duplicate', false);
+                }
+                return $q.reject(response);
+            })
             .then(function () {
                 var parentIdx = _.findIndex(
                     $scope.assignedTopics, {id: newTopic.parentId}
@@ -82,13 +87,14 @@ angular.module('authoringEnvironmentApp').controller('PaneTopicsCtrl', [
         };
 
         /**
-        * Resets all new topic form fields.
+        * Resets all new topic form fields and validation errors.
         *
         * @method clearNewTopicForm
         */
         $scope.clearNewTopicForm = function () {
             $scope.newTopic.title = '';
             $scope.newTopic.parentTopic = null;
+            $scope.addTopic.topicTitle.$setValidity('duplicate', true);
         };
 
         /**

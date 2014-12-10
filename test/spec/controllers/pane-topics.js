@@ -29,6 +29,13 @@ describe('Controller: PaneTopicsCtrl', function () {
         );
 
         scope = $rootScope.$new();
+
+        scope.addTopic = {
+            topicTitle: {
+                $setValidity: jasmine.createSpy()
+            }
+        };
+
         PaneTopicsCtrl = $controller('PaneTopicsCtrl', {
             $scope: scope,
             article: articleService,
@@ -129,6 +136,18 @@ describe('Controller: PaneTopicsCtrl', function () {
             }
         );
 
+        it('sets the topicTitle form field to invalid if the topic name ' +
+            'already exists',
+            function () {
+                scope.addNewTopicToArticle({title: 'Already exists'});
+                topicCreateDelay.reject({status: 409});
+                scope.$digest();
+
+                expect(scope.addTopic.topicTitle.$setValidity)
+                    .toHaveBeenCalledWith('duplicate', false);
+            }
+        );
+
         it('tries to assign the newly created topic to article', function () {
             scope.addNewTopicToArticle({title: 'New Topic'});
             topicCreateDelay.resolve(fakeNewTopic);
@@ -198,7 +217,7 @@ describe('Controller: PaneTopicsCtrl', function () {
         it('clears the addingNewTopic flag on error', function () {
             scope.addNewTopicToArticle({title: 'New Topic'});
             scope.addingNewTopic = true;  // make sure it is indeed true
-            topicCreateDelay.reject();
+            topicCreateDelay.reject({status: 500});
             scope.$digest();
 
             expect(scope.addingNewTopic).toBe(false);
@@ -214,6 +233,12 @@ describe('Controller: PaneTopicsCtrl', function () {
 
             expect(scope.newTopic.title).toEqual('');
             expect(scope.newTopic.parentTopic).toBe(null);
+        });
+
+        it('resets duplicate topic title error', function () {
+            scope.clearNewTopicForm();
+            expect(scope.addTopic.topicTitle.$setValidity)
+                .toHaveBeenCalledWith('duplicate', true);
         });
     });
 

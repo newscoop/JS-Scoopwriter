@@ -3115,6 +3115,7 @@ a:hover {
             overflow: visible;
             background-color: @add-element-gray;
             margin: 10px 0;
+
             .heading {
                 padding: 0px;
                 button {
@@ -3135,6 +3136,14 @@ a:hover {
             }
             .body {
                 overflow: visible;
+                &.ng-invalid-duplicate {
+                    input {
+                        border: 1px solid red;
+                    }
+                    span.error-msg {
+                        color: red;
+                    }
+                }
             }
         }
 
