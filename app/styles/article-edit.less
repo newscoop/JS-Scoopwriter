@@ -3197,7 +3197,7 @@ a:hover {
             position: absolute;
             top: 300px;
             right: 12px;
-            bottom: 0;
+            bottom: 18px;
             left: 12px;
             overflow: auto;
             padding: 0;
@@ -3206,7 +3206,7 @@ a:hover {
             &::-webkit-scrollbar-thumb:hover { background: #6e6e6e; border-left: 6px solid rgba(0,0,0,0);background-clip: padding-box; }
             .panel {
                 position: relative;
-                padding: 10px 12px;
+                padding: 8px 25px 8px 12px;
                 background: #fff;
                 border: 1px solid #e0e0e0;
                 margin-bottom: 8px;
@@ -3216,18 +3216,31 @@ a:hover {
                 -webkit-border-radius: 3px;
                 -moz-border-radius: 3px;
                 border-radius: 3px;
+                word-break: break-all;
                 &:hover {
                     border: 1px solid #ccc;
                 }
                 .unassign {
                     position: absolute;
-                    top: 10px;
+                    top: 8px;
                     right: 9px;
                     cursor: pointer;
                     color: gainsboro;
                     &:hover {
                         color:gray;
                     }
+                }
+                &.level-1 {
+                    margin-left: 15px;
+                }
+                &.level-2 {
+                    margin-left: 30px;
+                }
+                &.level-3 {
+                    margin-left: 45px;
+                }
+                &.level-4 {
+                    margin-left: 60px;
                 }
             }
         }
