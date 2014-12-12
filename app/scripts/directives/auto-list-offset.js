@@ -57,3 +57,54 @@ angular.module('authoringEnvironmentApp').directive('autoListOffset', [
         };
     }
 ]);
+
+/* Topics pane automatic offset */
+angular.module('authoringEnvironmentApp').directive('autoListOffsetTopics', [
+    function () {
+        return {
+            restrict: 'A',
+            link: function postLink(scope, $element, attrs) {
+                var baseOffsetY = 125,  // base offset (without from height)
+                    initialOffsetY = 195,  // initial offset at pane load
+                    firstAdjustment = true,
+                    $formBox,
+                    $list;
+
+                $formBox = $element.find('.addTopicWrapper');
+                $list = $element.find('.list');
+
+                /**
+                * Sets the item list's offset from the top to avoid overlapping
+                * with the "add new" form.
+                *
+                * @function adjustOffset
+                */
+                function adjustOffset() {
+                    var offsetY = Math.round($formBox.outerHeight());
+
+                    if (offsetY === 0) {
+                        // happens when pane gets closed - don't do anything,
+                        // instead just preserve the current offset
+                        return;
+                    }
+
+                    if (firstAdjustment) {  // pane opened for the first time
+                        offsetY = initialOffsetY;
+                        firstAdjustment = false;
+                    } else {
+                        offsetY += baseOffsetY;
+                    }
+
+                    $list.css('top', offsetY);
+                }
+
+                // watch for height changes and react accordingly
+                $formBox.mutate('height', function (element, info) {
+                    adjustOffset();
+                });
+
+                adjustOffset();
+            }
+        };
+    }
+]);

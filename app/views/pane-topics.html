@@ -1,11 +1,13 @@
 <section
     ng-controller="PaneTopicsCtrl"
-    class="tabcontent topics-panel">
+    class="tabcontent topics-panel"
+    auto-list-offset-topics>
 
   <div class="panel-title">
     Topics
   </div>
 
+  <div class="addTopicWrapper">
   <div class="add-element" ng-class="{expanded: showAddNew}">
     <div class="heading">
       <button class="btn btn-sf-invisible"
@@ -89,7 +91,7 @@
     </div>
 
   </div>
-
+</div>
 
   <div class="assigned-title">Assigned Topics</div>
 

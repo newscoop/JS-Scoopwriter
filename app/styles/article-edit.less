@@ -3115,6 +3115,9 @@ a:hover {
             overflow: visible;
             background-color: @add-element-gray;
             margin: 10px 0;
+            &:last-child {
+                margin: 10px 0 20px 0;
+            }
             .heading {
                 padding: 0px;
                 button {
@@ -3229,18 +3232,6 @@ a:hover {
                     &:hover {
                         color:gray;
                     }
-                }
-                &.level-1 {
-                    margin-left: 15px;
-                }
-                &.level-2 {
-                    margin-left: 30px;
-                }
-                &.level-3 {
-                    margin-left: 45px;
-                }
-                &.level-4 {
-                    margin-left: 60px;
                 }
             }
         }
