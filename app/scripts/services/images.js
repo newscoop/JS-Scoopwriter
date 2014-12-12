@@ -8,13 +8,12 @@ angular.module('authoringEnvironmentApp').service('images', [
     'formDataFactory',
     'imageFactory',
     'NcImage',
-    '$upload',
     '$rootScope',
     '$q',
     function images(
         pageTracker, configuration, $log, articleService,
         getFileReader, formDataFactory, imageFactory, NcImage,
-        $upload, $rootScope, $q
+        $rootScope, $q
     ) {
         var loadAttachedDeferred,
             self = this,
@@ -406,7 +405,7 @@ angular.module('authoringEnvironmentApp').service('images', [
                 promiseList = [];
 
             self.images2upload.forEach(function (image) {
-                uploadPromise = image.startUpload();
+                uploadPromise = NcImage.upload(image, image.progressCallback);
                 promiseList.push(uploadPromise);
             });
 
@@ -425,13 +424,6 @@ angular.module('authoringEnvironmentApp').service('images', [
             /**
             * @class image
             */
-            /**
-            * Whether or not the image has been already uploaded to the server.
-            * @property isUploaded
-            * @type Boolean
-            * @default false
-            */
-            image.isUploaded = false;
 
             /**
             * The number of bytes already sent to the server. Relevant for
@@ -474,70 +466,6 @@ angular.module('authoringEnvironmentApp').service('images', [
                 image.max = event.total;
                 image.percent =
                     Math.round((event.loaded / event.total) * 100) + '%';
-            };
-
-            /**
-            * Starts an asynchronous upload of the image to the server and
-            * stores the image ID once the upload has been successfully
-            * completed.
-            *
-            * @method startUpload
-            * @return {Object} file upload promise
-            */
-            image.startUpload = function () {
-                var deferred = $q.defer(),
-                    fd = formDataFactory.makeInstance(),
-                    imageObj = this,
-                    parts,
-                    rejectMsg = 'No x-location header in API response.';
-
-                fd.append('image[image]', imageObj);
-                fd.append(
-                    'image[photographer]', imageObj.photographer || '');
-                fd.append(
-                    'image[description]', imageObj.description || '');
-
-                // XXX: wrap this into NcImage (e.g. NcImage.create())
-                $upload.http({
-                    method: 'POST',
-                    url: Routing.generate(
-                        'newscoop_gimme_images_createimage', {}, true),
-                    data: fd,
-                    headers: {'Content-Type': undefined},
-                    transformRequest: angular.identity
-                })
-                .progress(
-                    image.progressCallback
-                )
-                .success(function (data, status, headers, config) {
-                    var imgUrl;
-
-                    image.progressCallback({
-                        loaded: 100,
-                        total:  100
-                    });
-
-                    image.isUploaded = true;
-
-                    imgUrl = headers()['x-location'];
-                    if (imgUrl) {
-                        parts = imgUrl.split('/');
-                        image.id = parseInt(parts[parts.length - 1], 10);
-                        deferred.resolve({
-                            id: image.id,
-                            url: imgUrl
-                        });
-                    } else {
-                        // most likely an API bug
-                        console.warn(rejectMsg);
-                        deferred.reject(rejectMsg);
-                    }
-                })
-                .error(function () {
-                    deferred.reject('error uploading');
-                });
-
-                return deferred.promise;
             };
 
             /**

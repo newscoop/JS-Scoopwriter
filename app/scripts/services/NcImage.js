@@ -11,7 +11,9 @@
 angular.module('authoringEnvironmentApp').factory('NcImage', [
     '$http',
     '$q',
-    function ($http, $q) {
+    '$upload',
+    'formDataFactory',
+    function ($http, $q, $upload, formDataFactory) {
         var NcImage;
 
         /**
@@ -218,6 +220,83 @@ angular.module('authoringEnvironmentApp').factory('NcImage', [
             })
             .error(function (responseBody) {
                 deferred.reject(responseBody);
+            });
+
+            return deferred.promise;
+        };
+
+        /**
+        * Starts an asynchronous upload of an image to the server and
+        * resolves given promise with image's ID and URL once the upload
+        * has been successfully completed.
+        *
+        * @method upload
+        * @param image {Object} image File object containing extra properties
+        *   @param [image.photographer=''] {String} image photographer's name
+        *   @param [image.description=''] {String} image description
+        * @param [onProgress] {Function} callback invoked on upload progress
+        *   notifications
+        *
+        * @return {Object} file upload promise
+        */
+        NcImage.upload = function (image, onProgress) {
+            var deferred = $q.defer(),
+                fd = formDataFactory.makeInstance(),
+                parts,
+                rejectMsg = 'No x-location header in API response.';
+
+            if (typeof onProgress !== 'function') {
+                onProgress = function () {};  // just a dummy function
+            }
+
+            fd.append('image[image]', image);
+            fd.append(
+                'image[photographer]', image.photographer || '');
+            fd.append(
+                'image[description]', image.description || '');
+
+            $upload.http({
+                method: 'POST',
+                url: Routing.generate(
+                    'newscoop_gimme_images_createimage', {}, true),
+                data: fd,
+                // override angular's default of application/json;
+                // also, if set to undefined, the browser will set it to
+                // multipart/form-data with a correct boundary parameter
+                // of the request
+                headers: {'Content-Type': undefined},
+                // by default, angular tries to serialize request data object
+                // into JSON, tell it not to do that here
+                transformRequest: angular.identity
+            })
+            .progress(
+                onProgress
+            )
+            .success(function (data, status, headers, config) {
+                var imgId,
+                    imgUrl;
+
+                onProgress({
+                    loaded: 100,
+                    total:  100
+                });
+
+                imgUrl = headers()['x-location'];
+                if (imgUrl) {
+                    parts = imgUrl.split('/');
+                    imgId = parseInt(parts[parts.length - 1], 10);
+                    deferred.resolve({
+                        id: imgId,
+                        url: imgUrl
+                    });
+                } else {
+                    // most likely an API bug
+                    console.warn(rejectMsg);
+                    deferred.reject(rejectMsg);
+                }
+            })
+            .error(function () {
+                deferred.reject('error uploading');
             });
 
             return deferred.promise;

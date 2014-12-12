@@ -296,6 +296,7 @@ describe('Factory: NcImage', function () {
         });
     });
 
+
    describe('getAllByArticle() method', function () {
         var images,
             url;
@@ -475,6 +476,165 @@ describe('Factory: NcImage', function () {
             $httpBackend.flush(1);
 
             expect(onErrorSpy).toHaveBeenCalledWith('Error :(');
+        });
+    });
+
+
+    describe('startUpload() method', function () {
+        var expectedPostData,
+            headersCheck,
+            imageObj,
+            postDataCheck,
+            url;
+
+        beforeEach(inject(function (formDataFactory) {
+            var imgContents = [
+                '\x47\x49\x46\x38\x39\x61\x01\x00\x01\x00\x00\x00\x00\x21' +
+                '\xF9\x04\x01\x0A\x00\x01\x00\x2C\x00\x00\x00\x00\x01\x00' +
+                '\x01\x00\x00\x02\x02\x4C\x01\x00\x3B'
+            ];  // a small 1x1 transparent GIF
+
+            imageObj = new Blob(imgContents, {type : 'image/gif'});
+            imageObj.photographer = 'John Doe';
+            imageObj.description = 'image description';
+
+            expectedPostData = formDataFactory.makeInstance();
+            expectedPostData.dict = {
+                'image[image]': imageObj,
+                'image[photographer]': 'John Doe',
+                'image[description]': 'image description'
+            };
+
+            spyOn(formDataFactory, 'makeInstance').andCallFake(
+                // factory should return a fake FormData object that we
+                // can actually inspect in tests (built-in FormData is not
+                // inspectable - browser security constraint)
+                function () {
+                    var dict = {};
+                    return {
+                        append: function (key, value) {
+                            dict[key] = value;
+                        },
+                        dict: dict
+                    };
+                }
+            );
+
+            headersCheck = function (headers) {
+                // when uploading files we need to set Content-Type header
+                // to undefined (overriding Angular's default of
+                // application/json).
+                return typeof headers['Content-Type'] === 'undefined';
+            };
+
+            postDataCheck = function (data) {
+                return angular.equals(data, expectedPostData);
+            };
+
+            url = Routing.generate(
+                'newscoop_gimme_images_createimage', {}, true);
+
+            $httpBackend.expectPOST(url, postDataCheck, headersCheck)
+            .respond(
+                201, null,
+                {'X-Location' : 'http://foo.com/images/4321'},
+                'Created'
+            );
+        }));  // end beforeEach
+
+        afterEach(function () {
+            $httpBackend.verifyNoOutstandingExpectation();
+        });
+
+        it('sends correct API request', function () {
+            NcImage.upload(imageObj);
+            // test will fail if http expectation is not fulfilled
+            // (= misformed POST request sent)
+        });
+
+        it('converts undefined values to empty strings', function () {
+            expectedPostData.dict['image[photographer]'] = '';
+            expectedPostData.dict['image[description]'] = '';
+
+            $httpBackend.resetExpectations();
+            $httpBackend.expectPOST(url, postDataCheck, headersCheck)
+            .respond(
+                201, null,
+                {'X-Location' : 'http://foo.com/images/4321'},
+                'Created'
+            );
+
+            imageObj.photographer = undefined;
+            imageObj.description = undefined;
+            NcImage.upload(imageObj);
+            // test will fail if http expectation is not fulfilled
+            // (= misformed POST request sent)
+        });
+
+        it('resolves upload promise with correct data', function () {
+            var promise = NcImage.upload(imageObj);
+
+            promise.then(function (data) {
+                expect(data).toEqual({
+                    id: 4321,
+                    url: 'http://foo.com/images/4321'
+                });
+            });
+
+            $httpBackend.flush(1);
+        });
+
+        // XXX: how to properly test progress callbacks?
+        // This test passes only because onProgress is manually called when
+        // the upload has been completed
+        it('calls the provided progress callback (if given)', function () {
+            var onProgressSpy = jasmine.createSpy(),
+                promise;
+
+            promise = NcImage.upload(imageObj, onProgressSpy);
+            $httpBackend.flush(1);
+
+            expect(onProgressSpy).toHaveBeenCalled();
+        });
+
+        it('rejects given upload promise if API' +
+           'returns no x-location header in response',
+            function () {
+                var url = Routing.generate(
+                    'newscoop_gimme_images_createimage', {}, true
+                );
+
+                $httpBackend.resetExpectations();
+                $httpBackend.expectPOST(url)
+                    .respond(201, null, {}, 'Created');
+
+                NcImage.upload(imageObj).then(function () {
+                    // success should not happen, fail the test
+                    expect(true).toEqual(false);
+                }, function (reason) {
+                    expect(reason.indexOf('x-location header'))
+                        .toBeGreaterThan(-1);
+                });
+
+                $httpBackend.flush(1);
+        });
+
+        it('rejects given upload promise on API error', function () {
+            var url = Routing.generate(
+                'newscoop_gimme_images_createimage', {}, true
+            );
+
+            $httpBackend.resetExpectations();
+            $httpBackend.expectPOST(url).respond(500);
+
+            NcImage.upload(imageObj).then(function () {
+                // success should not happen, fail the test
+                expect(true).toEqual(false);
+            }, function (reason) {
+                expect(reason).toEqual('error uploading');
+            });
+
+            $httpBackend.flush(1);
         });
     });
 
