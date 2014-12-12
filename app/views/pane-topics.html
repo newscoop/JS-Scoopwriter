@@ -97,7 +97,7 @@
     <div
        ng-repeat="topic in assignedTopics"
        class="panel panel-default" ng-class="level-{{::topic.level}}">
-       {{::topic.title}}
+       {{::topic.path}}
       <div class="unassign" ng-click="confirmUnassignTopic(topic)">
         <span class="glyphicon glyphicon-remove" title="Unassign topic"></span>
       </div>

@@ -27,6 +27,7 @@ describe('Factory: Topic', function () {
             data = {
                 id: '12',
                 title: 'Sports',
+                path: ' / Sports',
                 parent: '4',
                 level: '0',
                 order: '1'
@@ -43,6 +44,7 @@ describe('Factory: Topic', function () {
                 var instance = Topic.createFromApiData(data);
                 expect(instance.id).toEqual(12);
                 expect(instance.title).toEqual('Sports');
+                expect(instance.path).toEqual(' / Sports');
                 expect(instance.parentId).toEqual(4);
                 expect(instance.level).toEqual(0);
                 expect(instance.order).toEqual(1);

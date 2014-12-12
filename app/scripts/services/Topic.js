@@ -30,6 +30,7 @@ angular.module('authoringEnvironmentApp').factory('Topic', [
 
             topic.id = parseInt(data.id);
             topic.title = data.title;
+            topic.path = data.path;
             topic.parentId = parseInt(data.parent);
             topic.level = parseInt(data.level);
             topic.order = parseInt(data.order);
