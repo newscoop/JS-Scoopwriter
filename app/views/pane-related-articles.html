@@ -6,7 +6,7 @@
         Related Articles
     </div>
     
-    <div ng-show="showArticlePreview">
+    <div ng-hide="showArticlePreview">
         <div class="add-element" ng-class="{expanded: showAddFilter}">
             <div class="heading">
                 <button class="btn btn-sf-invisible"
@@ -99,7 +99,7 @@
         </div><!-- end wrapper -->
     </div>
 
-    <div ng-hide="showArticlePreview" class="article-preview">
+    <div ng-show="showArticlePreview" class="article-preview">
             <div class="header">
                 <div class="btn-group">
                     <button class="btn btn-default btn-xs"
