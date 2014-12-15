@@ -1,5 +1,5 @@
 <section
-    ng-controller="PaneTopicsCtrl"
+    ng-controller="PaneRelatedArticlesCtrl"
     class="tabcontent">
 
     <div class="panel-title">
@@ -34,17 +34,13 @@
                     <option value="option3">Option3</option>
                     <option value="option4">Option4</option>
                 </select>
-                <select>
+                <select ng-model="filterSection" ng-options="section.title for section in availableSections">
                     <option value="" class="">-- Section --</option>
-                    <option value="option1">Option1</option>
-                    <option value="option2">Option2</option>
-                    <option value="option3">Option3</option>
-                    <option value="option4">Option4</option>
                 </select>
                 <div class="input-group">
-                    <input type="text" class="editor-input" placeholder="Search">
+                    <input type="text" class="editor-input" ng-model="query" placeholder="Search">
                     <span class="input-group-btn">
-                        <button class="btn btn-primary btn-sm" type="button">Filter</button>
+                        <button ng-click="findRelatedArticles(query)" class="btn btn-primary btn-sm" type="button">Filter</button>
                     </span>
                 </div>
             </div>
@@ -58,99 +54,47 @@
                 <!-- pinned -->
                 <div class="group">
                     <div class="title">Pinned articles</div>
-
-                    <div class="related-article pinned">
+                    <div ng-repeat="article in assignedRelatedArticles"
+                        class="related-article pinned">
                         <div class="drag-bar"></div>
                         <div
                             class="remove"
                             title="Remove"
-                            ng-click=""
+                            ng-click="confirmUnassignRelatedArticle(article)"
                             >
                             <span class="glyphicon glyphicon-remove"></span>
                         </div>                
                         <div class="article-metadata">
-                            <span class="date">01.03.2012 at 22:15:06</span>
-                            <span class="status new">New</span>
+                            <span class="date">{{article.published| date:"dd.MM.yyyy 'at' H:mm:ss"}}</span>
+                            <span class="status new" ng-bind="article.status"></span>
                         </div>
                         <div class="article-title">
-                            <a href="#" target="_blank">Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu.</a>
+                            <a ng-click="previewRelatedArticle(article)" ng-bind="article.title"></a>
                         </div>
                     </div>
-                    <div class="related-article pinned">
-                        <div class="drag-bar"></div>
-                        <div
-                            class="remove"
-                            title="Remove"
-                            ng-click=""
-                            >
-                            <span class="glyphicon glyphicon-remove"></span>
-                        </div>
-                        <div class="article-metadata">
-                            <span class="date">01.03.2012 at 22:15:06</span>
-                            <span class="status submitted">Submitted</span>
-                        </div>
-                        <div class="article-title">
-                            <a href="#" target="_blank">Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium,</a>
-                        </div>
-                    </div>
+
                 </div><!-- end pinned -->
 
                 <!-- search results -->
                 <div class="group">
                     <div class="title">Search results</div>
-                    <div class="related-article">
-                        <button class="btn btn-default btn-xs pin" title="Pin article">
+                    <div ng-repeat="article in availableRelatedArticles"
+                        class="related-article">
+                        <button 
+                            class="btn btn-default btn-xs pin" 
+                            ng-disabled="assigningRelatedArticles"
+                            title="Pin article">
                             <i class="fa fa-thumb-tack"></i>
                         </button>
                         <div class="article-metadata">
-                            <span class="date">01.03.2012 at 22:15:06</span>
-                            <span class="status published">Published</span>
+                            <span class="date">{{article.published| date:"dd.MM.yyyy 'at' H:mm:ss"}}</span>
+                            <span class="status published" ng-bind="article.status"></span>
                         </div>
                         <div class="article-title">
-                            <a href="#" target="_blank">Lorem ipsum dolor sit amet, consectetuer adipiscing elit.</a>
-                        </div>
-                    </div>
-                    <div class="related-article">
-                        <button class="btn btn-default btn-xs pin" title="Pin article">
-                            <i class="fa fa-thumb-tack"></i>
-                        </button>
-                        <div class="article-metadata">
-                            <span class="date">01.03.2012 at 22:15:06</span>
-                            <span class="status published">Published</span>
-                        </div>
-                        <div class="article-title">
-                            <a href="#" target="_blank">Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit</a>
-                        </div>
-                    </div>
-                    <div class="related-article">
-                        <button class="btn btn-default btn-xs pin" title="Pin article">
-                            <i class="fa fa-thumb-tack"></i>
-                        </button>
-                        <div class="article-metadata">
-                            <span class="date">01.03.2012 at 22:15:06</span>
-                            <span class="status new">New</span>
-                        </div>
-                        <div class="article-title">
-                            <a href="#" target="_blank">Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu.</a>
-                        </div>
-                    </div>
-                    <div class="related-article">
-                        <button class="btn btn-default btn-xs pin" title="Pin article">
-                            <i class="fa fa-thumb-tack"></i>
-                        </button>
-                        <div class="article-metadata">
-                            <span class="date">01.03.2012 at 22:15:06</span>
-                            <span class="status submitted">Submitted</span>
-                        </div>
-                        <div class="article-title">
-                            <a href="#" target="_blank">Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium,</a>
+                            <a  ng-click="previewRelatedArticle(article)" ng-bind="article.title"></a>
                         </div>
                     </div>
                 </div><!-- end search results -->
-                <button class="btn btn-default"
-                  ng-click="showArticlePreview = !showArticlePreview">
-                  Preview
-                </button>
             </div><!-- end list -->
         </div><!-- end wrapper -->
     </div>
@@ -170,14 +114,12 @@
                 </div>
             </div>
             <div class="content">
-                <div class="preview-dateline">01.03.2012 at 22:15:06</div>
-                <div class="preview-title">Mit dem Fasnachtsfotiautomaten durch die Nacht und den Tag</div>
-                <div class="preview-lead">Auch in der dritten Fasnachtsnacht habe ich alle und alles fotografiert, die mir vor die Linse gekommen sind. Die besten Bilder zum Durchklicken. Save</div>
+                <div class="preview-dateline">{{relatedArticlePreview.published| date:"dd.MM.yyyy 'at' H:mm:ss"}}</div>
+                <div class="preview-title" ng-bind-html"relatedArticlePreview.title"></div>
+                <div class="preview-lead" ng-bind-html="relatedArticlePreview.lead"></div>
                 <div class="preview-body">
-                    <p>Vivamus elementum semper nisi. Aenean vulputate eleifend tellus.</p>
-                    <p><img src="images/Sourcecamp-656.jpg" /></p>
-                    <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius laoreet.</p>
-                    <p>Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing sem neque sed ipsum. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem. Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Donec sodales sagittis magna. Sed consequat, leo eget bibendum sodales, augue velit cursus nunc,</p>
+                    <p><img ng-src="http://{{relatedArticlePreview.image}}" /></p>
+                    <p ng-bind-html="relatedArticlePreview.body"></p>
                 </div>
             </div>          
     </div>
