@@ -17,7 +17,6 @@ angular.module('authoringEnvironmentApp').controller('PaneRelatedArticlesCtrl', 
             availableRelatedArticles = [],   // all existing relatedArticles to choose from
             relatedArticleListRetrieved = false;  // avilableRelatedArticles initialized yet?
 
-        $scope.selectedRelatedArticles = [];
         $scope.assigningRelatedArticles = false;  // relatedArticle assignment in progress?
 
         // load filter selects
@@ -40,17 +39,6 @@ angular.module('authoringEnvironmentApp').controller('PaneRelatedArticlesCtrl', 
         }
 
         /**
-        * Clears the list of currently selected relatedArticles.
-        *
-        * @method clearSelectedRelatedArticles
-        */
-        $scope.clearSelectedRelatedArticles = function () {
-            while ($scope.selectedRelatedArticles.length > 0) {
-                $scope.selectedRelatedArticles.pop();
-            }
-        };
-
-        /**
         * Finds a list of relatedArticles that can be assigned to the article based on
         * the search query. RelatedArticles that are already selected or assigned to
         * the article are excluded from search results.
@@ -65,10 +53,7 @@ angular.module('authoringEnvironmentApp').controller('PaneRelatedArticlesCtrl', 
                 filtered;
 
             // build a list of relatedArticle IDs to exclude from results (i.e. relatedArticles
-            // that are already selected and/or assigned to the article)
-            $scope.selectedRelatedArticles.forEach(function (article) {
-                ignored[article.number] = true;
-            });
+            // that are already assigned to the article)
             $scope.assignedRelatedArticles.forEach(function (article) {
                 ignored[article.number] = true;
             });
