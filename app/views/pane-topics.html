@@ -1,92 +1,105 @@
 <section
     ng-controller="PaneTopicsCtrl"
-    class="tabcontent topics-panel">
+    class="tabcontent topics-pane"
+    auto-list-offset="200">
 
   <div class="panel-title">
     Topics
   </div>
 
-  <div class="add-element" ng-class="{expanded: showAddNew}">
-    <div class="heading">
-      <button class="btn btn-sf-invisible"
-              ng-click="showAddNew = !showAddNew">
-        <span class="glyphicon"
-              ng-class="{'glyphicon-plus': !showAddNew,
-                         'glyphicon-minus': showAddNew}"
-              ></span><span class="add-text">ADD NEW TOPIC</span>
-      </button>
-    </div>
-
-    <form name="addSnippet" class="body" ng-show="showAddNew">
-      <div class="input-name">Title</div>
-      <input name="snippetTitle" required
-          class="editor-input"
-          placeholder="Title"
-          ng-model="newSnippet.name">
-      <div class="controls">
-        <button
-            class="btn btn-primary btn-sm pull-right"
-            data-test-button="new"
-            ng-click="addSnippet.$valid && addNewSnippetToArticle(newSnippet)"
-            ng-disabled="addingNewSnippet"
-            >Add</button>
-        <button
-            class="btn btn-default btn-sm pull-right"
-            ng-click="clearNewSnippetForm()"
-            ng-disabled="addingNewSnippet ||
-                        (!newSnippet.name && !newSnippet.template)"
-            >Clear</button>
+  <div class="paneFormWrapper">
+    <div class="add-element" ng-class="{expanded: showAddNew}">
+      <div class="heading">
+        <button class="btn btn-sf-invisible"
+                ng-click="showAddNew = !showAddNew">
+          <span class="glyphicon"
+                ng-class="{'glyphicon-plus': !showAddNew,
+                           'glyphicon-minus': showAddNew}"
+                ></span><span class="add-text">ADD NEW TOPIC</span>
+        </button>
       </div>
-    </form>
-  </div>
 
-  <div class="add-element" ng-class="{expanded: showAddExisting}">
-    <div class="heading">
-      <button class="btn btn-sf-invisible"
-              ng-click="showAddExisting = !showAddExisting">
-        <span class="glyphicon"
-              ng-class="{'glyphicon-plus': !showAddExisting,
-                         'glyphicon-minus': showAddExisting}"
-              ></span><span class="add-text">ADD EXISTING TOPIC</span>
-      </button>
+      <form name="addTopic" class="body" ng-show="showAddNew">
+        <div class="input-name">Title</div>
+        <input name="topicTitle" required
+            class="editor-input"
+            placeholder="Title"
+            ng-model="newTopic.title">
+
+        <span class="error-msg" ng-show="addTopic.topicTitle.$error.duplicate">
+          A topic with the same name already exists.
+        </span>
+
+        <input type="hidden" ui-select2="select2Options"
+          class="topicSearch"
+          ng-model="newTopic.parentTopic"
+          data-placeholder="-- select parent topic --"
+          ng-disabled="addingNewTopic"
+          />
+
+        <div class="controls">
+          <button
+              class="btn btn-primary btn-sm pull-right"
+              ng-click="addNewTopicToArticle(newTopic)"
+              ng-disabled="addTopic.$invalid || addingNewTopic"
+              >Add</button>
+          <button
+              class="btn btn-default btn-sm pull-right"
+              ng-click="clearNewTopicForm()"
+              ng-disabled="addingNewTopic ||
+                          (!newTopic.title && !newTopic.parentTopic)"
+              >Clear</button>
+        </div>
+      </form>
     </div>
 
-    <div class="body" ng-show="showAddExisting">
-      <tags-input
-          class="ti-input-sm"
-          ng-model="selectedTopics"
-          display-property="title"
-          placeholder="Topic name"
-          add-from-autocomplete-only="true">
-        <auto-complete
-            source="findTopics($query)"
-            debounce-delay="250"></auto-complete>
-      </tags-input>
+    <div class="add-element" ng-class="{expanded: showAddExisting}">
+      <div class="heading">
+        <button class="btn btn-sf-invisible"
+                ng-click="showAddExisting = !showAddExisting">
+          <span class="glyphicon"
+                ng-class="{'glyphicon-plus': !showAddExisting,
+                           'glyphicon-minus': showAddExisting}"
+                ></span><span class="add-text">ADD EXISTING TOPIC(S)</span>
+        </button>
+      </div>
 
-      <div class="controls">
-        <button
-            class="btn btn-primary btn-sm pull-right"
-            ng-disabled="assigningTopics || selectedTopics.length < 1"
-            ng-click="assignSelectedToArticle()"
-            >Add</button>
-        <button
-            class="btn btn-default btn-sm pull-right"
-            ng-disabled="assigningTopics || selectedTopics.length < 1"
-            ng-click="clearSelectedTopics()"
-            >Clear</button>
+      <div class="body" ng-show="showAddExisting">
+        <tags-input
+            class="ti-input-sm"
+            ng-model="selectedTopics"
+            display-property="title"
+            placeholder="Topic name"
+            add-from-autocomplete-only="true">
+          <auto-complete
+              source="findTopics($query)"
+              debounce-delay="250"></auto-complete>
+        </tags-input>
+
+        <div class="controls">
+          <button
+              class="btn btn-primary btn-sm pull-right"
+              ng-disabled="assigningTopics || selectedTopics.length < 1"
+              ng-click="assignSelectedToArticle()"
+              >Add</button>
+          <button
+              class="btn btn-default btn-sm pull-right"
+              ng-disabled="assigningTopics || selectedTopics.length < 1"
+              ng-click="clearSelectedTopics()"
+              >Clear</button>
+        </div>
       </div>
     </div>
 
   </div>
-
 
   <div class="assigned-title">Assigned Topics</div>
 
   <div class="list">
     <div
        ng-repeat="topic in assignedTopics"
-       class="panel panel-default">
-       {{topic.title}}
+       class="panel panel-default" ng-class=" 'level-{{topic.level}}' ">
+       {{::topic.path}}
       <div class="unassign" ng-click="confirmUnassignTopic(topic)">
         <span class="glyphicon glyphicon-remove" title="Unassign topic"></span>
       </div>
