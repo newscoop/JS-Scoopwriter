@@ -931,23 +931,34 @@ describe('Service: Images', function () {
             img_3;
 
         beforeEach(function () {
-            img_1 = angular.copy(mock.items[4]);
-            img_2 = angular.copy(mock.items[6]);
-            img_3 = angular.copy(mock.items[7]);
+            img_1 = angular.copy(mock.items[4]);  // id === 5
+            img_2 = angular.copy(mock.items[6]);  // id === 7
+            img_3 = angular.copy(mock.items[7]);  // id === 8
+
+            img_1.progressCallback = jasmine.createSpy('callback 1');
+            img_2.progressCallback = jasmine.createSpy('callback 2');
+            img_3.progressCallback = jasmine.createSpy('callback 3');
 
             images.images2upload = [img_1, img_2, img_3];
-            images.images2upload.forEach(function (img) {
-                img.startUpload = jasmine.createSpy().andCallFake(function () {
-                    return {promiseOf: img.id};  // fake promise object
-                });
+
+            spyOn(NcImage, 'upload').andCallFake(function (image, callback) {
+                return {promiseOf: image.id};  // dummy promise object
             });
         });
 
         it('starts uploads for all images in images2upload list', function () {
             images.uploadAll();
-            expect(img_1.startUpload).toHaveBeenCalled();
-            expect(img_2.startUpload).toHaveBeenCalled();
-            expect(img_3.startUpload).toHaveBeenCalled();
+
+            expect(NcImage.upload.callCount).toEqual(3);
+            expect(NcImage.upload).toHaveBeenCalledWith(
+                img_1, img_1.progressCallback
+            );
+            expect(NcImage.upload).toHaveBeenCalledWith(
+                img_2, img_2.progressCallback
+            );
+            expect(NcImage.upload).toHaveBeenCalledWith(
+                img_3, img_3.progressCallback
+            );
         });
 
         it('returns a list of all upload promises', function () {
@@ -967,6 +978,7 @@ describe('Service: Images', function () {
         });
     });
 
+
     describe('image decorated with decorate() method:', function () {
         var decoratedImg;
 
@@ -979,10 +991,6 @@ describe('Service: Images', function () {
 
             decoratedImg = new Blob(imgContents, {type : 'image/gif'});
             decoratedImg = images.decorate(decoratedImg);
-        });
-
-        it('has isUploaded flag cleared by default', function () {
-            expect(decoratedImg.isUploaded).toEqual(false);
         });
 
         it('has uploaded bytes counter initialized to zero', function () {
@@ -1020,158 +1028,6 @@ describe('Service: Images', function () {
             });
         });
 
-        describe('startUpload() method', function () {
-            var expectedPostData,
-                headersCheck,
-                postDataCheck,
-                url;
-
-            beforeEach(inject(function (formDataFactory) {
-                spyOn(formDataFactory, 'makeInstance').andCallFake(
-                    // factory should return a fake FormData object that we
-                    // can actually inspect in tests (built-in FormData is not
-                    // inspectable - browser security constraint)
-                    function () {
-                        var dict = {};
-                        return {
-                            append: function (key, value) {
-                                dict[key] = value;
-                            },
-                            dict: dict
-                        };
-                    }
-                );
-
-                expectedPostData = formDataFactory.makeInstance();
-                expectedPostData.dict = {
-                    'image[image]': decoratedImg,
-                    'image[photographer]': 'John Doe',
-                    'image[description]': 'image description'
-                };
-
-                headersCheck = function (headers) {
-                    // when uploading files we need to set Content-Type header
-                    // to undefined (overriding Angular's default of
-                    // application/json).
-                    return typeof headers['Content-Type'] === 'undefined';
-                };
-
-                postDataCheck = function (data) {
-                    return angular.equals(data, expectedPostData);
-                };
-
-                url = Routing.generate(
-                    'newscoop_gimme_images_createimage', {}, true);
-
-                $httpBackend.expectPOST(url, postDataCheck, headersCheck)
-                .respond(
-                    201, null,
-                    {'X-Location' : 'http://foo.com/images/4321'},
-                    'Created'
-                );
-
-                decoratedImg.isUploaded = false;
-                decoratedImg.photographer = 'John Doe';
-                decoratedImg.description = 'image description';
-            }));  // end beforeEach
-
-            afterEach(function () {
-                $httpBackend.verifyNoOutstandingExpectation();
-            });
-
-            it('sends correct API request', function () {
-                decoratedImg.startUpload();
-                // test will fail if http expectation is not fulfilled
-                // (= misformed POST request sent)
-            });
-
-            // XXX: how to test progress callbacks?
-
-            it('converts undefined values to empty strings', function () {
-                expectedPostData.dict['image[photographer]'] = '';
-                expectedPostData.dict['image[description]'] = '';
-
-                $httpBackend.resetExpectations();
-                $httpBackend.expectPOST(url, postDataCheck, headersCheck)
-                .respond(
-                    201, null,
-                    {'X-Location' : 'http://foo.com/images/4321'},
-                    'Created'
-                );
-
-                decoratedImg.photographer = undefined;
-                decoratedImg.description = undefined;
-                decoratedImg.startUpload();
-                // test will fail if http expectation is not fulfilled
-                // (= misformed POST request sent)
-            });
-
-            it('sets isUploaded flag on success', function () {
-                decoratedImg.startUpload();
-                $httpBackend.flush(1);
-                expect(decoratedImg.isUploaded).toEqual(true);
-            });
-
-            it('sets image\'s server ID on success', function () {
-                decoratedImg.startUpload();
-                $httpBackend.flush(1);
-                expect(decoratedImg.id).toEqual(4321);
-            });
-
-            it('resolves upload promise with correct data', function () {
-                var promise = decoratedImg.startUpload();
-
-                promise.then(function (data) {
-                    expect(data).toEqual({
-                        id: 4321,
-                        url: 'http://foo.com/images/4321'
-                    });
-                });
-
-                $httpBackend.flush(1);
-            });
-
-            it('rejects given upload promise if API' +
-               'returns no x-location header in response',
-                function () {
-                    var url = Routing.generate(
-                        'newscoop_gimme_images_createimage', {}, true
-                    );
-
-                    $httpBackend.resetExpectations();
-                    $httpBackend.expectPOST(url)
-                        .respond(201, null, {}, 'Created');
-
-                    decoratedImg.startUpload().then(function () {
-                        // success should not happen, fail the test
-                        expect(true).toEqual(false);
-                    }, function (reason) {
-                        expect(reason.indexOf('x-location header'))
-                            .toBeGreaterThan(-1);
-                    });
-
-                    $httpBackend.flush(1);
-            });
-
-            it('rejects given upload promise on API error', function () {
-                var url = Routing.generate(
-                    'newscoop_gimme_images_createimage', {}, true
-                );
-
-                $httpBackend.resetExpectations();
-                $httpBackend.expectPOST(url).respond(500);
-
-                decoratedImg.startUpload().then(function () {
-                    // success should not happen, fail the test
-                    expect(true).toEqual(false);
-                }, function (reason) {
-                    expect(reason).toEqual('error uploading');
-                });
-
-                $httpBackend.flush(1);
-            });
-
-        });
 
         describe('readRawData() method', function () {
             // Currently only Firefox implements a native Object.watch()
