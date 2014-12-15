@@ -137,26 +137,19 @@ angular.module('authoringEnvironmentApp').factory('RelatedArticle', [
         * @return {Object} promise object that is resolved on successful server
         *   response and rejected on server error response
         */
-        RelatedArticle.addToArticle = function (articleId, language, relatedArticles) {
+        RelatedArticle.addToArticle = function (articleId, language, relatedArticle) {
             var deferred = $q.defer(),
                 linkHeader = [];
 
-            if (relatedArticles.length < 1) {
-                throw new Error('RelatedArticles list is empty.');
-            }
-
-            relatedArticles.forEach(function (relatedArticle) {
-                linkHeader.push(
-                    '<' +
-                    Routing.generate(
-                        'newscoop_gimme_articles_getarticle',
-                        {number: relatedArticle.number},
-                        false
-                    ) +
-                    '; rel="topic">'
-                );
-            });
-            linkHeader = linkHeader.join();
+            linkHeader = [
+                '<' +
+                Routing.generate(
+                    'newscoop_gimme_articles_getarticle',
+                    {number: relatedArticle.number},
+                    false
+                ) +
+                '; rel="topic">'
+            ].join('');
 
             $http({
                 url: Routing.generate(
@@ -168,7 +161,7 @@ angular.module('authoringEnvironmentApp').factory('RelatedArticle', [
                 headers: {link: linkHeader}
             })
             .success(function () {
-                deferred.resolve(relatedArticles);
+                deferred.resolve();
             })
             .error(function (responseBody) {
                 deferred.reject(responseBody);
@@ -200,8 +193,6 @@ angular.module('authoringEnvironmentApp').factory('RelatedArticle', [
                 ),
                 '; rel="topic">'
             ].join('');
-
-            console.log(linkHeader);
 
             $http({
                 url: Routing.generate(
