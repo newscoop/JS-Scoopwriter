@@ -1,11 +1,13 @@
 <section
     ng-controller="PaneTopicsCtrl"
-    class="tabcontent topics-panel">
+    class="tabcontent topics-panel"
+    auto-list-offset>
 
   <div class="panel-title">
     Topics
   </div>
 
+  <div class="paneFormWrapper">
   <div class="add-element" ng-class="{expanded: showAddNew}">
     <div class="heading">
       <button class="btn btn-sf-invisible"
@@ -89,14 +91,14 @@
     </div>
 
   </div>
-
+</div>
 
   <div class="assigned-title">Assigned Topics</div>
 
   <div class="list">
     <div
        ng-repeat="topic in assignedTopics"
-       class="panel panel-default" ng-class="level-{{::topic.level}}">
+       class="panel panel-default" ng-class=" 'level-{{topic.level}}' ">
        {{::topic.path}}
       <div class="unassign" ng-click="confirmUnassignTopic(topic)">
         <span class="glyphicon glyphicon-remove" title="Unassign topic"></span>

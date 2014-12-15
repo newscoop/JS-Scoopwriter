@@ -19,7 +19,7 @@ angular.module('authoringEnvironmentApp').directive('autoListOffset', [
                     $formBox,
                     $list;
 
-                $formBox = $element.find('.add-element');
+                $formBox = $element.find('.paneFormWrapper');
                 $list = $element.find('.list');
 
                 /**
