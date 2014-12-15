@@ -14,10 +14,15 @@ angular.module('authoringEnvironmentApp').directive('autoListOffset', [
             restrict: 'A',
             link: function postLink(scope, $element, attrs) {
                 var baseOffsetY = 125,  // base offset (without from height)
-                    initialOffsetY = 150,  // initial offset at pane load
+                    initialOffsetY,    // initial offset at pane load
                     firstAdjustment = true,
                     $formBox,
                     $list;
+
+                initialOffsetY = parseInt(attrs.autoListOffset);
+                if (isNaN(initialOffsetY) || (initialOffsetY < 1)) {
+                    initialOffsetY = 150;
+                }
 
                 $formBox = $element.find('.paneFormWrapper');
                 $list = $element.find('.list');
