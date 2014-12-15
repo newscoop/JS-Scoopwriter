@@ -23,8 +23,6 @@ angular.module('authoringEnvironmentApp').controller('PaneRelatedArticlesCtrl', 
         // load filter selects
         $scope.availableSections = Section.getAll();
 
-        console.log($scope.availableSections);
-
         // retrieve all relatedArticles assigned to the article
         $scope.assignedRelatedArticles = RelatedArticle.getAllByArticle(
             article.articleId, article.language
@@ -102,21 +100,18 @@ angular.module('authoringEnvironmentApp').controller('PaneRelatedArticlesCtrl', 
         *
         * @method assignSelectedToArticle
         */
-        $scope.assignSelectedToArticle = function () {
+        $scope.assignToArticle = function (relatedArticle) {
+            var _self = this;
             $scope.assigningRelatedArticles = true;
 
             RelatedArticle.addToArticle(
-                article.articleId, article.language, $scope.selectedRelatedArticles
+                article.articleId, article.language, relatedArticle
             ).then(function (relatedArticles) {
-                relatedArticles.forEach(function (item) {
-                    $scope.assignedRelatedArticles.push(item);
-                });
-                $scope.clearSelectedRelatedArticles();
+                $scope.assignedRelatedArticles.unshift(relatedArticle);
+                _self.findRelatedArticles($scope.query); 
             }).finally(function () {
                 $scope.assigningRelatedArticles = false;
             });
-
-            // XXX: what about errors, e.g. 409 Conflict?
         };
 
         /**
