@@ -14,7 +14,7 @@ angular.module('authoringEnvironmentApp').directive('sfDroppable', [
             placeholderClass,
             sel;
 
-        sel = 'p';
+        sel = 'h1, h2, h3, h4, h5, h6, ol, p, pre, table, ul';
         placeholderClass = 'drag-drop-placeholder';
         place = '.' + placeholderClass;
 
