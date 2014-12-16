@@ -11,21 +11,19 @@ angular.module('authoringEnvironmentApp').controller('PaneRelatedArticlesCtrl', 
     'article',
     'modalFactory',
     'Section',
-    'RelatedArticle',
-    function ($q, $scope, articleService, modalFactory, Section, RelatedArticle) {
-        var article = articleService.articleInstance,
+    function ($q, $scope, articleService, modalFactory, Section) {
+        var self = this, 
+            article = articleService.articleInstance,
             availableRelatedArticles = [],   // all existing relatedArticles to choose from
-            relatedArticleListRetrieved = false;  // avilableRelatedArticles initialized yet?
-
-        $scope.assigningRelatedArticles = false;  // relatedArticle assignment in progress?
+            filteredRelatedArticles = [],   // all existing relatedArticles to choose from
+            relatedArticleListRetrieved = false,  // avilableRelatedArticles initialized yet?
+            assigningRelatedArticles = false;  // relatedArticle assignment in progress?
 
         // load filter selects
-        $scope.availableSections = Section.getAll();
+        self.availableSections = Section.getAll();
 
         // retrieve all relatedArticles assigned to the article
-        $scope.assignedRelatedArticles = RelatedArticle.getAllByArticle(
-            article.articleId, article.language
-        );
+        self.assignedRelatedArticles = article.getRelatedArticles();
 
         /**
          * Loads an article in the Related Articles preview pane
@@ -33,9 +31,11 @@ angular.module('authoringEnvironmentApp').controller('PaneRelatedArticlesCtrl', 
          * @method previewReleatedArticle
          * @param article {Object} RelatedArtile
          */
-        $scope.previewRelatedArticle = function(article) {
-            $scope.relatedArticlePreview = article;
-            $scope.showArticlePreview = !$scope.showArticlePreview;
+        self.previewRelatedArticle = function(previewArticle) {
+            var contentFields = previewArticle.loadContentFields();
+            previewArticle.content_fields = contentFields;
+            self.relatedArticlePreview = previewArticle;
+            self.showArticlePreview = !self.showArticlePreview;
         }
 
         /**
@@ -48,34 +48,34 @@ angular.module('authoringEnvironmentApp').controller('PaneRelatedArticlesCtrl', 
         * @return {Object} promise object which is resolved with (filtered)
         *   search results
         */
-        $scope.findRelatedArticles = function (query) {
+        self.findRelatedArticles = function (query) {
             var ignored = {},
                 filtered;
 
             // build a list of relatedArticle IDs to exclude from results (i.e. relatedArticles
             // that are already assigned to the article)
-            $scope.assignedRelatedArticles.forEach(function (article) {
-                ignored[article.number] = true;
+            self.assignedRelatedArticles.forEach(function (assignedArticle) {
+                ignored[assignedArticle.number] = true;
             });
 
             // relatedArticles list is long, thus we only retrieve it once
-            if (!relatedArticleListRetrieved) {
-                availableRelatedArticles = RelatedArticle.getAll();
+            if (!self.relatedArticleListRetrieved) {
+                self.availableRelatedArticles = article.getAll();
             }
 
-            availableRelatedArticles.$promise.then(function () {
-                relatedArticleListRetrieved = true;
+            self.availableRelatedArticles.$promise.then(function () {
+                self.relatedArticleListRetrieved = true;
 
                 query = (query) ? query.toLowerCase() : '';
         
-                filtered = _.filter(availableRelatedArticles, function (article) {
+                filtered = _.filter(self.availableRelatedArticles, function (filterArticle) {
                     return (
-                        !(article.number in ignored) &&
-                        article.title.toLowerCase().indexOf(query) >= 0
+                        !(filterArticle.number in ignored) &&
+                        filterArticle.title.toLowerCase().indexOf(query) >= 0
                     );
                 });
 
-                $scope.availableRelatedArticles =  filtered;
+                self.filteredRelatedArticles =  filtered;
             });
         };
 
@@ -85,17 +85,17 @@ angular.module('authoringEnvironmentApp').controller('PaneRelatedArticlesCtrl', 
         *
         * @method assignSelectedToArticle
         */
-        $scope.assignToArticle = function (relatedArticle) {
-            var _self = this;
-            $scope.assigningRelatedArticles = true;
+        self.assignToArticle = function (relatedArticle) {
+            var self = this;
+            self.assigningRelatedArticles = true;
 
-            RelatedArticle.addToArticle(
+            article.addRelatedArticle(
                 article.articleId, article.language, relatedArticle
             ).then(function (relatedArticles) {
-                $scope.assignedRelatedArticles.unshift(relatedArticle);
-                _self.findRelatedArticles($scope.query); 
+                self.assignedRelatedArticles.unshift(relatedArticle);
+                self.findRelatedArticles($scope.query); 
             }).finally(function () {
-                $scope.assigningRelatedArticles = false;
+                self.assigningRelatedArticles = false;
             });
         };
 
@@ -106,7 +106,7 @@ angular.module('authoringEnvironmentApp').controller('PaneRelatedArticlesCtrl', 
         * @method confirmUnassignRelatedArticle
         * @param relatedArticle {Object} relatedArticle to unassign
         */
-        $scope.confirmUnassignRelatedArticle = function (relatedArticle) {
+        self.confirmUnassignRelatedArticle = function (relatedArticle) {
             var modal,
                 title,
                 text;
@@ -119,11 +119,10 @@ angular.module('authoringEnvironmentApp').controller('PaneRelatedArticlesCtrl', 
             modal = modalFactory.confirmLight(title, text);
 
             modal.result.then(function () {
-                return relatedArticle.removeFromArticle(
-                    article.articleId, article.language);
+                return article.removeRelatedArticle(relatedArticle);
             }, $q.reject)
             .then(function () {
-                _.remove($scope.assignedRelatedArticles, {number: relatedArticle.number});
+                _.remove(self.assignedRelatedArticles, {number: relatedArticle.articleId});
             });
         };
     }
