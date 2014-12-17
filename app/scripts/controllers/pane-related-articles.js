@@ -7,22 +7,38 @@
 */
 angular.module('authoringEnvironmentApp').controller('PaneRelatedArticlesCtrl', [
     '$q',
-    '$scope',
     'article',
     'modalFactory',
+    'Publication',
+    'Issue',
     'Section',
-    function ($q, $scope, articleService, modalFactory, Section) {
+    function ($q, articleService, modalFactory, Publication, Issue, Section) {
         var self = this, 
             article = articleService.articleInstance,
-            availableRelatedArticles = [],   // all existing relatedArticles to choose from
+            availableRelatedArticles = [],   // article search results
             relatedArticleListRetrieved = false,  // avilableRelatedArticles initialized yet?
             assigningRelatedArticles = false;  // relatedArticle assignment in progress?
 
-        // load filter selects
+        // load initial filter select options
+        self.availablePublications = Publication.getAll();
+        self.availableIssues = Issue.getAll();
         self.availableSections = Section.getAll();
 
         // retrieve all relatedArticles assigned to the article
         self.assignedRelatedArticles = article.getRelatedArticles();
+
+        /**
+         * Loads options for all filter select fields
+         *
+         * @method loadAvailableFilters
+         */
+        self.loadAvailableFilters = function() {
+            var filters = self.buildFilters();
+            if (!self.issueFilter) {
+                self.availableIssues = Issue.getAll(filters);
+            }
+            self.availableSections = Section.getAll(filters);
+        };
 
         /**
          * Loads an article in the Related Articles preview pane
@@ -70,16 +86,7 @@ angular.module('authoringEnvironmentApp').controller('PaneRelatedArticlesCtrl', 
             });
 
             query = (self.query) ? self.query.toLowerCase() : '';
-            if (self.publicationFilter) {
-                filters['publication'] = self.publicationFilter.title;
-            }
-            if (self.issueFilter) {
-                filters['issue'] = self.issueFilter.title;
-            }
-            if (self.sectionFilter) {
-                filters['section'] = self.sectionFilter.title;
-            }
-
+            filters = self.buildFilters();
             article.searchArticles(query, filters).then(function (availableArticles) {
                 self.relatedArticleListRetrieved = true;
 
@@ -91,6 +98,28 @@ angular.module('authoringEnvironmentApp').controller('PaneRelatedArticlesCtrl', 
                 self.availableRelatedArticles = filtered;
             });
         };
+
+        /**
+        * Returns an object continaing article search filters 
+        *
+        * @method assignSelectedToArticle
+        * @return {Onject} containing article search filters
+        */
+        self.buildFilters = function () {
+            var filters = {};
+
+            if (self.publicationFilter) {
+                filters['publication'] = self.publicationFilter.id;
+            }
+            if (self.issueFilter) {
+                filters['issue'] = self.issueFilter.number;
+            }
+            if (self.sectionFilter) {
+                filters['section'] = self.sectionFilter.number;
+            }
+            
+            return filters;
+        }
 
         /**
         * Assigns all currently selected relatedArticles to the article and then clears

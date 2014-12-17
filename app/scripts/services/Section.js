@@ -36,9 +36,10 @@ angular.module('authoringEnvironmentApp').factory('Section', [
         * is resolved (exposed as a $promise property of the returned array).
         *
         * @method getAll
+        * @param filters {Object} search filters (issue|publication)
         * @return {Object} array of sections
         */
-        Section.getAll = function () {
+        Section.getAll = function (filters) {
             var sections = [],
                 deferredGet = $q.defer(),
                 url;
@@ -47,7 +48,7 @@ angular.module('authoringEnvironmentApp').factory('Section', [
 
             url = Routing.generate(
                 'newscoop_gimme_sections_getsections',
-                {},  // de facto "all"
+                filters,
                 true
             );
 

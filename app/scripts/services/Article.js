@@ -412,7 +412,6 @@ angular.module('authoringEnvironmentApp').factory('Article', [
                 });
                 deferredGet.resolve(allArticles);
             }).error(function (responseBody) {
-                console.log('rejected');
                 deferredGet.reject(responseBody);
             });
 
