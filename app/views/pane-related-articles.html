@@ -20,27 +20,27 @@
             </div>
 
             <div ng-show="paneRelatedArticles.showAddFilter" class="filters">
-                <select>
+                <select ng-model="paneRelatedArticles.publicationFilter">
                     <option value="" class="">-- Publication --</option>
                     <option value="option1">Option1</option>
                     <option value="option2">Option2</option>
                     <option value="option3">Option3</option>
                     <option value="option4">Option4</option>
                 </select>
-                <select>
+                <select ng-model="paneRelatedArticles.issueFilter">
                     <option value="" class="">-- Issue --</option>
                     <option value="option1">Option1</option>
                     <option value="option2">Option2</option>
                     <option value="option3">Option3</option>
                     <option value="option4">Option4</option>
                 </select>
-                <select ng-model="filterSection" ng-options="section.title for section in paneRelatedArticles.availableSections">
+                <select ng-model="paneRelatedArticles.sectionFilter" ng-options="section.title for section in paneRelatedArticles.availableSections">
                     <option value="" class="">-- Section --</option>
                 </select>
                 <div class="input-group">
-                    <input type="text" class="editor-input" ng-model="query" placeholder="Search">
+                    <input type="text" class="editor-input" ng-model="paneRelatedArticles.query" placeholder="Search">
                     <span class="input-group-btn">
-                        <button ng-click="paneRelatedArticles.findRelatedArticles(query)" class="btn btn-primary btn-sm" type="button">Filter</button>
+                        <button ng-click="paneRelatedArticles.loadSearchResults()" class="btn btn-primary btn-sm" type="button">Filter</button>
                     </span>
                 </div>
             </div>
@@ -54,22 +54,26 @@
                 <!-- pinned -->
                 <div class="group">
                     <div class="title">Pinned articles</div>
-                    <div ng-repeat="article in paneRelatedArticles.assignedRelatedArticles"
-                        class="related-article pinned">
-                        <div class="drag-bar"></div>
-                        <div
-                            class="remove"
-                            title="Remove"
-                            ng-click="paneRelatedArticles.confirmUnassignRelatedArticle(article)"
-                            >
-                            <span class="glyphicon glyphicon-remove"></span>
-                        </div>                
-                        <div class="article-metadata">
-                            <span class="date">{{article.published| date:"dd.MM.yyyy 'at' H:mm:ss"}}</span>
-                            <span class="status new" ng-bind="article.status"></span>
-                        </div>
-                        <div class="article-title">
-                            <a ng-click="paneRelatedArticles.previewRelatedArticle(article)" ng-bind="article.title"></a>
+                    <div class="related-articles-list"
+                        drag-sort items="paneRelatedArticles.assignedRelatedArticles"
+                        on-order-changed="paneRelatedArticles.orderChange()">
+                        <div ng-repeat="article in paneRelatedArticles.assignedRelatedArticles"
+                            class="related-article pinned">
+                            <div class="drag-bar"></div>
+                            <div
+                                class="remove"
+                                title="Remove"
+                                ng-click="paneRelatedArticles.confirmUnassignRelatedArticle(article)"
+                                >
+                                <span class="glyphicon glyphicon-remove"></span>
+                            </div>                
+                            <div class="article-metadata">
+                                <span class="date">{{article.created| date:"dd.MM.yyyy 'at' H:mm:ss"}}</span>
+                                <span class="status new" ng-bind="article.statusString"></span>
+                            </div>
+                            <div class="article-title">
+                                <a ng-click="paneRelatedArticles.previewRelatedArticle(article)" ng-bind="article.title"></a>
+                            </div>
                         </div>
                     </div>
 
@@ -88,8 +92,8 @@
                             <i class="fa fa-thumb-tack"></i>
                         </button>
                         <div class="article-metadata">
-                            <span class="date">{{article.published| date:"dd.MM.yyyy 'at' H:mm:ss"}}</span>
-                            <span class="status published" ng-bind="article.status"></span>
+                            <span class="date">{{article.created| date:"dd.MM.yyyy 'at' H:mm:ss"}}</span>
+                            <span class="status published" ng-bind="article.statusString"></span>
                         </div>
                         <div class="article-title">
                             <a  ng-click="paneRelatedArticles.previewRelatedArticle(article)" ng-bind="article.title"></a>
@@ -115,12 +119,12 @@
                 </div>
             </div>
             <div class="content">
-                <div class="preview-dateline">{{paneRelatedArticles.relatedArticlePreview.published| date:"dd.MM.yyyy 'at' H:mm:ss"}}</div>
+                <div class="preview-dateline">{{paneRelatedArticles.relatedArticlePreview.created| date:"dd.MM.yyyy 'at' H:mm:ss"}}</div>
                 <div class="preview-title" ng-bind-html="paneRelatedArticles.relatedArticlePreview.title"></div>
                 <div class="preview-lead" ng-bind-html="paneRelatedArticles.relatedArticlePreview.lead"></div>
                 <div class="preview-body">
-                    <p><img ng-src="http://{{paneRelatedArticles.relatedArticlePreview.image}}" /></p>
-                    <div ng-repeat="field in paneRelatedArticles.relatedArticlePreview.content_fields">
+                    <p><img ng-src="{{paneRelatedArticles.relatedArticlePreview.firstImage}}" /></p>
+                    <div ng-repeat="field in paneRelatedArticles.relatedArticlePreview.contentFields">
                         <p ng-bind-html="paneRelatedArticles.relatedArticlePreview.fields[field]">{{field.name}}</p>
                     </div>
                 </div>

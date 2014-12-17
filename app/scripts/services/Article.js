@@ -212,6 +212,7 @@ angular.module('authoringEnvironmentApp').factory('Article', [
 
             self.comments_locked = !!parseInt(self.comments_locked);
             self.comments_enabled = !!parseInt(self.comments_enabled);
+            self.statusString = _.property(data.status)(_.invert(Article.wfStatus));
         };
 
         // all possible values for the article commenting setting
@@ -299,14 +300,15 @@ angular.module('authoringEnvironmentApp').factory('Article', [
         * only used for previewRelatedArticle() it is not included in
         * constructor
         *
-        * @method
-        * @return {Array} list of field names of type body and longtext
+        * @method loadContentFields
+        * @return {Object} promise object which is resolved with retrieved
+        *   contentFields
         */
         Article.prototype.loadContentFields = function() {
             var self = this,
                 contentFields = [],
                 deferredGet = $q.defer();
-            
+
             contentFields.$promise = deferredGet.promise;
 
             // lookup ArticleType and set content fields for preview
@@ -320,19 +322,52 @@ angular.module('authoringEnvironmentApp').factory('Article', [
                  */
                 articleType.fields.forEach(function (field) {
                     if (field.isContentField === 1) {
-                        self.content_fields.unshift(field.name);
+                        contentFields.unshift(field.name);
                         return;
                     }
                     if ((field.showInEditor === 1) && 
                         ((field.type == 'body') || (field.type == 'longtext'))) {
-                        self.content_fields.unshift(field.name);
+                        contentFields.unshift(field.name);
                         return;
                     }
                 });
-                deferredGet.resolve();
+                deferredGet.resolve(contentFields);
             });
 
-            return contentFields;
+            return deferredGet.promise;
+        };
+
+        /**
+        * Returns filename of the first image attached to an article
+        *
+        * because this requires separate api request, and is currently
+        * only used for previewRelatedArticle() it is not included in
+        * constructor
+        *
+        * @method loadFirstImage
+        * @return {Object} promise object which is resolved with retrieved
+        *   basename of an articles first image
+        */
+        Article.prototype.loadFirstImage = function() {
+            var self = this,
+                deferredGet = $q.defer(),
+                url = Routing.generate(
+                    'newscoop_gimme_images_getimagesforarticle',
+                    {number: self.articleId, language: self.language}, true
+                );
+
+            $http.get(url)
+            .success(function (response) {
+                if (response.items.length > 0) {
+                    deferredGet.resolve(response.items[0].basename);
+                } else {
+                    deferredGet.reject(response);
+                }
+            }).error(function (responseBody) {
+                deferredGet.reject(responseBody);
+            });
+
+            return deferredGet.promise;
         };
 
         /**
@@ -342,19 +377,29 @@ angular.module('authoringEnvironmentApp').factory('Article', [
         * data on successful server response. At that point the given promise
         * is resolved (exposed as a $promise property of the returned array).
         *
-        * @method getAll
+        * @method searchArticles
+        * @param query {String} relatedArticles search query
+        * @param filters {Object} relatedArticles search filters
         * @return {Object} array of relatedArticles
         */
-        Article.prototype.getAll = function () {
+        Article.prototype.searchArticles = function (query, filters) {
             var allArticles = [],
                 deferredGet = $q.defer(),
+                params = {},
                 url;
 
             allArticles.$promise = deferredGet.promise;
+           
+            if (!_.isEmpty(filters)) {
+               params = filters; 
+            }
 
+            params['items_per_page'] = 20;
+            params['query'] = query; 
+ 
             url = Routing.generate(
-                'newscoop_gimme_articles_getarticles',
-                {items_per_page: 50},  // de facto "all"
+                'newscoop_gimme_articles_searcharticles',
+                params,  // de facto "all"
                 true
             );
 
@@ -364,12 +409,13 @@ angular.module('authoringEnvironmentApp').factory('Article', [
                     var article = new Article(item);
                     allArticles.push(article);
                 });
-                deferredGet.resolve();
+                deferredGet.resolve(allArticles);
             }).error(function (responseBody) {
+                console.log('rejected');
                 deferredGet.reject(responseBody);
             });
 
-            return allArticles;
+            return deferredGet.promise;
         };
 
         /**
@@ -427,7 +473,7 @@ angular.module('authoringEnvironmentApp').factory('Article', [
                 '<' +
                 Routing.generate(
                     'newscoop_gimme_articles_getarticle',
-                    {number: self.articleId},
+                    {number: relatedArticle.articleId},
                     false
                 ) +
                 '; rel="topic">'
@@ -477,7 +523,7 @@ angular.module('authoringEnvironmentApp').factory('Article', [
             $http({
                 url: Routing.generate(
                     'newscoop_gimme_articles_unlinkarticle',
-                    {number: self.number, language: self.language},
+                    {number: self.articleId, language: self.language},
                     true
                 ),
                 method: 'UNLINK',
