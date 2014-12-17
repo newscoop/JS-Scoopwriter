@@ -378,9 +378,10 @@ angular.module('authoringEnvironmentApp').factory('Article', [
         * is resolved (exposed as a $promise property of the returned array).
         *
         * @method searchArticles
-        * @param query {String} relatedArticles search query
-        * @param filters {Object} relatedArticles search filters
-        * @return {Object} array of relatedArticles
+        * @param query {String} search query
+        * @param filters {Object} search filters (issue|publication|section)
+        * @return {Object} promise object which is resolved with retrieved
+        *   Articles search results
         */
         Article.prototype.searchArticles = function (query, filters) {
             var allArticles = [],
@@ -399,7 +400,7 @@ angular.module('authoringEnvironmentApp').factory('Article', [
  
             url = Routing.generate(
                 'newscoop_gimme_articles_searcharticles',
-                params,  // de facto "all"
+                params,  
                 true
             );
 
