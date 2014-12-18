@@ -204,41 +204,109 @@ describe('Controller: ArticleCtrl', function () {
 
             scope.article.fields = {
                 body: '<p>Paragraph 1</p>\n<p>Paragraph 2</p>',
-                printsection: 'Sports'
+                contentField: 'some content',
+                seo_description: 'foo bar baz',
+                isPayable: true
             };
 
             articleTypeNews = {
                 name: 'news',
                 fields: [
-                    {name: 'body'},
-                    {name: '_internal'}
+                    {
+                        name: 'body',
+                        type: 'text',
+                        isHidden: false,
+                        showInEditor: true
+                    },
+                    {
+                        name: 'contentField',
+                        type: 'text',
+                        isHidden: false,
+                        showInEditor: true
+                    },
+                    {
+                        name:'printsection',
+                        type: 'text',
+                        isHidden: true,
+                        showInEditor: false  // a non-content field
+                    },
+                    {
+                        name:'seo_description',
+                        type: 'text',
+                        isHidden: false,
+                        showInEditor: false  // a non-content field
+                    },
+                    {
+                        name:'isPayable',
+                        type: 'switch',
+                        isHidden: false,
+                        showInEditor: false  // a non-content field
+                    }
                 ]
             };
         }));
 
-        it('exposes all article fields from config in scope', function () {
-            var match;
-
-            getArticleTypeDeferred.resolve(articleTypeNews);
-            scope.$digest();
-
-            match = _(scope.editableFields).find({name: 'title'});
-            expect(match).toBeDefined();
-            match = _(scope.editableFields).find({name: 'body'});
-            expect(match).toBeDefined();
-        });
-
-        it('does not expose article type\'s fields not found in config',
+        it('exposes all article content fields from config in scope',
             function () {
                 var match;
 
                 getArticleTypeDeferred.resolve(articleTypeNews);
                 scope.$digest();
 
-                match = _(scope.editableFields).find({name: '_internal'});
+                match = _(scope.editableFields).find({name: 'title'});
+                expect(match).toBeDefined();
+                match = _(scope.editableFields).find({name: 'body'});
+                expect(match).toBeDefined();
+            }
+        );
+
+        it('exposes article\'s non-content fields in scope', function () {
+            var match;
+
+            getArticleTypeDeferred.resolve(articleTypeNews);
+            scope.$digest();
+
+            expect(scope.nonContentFields).toBeDefined();
+            expect(scope.nonContentFields.length).toEqual(1);
+            match = _(scope.nonContentFields).find({name: 'seo_description'});
+            expect(match).toBeDefined();
+        });
+
+        it('does not expose article\'s content fields not found in config',
+            function () {
+                var match;
+
+                getArticleTypeDeferred.resolve(articleTypeNews);
+                scope.$digest();
+
+                match = _(scope.editableFields).find({name: 'contentField'});
                 expect(match).toBeUndefined();
             }
         );
+
+        it('does not expose hidden fields in scope', function () {
+            var match;
+
+            getArticleTypeDeferred.resolve(articleTypeNews);
+            scope.$digest();
+
+            match = _(scope.editableFields).find({name: 'printsection'});
+            expect(match).toBeUndefined();
+            match = _(scope.nonContentFields).find({name: 'printsection'});
+            expect(match).toBeUndefined();
+        });
+
+        it('does not expose "switch" fields in scope', function () {
+            var match;
+
+            getArticleTypeDeferred.resolve(articleTypeNews);
+            scope.$digest();
+
+            match = _(scope.editableFields).find({name: 'isPayable'});
+            expect(match).toBeUndefined();
+            match = _(scope.nonContentFields).find({name: 'isPayable'});
+            expect(match).toBeUndefined();
+        });
 
         it('sets empty article fields to their default text', function () {
             scope.article.fields.body = null;

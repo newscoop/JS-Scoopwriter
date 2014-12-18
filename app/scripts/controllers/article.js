@@ -82,20 +82,33 @@ angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
             });
         });
 
+        // expose a subset of content and non-content fields in scope
         ArticleType.getByName(
             $scope.article.type
         ).then(function (articleType) {
             var cfgFields = configuration.articleTypeFields[articleType.name],
-                editableFields = [];
+                editableFields = [],
+                nonContentFields = [];
 
             // for empty fields set their corresponding default values 
             articleType.fields.forEach(function (field) {
                 var fieldValue = $scope.article.fields[field.name];
 
-                if ((field.name in cfgFields) && (!fieldValue)) {
-                    $scope.article.fields[field.name] =
-                        cfgFields[field.name].defaultText;
+                if (field.isHidden || field.type === 'switch') {
+                    return;  // skip hidden fields and switches
                 }
+
+                if (!field.showInEditor) {  // a non-content field
+                    nonContentFields.push(field);
+                } else {
+                    // if defined, set default text for empty content fields
+                    if ((field.name in cfgFields) && (!fieldValue)) {
+                        $scope.article.fields[field.name] =
+                            cfgFields[field.name].defaultText;
+                        return;
+                    }
+                }
+
             });
 
             // calculate text stats and convert to array (for sorting purposes
@@ -106,6 +119,7 @@ angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
             });
 
             $scope.editableFields = editableFields;
+            $scope.nonContentFields = nonContentFields;
         });
 
         /**
