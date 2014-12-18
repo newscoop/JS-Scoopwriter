@@ -336,10 +336,7 @@ describe('Factory: Article', function () {
             article.fields = {};
 
             url = Routing.generate(
-                // XXX: should be the patcharticle path, but there is a bug in
-                // Routing object, thus we use another path that gives us the
-                // same result
-                'newscoop_gimme_articles_linkarticle',
+                'newscoop_gimme_articles_patcharticle',
                 {number: 8, language: 'de'},
                 true
             );
@@ -475,10 +472,7 @@ describe('Factory: Article', function () {
             switchNames = ['switch_1', 'switch_2'];
 
             url = Routing.generate(
-                // XXX: should be the patcharticle path, but there is a bug in
-                // Routing object, thus we use another path that gives us the
-                // same result
-                'newscoop_gimme_articles_linkarticle',
+                'newscoop_gimme_articles_patcharticle',
                 {number: 8, language: 'de'},
                 true
             );

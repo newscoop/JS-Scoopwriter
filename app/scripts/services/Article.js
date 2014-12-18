@@ -303,10 +303,7 @@ angular.module('authoringEnvironmentApp').factory('Article', [
                 url;
 
             url = Routing.generate(
-                // XXX: should be the patcharticle path, but there is a bug in
-                // Routing object, thus we use another path that gives us the
-                // same result
-                'newscoop_gimme_articles_linkarticle',
+                'newscoop_gimme_articles_patcharticle',
                 {number: self.articleId, language: self.language},
                 true
             );
@@ -349,10 +346,7 @@ angular.module('authoringEnvironmentApp').factory('Article', [
                 url;
 
             url = Routing.generate(
-                // XXX: should be the patcharticle path, but there is a bug in
-                // Routing object, thus we use another path that gives us the
-                // same result
-                'newscoop_gimme_articles_linkarticle',
+                'newscoop_gimme_articles_patcharticle',
                 {number: self.articleId, language: self.language},
                 true
             );
