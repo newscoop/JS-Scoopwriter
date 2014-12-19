@@ -237,6 +237,12 @@ describe('Controller: ArticleCtrl', function () {
                         showInEditor: false  // a non-content field
                     },
                     {
+                        name:'field_type_body',
+                        type: 'body',
+                        isHidden: false,
+                        showInEditor: false  // a non-content field
+                    },
+                    {
                         name:'isPayable',
                         type: 'switch',
                         isHidden: false,
@@ -296,7 +302,7 @@ describe('Controller: ArticleCtrl', function () {
             expect(match).toBeUndefined();
         });
 
-        it('does not expose "switch" fields in scope', function () {
+        it('does not expose fields of type "switch" in scope', function () {
             var match;
 
             getArticleTypeDeferred.resolve(articleTypeNews);
@@ -305,6 +311,18 @@ describe('Controller: ArticleCtrl', function () {
             match = _(scope.editableFields).find({name: 'isPayable'});
             expect(match).toBeUndefined();
             match = _(scope.nonContentFields).find({name: 'isPayable'});
+            expect(match).toBeUndefined();
+        });
+
+        it('does not expose fields of type "body" in scope', function () {
+            var match;
+
+            getArticleTypeDeferred.resolve(articleTypeNews);
+            scope.$digest();
+
+            match = _(scope.editableFields).find({name: 'field_type_body'});
+            expect(match).toBeUndefined();
+            match = _(scope.nonContentFields).find({name: 'field_type_body'});
             expect(match).toBeUndefined();
         });
 

@@ -94,7 +94,10 @@ angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
             articleType.fields.forEach(function (field) {
                 var fieldValue = $scope.article.fields[field.name];
 
-                if (field.isHidden || field.type === 'switch') {
+                if (
+                    field.isHidden ||
+                    field.type in {'switch': true, 'body': true}
+                ) {
                     return;  // skip hidden fields and switches
                 }
 
