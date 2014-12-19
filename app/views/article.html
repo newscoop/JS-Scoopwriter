@@ -42,11 +42,11 @@
   </div>
     <section
        class="article-full-text article-field {{field.name}}"
-       ng-repeat="field in (editableFields | orderBy: 'order')"
+       ng-repeat="field in ::editableFields track by field.name"
        ng-switch on="field.name"
        >
       <header>
-        <span class="edit-label">{{field.displayName}}</span>
+        <span class="edit-label">{{::(field.phrase || field.name)}}</span>
         <span ng-if="field.name !== 'mainImage'"
               class="edit-words-info">{{field.statsText}}</span>
       </header>
@@ -85,8 +85,7 @@
 
       <div class="wrapper" ng-show="showCustomFields">
         <ul class="fields">
-          <li ng-repeat="field in (nonContentFields | orderBy: 'order')
-                         track by field.name"
+          <li ng-repeat="field in ::nonContentFields track by field.name"
               ng-switch on="field.type">
 
               <label>{{::(field.phrase || field.name)}}</label>

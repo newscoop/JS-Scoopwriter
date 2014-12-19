@@ -1,3 +1,4 @@
+/* global AES_SETTINGS */
 'use strict';
 
 /**
@@ -13,12 +14,11 @@ angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
     'Article',
     'ArticleType',
     'panes',
-    'configuration',
     'mode',
     'platform',
     function (
         $q, $scope, $rootScope, articleService, Article, ArticleType, panes,
-        configuration, mode, platform
+        mode, platform
     ) {
         var self = this;
 
@@ -86,43 +86,61 @@ angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
         ArticleType.getByName(
             $scope.article.type
         ).then(function (articleType) {
-            var cfgFields = configuration.articleTypeFields[articleType.name],
-                editableFields = [],
-                nonContentFields = [];
+            var editableFields = [],
+                nonContentFields = [],
+                settings,
+                titleField,
+                titleFieldIdx;
 
-            // for empty fields set their corresponding default values 
+            // filter out some fields and split others into two groups
+            // (content and non-content fields)
             articleType.fields.forEach(function (field) {
-                var fieldValue = $scope.article.fields[field.name];
+                var fieldValue;
 
-                if (
-                    field.isHidden ||
-                    field.type in {'switch': true, 'body': true}
-                ) {
-                    return;  // skip hidden fields and switches
+                if (field.isHidden) {
+                    return;
                 }
 
-                if (!field.showInEditor) {  // a non-content field
-                    nonContentFields.push(field);
-                } else {
-                    // if defined, set default text for empty content fields
-                    if ((field.name in cfgFields) && (!fieldValue)) {
+                if (field.showInEditor) {  // field is a content field
+                    // set default text if necessary and calculate text stats
+                    fieldValue = $scope.article.fields[field.name];
+                    if (!fieldValue) {
                         $scope.article.fields[field.name] =
-                            cfgFields[field.name].defaultText;
-                        return;
+                            AES_SETTINGS.placeholder;
+                    }
+                    field.statsText = self.fieldStatsText(field.name);
+                    editableFields.push(field);
+                } else {  // field is a non-content field
+                    // skip switches and body fields
+                    if ((field.type !== 'switch') && (field.type !== 'body')) {
+                        nonContentFields.push(field);
                     }
                 }
-
             });
 
-            // calculate text stats and convert to array (for sorting purposes
-            // in template)
-            _(cfgFields).forIn(function (field, key, collection) {
-                field.statsText = self.fieldStatsText(field.name);
-                editableFields.push(field);
-            });
+            // manually create "title" field (because it's not a normal
+            // article field but its property instead) and insert it at
+            // a correct place in the content fields list (at the beginning
+            // by default if not specified in the config)
+            settings = AES_SETTINGS.articleTypeFields[articleType.name];
 
+            titleField = {
+                name: settings.title.name,
+                phrase: settings.title.displayName,
+                statsText: self.fieldStatsText('title')
+            };
+            titleFieldIdx = settings.title.order - 1;
+
+            if (!$scope.article.title) {
+                $scope.article.title = AES_SETTINGS.placeholder;
+            }
+
+            editableFields = _.sortBy(editableFields, 'fieldWeight');
+            editableFields.splice(titleFieldIdx, 0, titleField);
             $scope.editableFields = editableFields;
-            $scope.nonContentFields = nonContentFields;
+
+            $scope.nonContentFields = _.sortBy(
+                nonContentFields, 'fieldWeight');
         });
 
         /**

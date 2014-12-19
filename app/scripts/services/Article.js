@@ -323,6 +323,9 @@ angular.module('authoringEnvironmentApp').factory('Article', [
             delete postData.article.fields.show_on_front_page;
             delete postData.article.fields.show_on_section_page;
 
+            // title is not a regular article field, need to set it manually
+            postData.article.title = self.title;
+
             // serialize objects (images, snippets) in all article fields
             Object.keys(postData.article.fields).forEach(function (key) {
                 var serialized = serializeAlohaBlocks(

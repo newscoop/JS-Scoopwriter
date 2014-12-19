@@ -413,6 +413,8 @@ describe('Factory: Article', function () {
                     }
                 };
 
+                article.title = 'article title';
+
                 $httpBackend.resetExpectations();
                 $httpBackend.expectPATCH(url, dataValidChecker).respond(200);
             });
@@ -422,6 +424,7 @@ describe('Factory: Article', function () {
                     var bodyValue = '<p>This <b>bold</b>, really.&nbsp;</p>';
                     article.fields.body = bodyValue;
                     expectedReqData.article.fields.body = bodyValue;
+                    expectedReqData.article.title = 'article title';
                     article.save();
                 }
             );
@@ -429,6 +432,7 @@ describe('Factory: Article', function () {
             it('does not convert empty (null) content fields', function () {
                 article.fields.teaser = null;
                 expectedReqData.article.fields.teaser = null;
+                expectedReqData.article.title = 'article title';
                 article.save();
             });
 
@@ -438,6 +442,7 @@ describe('Factory: Article', function () {
                 article.fields.show_on_section_page = true;
 
                 expectedReqData.article.fields.body = 'body content';
+                expectedReqData.article.title = 'article title';
 
                 article.save();
             });
@@ -453,6 +458,7 @@ describe('Factory: Article', function () {
 
                 expectedReqData.article.fields.body =
                     'Body text<** Image 123 size="small" **>End of text.';
+                expectedReqData.article.title = 'article title';
 
                 article.save();
             });
@@ -468,6 +474,7 @@ describe('Factory: Article', function () {
 
                 expectedReqData.article.fields.body =
                     'Body text<-- Snippet 99 -->End of text.';
+                expectedReqData.article.title = 'article title';
 
                 article.save();
             });
