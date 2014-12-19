@@ -139,5 +139,13 @@ angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
             });
         };
 
+        /**
+        * Non-content field onChange handler. Sets the article modifed flag.
+        *
+        * @method nonContentFieldChanged
+        */
+        $scope.nonContentFieldChanged = function () {
+            articleService.modified = true;
+        };
     }
 ]);

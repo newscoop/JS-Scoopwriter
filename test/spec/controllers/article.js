@@ -137,6 +137,7 @@ describe('Controller: ArticleCtrl', function () {
         });
     });
 
+
     describe('on editor content change', function () {
         var alohaEditable;
 
@@ -189,6 +190,7 @@ describe('Controller: ArticleCtrl', function () {
     it('retrieves info on retrieved article\'s type', function () {
         expect(ArticleType.getByName).toHaveBeenCalledWith('news');
     });
+
 
     describe('when article\'s type info is retrieved', function () {
         var article,
@@ -354,6 +356,7 @@ describe('Controller: ArticleCtrl', function () {
         });
     });
 
+
     describe('scope\'s save() method', function () {
         it('invokes article service with the article object as a parameter',
             function () {
@@ -370,6 +373,15 @@ describe('Controller: ArticleCtrl', function () {
             scope.$digest();
 
             expect(articleService.modified).toBe(false);
+        });
+    });
+
+
+    describe('scope\'s nonContentFieldChanged() method', function () {
+        it('sets the article modified flag', function () {
+            articleService.modified = false;
+            scope.nonContentFieldChanged();
+            expect(articleService.modified).toBe(true);
         });
     });
 
