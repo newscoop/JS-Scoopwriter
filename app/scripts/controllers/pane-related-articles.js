@@ -12,11 +12,13 @@ angular.module('authoringEnvironmentApp').controller('PaneRelatedArticlesCtrl', 
     'Publication',
     'Issue',
     'Section',
-    function ($q, articleService, modalFactory, Publication, Issue, Section) {
+    'configuration',
+    function ($q, articleService, modalFactory, Publication, Issue, Section, configuration) {
         var self = this, 
             article = articleService.articleInstance,
-            availableRelatedArticles = [],   // article search results
-            relatedArticleListRetrieved = false,  // avilableRelatedArticles initialized yet?
+            articlesSearchResults = [],   // article search results
+            articlesSearchResultsListRetrieved = false,  // articlesSearchResults initialized yet?
+            assignedRelatedArticles = [],
             assigningRelatedArticles = false;  // relatedArticle assignment in progress?
 
         // load initial filter select options
@@ -51,8 +53,8 @@ angular.module('authoringEnvironmentApp').controller('PaneRelatedArticlesCtrl', 
                 previewArticle.contentFields = contentFields;
             });
             previewArticle.loadFirstImage().then(function(firstImage) {
-                // TODO: find best way to get full image url
-                var url = 'http://newscoop.aes.sourcefabric.net/images/';
+                // TODO: is this the best way to get full image url?
+                var url = configuration.API.rootURI + '/images/';
                 previewArticle.firstImage = (firstImage) ? url + firstImage : null;
             });
             self.relatedArticlePreview = previewArticle;
@@ -76,8 +78,8 @@ angular.module('authoringEnvironmentApp').controller('PaneRelatedArticlesCtrl', 
                 filtered,
                 query;
 
-            self.availableRelatedArticles = [];
-            self.relatedArticleListRetrieved = false;
+            self.articlesSearchResults = [];
+            self.articlesSearchResultsListRetrieved = false;
 
             // build a list of relatedArticle IDs to exclude from results (i.e. relatedArticles
             // that are already assigned to the article)
@@ -87,15 +89,14 @@ angular.module('authoringEnvironmentApp').controller('PaneRelatedArticlesCtrl', 
 
             query = (self.query) ? self.query.toLowerCase() : '';
             filters = self.buildFilters();
-            article.searchArticles(query, filters).then(function (availableArticles) {
-                self.relatedArticleListRetrieved = true;
+            article.searchArticles(query, filters).then(function (searchResults) {
+                self.articlesSearchResultsListRetrieved = true;
 
-                console.log(ignored);
-                filtered = _.filter(availableArticles, function (filterArticle) {
+                filtered = _.filter(searchResults, function (filterArticle) {
                     return (!(filterArticle.articleId in ignored));
                 });
 
-                self.availableRelatedArticles = filtered;
+                self.articlesSearchResults = filtered;
             });
         };
 

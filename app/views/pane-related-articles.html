@@ -57,7 +57,7 @@
                     <div class="related-articles-list"
                         drag-sort items="paneRelatedArticles.assignedRelatedArticles"
                         on-order-changed="paneRelatedArticles.orderChange()">
-                        <div ng-repeat="article in paneRelatedArticles.assignedRelatedArticles"
+                        <div ng-repeat="article in paneRelatedArticles.assignedRelatedArticles track by article.articleId"
                             class="related-article pinned">
                             <div class="drag-bar"></div>
                             <div
@@ -68,7 +68,7 @@
                                 <span class="glyphicon glyphicon-remove"></span>
                             </div>                
                             <div class="article-metadata">
-                                <span class="date">{{article.created| date:"dd.MM.yyyy 'at' H:mm:ss"}}</span>
+                                <span class="date">{{::article.created| date:"dd.MM.yyyy 'at' H:mm:ss"}}</span>
                                 <span class="status new" ng-bind="article.statusString"></span>
                             </div>
                             <div class="article-title">
@@ -82,7 +82,7 @@
                 <!-- search results -->
                 <div class="group">
                     <div class="title">Search results</div>
-                    <div ng-repeat="article in paneRelatedArticles.availableRelatedArticles"
+                    <div ng-repeat="article in paneRelatedArticles.articlesSearchResults track by article.articleId"
                         class="related-article">
                         <button 
                             class="btn btn-default btn-xs pin" 
@@ -92,7 +92,7 @@
                             <i class="fa fa-thumb-tack"></i>
                         </button>
                         <div class="article-metadata">
-                            <span class="date">{{article.created| date:"dd.MM.yyyy 'at' H:mm:ss"}}</span>
+                            <span class="date">{{::article.created| date:"dd.MM.yyyy 'at' H:mm:ss"}}</span>
                             <span class="status published" ng-bind="article.statusString"></span>
                         </div>
                         <div class="article-title">
@@ -119,7 +119,7 @@
                 </div>
             </div>
             <div class="content">
-                <div class="preview-dateline">{{paneRelatedArticles.relatedArticlePreview.created| date:"dd.MM.yyyy 'at' H:mm:ss"}}</div>
+                <div class="preview-dateline">{{::paneRelatedArticles.relatedArticlePreview.created| date:"dd.MM.yyyy 'at' H:mm:ss"}}</div>
                 <div class="preview-title" ng-bind-html="paneRelatedArticles.relatedArticlePreview.title"></div>
                 <div class="preview-lead" ng-bind-html="paneRelatedArticles.relatedArticlePreview.lead"></div>
                 <div class="preview-body">

@@ -321,11 +321,11 @@ angular.module('authoringEnvironmentApp').factory('Article', [
                  *  by default)
                  */
                 articleType.fields.forEach(function (field) {
-                    if (field.isContentField === 1) {
+                    if (field.isContentField) {
                         contentFields.unshift(field.name);
                         return;
                     }
-                    if ((field.showInEditor === 1) && 
+                    if ((field.showInEditor) && 
                         ((field.type == 'body') || (field.type == 'longtext'))) {
                         contentFields.unshift(field.name);
                         return;
