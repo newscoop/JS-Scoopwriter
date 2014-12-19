@@ -11,6 +11,7 @@ module.exports = {
                     '*.{ico,png,txt}',
                     '.htaccess',
                     'css/plugin.css',
+                    'css/aes-custom-styles.css',
                     'bower_components/**/*',
                     'scripts/aloha/plugins/aes/**/*',
                     'scripts/routing/*',
@@ -40,6 +41,7 @@ module.exports = {
                 src: [
                     'index.html',
                     'css/plugin.css',
+                    'css/aes-custom-styles.css',
                     'bower_components/**/*',
                     'scripts/aloha/plugins/aes/**/*',
                     'fonts/{,*/}*',
