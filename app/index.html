@@ -15,12 +15,60 @@
       var CSBaseUrl = '/bundles/newscoopeditor/';
     </script>
     <!-- endcode -->
+
     <!-- devcode: !newscoop -->
     <script src="scripts/routing/router.js"></script>
     <script src="scripts/routing/fos_js_routes.js"></script>
     <script type="text/javascript">
       var CSClientId = '7_6203opwgvx8g4skgskksgkws8cs44ks8s4cw4sc8cg4wsk8c40';
       var CSBaseUrl = '';
+
+      var AES_SETTINGS = {
+          API: {
+              rootURI: 'http://newscoop.aes.sourcefabric.net',
+              endpoint: '/content-api',
+              full: 'http://newscoop.aes.sourcefabric.net/content-api'
+          },
+          auth: {
+              client_id: '7_6203opwgvx8g4skgskksgkws8cs44ks8s4cw4sc8cg4wsk8c40',
+              redirect_uri: 'http://localhost:9000',
+              server: 'http://newscoop.aes.sourcefabric.net/oauth/v2/auth'
+          },
+          article: {
+              width: {
+                  desktop: 960,
+                  tablet: 600,
+                  phone: 320
+              }
+          },
+          image: {
+              width: {
+                 small: '30%',
+                 medium: '50%',
+                 big: '100%'
+              },
+              float: 'none'
+          },
+          // default text for empty article fields
+          placeholder: '[please provide your content]',
+          showSwitches: true,
+          articleTypeFields: {
+              news: {
+                  title: {
+                      name: 'title',
+                      displayName: 'Title',
+                      order: 2
+                  }
+              },
+              page: {
+                  title: {
+                      name: 'title',
+                      displayName: 'Title',
+                      order: 1
+                  }
+              }
+          }
+      };
     </script>
     <!-- endcode -->
 

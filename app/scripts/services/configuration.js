@@ -1,5 +1,8 @@
 'use strict';
-angular.module('authoringEnvironmentApp').factory('configuration', function () {
+
+// XXX: deprecated module, use the AES_SETTINGS object instead
+angular.module('authoringEnvironmentApp')
+.factory('configuration', function () {
     return {
         API: {
             rootURI: 'http://newscoop.aes.sourcefabric.net',

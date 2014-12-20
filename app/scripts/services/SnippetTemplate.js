@@ -46,9 +46,10 @@ angular.module('authoringEnvironmentApp').factory('SnippetTemplate', [
         * rejected depending on the server response.
         *
         * @method getAll
-        * @return {Object} "future" array of SnippetTemplate objects - initially
-        *   an empty array is returned, which is later populated with the
-        *   actual data (once the http promise has been successfully resolved)
+        * @return {Object} "future" array of SnippetTemplate objects -
+        *   initially an empty array is returned, which is later populated with
+        *   the actual data (once the http promise has been successfully
+        *   resolved)
         */
         SnippetTemplate.getAll = function () {
             var deferredGet = $q.defer(),

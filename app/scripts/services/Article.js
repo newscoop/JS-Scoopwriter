@@ -8,7 +8,8 @@
 angular.module('authoringEnvironmentApp').factory('Article', [
     '$http',
     '$q',
-    function ($http, $q) {
+    'transform',
+    function ($http, $q, transform) {
         var Article,
             unicodeWords = new XRegExp('(\\p{Letter}|\\d)+', 'g');
 
@@ -290,6 +291,10 @@ angular.module('authoringEnvironmentApp').factory('Article', [
             return stats;
         };
 
+        // XXX: save(), saveSwitches() and changeCommentingSetting() methods
+        // only differ in postData - refactor common API invocation logic
+        // into its own helper method
+
         /**
         * Saves all changes in article content to the server.
         *
@@ -298,33 +303,41 @@ angular.module('authoringEnvironmentApp').factory('Article', [
         */
         Article.prototype.save = function () {
             var deferred = $q.defer(),
-                postData,
+                postData = {
+                    article: {fields: {}}
+                },
                 self = this,
                 url;
 
             url = Routing.generate(
-                // XXX: should be the patcharticle path, but there is a bug in
-                // Routing object, thus we use another path that gives us the
-                // same result
-                'newscoop_gimme_articles_linkarticle',
+                'newscoop_gimme_articles_patcharticle',
                 {number: self.articleId, language: self.language},
                 true
             );
 
-            postData = angular.copy(self);
+            angular.extend(postData.article.fields, self.fields);
+
+            // remove pre-defined switches from POST data as they are not
+            // really article fields and cause trouble
+            // (don't ask why, some weird Newscoop stuff :))
+            delete postData.article.fields.show_on_front_page;
+            delete postData.article.fields.show_on_section_page;
+
+            // title is not a regular article field, need to set it manually
+            postData.article.title = self.title;
 
             // serialize objects (images, snippets) in all article fields
-            Object.keys(postData.fields).forEach(function (key) {
+            Object.keys(postData.article.fields).forEach(function (key) {
                 var serialized = serializeAlohaBlocks(
-                    'image', postData.fields[key]
+                    'image', postData.article.fields[key]
                 );
-                postData.fields[key] = serializeAlohaBlocks(
+                postData.article.fields[key] = serializeAlohaBlocks(
                     'snippet', serialized
                 );
             });
 
             $http.patch(
-                url, postData
+                url, postData, {transformRequest: transform.formEncode}
             ).success(function () {
                 deferred.resolve();
             }).error(function (responseBody) {
@@ -341,31 +354,27 @@ angular.module('authoringEnvironmentApp').factory('Article', [
         * @param switchNames {Array} list of article field names of type switch
         * @return {Object} promise object
         */
-        // XXX: get rid of explicitly passing switchNames
+        // XXX: get rid of explicitly passing switchNames?
         Article.prototype.saveSwitches = function (switchNames) {
             var deferred = $q.defer(),
-                postData,
+                postData = {
+                    article: {fields: {}}
+                },
                 self = this,
                 url;
 
             url = Routing.generate(
-                // XXX: should be the patcharticle path, but there is a bug in
-                // Routing object, thus we use another path that gives us the
-                // same result
-                'newscoop_gimme_articles_linkarticle',
+                'newscoop_gimme_articles_patcharticle',
                 {number: self.articleId, language: self.language},
                 true
             );
 
-            postData = {
-                fields: {}
-            };
             switchNames.forEach(function (name) {
-                postData.fields[name] = self.fields[name];
+                postData.article.fields[name] = self.fields[name];
             });
 
             $http.patch(
-                url, postData
+                url, postData, {transformRequest: transform.formEncode}
             ).success(function () {
                 deferred.resolve();
             }).error(function (responseBody) {
@@ -387,22 +396,25 @@ angular.module('authoringEnvironmentApp').factory('Article', [
         */
         Article.prototype.changeCommentingSetting = function (newValue) {
             var deferred = $q.defer(),
-                postData,
+                postData = {
+                    article: {}
+                },
+                self = this,
                 url;
 
             url = Routing.generate(
                 'newscoop_gimme_articles_patcharticle',
-                {number: this.articleId, language: this.language},
+                {number: self.articleId, language: self.language},
                 true
             );
 
-            postData = {
+            postData.article = {
                 comments_enabled: (newValue === Article.commenting.ENABLED),
                 comments_locked: (newValue === Article.commenting.LOCKED)
             };
 
             $http.patch(
-                url, postData
+                url, postData, {transformRequest: transform.formEncode}
             ).success(function () {
                 deferred.resolve();
             }).error(function (responseBody) {

@@ -137,6 +137,7 @@ describe('Controller: ArticleCtrl', function () {
         });
     });
 
+
     describe('on editor content change', function () {
         var alohaEditable;
 
@@ -190,63 +191,232 @@ describe('Controller: ArticleCtrl', function () {
         expect(ArticleType.getByName).toHaveBeenCalledWith('news');
     });
 
+
     describe('when article\'s type info is retrieved', function () {
         var article,
             articleTypeNews;
 
-        beforeEach(inject(function (configuration) {
-            configuration.articleTypeFields = {
-                news: {
-                    title: {name: 'title', order: 10},
-                    body: {name: 'body', order: 20, defaultText: '[body]'}
-                }
-            };
-
+        beforeEach(function () {
             scope.article.fields = {
                 body: '<p>Paragraph 1</p>\n<p>Paragraph 2</p>',
-                printsection: 'Sports'
+                contentField: 'some content',
+                seo_description: 'foo bar baz',
+                isPayable: true
             };
+            scope.article.title = 'article title';
 
             articleTypeNews = {
                 name: 'news',
                 fields: [
-                    {name: 'body'},
-                    {name: '_internal'}
+                    {
+                        name: 'body',
+                        type: 'text',
+                        fieldWeight: 12,
+                        isHidden: false,
+                        showInEditor: true  // content field
+                    },
+                    {
+                        name: 'contentField',
+                        type: 'text',
+                        fieldWeight: 5,
+                        isHidden: false,
+                        showInEditor: true  // content field
+                    },
+                    {
+                        name: 'contentField2',
+                        type: 'text',
+                        fieldWeight: 6,
+                        isHidden: false,
+                        showInEditor: true  // content field
+                    },
+                    {
+                        name: 'hiddenContentField',
+                        type: 'text',
+                        fieldWeight: 24,
+                        isHidden: true,
+                        showInEditor: true  // content field
+                    },
+                    {
+                        name:'printsection',
+                        type: 'text',
+                        fieldWeight: 3,
+                        isHidden: true,
+                        showInEditor: false  // a non-content field
+                    },
+                    {
+                        name:'seo_description',
+                        type: 'text',
+                        fieldWeight: 1,
+                        isHidden: false,
+                        showInEditor: false  // a non-content field
+                    },
+                    {
+                        name:'field_type_body',
+                        type: 'body',
+                        fieldWeight: 8,
+                        isHidden: false,
+                        showInEditor: false  // a non-content field
+                    },
+                    {
+                        name:'isPayable',
+                        type: 'switch',
+                        fieldWeight: 7,
+                        isHidden: false,
+                        showInEditor: false  // a non-content field
+                    },
+                    {
+                        name:'metaField_1',
+                        type: 'text',
+                        fieldWeight: 19,
+                        isHidden: false,
+                        showInEditor: false  // a non-content field
+                    },
+                    {
+                        name:'metaField_2',
+                        type: 'text',
+                        fieldWeight: 16,
+                        isHidden: false,
+                        showInEditor: false  // a non-content field
+                    },
                 ]
             };
-        }));
-
-        it('exposes all article fields from config in scope', function () {
-            var match;
-
-            getArticleTypeDeferred.resolve(articleTypeNews);
-            scope.$digest();
-
-            match = _(scope.editableFields).find({name: 'title'});
-            expect(match).toBeDefined();
-            match = _(scope.editableFields).find({name: 'body'});
-            expect(match).toBeDefined();
         });
 
-        it('does not expose article type\'s fields not found in config',
+        it('exposes article\'s non-hidden content fields and a title in scope',
             function () {
                 var match;
 
                 getArticleTypeDeferred.resolve(articleTypeNews);
                 scope.$digest();
 
-                match = _(scope.editableFields).find({name: '_internal'});
-                expect(match).toBeUndefined();
+                match = _(scope.editableFields).find({name: 'body'});
+                expect(match).toBeDefined();
+                match = _(scope.editableFields).find({name: 'contentField'});
+                expect(match).toBeDefined();
+                match = _(scope.editableFields).find({name: 'contentField2'});
+                expect(match).toBeDefined();
+                match = _(scope.editableFields).find({name: 'title'});
+                expect(match).toBeDefined();
             }
         );
 
-        it('sets empty article fields to their default text', function () {
+        it('exposes article\'s non-content fields in scope', function () {
+            var match;
+
+            getArticleTypeDeferred.resolve(articleTypeNews);
+            scope.$digest();
+
+            expect(scope.nonContentFields).toBeDefined();
+            expect(scope.nonContentFields.length).toEqual(3);
+            match = _(scope.nonContentFields).find({name: 'seo_description'});
+            expect(match).toBeDefined();
+            match = _(scope.nonContentFields).find({name: 'metaField_1'});
+            expect(match).toBeDefined();
+            match = _(scope.nonContentFields).find({name: 'metaField_2'});
+            expect(match).toBeDefined();
+        });
+
+        it('does not expose hidden fields in scope', function () {
+            var match;
+
+            getArticleTypeDeferred.resolve(articleTypeNews);
+            scope.$digest();
+
+            match = _(scope.editableFields).find({name: 'hiddenContentField'});
+            expect(match).toBeUndefined();
+            match = _(scope.nonContentFields).find({name: 'printsection'});
+            expect(match).toBeUndefined();
+        });
+
+        it('does not expose fields of type "switch" in scope', function () {
+            var match;
+
+            getArticleTypeDeferred.resolve(articleTypeNews);
+            scope.$digest();
+
+            match = _(scope.nonContentFields).find({name: 'isPayable'});
+            expect(match).toBeUndefined();
+        });
+
+        it('does not expose fields of type "body" in scope', function () {
+            var match;
+
+            getArticleTypeDeferred.resolve(articleTypeNews);
+            scope.$digest();
+
+            match = _(scope.nonContentFields).find({name: 'field_type_body'});
+            expect(match).toBeUndefined();
+        });
+
+        it('correctly sorts the content fields list', function () {
+            var maxWeight = -1,
+                oldTitleOrder,
+                titleSettings;
+
+            titleSettings = AES_SETTINGS.articleTypeFields.news.title;
+            oldTitleOrder = titleSettings.order;
+            titleSettings.order = 3;
+
+            getArticleTypeDeferred.resolve(articleTypeNews);
+            scope.$digest();
+
+            // the title field must be at correct position and all other
+            // fields' weights must be greater than or equal to field
+            // weights of all the fields preceding them
+            scope.editableFields.forEach(function (field, i) {
+                if (field.name === 'title') {
+                    expect(i).toEqual(2);  // an order of 3 means index 2
+                    return;
+                }
+
+                if (i === 0) {
+                    maxWeight = field.fieldWeight;
+                } else {
+                    expect(field.fieldWeight >= maxWeight).toBe(true);
+                    maxWeight = field.fieldWeight;
+                }
+            });
+
+            // restore original global setting
+            titleSettings.order = oldTitleOrder;
+        });
+
+        it('correctly sorts the non-content fields list',  function () {
+            var maxWeight = -1;
+
+            getArticleTypeDeferred.resolve(articleTypeNews);
+            scope.$digest();
+
+            // all fields' weights must be greater than or equal to field
+            // weights of all the fields preceding them
+            scope.nonContentFields.forEach(function (field, i) {
+                if (i === 0) {
+                    maxWeight = field.fieldWeight;
+                } else {
+                    expect(field.fieldWeight >= maxWeight).toBe(true);
+                    maxWeight = field.fieldWeight;
+                }
+            });
+        });
+
+        it('sets empty article fields to default text', function () {
+            AES_SETTINGS.placeholder= '[default text]';
             scope.article.fields.body = null;
 
             getArticleTypeDeferred.resolve(articleTypeNews);
             scope.$digest();
 
-            expect(scope.article.fields.body).toEqual('[body]');
+            expect(scope.article.fields.body).toEqual('[default text]');
+        });
+
+        it('sets article title to default text if empty', function () {
+            AES_SETTINGS.placeholder= '[default text]';
+            scope.article.title = '';
+
+            getArticleTypeDeferred.resolve(articleTypeNews);
+            scope.$digest();
+
+            expect(scope.article.title).toEqual('[default text]');
         });
 
         it('sets fields\' stats text', function () {
@@ -268,6 +438,7 @@ describe('Controller: ArticleCtrl', function () {
         });
     });
 
+
     describe('scope\'s save() method', function () {
         it('invokes article service with the article object as a parameter',
             function () {
@@ -284,6 +455,15 @@ describe('Controller: ArticleCtrl', function () {
             scope.$digest();
 
             expect(articleService.modified).toBe(false);
+        });
+    });
+
+
+    describe('scope\'s nonContentFieldChanged() method', function () {
+        it('sets the article modified flag', function () {
+            articleService.modified = false;
+            scope.nonContentFieldChanged();
+            expect(articleService.modified).toBe(true);
         });
     });
 
