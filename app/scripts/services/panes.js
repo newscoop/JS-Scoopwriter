@@ -32,8 +32,8 @@ angular.module('authoringEnvironmentApp').factory('panes', [
                     template: 'views/pane-related-articles.html',
                     position: 'right',
                     size: 'small',
-                    visible: true,
-                    active: true,
+                    visible: false,
+                    active: false,
                     selected: true
                 },
                 {
