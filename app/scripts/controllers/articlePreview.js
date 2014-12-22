@@ -6,14 +6,12 @@
     *
     * @class ModalCtrl
     */
-    function ModalCtrl(
-        $modalInstance, $sce, articleInfo, configuration
-    ) {
+    function ModalCtrl($modalInstance, $sce, articleInfo) {
         var self = this,
             url;
 
         url = [
-            configuration.API.rootURI, '/admin/articles/preview.php?',
+            AES_SETTINGS.API.rootURI, '/admin/articles/preview.php?',
             'f_publication_id=', articleInfo.publicationId,
             '&f_issue_number=', articleInfo.issueId,
             '&f_section_number=', articleInfo.sectionId,
@@ -34,9 +32,7 @@
         };
     }
 
-    ModalCtrl.$inject = [
-        '$modalInstance', '$sce', 'articleInfo', 'configuration'
-    ];
+    ModalCtrl.$inject = ['$modalInstance', '$sce', 'articleInfo'];
 
 
     /**

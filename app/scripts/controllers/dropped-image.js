@@ -2,11 +2,10 @@
 angular.module('authoringEnvironmentApp').controller('DroppedImageCtrl', [
     'images',
     '$scope',
-    'configuration',
     'NcImage',
     '$rootScope',
     '$q',
-    function (images, $scope, configuration, NcImage, $rootScope, $q) {
+    function (images, $scope, NcImage, $rootScope, $q) {
 
         /**
         * Initializes the controller - it finds the specified image in the
@@ -72,7 +71,7 @@ angular.module('authoringEnvironmentApp').controller('DroppedImageCtrl', [
         $scope.editingCaption = false;
         $scope.newCaption = '';  // temp value of image's new description
 
-        $scope.root = configuration.API.rootURI;
+        $scope.root = AES_SETTINGS.API.rootURI;
         $scope.images = images;
     }
 ]);

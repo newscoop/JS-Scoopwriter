@@ -43,7 +43,7 @@ describe('Controller: MediaArchiveCtrl', function () {
     });
 
     it('sets `root` property on scope holding API root URL', function () {
-        expect(scope.root).toEqual('http://newscoop.aes.sourcefabric.net');
+        expect(scope.root).toEqual(AES_SETTINGS.API.rootURI);
     });
 
     describe('scope\'s thumbnailClicked() method', function () {

@@ -1,7 +1,6 @@
 'use strict';
 angular.module('authoringEnvironmentApp').service('images', [
     'pageTracker',
-    'configuration',
     '$log',
     'article',
     'getFileReader',
@@ -11,7 +10,7 @@ angular.module('authoringEnvironmentApp').service('images', [
     '$rootScope',
     '$q',
     function images(
-        pageTracker, configuration, $log, articleService,
+        pageTracker, $log, articleService,
         getFileReader, formDataFactory, imageFactory, NcImage,
         $rootScope, $q
     ) {

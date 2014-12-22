@@ -25,6 +25,7 @@
   "regexp": true,       // Prohibit `.` and `[^...]` in regular expressions.
   "maxlen": 79,         // This option lets you set the maximum length of a line.
   "globals": {
+    "AES_SETTINGS": false,  // global configuration object
     "angular": false,   // Tells JSHint about the existence of Angular as a global var
     "_": false,         // Tells JSHint about LoDash
     "$": false,         // jQuery

@@ -9,9 +9,8 @@ angular.module('authoringEnvironmentApp')
 .controller('FixedImagePlaceholderCtrl', [
     '$scope',
     'images',
-    'configuration',
-    function ($scope, images, configuration) {
-        $scope.root = configuration.API.rootURI;
+    function ($scope, images) {
+        $scope.root = AES_SETTINGS.API.rootURI;
         $scope.style = {};
         // currently unused
         $scope.dropped = false;

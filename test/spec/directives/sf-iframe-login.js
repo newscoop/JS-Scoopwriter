@@ -8,7 +8,6 @@
 
 describe('Directive: sfIframeLogin', function () {
     var scope,
-        configuration,
         $compile;
 
     /**
@@ -49,9 +48,8 @@ describe('Directive: sfIframeLogin', function () {
 
     beforeEach(module('authoringEnvironmentApp'));
 
-    beforeEach(inject(function (_$compile_, $rootScope, _configuration_) {
+    beforeEach(inject(function (_$compile_, $rootScope) {
         $compile = _$compile_;
-        configuration = _configuration_;
         scope = $rootScope.$new();
     }));
 
@@ -110,15 +108,12 @@ describe('Directive: sfIframeLogin', function () {
                 expectedUrl,
                 template = createHtmlTemplate({'on-load': 'foo()'});
 
-            configuration.auth = {
-                server: 'http://login.com/form',
-                'redirect_uri': 'http://redirect.com'
-            };
-
+            // NOTE: these settings (URL, client_id, etc.) are defined in the
+            // global AES_SETTINGS object mock
             expectedUrl = [
-                'http://login.com/form',
-                '?client_id=123_qwertz',  // determined from global CSClientId
-                '&redirect_uri=http://redirect.com',
+                'http://server.net/oauth',
+                '?client_id=1234_qwerty',
+                '&redirect_uri=http://redirect.me:80',
                 '&response_type=token'
             ].join('');
 

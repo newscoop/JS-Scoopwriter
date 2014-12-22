@@ -34,9 +34,9 @@ describe('Controller: DroppedImageCtrl', function () {
         expect(scope.images).toBe(images);
     });
 
-    it('exposes base URL in scope', inject(function (configuration) {
-        expect(scope.root).toEqual(configuration.API.rootURI);
-    }));
+    it('exposes base URL in scope', function () {
+        expect(scope.root).toEqual(AES_SETTINGS.API.rootURI);
+    });
 
     it('sets scope\'s editingCaption flag to false by default', function () {
         expect(scope.editingCaption).toBe(false);
