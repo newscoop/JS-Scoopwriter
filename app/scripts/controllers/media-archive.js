@@ -8,10 +8,9 @@
 angular.module('authoringEnvironmentApp').controller('MediaArchiveCtrl', [
     '$scope',
     'images',
-    'configuration',
-    function ($scope, images, conf) {
+    function ($scope, images) {
         $scope.images = images;
-        $scope.root = conf.API.rootURI;
+        $scope.root = AES_SETTINGS.API.rootURI;
 
         $scope.searchFilter = '';  // search term as entered by user
 

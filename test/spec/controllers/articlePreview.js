@@ -87,7 +87,6 @@ describe('Controller: ArticlePreviewCtrl', function () {
 
         beforeEach(function () {
             var articleInfoParam,
-                fakeConfig,
                 fakeSCE,
                 ModalCtrl;
 
@@ -118,21 +117,12 @@ describe('Controller: ArticlePreviewCtrl', function () {
                 sectionId: 555
             };
 
-            fakeConfig = {
-                API: {
-                    rootURI: 'http://foo.bar'
-                }
-            };
-
-            ctrl = new ModalCtrl(
-                fakeModalInstance, fakeSCE, articleInfoParam, fakeConfig
-            );
-
+            ctrl = new ModalCtrl(fakeModalInstance, fakeSCE, articleInfoParam);
         });
 
         it('exposes correct preview URL', function () {
             var expectedUrl = [
-                'http://foo.bar',
+                AES_SETTINGS.API.rootURI,
                 '/admin/articles/preview.php?',
                 'f_publication_id=333',
                 '&f_issue_number=444',

@@ -30,7 +30,7 @@ describe('Controller: AttachImageCtrl', function () {
     }));
 
     it('sets API root URL in scope', function () {
-        expect(scope.root).toEqual('http://newscoop.aes.sourcefabric.net');
+        expect(scope.root).toEqual(AES_SETTINGS.API.rootURI);
     });
 
     it('proxies images', function () {

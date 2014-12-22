@@ -12,12 +12,10 @@ angular.module('authoringEnvironmentApp').controller('ArticleActionsCtrl', [
     '$window',
     'article',
     'Article',
-    'configuration',
     'mode',
     'toaster',
     function (
-        $rootScope, $scope, $window, articleService, Article, configuration,
-        mode, toaster
+        $rootScope, $scope, $window, articleService, Article, mode, toaster
     ) {
         var statusObj;
 
@@ -100,7 +98,7 @@ angular.module('authoringEnvironmentApp').controller('ArticleActionsCtrl', [
         */
         $scope.close = function () {
             var redirectUrl = [
-                configuration.API.rootURI, '/',
+                AES_SETTINGS.API.rootURI, '/',
                 'admin/articles/index.php?',
                 'f_publication_id=', $scope.article.publication.id,
                 '&f_issue_number=', $scope.article.issue.number,

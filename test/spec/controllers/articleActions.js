@@ -10,7 +10,6 @@ describe('Controller: ArticleActionsCtrl', function () {
     var Article,
         ArticleActionsCtrl,
         articleService,
-        configService,
         modeService,
         scope,
         toaster,
@@ -51,17 +50,10 @@ describe('Controller: ArticleActionsCtrl', function () {
             }
         };
 
-        configService = {
-            API: {
-                rootURI: 'http://server.com/newscoop'
-            }
-        };
-
         ArticleActionsCtrl = $controller('ArticleActionsCtrl', {
             $scope: scope,
             $window: $window,
             article: articleService,
-            configuration: configService,
             mode: modeService
         });
 
@@ -222,7 +214,7 @@ describe('Controller: ArticleActionsCtrl', function () {
         it('redirects to the list of articles when lock is released',
             function () {
                 var expectedUrl = [
-                    configService.API.rootURI, '/',
+                    AES_SETTINGS.API.rootURI, '/',
                     'admin/articles/index.php?',
                     'f_publication_id=11',
                     '&f_issue_number=22',

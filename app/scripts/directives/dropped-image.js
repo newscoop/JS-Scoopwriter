@@ -8,10 +8,9 @@
 */
 
 angular.module('authoringEnvironmentApp').directive('droppedImage', [
-    'configuration',
     '$log',
     '$timeout',
-    function (configuration, $log, $timeout) {
+    function ($log, $timeout) {
         return {
             restrict: 'A',
             templateUrl: 'views/dropped-image.html',
@@ -182,8 +181,8 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                         scope.activeSize = 'custom';
                         positionToolbar();
                         return;
-                    } else if (size in configuration.image.width) {
-                        width = configuration.image.width[size];
+                    } else if (size in AES_SETTINGS.image.width) {
+                        width = AES_SETTINGS.image.width[size];
                         scope.activeSize = size;
                     } else {
                         // set to original image size (NOTE: add 2px because

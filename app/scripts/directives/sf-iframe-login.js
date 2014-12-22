@@ -1,4 +1,3 @@
-/* global CSClientId */
 'use strict';
 
 /**
@@ -7,8 +6,7 @@
 * @class sfIframeLogin
 */
 angular.module('authoringEnvironmentApp').directive('sfIframeLogin', [
-    'configuration',
-    function (configuration) {
+    function () {
         return {
             template: '<iframe></iframe>',
             replace: true,
@@ -23,13 +21,13 @@ angular.module('authoringEnvironmentApp').directive('sfIframeLogin', [
                     throw 'sfIframeLogin: missing onLoad handler';
                 }
 
-                // NOTE: when bundled into a Newscoop plugin, CSClientId is
+                // NOTE: when bundled into a Newscoop plugin, AES_SETTINGS is
                 // available as a global variable (it is set by the PHP code
                 // that produces the index.html file containing our app)
                 url = [
-                    configuration.auth.server,
-                    '?client_id=', CSClientId,
-                    '&redirect_uri=', configuration.auth.redirect_uri,
+                    AES_SETTINGS.auth.server,
+                    '?client_id=', AES_SETTINGS.auth.client_id,
+                    '&redirect_uri=', AES_SETTINGS.auth.redirect_uri,
                     '&response_type=token'
                 ].join('');
 

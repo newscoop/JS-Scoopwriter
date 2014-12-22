@@ -11,10 +11,8 @@ angular.module('authoringEnvironmentApp').controller('AttachImageCtrl', [
     '$q',
     'images',
     'modal',
-    'configuration',
-    function ($scope, $q, images, modal, configuration) {
-
-        $scope.root = configuration.API.rootURI;
+    function ($scope, $q, images, modal) {
+        $scope.root = AES_SETTINGS.API.rootURI;
         $scope.images = images;
 
         $scope.sources = [

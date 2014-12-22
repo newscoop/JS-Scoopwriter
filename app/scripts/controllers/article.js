@@ -1,4 +1,3 @@
-/* global AES_SETTINGS */
 'use strict';
 
 /**

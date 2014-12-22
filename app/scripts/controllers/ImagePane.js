@@ -10,12 +10,11 @@ angular.module('authoringEnvironmentApp').controller('ImagePaneCtrl', [
     'images',
     'modal',  // XXX: later move this old modal service into modalFactory
     'modalFactory',
-    'configuration',
-    function ($scope, images, modal, modalFactory, conf) {
+    function ($scope, images, modal, modalFactory) {
 
         $scope.images = images;
         $scope.defaultWidth = '100%';
-        $scope.root = conf.API.rootURI;
+        $scope.root = AES_SETTINGS.API.rootURI;
 
         /**
         * Opens a modal containing an interface for attaching
