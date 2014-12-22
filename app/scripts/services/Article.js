@@ -8,8 +8,9 @@
 angular.module('authoringEnvironmentApp').factory('Article', [
     '$http',
     '$q',
+    'transform',
     'ArticleType',
-    function ($http, $q, ArticleType) {
+    function ($http, $q, transform, ArticleType) {
         var Article,
             unicodeWords = new XRegExp('(\\p{Letter}|\\d)+', 'g');
 
