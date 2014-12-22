@@ -1,29 +1,27 @@
-'use strict';
+(function () {
+    'use strict';
 
-/**
-* A directive which enables changing the order of container's children by
-* drag and drop operations.
-*
-* @class dragSort
-*/
-
-angular.module('authoringEnvironmentApp').directive('dragSort', [
-    function () {
-
+    // directive's linking function
+    function linkFunction(scope, element, attrs) {
         var newIdx = -1,  // dragged element's (potential) new position
             $emptySlot = null,  // DOM marker for the new position
             $rootElement,  // root DOM element the directive is applied to
             draggedElementIdx = -1;  // index of the element being dragged
 
+        // NOTE: we unwrap element and wrap it into a "real jQuery" object
+        // as this prevents some weird behavior in tests (i.e. event
+        // handlers not registered on the $rootElement)
+        $rootElement = $(element[0]);
+
         /**
         * Sets drag-n-drop event handlers for the given node, making it
         * draggable.
         *
-        * @method setEventHandlers
+        * @function setEventHandlers
         * @param $element {Object} jQuery-wrapped DOM element for which to set
         *   the event handlers
         */
-        var setEventHandlers = function ($element) {
+        function setEventHandlers($element) {
             $element.attr('draggable', true);
 
             $element.on('dragstart', function (e) {
@@ -130,18 +128,18 @@ angular.module('authoringEnvironmentApp').directive('dragSort', [
                 // let the drop even through to the parent container, thus
                 // don't call e.originalEvent.stopPropagation()
             });
-        };
+        }
 
         /**
         * Sets drag-n-drop event handlers for the container of the nodes
         * representing the items in collection.
         *
-        * @method setContainerEventHandlers
+        * @function setContainerEventHandlers
         * @param $container {Object} jQuery-wrapped DOM element representing
         *   the container
         * @param scope {Object} scope of the directive
         */
-        var setContainerEventHandlers = function ($container, scope) {
+        function setContainerEventHandlers($container, scope) {
             $container.on('dragover', function (e) {
                 e.originalEvent.preventDefault();  // allow drop
                 e.originalEvent.dataTransfer.dropEffect = 'move';
@@ -178,37 +176,41 @@ angular.module('authoringEnvironmentApp').directive('dragSort', [
                     scope.orderChangedCallback();
                 }
             });
-        };
+        }
 
-        // directive's linking function
-        var linkFunction = function (scope, element, attrs) {
-            // NOTE: we unwrap element and wrap it into a "real jQuery" object
-            // as this prevents some weird behavior in tests (i.e. event
-            // handlers not registered on the $rootElement)
-            $rootElement = $(element[0]);
+        scope.$watchCollection('items', function (newItems, oldItems) {
+            var children = $rootElement.children(),
+                diff = _.difference(newItems, oldItems);
 
-            scope.$watchCollection('items', function (newItems, oldItems) {
-                var children = $rootElement.children(),
-                    diff = _.difference(newItems, oldItems);
-
-                angular.forEach(children, function (el, i) {
-                    // only set event handlers for new elements in collection
-                    if (_.indexOf(diff, newItems[i]) > -1) {
-                        setEventHandlers($(el));
-                    }
-                });
+            angular.forEach(children, function (el, i) {
+                // only set event handlers for new elements in collection
+                if (_.indexOf(diff, newItems[i]) > -1) {
+                    setEventHandlers($(el));
+                }
             });
+        });
 
-            setContainerEventHandlers($rootElement, scope);
-        };
+        setContainerEventHandlers($rootElement, scope);
+    }  // end linkFunction
 
-        return {
-            restrict: 'A',
-            scope: {
-                items: '=',
-                orderChangedCallback: '&onOrderChanged'
-            },
-            link: linkFunction
-        };
-    }
-]);
+
+    /**
+    * A directive which enables changing the order of container's children by
+    * drag and drop operations.
+    *
+    * @class dragSort
+    */
+    angular.module('authoringEnvironmentApp').directive('dragSort', [
+        function () {
+            return {
+                restrict: 'A',
+                scope: {
+                    items: '=',
+                    orderChangedCallback: '&onOrderChanged'
+                },
+                link: linkFunction
+            };
+        }
+    ]);
+
+}());
