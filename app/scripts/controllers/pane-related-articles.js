@@ -12,8 +12,7 @@ angular.module('authoringEnvironmentApp').controller('PaneRelatedArticlesCtrl', 
     'Publication',
     'Issue',
     'Section',
-    'configuration',
-    function ($q, articleService, modalFactory, Publication, Issue, Section, configuration) {
+    function ($q, articleService, modalFactory, Publication, Issue, Section) {
         var self = this;
 
         self.article = articleService.articleInstance;
@@ -55,7 +54,7 @@ angular.module('authoringEnvironmentApp').controller('PaneRelatedArticlesCtrl', 
             });
             previewArticle.loadFirstImage().then(function(firstImage) {
                 // TODO: is this the best way to get full image url?
-                var url = configuration.API.rootURI + '/images/';
+                var url = AES_SETTINGS.API.rootURI + '/images/';
                 previewArticle.firstImage = (firstImage) ? url + firstImage : null;
             });
             self.relatedArticlePreview = previewArticle;
