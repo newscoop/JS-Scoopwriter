@@ -42,11 +42,11 @@
   </div>
     <section
        class="article-full-text article-field {{field.name}}"
-       ng-repeat="field in (editableFields | orderBy: 'order')"
+       ng-repeat="field in ::editableFields track by field.name"
        ng-switch on="field.name"
        >
       <header>
-        <span class="edit-label">{{field.displayName}}</span>
+        <span class="edit-label">{{::(field.phrase || field.name)}}</span>
         <span ng-if="field.name !== 'mainImage'"
               class="edit-words-info">{{field.statsText}}</span>
       </header>
@@ -73,8 +73,46 @@
          >
       </div>
     </section>
-    <div ng-hide="editableFields.length">
-      There are no editable fields for this type of article
-    </div>
+
+
+    <section class="custom-fields">
+      <div class="header">
+        <span ng-click="showCustomFields = !showCustomFields">
+          <i class="fa fa-chevron-{{showCustomFields ? 'down' : 'right'}}"></i>
+          Custom fields
+        </span>
+      </div>
+
+      <div class="wrapper" ng-show="showCustomFields">
+        <ul class="fields">
+          <li ng-repeat="field in ::nonContentFields track by field.name"
+              ng-switch on="field.type">
+
+              <label>{{::(field.phrase || field.name)}}</label>
+
+              <input ng-switch-when="text"
+                  type="text"
+                  class="form-control"
+                  ng-model="article.fields[field.name]"
+                  ng-change="nonContentFieldChanged()"/>
+
+              <textarea ng-switch-when="longtext"
+                  class="form-control"
+                  ng-model="article.fields[field.name]"
+                  ng-change="nonContentFieldChanged()"></textarea>
+
+              <div ng-switch-default>
+                Unrecognized field type <em>{{::field.type}}</em>, cannot render
+                input widget for the field <em>{{::field.name}}</em>.
+              </div>
+          </li>
+        </ul>
+
+        <div ng-show="nonContentFields.length < 1">
+          There are no metadata fields for this type of article
+        </div>
+      </div>
+
+    </section>
 
 </article>

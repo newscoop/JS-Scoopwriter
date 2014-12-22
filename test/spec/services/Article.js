@@ -624,6 +624,19 @@ describe('Factory: Article', function () {
         var article,
             url;
 
+        /**
+        * Helper function for verifying if Content-Type request header is
+        * correctly set.
+        *
+        * @function headersCheck
+        * @param headers {Object} request headers
+        * @return {Boolean} true if check passes, false otherwise
+        */
+        function headersCheck(headers) {
+            return headers['Content-Type'] ===
+                'application/x-www-form-urlencoded';
+        }
+
         beforeEach(function () {
             article = new Article();
             article.articleId = 8;
@@ -631,14 +644,11 @@ describe('Factory: Article', function () {
             article.fields = {};
 
             url = Routing.generate(
-                // XXX: should be the patcharticle path, but there is a bug in
-                // Routing object, thus we use another path that gives us the
-                // same result
-                'newscoop_gimme_articles_linkarticle',
+                'newscoop_gimme_articles_patcharticle',
                 {number: 8, language: 'de'},
                 true
             );
-            $httpBackend.expectPATCH(url).respond(204);
+            $httpBackend.expectPATCH(url).respond(200);
         });
 
         afterEach(function () {
@@ -646,6 +656,17 @@ describe('Factory: Article', function () {
         });
 
         it('invokes correct API endpoint', function () {
+            article.save();
+        });
+
+        it('sets correct Content-Type header', function () {
+            $httpBackend.resetExpectations();
+            $httpBackend.expectPATCH(
+                url,
+                function () {return true;},  // we don't check POST data here
+                headersCheck
+            ).respond(200);
+
             article.save();
         });
 
@@ -672,43 +693,51 @@ describe('Factory: Article', function () {
             }
         );
 
+
         describe('building request data', function () {
-            var checkPostData;
+            var expectedReqData;
 
             beforeEach(function () {
-                var dataValid;
-
-                checkPostData = jasmine.createSpy();
-                dataValid = function (data) {
-                    return checkPostData(data);
+                var dataValidChecker = function (data) {
+                    return data === $.param(expectedReqData);
                 };
+
+                expectedReqData = {
+                    article: {
+                        fields: {}
+                    }
+                };
+
+                article.title = 'article title';
+
                 $httpBackend.resetExpectations();
-                $httpBackend.expectPATCH(url, dataValid).respond(204);
+                $httpBackend.expectPATCH(url, dataValidChecker).respond(200);
             });
 
             it('does not modify normal HTML text (no special content)',
                 function () {
-                    article.fields.body = [
-                        '<p>This is <b>bold</b>, really.&nbsp;</p>',
-                    ].join('');
-
-                    checkPostData.andCallFake(function (data) {
-                        var jsonData = JSON.parse(data);
-                        return jsonData.fields.body ===
-                            '<p>This is <b>bold</b>, really.&nbsp;</p>';
-                    });
-
+                    var bodyValue = '<p>This <b>bold</b>, really.&nbsp;</p>';
+                    article.fields.body = bodyValue;
+                    expectedReqData.article.fields.body = bodyValue;
+                    expectedReqData.article.title = 'article title';
                     article.save();
                 }
             );
 
             it('does not convert empty (null) content fields', function () {
                 article.fields.teaser = null;
+                expectedReqData.article.fields.teaser = null;
+                expectedReqData.article.title = 'article title';
+                article.save();
+            });
 
-                checkPostData.andCallFake(function (data) {
-                    var jsonData = JSON.parse(data);
-                    return jsonData.fields.teaser === null;  // still null?
-                });
+            it('omits predefined switch fields', function () {
+                article.fields.body = 'body content';
+                article.fields.show_on_front_page = true;
+                article.fields.show_on_section_page = true;
+
+                expectedReqData.article.fields.body = 'body content';
+                expectedReqData.article.title = 'article title';
 
                 article.save();
             });
@@ -722,11 +751,9 @@ describe('Factory: Article', function () {
                     'End of text.'
                 ].join('');
 
-                checkPostData.andCallFake(function (data) {
-                    var jsonData = JSON.parse(data);
-                    return (jsonData.fields.body ===
-                        'Body text<** Image 123 size="small" **>End of text.');
-                });
+                expectedReqData.article.fields.body =
+                    'Body text<** Image 123 size="small" **>End of text.';
+                expectedReqData.article.title = 'article title';
 
                 article.save();
             });
@@ -740,11 +767,9 @@ describe('Factory: Article', function () {
                     'End of text.'
                 ].join('');
 
-                checkPostData.andCallFake(function (data) {
-                    var jsonData = JSON.parse(data);
-                    return (jsonData.fields.body ===
-                        'Body text<-- Snippet 99 -->End of text.');
-                });
+                expectedReqData.article.fields.body =
+                    'Body text<-- Snippet 99 -->End of text.';
+                expectedReqData.article.title = 'article title';
 
                 article.save();
             });
@@ -770,14 +795,11 @@ describe('Factory: Article', function () {
             switchNames = ['switch_1', 'switch_2'];
 
             url = Routing.generate(
-                // XXX: should be the patcharticle path, but there is a bug in
-                // Routing object, thus we use another path that gives us the
-                // same result
-                'newscoop_gimme_articles_linkarticle',
+                'newscoop_gimme_articles_patcharticle',
                 {number: 8, language: 'de'},
                 true
             );
-            $httpBackend.expectPATCH(url).respond(204);
+            $httpBackend.expectPATCH(url).respond(200);
         });
 
         afterEach(function () {
@@ -788,15 +810,26 @@ describe('Factory: Article', function () {
             article.saveSwitches(switchNames);
         });
 
-        it('sends correct data to server', function () {
+        it('sets correct request data and headers', function () {
             var requestData = {
-                fields: {
-                    'switch_1': false,
-                    'switch_2': true
+                article: {
+                    fields: {
+                        'switch_1': false,
+                        'switch_2': true
+                    }
                 }
             };
+            requestData = $.param(requestData);
+
             $httpBackend.resetExpectations();
-            $httpBackend.expectPATCH(url, requestData).respond(204);
+            $httpBackend.expectPATCH(
+                /.+/,
+                requestData,
+                function headersCheck(headers) {
+                    return (headers['Content-Type'] ===
+                        'application/x-www-form-urlencoded');
+                }
+            ).respond(200);
 
             article.saveSwitches(switchNames);
         });
@@ -853,7 +886,7 @@ describe('Factory: Article', function () {
                 function (data) {
                     return postDataChecker(data);
                 }
-            ).respond(204);
+            ).respond(200);
         });
 
         afterEach(function () {
@@ -867,9 +900,11 @@ describe('Factory: Article', function () {
         it('sends correct parameters when setting commenting to ENABLED',
            function () {
                 postDataChecker = function (data) {
-                    var expected = JSON.stringify({
-                        comments_enabled: true,
-                        comments_locked: false
+                    var expected = $.param({
+                        article: {
+                            comments_enabled: true,
+                            comments_locked: false
+                        }
                     });
                     return angular.equals(data, expected);
                 };
@@ -881,9 +916,11 @@ describe('Factory: Article', function () {
         it('sends correct parameters when setting commenting to DISABLED',
            function () {
                 postDataChecker = function (data) {
-                    var expected = JSON.stringify({
-                        comments_enabled: false,
-                        comments_locked: false
+                    var expected = $.param({
+                        article: {
+                            comments_enabled: false,
+                            comments_locked: false
+                        }
                     });
                     return angular.equals(data, expected);
                 };
@@ -895,9 +932,11 @@ describe('Factory: Article', function () {
         it('sends correct parameters when setting commenting to LOCKED',
            function () {
                 postDataChecker = function (data) {
-                    var expected = JSON.stringify({
-                        comments_enabled: false,
-                        comments_locked: true
+                    var expected = $.param({
+                        article: {
+                            comments_enabled: false,
+                            comments_locked: true
+                        }
                     });
                     return angular.equals(data, expected);
                 };
