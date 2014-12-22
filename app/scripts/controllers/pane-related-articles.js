@@ -14,12 +14,13 @@ angular.module('authoringEnvironmentApp').controller('PaneRelatedArticlesCtrl', 
     'Section',
     'configuration',
     function ($q, articleService, modalFactory, Publication, Issue, Section, configuration) {
-        var self = this, 
-            article = articleService.articleInstance,
-            articlesSearchResults = [],   // article search results
-            articlesSearchResultsListRetrieved = false,  // articlesSearchResults initialized yet?
-            assignedRelatedArticles = [],
-            assigningRelatedArticles = false;  // relatedArticle assignment in progress?
+        var self = this;
+
+        self.article = articleService.articleInstance;
+        self.articlesSearchResults = [];   // article search results
+        self.articlesSearchResultsListRetrieved = false;  // articlesSearchResults initialized yet?
+        self.assignedRelatedArticles = [];
+        self.assigningRelatedArticles = false;  // relatedArticle assignment in progress?
 
         // load initial filter select options
         self.availablePublications = Publication.getAll();
@@ -27,7 +28,7 @@ angular.module('authoringEnvironmentApp').controller('PaneRelatedArticlesCtrl', 
         self.availableSections = Section.getAll();
 
         // retrieve all relatedArticles assigned to the article
-        self.assignedRelatedArticles = article.getRelatedArticles();
+        self.assignedRelatedArticles = self.article.getRelatedArticles();
 
         /**
          * Loads options for all filter select fields
@@ -89,7 +90,7 @@ angular.module('authoringEnvironmentApp').controller('PaneRelatedArticlesCtrl', 
 
             query = (self.query) ? self.query.toLowerCase() : '';
             filters = self.buildFilters();
-            article.searchArticles(query, filters).then(function (searchResults) {
+            self.article.searchArticles(query, filters).then(function (searchResults) {
                 self.articlesSearchResultsListRetrieved = true;
 
                 filtered = _.filter(searchResults, function (filterArticle) {
@@ -129,12 +130,11 @@ angular.module('authoringEnvironmentApp').controller('PaneRelatedArticlesCtrl', 
         * @method assignSelectedToArticle
         */
         self.assignToArticle = function (relatedArticle) {
-            var self = this;
             self.assigningRelatedArticles = true;
 
-            article.addRelatedArticle(relatedArticle).then(function (relatedArticles) {
+            self.article.addRelatedArticle(relatedArticle).then(function (relatedArticles) {
                 self.assignedRelatedArticles.push(relatedArticle);
-                self.searchArticles(self.query); 
+                self.loadSearchResults(self.query); 
             }).finally(function () {
                 self.assigningRelatedArticles = false;
             });
@@ -160,7 +160,7 @@ angular.module('authoringEnvironmentApp').controller('PaneRelatedArticlesCtrl', 
             modal = modalFactory.confirmLight(title, text);
 
             modal.result.then(function () {
-                return article.removeRelatedArticle(relatedArticle);
+                return self.article.removeRelatedArticle(relatedArticle);
             }, $q.reject)
             .then(function () {
                 _.remove(self.assignedRelatedArticles, {articleId: relatedArticle.articleId});
