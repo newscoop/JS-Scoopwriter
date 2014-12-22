@@ -20,29 +20,31 @@
             </div>
 
             <div ng-show="paneRelatedArticles.showAddFilter" class="filters">
-                <select 
-                    ng-model="paneRelatedArticles.publicationFilter"
-                    ng-options="publication.name for publication in paneRelatedArticles.availablePublications"
-                    ng-change="paneRelatedArticles.loadAvailableFilters()">
-                    <option value="" class="">-- Publication --</option>
-                </select>
-                <select 
-                    ng-model="paneRelatedArticles.issueFilter"
-                    ng-options="issue.title for issue in paneRelatedArticles.availableIssues"
-                    ng-change="paneRelatedArticles.loadAvailableFilters()">
-                    <option value="" class="">-- Issue --</option>
-                </select>
-                <select 
-                    ng-model="paneRelatedArticles.sectionFilter" 
-                    ng-options="section.title for section in paneRelatedArticles.availableSections">
-                    <option value="" class="">-- Section --</option>
-                </select>
-                <div class="input-group">
-                    <input type="text" class="editor-input" ng-model="paneRelatedArticles.query" placeholder="Search">
-                    <span class="input-group-btn">
-                        <button ng-click="paneRelatedArticles.loadSearchResults()" class="btn btn-primary btn-sm" type="button">Filter</button>
-                    </span>
-                </div>
+                <form ng-submit="paneRelatedArticles.loadSearchResults()">
+                    <select 
+                        ng-model="paneRelatedArticles.publicationFilter"
+                        ng-options="publication.name for publication in paneRelatedArticles.availablePublications"
+                        ng-change="paneRelatedArticles.loadAvailableFilters()">
+                        <option value="" class="">-- Publication --</option>
+                    </select>
+                    <select 
+                        ng-model="paneRelatedArticles.issueFilter"
+                        ng-options="issue.title for issue in paneRelatedArticles.availableIssues"
+                        ng-change="paneRelatedArticles.loadAvailableFilters()">
+                        <option value="" class="">-- Issue --</option>
+                    </select>
+                    <select 
+                        ng-model="paneRelatedArticles.sectionFilter" 
+                        ng-options="section.title for section in paneRelatedArticles.availableSections">
+                        <option value="" class="">-- Section --</option>
+                    </select>
+                    <div class="input-group">
+                        <input type="text" class="editor-input" ng-model="paneRelatedArticles.query" placeholder="Search">
+                        <span class="input-group-btn">
+                            <button class="btn btn-primary btn-sm" type="submit">Filter</button>
+                        </span>
+                    </div>
+                </form>
             </div>
         </div><!-- end add element -->
 
