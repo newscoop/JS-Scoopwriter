@@ -47,7 +47,7 @@ angular.module('authoringEnvironmentApp').factory('Publication', [
 
             url = Routing.generate(
                 'newscoop_gimme_publications_getpublications',
-                {},  // de facto "all"
+                {}, 
                 true
             );
 
