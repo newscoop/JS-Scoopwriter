@@ -400,7 +400,6 @@ describe('Controller: ArticleCtrl', function () {
         });
 
         it('sets empty article fields to default text', function () {
-            AES_SETTINGS.placeholder= '[default text]';
             scope.article.fields.body = null;
 
             getArticleTypeDeferred.resolve(articleTypeNews);
@@ -410,7 +409,6 @@ describe('Controller: ArticleCtrl', function () {
         });
 
         it('sets article title to default text if empty', function () {
-            AES_SETTINGS.placeholder= '[default text]';
             scope.article.title = '';
 
             getArticleTypeDeferred.resolve(articleTypeNews);
