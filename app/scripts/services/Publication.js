@@ -20,7 +20,6 @@ angular.module('authoringEnvironmentApp').factory('Publication', [
         */
         Publication.createFromApiData = function (data) {
             var publication = new Publication();
-            var statusText = null;
 
             publication.name = data.name;
             publication.id = data.id;
@@ -47,7 +46,7 @@ angular.module('authoringEnvironmentApp').factory('Publication', [
 
             url = Routing.generate(
                 'newscoop_gimme_publications_getpublications',
-                {}, 
+                {},
                 true
             );
 
