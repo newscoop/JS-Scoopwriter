@@ -9,6 +9,7 @@
 describe('Factory: Article', function () {
 
     var Article,
+        $rootScope,
         $httpBackend;
 
     /**
@@ -25,8 +26,9 @@ describe('Factory: Article', function () {
 
     beforeEach(module('authoringEnvironmentApp'));
 
-    beforeEach(inject(function (_Article_, _$httpBackend_) {
+    beforeEach(inject(function (_Article_, _$rootScope_, _$httpBackend_) {
         Article = _Article_;
+        $rootScope = _$rootScope_;
         $httpBackend = _$httpBackend_;
 
     }));
@@ -324,6 +326,438 @@ describe('Factory: Article', function () {
         });
     });
 
+    describe('loadContentFields() method', function () {
+        var article,
+            deferedArticleType,
+            ArticleType,
+            fakeArticleType;
+        
+        beforeEach(inject(function($q, _ArticleType_) {
+            deferedArticleType = $q.defer();
+            ArticleType = _ArticleType_;
+            fakeArticleType = {
+                fields: [
+                    {name: 'body', isContentField: false, type: 'body', showInEditor: true},
+                    {name: 'longtext', isContentField: false, type: 'longtext', showInEditor: true},
+                    {name: 'isContent', isContentField: true, type: 'body', showInEditor: false},
+                    {name: 'hidden-body', isContentField: false, type: 'body', showInEditor: false},
+                    {name: 'hidden-longtext', isContentField: false, type: 'longtext', showInEditor: false},
+                    {name: 'hidden-isContent', isContentField: false, showInEditor: false},
+                ]
+            };
+            spyOn(ArticleType, 'getByName').andReturn(deferedArticleType.promise);
+        }));
+
+        
+        it('call ArticleType.getByName() method with the correct article type', function () {
+            article = new Article({articleId: 1, type: 'news'}); 
+            article.loadContentFields();
+            expect(ArticleType.getByName).toHaveBeenCalledWith('news');
+        });
+        
+
+        it('returns correct contentFields promise', function () {
+            var readPromise, 
+                spyOnThen = jasmine.createSpy(),
+                expectedContentFields = [[ 'isContent', 'longtext', 'body' ]];
+
+            article = new Article({articleId: 1, type: 'news'}); 
+
+            readPromise = article.loadContentFields();
+            readPromise.then(spyOnThen);
+            deferedArticleType.resolve(fakeArticleType);
+            $rootScope.$apply();
+
+            expect(angular.equals(spyOnThen.mostRecentCall.args, expectedContentFields)).toBe(true);
+        });
+
+        it('returns a promise', inject(function ($q) {
+            var deferred = $q.defer(),
+                promise;
+            promise = article.loadContentFields();
+            expect(promise instanceof deferred.promise.constructor).toBe(true);
+        }));
+    });
+
+    describe('loadFirstImage() method', function () {
+        var article,
+            url;
+
+        beforeEach(function () {
+            article = new Article();
+            article.articleId = 8;
+            article.language = 'de';
+            article.fields = {};
+
+            url = Routing.generate(
+                'newscoop_gimme_images_getimagesforarticle',
+                {number: 8, language: 'de'},
+                true
+            );
+            $httpBackend.expectGET(url).respond(204);
+        });
+
+        afterEach(function () {
+            $httpBackend.verifyNoOutstandingExpectation();
+        });
+
+        it('calls the correct API endpoint', function () {
+            article.loadFirstImage();
+        });
+
+        it('returns a promise', inject(function ($q) {
+            var deferred = $q.defer(),
+                promise;
+            promise = article.loadFirstImage();
+            expect(promise instanceof deferred.promise.constructor).toBe(true);
+        }));
+
+        it('resolves promise to an image basename on success', function () {
+            var onSuccessSpy = jasmine.createSpy(),
+                fakeImage = { 
+                    items: [
+                        { basename: 'fakeimage.png' }
+                    ]
+                };
+
+            $httpBackend.resetExpectations();
+            $httpBackend.expectGET(url).respond(200, fakeImage);
+
+            article.loadFirstImage().then(onSuccessSpy);
+            $httpBackend.flush(1);
+
+            expect(onSuccessSpy).toHaveBeenCalled();
+        });
+
+        it('rejects promise when empty results are returned', function () {
+            var errorSpy = jasmine.createSpy(),
+                fakeImage = { 
+                    items: [ ]
+                };
+
+            $httpBackend.resetExpectations();
+            $httpBackend.expectGET(url).respond(200, fakeImage);
+
+            article.loadFirstImage().catch(function (reason) {
+                errorSpy(reason);
+            });
+            expect(errorSpy).not.toHaveBeenCalled();
+
+            $httpBackend.flush(1);
+            expect(errorSpy).toHaveBeenCalledWith('Empty List');
+
+        });
+        
+        it('rejects given promise with server error message on failure', function () {
+                var errorSpy = jasmine.createSpy();                                                      
+                
+                $httpBackend.resetExpectations();
+                $httpBackend.expectGET(url).respond(500, 'Server error');                                
+                
+                article.loadFirstImage().catch(errorSpy);                                           
+                $httpBackend.flush(1);                                                                   
+                
+                expect(errorSpy).toHaveBeenCalledWith('Server error');                                   
+        });
+    });
+
+    describe('searchArticles() method', function () {
+        var article,
+            url,
+            filters;
+
+        beforeEach(function () {
+            article = new Article();
+            article.articleId = 8;
+            article.language = 'de';
+            article.fields = {};
+            filters = {
+                'publication': 1,
+                'issue': 1,
+                'section': 1,
+            };
+
+            url = Routing.generate(
+                'newscoop_gimme_articles_searcharticles',
+                {
+                    'publication': 1,
+                    'issue': 1,
+                    'section': 1,
+                    'items_per_page': 20,
+                    'query': 'query'
+                },
+                true
+            );
+            $httpBackend.expectGET(url).respond(204);
+        });
+
+        afterEach(function () {
+            $httpBackend.verifyNoOutstandingExpectation();
+        });
+
+        it('calls the correct API endpoint', function () {
+            article.searchArticles('query', filters);
+        });
+
+        it('returns a promise', inject(function ($q) {
+            var deferred = $q.defer(),
+                promise;
+            promise = article.searchArticles('query', filters);
+            expect(promise instanceof deferred.promise.constructor).toBe(true);
+        }));
+
+        it('resolves promise on success', function () {
+            var onSuccessSpy = jasmine.createSpy(),
+                fakeArticles = { 
+                    items: [
+                        { articleId: 1, language: 'de' },
+                        { articleId: 2, language: 'de' }
+                    ]
+                };
+
+            $httpBackend.resetExpectations();
+            $httpBackend.expectGET(url).respond(200, fakeArticles);
+
+            article.searchArticles('query', filters).then(onSuccessSpy);
+            $httpBackend.flush(1);
+
+            expect(onSuccessSpy).toHaveBeenCalled();
+        });
+        
+        it('rejects given promise with server error message on failure', function () {
+                var errorSpy = jasmine.createSpy();
+                
+                $httpBackend.resetExpectations();
+                $httpBackend.expectGET(url).respond(500, 'Server error');
+                
+                article.searchArticles('query', filters).catch(errorSpy);
+                $httpBackend.flush(1);
+                
+                expect(errorSpy).toHaveBeenCalledWith('Server error');
+        });
+    });
+
+    describe('getRelatedArticles() method', function () {
+        var article,
+            url;
+
+        beforeEach(function () {
+            article = new Article();
+            article.articleId = 8;
+            article.language = 'de';
+            article.fields = {};
+
+            url = Routing.generate(
+                'newscoop_gimme_articles_related',
+                {number: 8, language: 'de'},
+                true
+            );
+            $httpBackend.expectGET(url).respond(204);
+        });
+
+        afterEach(function () {
+            $httpBackend.verifyNoOutstandingExpectation();
+        });
+
+        it('calls the correct API endpoint', function () {
+            article.getRelatedArticles();
+        });
+
+        it('returns a promise', inject(function ($q) {
+            var deferred = $q.defer(),
+                promise;
+            promise = article.getRelatedArticles();
+            expect(promise instanceof deferred.promise.constructor).toBe(true);
+        }));
+
+        it('resolves promise on success', function () {
+            var results, 
+                onSuccessSpy = jasmine.createSpy(),
+                fakeArticles = { 
+                    items: [
+                        { articleId: 1, language: 'de' },
+                        { articleId: 2, language: 'de' }
+                    ]
+                };
+
+            $httpBackend.resetExpectations();
+            $httpBackend.expectGET(url).respond(200, fakeArticles);
+
+            results = article.getRelatedArticles();
+            $httpBackend.flush(1);
+
+            results.forEach(function (item) {
+                expect(item instanceof Article).toBe(true);
+            });
+        });
+        
+        it('rejects given promise with server error message on failure', function () {
+                var result,
+                    errorSpy = jasmine.createSpy();
+                
+                $httpBackend.resetExpectations();
+                $httpBackend.expectGET(url).respond(500, 'Server error');
+                
+                result = article.getRelatedArticles();
+                $httpBackend.flush(1);
+               
+                expect(result.length).toEqual(0); 
+        });
+    });
+
+    describe('addRelatedArticle() method', function () {
+        var article,
+            url;
+
+        beforeEach(function() {
+            var expectedLinkHeader;
+            article = new Article();
+            article.articleId = 8;
+            article.language = 'de';
+            article.fields = {};
+
+
+            expectedLinkHeader = [
+                '<' +
+                Routing.generate(
+                    'newscoop_gimme_articles_getarticle',
+                    {number: 18},
+                    false
+                ) +
+                '; rel="topic">'
+            ].join('');
+
+            url = Routing.generate(
+                'newscoop_gimme_articles_linkarticle',
+                {number: 8, language: 'de'}, true
+            );
+
+            $httpBackend.expect(
+                'LINK',
+                url,
+                undefined,
+                function (headers) {
+                    return headers.link === expectedLinkHeader;
+                }
+            ).respond(201, '');
+        });
+
+        afterEach(function () {
+            $httpBackend.verifyNoOutstandingExpectation();
+        });
+        
+        it('sends a correct request to API', function () {
+            article.addRelatedArticle({articleId: 18});
+        });
+
+        it('returns a promise', inject(function ($q) {
+            var deferred = $q.defer(),
+                promise;
+            promise = article.addRelatedArticle({articleId: 18});
+            expect(promise instanceof deferred.promise.constructor).toBe(true);
+        }));
+
+        it('resolves promise on success', function () {
+            var onSuccessSpy = jasmine.createSpy();
+
+            $httpBackend.resetExpectations();
+            $httpBackend.expect('LINK', url).respond(200);
+
+            article.addRelatedArticle({articleId: 18}).then(onSuccessSpy);
+            $httpBackend.flush(1);
+
+            expect(onSuccessSpy).toHaveBeenCalled();
+        });
+        
+        it('rejects given promise with server error message on failure', function () {
+                var errorSpy = jasmine.createSpy();
+                
+                $httpBackend.resetExpectations();
+                $httpBackend.expect('LINK', url).respond(500, 'Server error');
+                
+                article.addRelatedArticle({articleId: 18}).catch(errorSpy);
+                $httpBackend.flush(1);
+                
+                expect(errorSpy).toHaveBeenCalledWith('Server error');
+        });
+    });
+
+    describe('removeRelatedArticle() method', function () {
+        var article,
+            url;
+
+        beforeEach(function() {
+            var expectedLinkHeader;
+            article = new Article();
+            article.articleId = 8;
+            article.language = 'de';
+            article.fields = {};
+
+
+            expectedLinkHeader = [
+                '<' +
+                Routing.generate(
+                    'newscoop_gimme_articles_getarticle',
+                    {number: 18},
+                    false
+                ) +
+                '; rel="topic">'
+            ].join('');
+
+            url = Routing.generate(
+                'newscoop_gimme_articles_unlinkarticle',
+                {number: 8, language: 'de'}, true
+            );
+
+            $httpBackend.expect(
+                'UNLINK',
+                url,
+                undefined,
+                function (headers) {
+                    return headers.link === expectedLinkHeader;
+                }
+            ).respond(201, '');
+        });
+
+        afterEach(function () {
+            $httpBackend.verifyNoOutstandingExpectation();
+        });
+        
+        it('sends a correct request to API', function () {
+            article.removeRelatedArticle({articleId: 18});
+        });
+
+        it('returns a promise', inject(function ($q) {
+            var deferred = $q.defer(),
+                promise;
+            promise = article.removeRelatedArticle({articleId: 18});
+            expect(promise instanceof deferred.promise.constructor).toBe(true);
+        }));
+
+        it('resolves promise on success', function () {
+            var onSuccessSpy = jasmine.createSpy();
+
+            $httpBackend.resetExpectations();
+            $httpBackend.expect('UNLINK', url).respond(200);
+
+            article.removeRelatedArticle({articleId: 18}).then(onSuccessSpy);
+            $httpBackend.flush(1);
+
+            expect(onSuccessSpy).toHaveBeenCalled();
+        });
+        
+        it('rejects given promise with server error message on failure', function () {
+                var errorSpy = jasmine.createSpy();
+                
+                $httpBackend.resetExpectations();
+                $httpBackend.expect('UNLINK', url).respond(500, 'Server error');
+                
+                article.removeRelatedArticle({articleId: 18}).catch(errorSpy);
+                $httpBackend.flush(1);
+                
+                expect(errorSpy).toHaveBeenCalledWith('Server error');
+        });
+    });
 
     describe('save() method', function () {
         var article,

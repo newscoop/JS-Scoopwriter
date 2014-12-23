@@ -1,0 +1,135 @@
+<section
+    ng-controller="PaneRelatedArticlesCtrl as paneRelatedArticles"
+    class="tabcontent">
+
+    <div class="panel-title">
+        Related Articles
+    </div>
+    
+    <div ng-hide="paneRelatedArticles.showArticlePreview">
+        <div class="add-element" ng-class="{expanded: showAddFilter}">
+            <div class="heading">
+                <button class="btn btn-sf-invisible"
+                  ng-click="paneRelatedArticles.showAddFilter = !paneRelatedArticles.showAddFilter">
+                <span class="glyphicon"
+                  ng-class="{'glyphicon-plus': !paneRelatedArticles.showAddFilter,
+                             'glyphicon-minus': paneRelatedArticles.showAddFilter}"
+                  ></span>
+                <span class="add-text">FILTER ARTICLES</span>
+                </button>
+            </div>
+
+            <div ng-show="paneRelatedArticles.showAddFilter" class="filters">
+                <form ng-submit="paneRelatedArticles.loadSearchResults()">
+                    <select 
+                        ng-model="paneRelatedArticles.publicationFilter"
+                        ng-options="publication.name for publication in paneRelatedArticles.availablePublications"
+                        ng-change="paneRelatedArticles.loadAvailableFilters()">
+                        <option value="" class="">-- Publication --</option>
+                    </select>
+                    <select 
+                        ng-model="paneRelatedArticles.issueFilter"
+                        ng-options="issue.title for issue in paneRelatedArticles.availableIssues"
+                        ng-change="paneRelatedArticles.loadAvailableFilters()">
+                        <option value="" class="">-- Issue --</option>
+                    </select>
+                    <select 
+                        ng-model="paneRelatedArticles.sectionFilter" 
+                        ng-options="section.title for section in paneRelatedArticles.availableSections">
+                        <option value="" class="">-- Section --</option>
+                    </select>
+                    <div class="input-group">
+                        <input type="text" class="editor-input" ng-model="paneRelatedArticles.query" placeholder="Search">
+                        <span class="input-group-btn">
+                            <button class="btn btn-primary btn-sm" type="submit">Filter</button>
+                        </span>
+                    </div>
+                </form>
+            </div>
+        </div><!-- end add element -->
+
+        <div class="wrapper"
+            ng-class="{low: paneRelatedArticles.showAddFilter, high: !paneRelatedArticles.showAddFilter}">    
+
+            <div class="list">
+
+                <!-- pinned -->
+                <div class="group">
+                    <div class="title">Pinned articles</div>
+                    <div class="related-articles-list"
+                        drag-sort items="paneRelatedArticles.assignedRelatedArticles"
+                        on-order-changed="paneRelatedArticles.orderChange()">
+                        <div ng-repeat="article in paneRelatedArticles.assignedRelatedArticles track by article.articleId"
+                            class="related-article pinned">
+                            <div class="drag-bar"></div>
+                            <div
+                                class="remove"
+                                title="Remove"
+                                ng-click="paneRelatedArticles.confirmUnassignRelatedArticle(article)"
+                                >
+                                <span class="glyphicon glyphicon-remove"></span>
+                            </div>                
+                            <div class="article-metadata">
+                                <span class="date">{{::article.created| date:"dd.MM.yyyy 'at' H:mm:ss"}}</span>
+                                <span class="status new" ng-bind="::article.statusString"></span>
+                            </div>
+                            <div class="article-title">
+                                <a ng-click="paneRelatedArticles.previewRelatedArticle(article)" ng-bind="::article.title"></a>
+                            </div>
+                        </div>
+                    </div>
+
+                </div><!-- end pinned -->
+
+                <!-- search results -->
+                <div class="group">
+                    <div class="title">Search results</div>
+                    <div ng-repeat="article in paneRelatedArticles.articlesSearchResults track by article.articleId"
+                        class="related-article">
+                        <button 
+                            class="btn btn-default btn-xs pin" 
+                            ng-disabled="paneRelatedArticles.assigningRelatedArticles"
+                            ng-click="paneRelatedArticles.assignToArticle(article)"
+                            title="Pin article">
+                            <i class="fa fa-thumb-tack"></i>
+                        </button>
+                        <div class="article-metadata">
+                            <span class="date">{{::article.created| date:"dd.MM.yyyy 'at' H:mm:ss"}}</span>
+                            <span class="status published" ng-bind="::article.statusString"></span>
+                        </div>
+                        <div class="article-title">
+                            <a  ng-click="paneRelatedArticles.previewRelatedArticle(article)" ng-bind="::article.title"></a>
+                        </div>
+                    </div>
+                </div><!-- end search results -->
+            </div><!-- end list -->
+        </div><!-- end wrapper -->
+    </div>
+
+    <div ng-show="paneRelatedArticles.showArticlePreview" class="article-preview">
+            <div class="header">
+                <div class="btn-group">
+                    <button class="btn btn-default btn-xs"
+                      ng-click="paneRelatedArticles.showArticlePreview = !paneRelatedArticles.showArticlePreview">
+                      <i class="fa fa-chevron-left"></i> Back
+                    </button>
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-default btn-xs">
+                        <i class="fa fa-pencil"></i> Edit
+                    </button>
+                </div>
+            </div>
+            <div class="content">
+                <div class="preview-dateline">{{::paneRelatedArticles.relatedArticlePreview.created| date:"dd.MM.yyyy 'at' H:mm:ss"}}</div>
+                <div class="preview-title" ng-bind-html="::paneRelatedArticles.relatedArticlePreview.title"></div>
+                <div class="preview-lead" ng-bind-html="::paneRelatedArticles.relatedArticlePreview.lead"></div>
+                <div class="preview-body">
+                    <p><img ng-src="{{paneRelatedArticles.relatedArticlePreview.firstImage}}" /></p>
+                    <div ng-repeat="field in paneRelatedArticles.relatedArticlePreview.contentFields">
+                        <p ng-bind-html="::paneRelatedArticles.relatedArticlePreview.fields[field]" title="{{::field}}"></p>
+                    </div>
+                </div>
+            </div>          
+    </div>
+</section>

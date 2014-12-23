@@ -9,7 +9,8 @@ angular.module('authoringEnvironmentApp').factory('Article', [
     '$http',
     '$q',
     'transform',
-    function ($http, $q, transform) {
+    'ArticleType',
+    function ($http, $q, transform, ArticleType) {
         var Article,
             unicodeWords = new XRegExp('(\\p{Letter}|\\d)+', 'g');
 
@@ -212,6 +213,7 @@ angular.module('authoringEnvironmentApp').factory('Article', [
 
             self.comments_locked = !!parseInt(self.comments_locked);
             self.comments_enabled = !!parseInt(self.comments_enabled);
+            self.statusString = _.property(data.status)(_.invert(Article.wfStatus));
         };
 
         // all possible values for the article commenting setting
@@ -294,6 +296,253 @@ angular.module('authoringEnvironmentApp').factory('Article', [
         // XXX: save(), saveSwitches() and changeCommentingSetting() methods
         // only differ in postData - refactor common API invocation logic
         // into its own helper method
+
+        /**
+        * Returns an array of field names that would most 
+        * likely be used for display
+        *
+        * because this requires separate api request, and is currently
+        * only used for previewRelatedArticle() it is not included in
+        * constructor
+        *
+        * @method loadContentFields
+        * @return {Object} promise object which is resolved with retrieved
+        *   contentFields
+        */
+        Article.prototype.loadContentFields = function() {
+            var self = this,
+                contentFields = [],
+                deferredGet = $q.defer();
+
+            contentFields.$promise = deferredGet.promise;
+
+            // lookup ArticleType and set content fields for preview
+            ArticleType.getByName(self.type).then(function(articleType) {
+                /**
+                 * check for fields that are marked with isContent or 
+                 * or showInEditor and are of type body or longtext
+                 * (using unshift here because lead and teaser are returned
+                 *  after body, and we want these to display in reverse order
+                 *  by default)
+                 */
+                articleType.fields.forEach(function (field) {
+                    if (field.isContentField) {
+                        contentFields.unshift(field.name);
+                        return;
+                    }
+                    if ((field.showInEditor) && 
+                        ((field.type == 'body') || (field.type == 'longtext'))) {
+                        contentFields.unshift(field.name);
+                        return;
+                    }
+                });
+                deferredGet.resolve(contentFields);
+            });
+
+            return deferredGet.promise;
+        };
+
+        /**
+        * Returns filename of the first image attached to an article
+        *
+        * because this requires separate api request, and is currently
+        * only used for previewRelatedArticle() it is not included in
+        * constructor
+        *
+        * @method loadFirstImage
+        * @return {Object} promise object which is resolved with retrieved
+        *   basename of an articles first image
+        */
+        Article.prototype.loadFirstImage = function() {
+            var self = this,
+                deferredGet = $q.defer(),
+                url = Routing.generate(
+                    'newscoop_gimme_images_getimagesforarticle',
+                    {number: self.articleId, language: self.language}, true
+                );
+
+            $http.get(url)
+            .success(function (response) {
+                if (response.items.length > 0) {
+                    deferredGet.resolve(response.items[0].basename);
+                } else {
+                    deferredGet.reject('Empty List');
+                }
+            }).error(function (responseBody) {
+                deferredGet.reject(responseBody);
+            });
+
+            return deferredGet.promise;
+        };
+
+        /**
+        * Retrieves a list of all existing relatedArticles.
+        *
+        * Initially, an empty array is returned, which is later filled with
+        * data on successful server response. At that point the given promise
+        * is resolved (exposed as a $promise property of the returned array).
+        *
+        * @method searchArticles
+        * @param query {String} search query
+        * @param filters {Object} search filters (issue|publication|section)
+        * @return {Object} promise object which is resolved with retrieved
+        *   Articles search results
+        */
+        Article.prototype.searchArticles = function (query, filters) {
+            var allArticles = [],
+                deferredGet = $q.defer(),
+                params = {},
+                url;
+
+            allArticles.$promise = deferredGet.promise;
+           
+            if (!_.isEmpty(filters)) {
+               params = filters; 
+            }
+
+            params['items_per_page'] = 20;
+            params['query'] = query; 
+ 
+            url = Routing.generate(
+                'newscoop_gimme_articles_searcharticles',
+                params,  
+                true
+            );
+
+            $http.get(url)
+            .success(function (response) {
+                response.items.forEach(function (item) {
+                    var article = new Article(item);
+                    allArticles.push(article);
+                });
+                deferredGet.resolve(allArticles);
+            }).error(function (responseBody) {
+                deferredGet.reject(responseBody);
+            });
+
+            return deferredGet.promise;
+        };
+
+        /**
+        * Retrieves a list of all relatedArticles assigned to a specific article.
+        *
+        * Initially, an empty array is returned, which is later filled with
+        * data on successful server response. At that point the given promise
+        * is resolved (exposed as a $promise property of the returned array).
+        *
+        * @method getRelatedArticles
+        * @return {Object} array of article relatedArticles
+        */
+        Article.prototype.getRelatedArticles = function () {
+            var relatedArticles = [],
+                self = this,
+                deferredGet = $q.defer(),
+                url;
+
+            relatedArticles.$promise = deferredGet.promise;
+
+            url = Routing.generate(
+                'newscoop_gimme_articles_related',
+                {number: self.articleId, language: self.language},
+                true
+            );
+
+            $http.get(url)
+            .success(function (response) {
+                response.items.forEach(function (item) {
+                    var article = new Article(item);
+                    relatedArticles.push(article);
+                });
+                deferredGet.resolve();
+            }).error(function (responseBody) {
+                deferredGet.reject(responseBody);
+            });
+
+            return relatedArticles;
+        };
+
+        /**
+        * Assignes all given relatedArticles to an article.
+        *
+        * @method addToArticle
+        * @param relatedArticles {Array} list of relatedArticles to assign
+        * @return {Object} promise object that is resolved on successful server
+        *   response and rejected on server error response
+        */
+        Article.prototype.addRelatedArticle = function (relatedArticle) {
+            var deferred = $q.defer(),
+                self = this,
+                linkHeader = [];
+
+            linkHeader = [
+                '<' +
+                Routing.generate(
+                    'newscoop_gimme_articles_getarticle',
+                    {number: relatedArticle.articleId},
+                    false
+                ) +
+                '; rel="topic">'
+            ].join('');
+
+            $http({
+                url: Routing.generate(
+                    'newscoop_gimme_articles_linkarticle',
+                    {number: self.articleId, language: self.language},
+                    true
+                ),
+                method: 'LINK',
+                headers: {link: linkHeader}
+            })
+            .success(function () {
+                deferred.resolve();
+            })
+            .error(function (responseBody) {
+                deferred.reject(responseBody);
+            });
+
+            return deferred.promise;
+        };
+
+        /**
+        * Unassignes relatedArticle from article.
+        *
+        * @method removeFromArticle
+        * @return {Object} promise object that is resolved on successful server
+        *   response and rejected on server error response
+        */
+        Article.prototype.removeRelatedArticle = function(relatedArticle) {
+            var deferred = $q.defer(),
+                self = this,
+                linkHeader;
+
+            linkHeader = [
+                '<',
+                Routing.generate(
+                    'newscoop_gimme_articles_getarticle',
+                    {number: relatedArticle.articleId},
+                    false
+                ),
+                '; rel="topic">'
+            ].join('');
+
+            $http({
+                url: Routing.generate(
+                    'newscoop_gimme_articles_unlinkarticle',
+                    {number: self.articleId, language: self.language},
+                    true
+                ),
+                method: 'UNLINK',
+                headers: {link: linkHeader}
+            })
+            .success(function () {
+                deferred.resolve();
+            })
+            .error(function (responseBody) {
+                deferred.reject(responseBody);
+            });
+
+            return deferred.promise;
+        };
 
         /**
         * Saves all changes in article content to the server.
@@ -489,4 +738,5 @@ angular.module('authoringEnvironmentApp').factory('Article', [
 
         return Article;
     }
+
 ]);
