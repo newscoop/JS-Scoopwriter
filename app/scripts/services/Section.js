@@ -20,7 +20,6 @@ angular.module('authoringEnvironmentApp').factory('Section', [
         */
         Section.createFromApiData = function (data) {
             var section = new Section();
-            var statusText = null;
 
             section.number = data.number;
             section.title = data.title;

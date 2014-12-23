@@ -213,7 +213,8 @@ angular.module('authoringEnvironmentApp').factory('Article', [
 
             self.comments_locked = !!parseInt(self.comments_locked);
             self.comments_enabled = !!parseInt(self.comments_enabled);
-            self.statusString = _.property(data.status)(_.invert(Article.wfStatus));
+            self.statusString = _.property(data.status)
+                (_.invert(Article.wfStatus));
         };
 
         // all possible values for the article commenting setting
@@ -330,8 +331,9 @@ angular.module('authoringEnvironmentApp').factory('Article', [
                         contentFields.unshift(field.name);
                         return;
                     }
-                    if ((field.showInEditor) && 
-                        ((field.type == 'body') || (field.type == 'longtext'))) {
+                    if ((field.showInEditor) &&
+                        ((field.type === 'body') ||
+                         (field.type === 'longtext'))) {
                         contentFields.unshift(field.name);
                         return;
                     }
@@ -397,15 +399,15 @@ angular.module('authoringEnvironmentApp').factory('Article', [
             allArticles.$promise = deferredGet.promise;
            
             if (!_.isEmpty(filters)) {
-               params = filters; 
+                params = filters;
             }
 
-            params['items_per_page'] = 20;
-            params['query'] = query; 
+            params.items_per_page = 20;
+            params.query = query;
  
             url = Routing.generate(
                 'newscoop_gimme_articles_searcharticles',
-                params,  
+                params,
                 true
             );
 
@@ -424,7 +426,8 @@ angular.module('authoringEnvironmentApp').factory('Article', [
         };
 
         /**
-        * Retrieves a list of all relatedArticles assigned to a specific article.
+        * Retrieves a list of all relatedArticles
+        * assigned to a specific article.
         *
         * Initially, an empty array is returned, which is later filled with
         * data on successful server response. At that point the given promise
