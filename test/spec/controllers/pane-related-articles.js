@@ -123,6 +123,44 @@ describe('Controller: PaneRelatedArticlesCtrl', function () {
         });
     });
 
+    describe('previewRelatedArticle() method', function () {
+        var fakePreviewArticle,
+            deferedContentFields,
+            deferedFirstImage;
+
+        beforeEach(inject(function ($q) {
+            deferedContentFields = $q.defer();
+            deferedFirstImage = $q.defer();
+            fakePreviewArticle = {
+                articleId: 1,
+                contentFields: null,
+                firstImage: null
+            };
+           
+            fakePreviewArticle.loadContentFields = jasmine
+                .createSpy('loadContentFields')
+                .andReturn(deferedContentFields.promise);
+            fakePreviewArticle.loadFirstImage = jasmine
+                .createSpy('loadFirstImage')
+                .andReturn(deferedFirstImage.promise);
+            PaneRelatedArticlesCtrl.previewRelatedArticle(fakePreviewArticle);
+        }));
+
+        it('sets contentFields on the previewArticle', function () {
+            expect(fakePreviewArticle.loadContentFields).toHaveBeenCalled();
+            deferedContentFields.resolve(['body', 'lead']);
+            $rootScope.$apply();
+            expect(fakePreviewArticle.contentFields).toEqual(['body', 'lead']);
+        });
+        it('sets firstImage on the previewArticle', function () {
+            AES_SETTINGS = { API: { rootURI: 'fake' } };
+            expect(fakePreviewArticle.loadFirstImage).toHaveBeenCalled();
+            deferedFirstImage.resolve('firstimage.png');
+            $rootScope.$apply();
+            expect(fakePreviewArticle.firstImage).toEqual('fake/images/firstimage.png');
+        });
+    });
+
     describe('buildFilters() method', function () {
         var filters,
             mockedFilters;
@@ -159,8 +197,12 @@ describe('Controller: PaneRelatedArticlesCtrl', function () {
             relatedArticle.$promise = deferedAssign.promise;
 
             PaneRelatedArticlesCtrl.assignedRelatedArticles = [];
-            PaneRelatedArticlesCtrl.article.addRelatedArticle = jasmine.createSpy('assignRelatedArticle').andReturn(deferedAssign.promise); 
-            PaneRelatedArticlesCtrl.loadSearchResults = jasmine.createSpy('loadSearchResults').andReturn([]); 
+            PaneRelatedArticlesCtrl.article.addRelatedArticle = jasmine
+                .createSpy('assignRelatedArticle')
+                .andReturn(deferedAssign.promise); 
+            PaneRelatedArticlesCtrl.loadSearchResults = jasmine
+                .createSpy('loadSearchResults')
+                .andReturn([]); 
 
         }));
 
@@ -191,8 +233,12 @@ describe('Controller: PaneRelatedArticlesCtrl', function () {
                 'language': 'de'
             }
 
-            previewArticle.loadContentFields = jasmine.createSpy('loadContentFields').andReturn(deferedContent.promise); 
-            previewArticle.loadFirstImage = jasmine.createSpy('loadFirstImage').andReturn(deferedImage.promise); 
+            previewArticle.loadContentFields = jasmine
+                .createSpy('loadContentFields')
+                .andReturn(deferedContent.promise); 
+            previewArticle.loadFirstImage = jasmine
+                .createSpy('loadFirstImage')
+                .andReturn(deferedImage.promise); 
         }));
 
         it('sets relatedArticlePreview to the correct article', function () {
@@ -218,7 +264,9 @@ describe('Controller: PaneRelatedArticlesCtrl', function () {
             ignoredResults = [
                 {'articleId': 1, language: 'de'}
             ];
-            PaneRelatedArticlesCtrl.article.searchArticles = jasmine.createSpy('searchArticles').andReturn(deferedSearch.promise); 
+            PaneRelatedArticlesCtrl.article.searchArticles = jasmine
+                .createSpy('searchArticles')
+                .andReturn(deferedSearch.promise); 
         }));
 
         it('sets ignored object correctly', function () {
@@ -270,7 +318,9 @@ describe('Controller: PaneRelatedArticlesCtrl', function () {
                 language: 'de',
             };
 
-            PaneRelatedArticlesCtrl.article.removeRelatedArticle = jasmine.createSpy('removeRelatedArticle').andReturn(deferedRemove); 
+            PaneRelatedArticlesCtrl.article.removeRelatedArticle = jasmine
+                .createSpy('removeRelatedArticle')
+                .andReturn(deferedRemove); 
         }));
 
         it('opens a "light" confirmation dialog', function () {
@@ -285,7 +335,8 @@ describe('Controller: PaneRelatedArticlesCtrl', function () {
                 modalDefered.resolve();
                 $rootScope.$apply();
 
-                expect(PaneRelatedArticlesCtrl.article.removeRelatedArticle).toHaveBeenCalledWith({ articleId : 20, language : 'de' });
+                expect(PaneRelatedArticlesCtrl.article.removeRelatedArticle).
+                    toHaveBeenCalledWith({ articleId : 20, language : 'de' });
             }
         );
 

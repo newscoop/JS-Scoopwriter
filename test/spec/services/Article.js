@@ -337,12 +337,12 @@ describe('Factory: Article', function () {
             ArticleType = _ArticleType_;
             fakeArticleType = {
                 fields: [
-                    {name: 'body', isContent: false, type: 'body', showInEditor: true},
-                    {name: 'longtext', isContent: false, type: 'longtext', showInEditor: true},
-                    {name: 'isContent', isContent: true, type: 'body', showInEditor: true},
-                    {name: 'hidden-body', isContent: false, type: 'body', showInEditor: false},
-                    {name: 'hidden-longtext', isContent: false, type: 'longtext', showInEditor: false},
-                    {name: 'hidden-isContent', isContent: false, showInEditor: false},
+                    {name: 'body', isContentField: false, type: 'body', showInEditor: true},
+                    {name: 'longtext', isContentField: false, type: 'longtext', showInEditor: true},
+                    {name: 'isContent', isContentField: true, type: 'body', showInEditor: false},
+                    {name: 'hidden-body', isContentField: false, type: 'body', showInEditor: false},
+                    {name: 'hidden-longtext', isContentField: false, type: 'longtext', showInEditor: false},
+                    {name: 'hidden-isContent', isContentField: false, showInEditor: false},
                 ]
             };
             spyOn(ArticleType, 'getByName').andReturn(deferedArticleType.promise);
@@ -411,6 +411,54 @@ describe('Factory: Article', function () {
             promise = article.loadFirstImage();
             expect(promise instanceof deferred.promise.constructor).toBe(true);
         }));
+
+        it('resolves promise to an image basename on success', function () {
+            var onSuccessSpy = jasmine.createSpy(),
+                fakeImage = { 
+                    items: [
+                        { basename: 'fakeimage.png' }
+                    ]
+                };
+
+            $httpBackend.resetExpectations();
+            $httpBackend.expectGET(url).respond(200, fakeImage);
+
+            article.loadFirstImage().then(onSuccessSpy);
+            $httpBackend.flush(1);
+
+            expect(onSuccessSpy).toHaveBeenCalled();
+        });
+
+        it('rejects promise when empty results are returned', function () {
+            var errorSpy = jasmine.createSpy(),
+                fakeImage = { 
+                    items: [ ]
+                };
+
+            $httpBackend.resetExpectations();
+            $httpBackend.expectGET(url).respond(200, fakeImage);
+
+            article.loadFirstImage().catch(function (reason) {
+                errorSpy(reason);
+            });
+            expect(errorSpy).not.toHaveBeenCalled();
+
+            $httpBackend.flush(1);
+            expect(errorSpy).toHaveBeenCalledWith('Empty List');
+
+        });
+        
+        it('rejects given promise with server error message on failure', function () {
+                var errorSpy = jasmine.createSpy();                                                      
+                
+                $httpBackend.resetExpectations();
+                $httpBackend.expectGET(url).respond(500, 'Server error');                                
+                
+                article.loadFirstImage().catch(errorSpy);                                           
+                $httpBackend.flush(1);                                                                   
+                
+                expect(errorSpy).toHaveBeenCalledWith('Server error');                                   
+        });
     });
 
     describe('searchArticles() method', function () {
@@ -457,6 +505,36 @@ describe('Factory: Article', function () {
             promise = article.searchArticles('query', filters);
             expect(promise instanceof deferred.promise.constructor).toBe(true);
         }));
+
+        it('resolves promise on success', function () {
+            var onSuccessSpy = jasmine.createSpy(),
+                fakeArticles = { 
+                    items: [
+                        { articleId: 1, language: 'de' },
+                        { articleId: 2, language: 'de' }
+                    ]
+                };
+
+            $httpBackend.resetExpectations();
+            $httpBackend.expectGET(url).respond(200, fakeArticles);
+
+            article.searchArticles('query', filters).then(onSuccessSpy);
+            $httpBackend.flush(1);
+
+            expect(onSuccessSpy).toHaveBeenCalled();
+        });
+        
+        it('rejects given promise with server error message on failure', function () {
+                var errorSpy = jasmine.createSpy();
+                
+                $httpBackend.resetExpectations();
+                $httpBackend.expectGET(url).respond(500, 'Server error');
+                
+                article.searchArticles('query', filters).catch(errorSpy);
+                $httpBackend.flush(1);
+                
+                expect(errorSpy).toHaveBeenCalledWith('Server error');
+        });
     });
 
     describe('getRelatedArticles() method', function () {
@@ -491,6 +569,40 @@ describe('Factory: Article', function () {
             promise = article.getRelatedArticles();
             expect(promise instanceof deferred.promise.constructor).toBe(true);
         }));
+
+        it('resolves promise on success', function () {
+            var results, 
+                onSuccessSpy = jasmine.createSpy(),
+                fakeArticles = { 
+                    items: [
+                        { articleId: 1, language: 'de' },
+                        { articleId: 2, language: 'de' }
+                    ]
+                };
+
+            $httpBackend.resetExpectations();
+            $httpBackend.expectGET(url).respond(200, fakeArticles);
+
+            results = article.getRelatedArticles();
+            $httpBackend.flush(1);
+
+            results.forEach(function (item) {
+                expect(item instanceof Article).toBe(true);
+            });
+        });
+        
+        it('rejects given promise with server error message on failure', function () {
+                var result,
+                    errorSpy = jasmine.createSpy();
+                
+                $httpBackend.resetExpectations();
+                $httpBackend.expectGET(url).respond(500, 'Server error');
+                
+                result = article.getRelatedArticles();
+                $httpBackend.flush(1);
+               
+                expect(result.length).toEqual(0); 
+        });
     });
 
     describe('addRelatedArticle() method', function () {
@@ -544,6 +656,30 @@ describe('Factory: Article', function () {
             promise = article.addRelatedArticle({articleId: 18});
             expect(promise instanceof deferred.promise.constructor).toBe(true);
         }));
+
+        it('resolves promise on success', function () {
+            var onSuccessSpy = jasmine.createSpy();
+
+            $httpBackend.resetExpectations();
+            $httpBackend.expect('LINK', url).respond(200);
+
+            article.addRelatedArticle({articleId: 18}).then(onSuccessSpy);
+            $httpBackend.flush(1);
+
+            expect(onSuccessSpy).toHaveBeenCalled();
+        });
+        
+        it('rejects given promise with server error message on failure', function () {
+                var errorSpy = jasmine.createSpy();
+                
+                $httpBackend.resetExpectations();
+                $httpBackend.expect('LINK', url).respond(500, 'Server error');
+                
+                article.addRelatedArticle({articleId: 18}).catch(errorSpy);
+                $httpBackend.flush(1);
+                
+                expect(errorSpy).toHaveBeenCalledWith('Server error');
+        });
     });
 
     describe('removeRelatedArticle() method', function () {
@@ -597,6 +733,30 @@ describe('Factory: Article', function () {
             promise = article.removeRelatedArticle({articleId: 18});
             expect(promise instanceof deferred.promise.constructor).toBe(true);
         }));
+
+        it('resolves promise on success', function () {
+            var onSuccessSpy = jasmine.createSpy();
+
+            $httpBackend.resetExpectations();
+            $httpBackend.expect('UNLINK', url).respond(200);
+
+            article.removeRelatedArticle({articleId: 18}).then(onSuccessSpy);
+            $httpBackend.flush(1);
+
+            expect(onSuccessSpy).toHaveBeenCalled();
+        });
+        
+        it('rejects given promise with server error message on failure', function () {
+                var errorSpy = jasmine.createSpy();
+                
+                $httpBackend.resetExpectations();
+                $httpBackend.expect('UNLINK', url).respond(500, 'Server error');
+                
+                article.removeRelatedArticle({articleId: 18}).catch(errorSpy);
+                $httpBackend.flush(1);
+                
+                expect(errorSpy).toHaveBeenCalledWith('Server error');
+        });
     });
 
     describe('save() method', function () {

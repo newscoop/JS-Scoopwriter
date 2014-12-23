@@ -366,7 +366,7 @@ angular.module('authoringEnvironmentApp').factory('Article', [
                 if (response.items.length > 0) {
                     deferredGet.resolve(response.items[0].basename);
                 } else {
-                    deferredGet.reject(response);
+                    deferredGet.reject('Empty List');
                 }
             }).error(function (responseBody) {
                 deferredGet.reject(responseBody);
