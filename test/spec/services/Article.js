@@ -330,11 +330,7 @@ describe('Factory: Article', function () {
         var article,
             deferedArticleType,
             ArticleType,
-            readPromise,
-            promiseResolved,
-            contentFields,
-            fakeArticleType,
-            expectedContentFields;
+            fakeArticleType;
         
         beforeEach(inject(function($q, _ArticleType_) {
             deferedArticleType = $q.defer();
@@ -343,7 +339,7 @@ describe('Factory: Article', function () {
                 fields: [
                     {name: 'body', isContent: false, type: 'body', showInEditor: true},
                     {name: 'longtext', isContent: false, type: 'longtext', showInEditor: true},
-                    {name: 'isContent', isContent: true, showInEditor: true},
+                    {name: 'isContent', isContent: true, type: 'body', showInEditor: true},
                     {name: 'hidden-body', isContent: false, type: 'body', showInEditor: false},
                     {name: 'hidden-longtext', isContent: false, type: 'longtext', showInEditor: false},
                     {name: 'hidden-isContent', isContent: false, showInEditor: false},
@@ -361,38 +357,18 @@ describe('Factory: Article', function () {
         
 
         it('returns correct contentFields promise', function () {
-            expectedContentFields = [ 'body', 'longtext', 'isContent' ];
+            var readPromise, 
+                spyOnThen = jasmine.createSpy(),
+                expectedContentFields = [[ 'isContent', 'longtext', 'body' ]];
+
             article = new Article({articleId: 1, type: 'news'}); 
 
-            /**
-             * Problem: test never resolves (times out after 5000 msec).  
-             * I thought that the spyOn would return the resolved deferedArticleType
-             * results and continue running the loadContentField code with those
-             * results.  However, this test just hangs after running article.loadContentFields()
-             * No idea how to make this work, and not sure how to test this functionality
-             */ 
-            runs(function () {
-                promiseResolved = false;
-                contentFields = null;
+            readPromise = article.loadContentFields();
+            readPromise.then(spyOnThen);
+            deferedArticleType.resolve(fakeArticleType);
+            $rootScope.$apply();
 
-                readPromise = article.loadContentFields();
-                deferedArticleType.resolve(fakeArticleType);
-                $rootScope.$apply();
-
-                readPromise.then(function (results) {
-                    contentFields = results;
-                    promiseResolved = true;
-                });
-            });
-            
-            waitsFor(function() {
-                return promiseResolved;
-            }, 'the contentFields have been filtered');
-
-            /**/
-            
-            //contentFields = expectedContentFields; // TODO fix this
-            expect(contentFields).toEqual(expectedContentFields);
+            expect(angular.equals(spyOnThen.mostRecentCall.args, expectedContentFields)).toBe(true);
         });
 
         it('returns a promise', inject(function ($q) {
