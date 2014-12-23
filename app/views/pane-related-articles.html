@@ -71,10 +71,10 @@
                             </div>                
                             <div class="article-metadata">
                                 <span class="date">{{::article.created| date:"dd.MM.yyyy 'at' H:mm:ss"}}</span>
-                                <span class="status new" ng-bind="article.statusString"></span>
+                                <span class="status new" ng-bind="::article.statusString"></span>
                             </div>
                             <div class="article-title">
-                                <a ng-click="paneRelatedArticles.previewRelatedArticle(article)" ng-bind="article.title"></a>
+                                <a ng-click="paneRelatedArticles.previewRelatedArticle(article)" ng-bind="::article.title"></a>
                             </div>
                         </div>
                     </div>
@@ -95,10 +95,10 @@
                         </button>
                         <div class="article-metadata">
                             <span class="date">{{::article.created| date:"dd.MM.yyyy 'at' H:mm:ss"}}</span>
-                            <span class="status published" ng-bind="article.statusString"></span>
+                            <span class="status published" ng-bind="::article.statusString"></span>
                         </div>
                         <div class="article-title">
-                            <a  ng-click="paneRelatedArticles.previewRelatedArticle(article)" ng-bind="article.title"></a>
+                            <a  ng-click="paneRelatedArticles.previewRelatedArticle(article)" ng-bind="::article.title"></a>
                         </div>
                     </div>
                 </div><!-- end search results -->
@@ -122,12 +122,12 @@
             </div>
             <div class="content">
                 <div class="preview-dateline">{{::paneRelatedArticles.relatedArticlePreview.created| date:"dd.MM.yyyy 'at' H:mm:ss"}}</div>
-                <div class="preview-title" ng-bind-html="paneRelatedArticles.relatedArticlePreview.title"></div>
-                <div class="preview-lead" ng-bind-html="paneRelatedArticles.relatedArticlePreview.lead"></div>
+                <div class="preview-title" ng-bind-html="::paneRelatedArticles.relatedArticlePreview.title"></div>
+                <div class="preview-lead" ng-bind-html="::paneRelatedArticles.relatedArticlePreview.lead"></div>
                 <div class="preview-body">
                     <p><img ng-src="{{paneRelatedArticles.relatedArticlePreview.firstImage}}" /></p>
                     <div ng-repeat="field in paneRelatedArticles.relatedArticlePreview.contentFields">
-                        <p ng-bind-html="paneRelatedArticles.relatedArticlePreview.fields[field]">{{field.name}}</p>
+                        <p ng-bind-html="::paneRelatedArticles.relatedArticlePreview.fields[field]" title="{{::field}}"></p>
                     </div>
                 </div>
             </div>          
