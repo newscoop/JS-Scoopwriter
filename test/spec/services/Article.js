@@ -9,6 +9,7 @@
 describe('Factory: Article', function () {
 
     var Article,
+        $rootScope,
         $httpBackend;
 
     /**
@@ -25,8 +26,9 @@ describe('Factory: Article', function () {
 
     beforeEach(module('authoringEnvironmentApp'));
 
-    beforeEach(inject(function (_Article_, _$httpBackend_) {
+    beforeEach(inject(function (_Article_, _$rootScope_, _$httpBackend_) {
         Article = _Article_;
+        $rootScope = _$rootScope_;
         $httpBackend = _$httpBackend_;
 
     }));
@@ -331,26 +333,23 @@ describe('Factory: Article', function () {
             readPromise,
             promiseResolved,
             contentFields,
+            fakeArticleType,
             expectedContentFields;
         
         beforeEach(inject(function($q, _ArticleType_) {
             deferedArticleType = $q.defer();
             ArticleType = _ArticleType_;
-
-            spyOn(ArticleType, 'getByName').andCallFake(function () {
-                deferedArticleType.resolve({
-                    fields: [
-                        {name: 'body', isContent: false, type: 'body', showInEditor: true},
-                        {name: 'longtext', isContent: false, type: 'longtext', showInEditor: true},
-                        {name: 'isContent', isContent: true, showInEditor: true},
-                        {name: 'hidden-body', isContent: false, type: 'body', showInEditor: false},
-                        {name: 'hidden-longtext', isContent: false, type: 'longtext', showInEditor: false},
-                        {name: 'hidden-isContent', isContent: false, showInEditor: false},
-                    ]
-                });
-                
-                return deferedArticleType.promise;
-            });
+            fakeArticleType = {
+                fields: [
+                    {name: 'body', isContent: false, type: 'body', showInEditor: true},
+                    {name: 'longtext', isContent: false, type: 'longtext', showInEditor: true},
+                    {name: 'isContent', isContent: true, showInEditor: true},
+                    {name: 'hidden-body', isContent: false, type: 'body', showInEditor: false},
+                    {name: 'hidden-longtext', isContent: false, type: 'longtext', showInEditor: false},
+                    {name: 'hidden-isContent', isContent: false, showInEditor: false},
+                ]
+            };
+            spyOn(ArticleType, 'getByName').andReturn(deferedArticleType.promise);
         }));
 
         
@@ -371,12 +370,15 @@ describe('Factory: Article', function () {
              * results and continue running the loadContentField code with those
              * results.  However, this test just hangs after running article.loadContentFields()
              * No idea how to make this work, and not sure how to test this functionality
-             
+             */ 
             runs(function () {
                 promiseResolved = false;
                 contentFields = null;
 
-                readPromise = article.loadContentFields()
+                readPromise = article.loadContentFields();
+                deferedArticleType.resolve(fakeArticleType);
+                $rootScope.$apply();
+
                 readPromise.then(function (results) {
                     contentFields = results;
                     promiseResolved = true;
@@ -387,8 +389,9 @@ describe('Factory: Article', function () {
                 return promiseResolved;
             }, 'the contentFields have been filtered');
 
-            */
-            contentFields = expectedContentFields; // TODO fix this
+            /**/
+            
+            //contentFields = expectedContentFields; // TODO fix this
             expect(contentFields).toEqual(expectedContentFields);
         });
 
