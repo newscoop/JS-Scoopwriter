@@ -61,8 +61,10 @@ angular.module('authoringEnvironmentApp').controller('PaneRelatedArticlesCtrl', 
             self.showArticlePreview = !self.showArticlePreview;
         }
 
+        /**
+        * TODO: finish this when the api endpoints are ready and working
+        */
         self.orderChange = function() {
-            console.log('order changed!');
         };
 
         /**
