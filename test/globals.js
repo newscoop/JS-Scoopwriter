@@ -26,5 +26,6 @@ var rootURI = 'http://newscoop.aes.sourcefabric.net/content-api',
                 big: '100%'
             },
             float: 'none'
-        }
+        },
+        placeholder: '[default text]'
     };

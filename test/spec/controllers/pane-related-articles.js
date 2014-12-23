@@ -153,11 +153,15 @@ describe('Controller: PaneRelatedArticlesCtrl', function () {
             expect(fakePreviewArticle.contentFields).toEqual(['body', 'lead']);
         });
         it('sets firstImage on the previewArticle', function () {
-            AES_SETTINGS = { API: { rootURI: 'fake' } };
+            var oldRootURI = AES_SETTINGS.API.rootURI;
+            AES_SETTINGS.API.rootURI = 'fake';
+
             expect(fakePreviewArticle.loadFirstImage).toHaveBeenCalled();
             deferedFirstImage.resolve('firstimage.png');
             $rootScope.$apply();
             expect(fakePreviewArticle.firstImage).toEqual('fake/images/firstimage.png');
+
+            AES_SETTINGS.API.rootURI = oldRootURI;
         });
     });
 
