@@ -84,6 +84,15 @@
                 <!-- search results -->
                 <div class="group">
                     <div class="title">Search results</div>
+                    <!-- loader -->
+                    <div  ng-hide="paneRelatedArticles.articlesSearchResultsListRetrieved"
+                        class="load-anim">
+                        <div class="rect1"></div>
+                        <div class="rect2"></div>
+                        <div class="rect3"></div>
+                        <div class="rect4"></div>
+                        <div class="rect5"></div>
+                    </div><!-- end loader -->
                     <div ng-repeat="article in paneRelatedArticles.articlesSearchResults track by article.articleId"
                         class="related-article">
                         <button 
@@ -110,7 +119,7 @@
             <div class="header">
                 <div class="btn-group">
                     <button class="btn btn-default btn-xs"
-                      ng-click="paneRelatedArticles.showArticlePreview = !paneRelatedArticles.showArticlePreview">
+                      ng-click="paneRelatedArticles.clearPreview()">
                       <i class="fa fa-chevron-left"></i> Back
                     </button>
                 </div>
@@ -121,13 +130,22 @@
                 </div>
             </div>
             <div class="content">
-                <div class="preview-dateline">{{::paneRelatedArticles.relatedArticlePreview.created| date:"dd.MM.yyyy 'at' H:mm:ss"}}</div>
-                <div class="preview-title" ng-bind-html="::paneRelatedArticles.relatedArticlePreview.title"></div>
-                <div class="preview-lead" ng-bind-html="::paneRelatedArticles.relatedArticlePreview.lead"></div>
+                <div class="preview-dateline">{{paneRelatedArticles.relatedArticlePreview.created| date:"dd.MM.yyyy 'at' H:mm:ss"}}</div>
+                <div class="preview-title" ng-bind-html="paneRelatedArticles.relatedArticlePreview.title"></div>
+                <div class="preview-lead" ng-bind-html="paneRelatedArticles.relatedArticlePreview.lead"></div>
                 <div class="preview-body">
+                    <!-- loader -->
+                    <div  ng-hide="paneRelatedArticles.previewLoaded"
+                        class="load-anim">
+                        <div class="rect1"></div>
+                        <div class="rect2"></div>
+                        <div class="rect3"></div>
+                        <div class="rect4"></div>
+                        <div class="rect5"></div>
+                    </div><!-- end loader -->
                     <p><img ng-src="{{paneRelatedArticles.relatedArticlePreview.firstImage}}" /></p>
                     <div ng-repeat="field in paneRelatedArticles.relatedArticlePreview.contentFields">
-                        <p ng-bind-html="::paneRelatedArticles.relatedArticlePreview.fields[field]" title="{{::field}}"></p>
+                        <p ng-bind-html="paneRelatedArticles.relatedArticlePreview.fields[field]" title="{{field}}"></p>
                     </div>
                 </div>
             </div>          

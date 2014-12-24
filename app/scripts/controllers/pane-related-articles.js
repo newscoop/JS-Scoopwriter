@@ -18,9 +18,10 @@ angular.module('authoringEnvironmentApp')
 
         self.article = articleService.articleInstance;
         self.articlesSearchResults = [];
-        self.articlesSearchResultsListRetrieved = false;
+        self.articlesSearchResultsListRetrieved = true;
         self.assignedRelatedArticles = [];
         self.assigningRelatedArticles = false;
+        self.previewLoaded = true;
 
         // load initial filter select options
         self.availablePublications = Publication.getAll();
@@ -50,9 +51,8 @@ angular.module('authoringEnvironmentApp')
          * @param article {Object} RelatedArtile
          */
         self.previewRelatedArticle = function(previewArticle) {
-            previewArticle.loadContentFields().then(function(contentFields) {
-                previewArticle.contentFields = contentFields;
-            });
+            self.clearPreview();
+
             previewArticle.loadFirstImage().then(function(firstImage) {
                 // TODO: is this the best way to get full image url?
                 var url = AES_SETTINGS.API.rootURI + '/images/';
@@ -60,8 +60,29 @@ angular.module('authoringEnvironmentApp')
                     url + firstImage :
                     null;
             });
+            previewArticle.loadContentFields().then(function(contentFields) {
+                previewArticle.contentFields = contentFields;
+                self.previewLoaded = true;
+            });
             self.relatedArticlePreview = previewArticle;
             self.showArticlePreview = !self.showArticlePreview;
+        };
+
+        /**
+         * Clears the Related Articles preview pane
+         *
+         * @method clearPreview 
+         */
+        self.clearPreview = function() {
+            self.previewLoaded = false;
+            // clear the current previewArticle
+            if (self.relatedArticlePreview) {
+                self.relatedArticlePreview.title = null;
+                self.relatedArticlePreview.lead = null;
+                self.relatedArticlePreview.firstImage = ' ';
+                self.relatedArticlePreview.contentFields = null;
+            }
+            self.showArticlePreview = false;
         };
 
         /**

@@ -83,8 +83,8 @@ describe('Controller: PaneRelatedArticlesCtrl', function () {
         expect(PaneRelatedArticlesCtrl.articlesSearchResults).toEqual([]);
     });
 
-    it('initializes articlesSearchResultsListRetrieved to false', function () {
-        expect(PaneRelatedArticlesCtrl.articlesSearchResultsListRetrieved).toBe(false);
+    it('initializes articlesSearchResultsListRetrieved to true', function () {
+        expect(PaneRelatedArticlesCtrl.articlesSearchResultsListRetrieved).toBe(true);
     });
 
     it('initializes assignedRelatedArticles to article list', function () {
@@ -93,6 +93,10 @@ describe('Controller: PaneRelatedArticlesCtrl', function () {
 
     it('initializes assigningRelatedArticles flag to false', function () {
         expect(PaneRelatedArticlesCtrl.assigningRelatedArticles).toBe(false);
+    });
+
+    it('initializes previewLoaded flag to true', function () {
+        expect(PaneRelatedArticlesCtrl.previewLoaded).toBe(true);
     });
 
     it('initializes availablePublications with correct array', function () {
@@ -162,6 +166,45 @@ describe('Controller: PaneRelatedArticlesCtrl', function () {
             expect(fakePreviewArticle.firstImage).toEqual('fake/images/firstimage.png');
 
             AES_SETTINGS.API.rootURI = oldRootURI;
+        });
+
+        it('sets previewLoaded flag to true', function () {
+            deferedContentFields.resolve(['body', 'lead']);
+            $rootScope.$apply();
+            expect(PaneRelatedArticlesCtrl.previewLoaded).toBe(true);
+        });
+    });
+
+    describe('clearPreview() method', function () {
+        var fakePreviewArticle;
+
+        beforeEach(inject(function ($q) {
+            fakePreviewArticle = {
+                articleId: 1,
+                title: 'title',
+                contentFields: [ 'content' ],
+                firstImage: 'image.png' 
+            };
+           
+            PaneRelatedArticlesCtrl.relatedArticlePreview = fakePreviewArticle;
+        }));
+
+        it('sets previewLoaded flag to false', function () {
+            PaneRelatedArticlesCtrl.clearPreview();
+            expect(PaneRelatedArticlesCtrl.previewLoaded).toBe(false);
+        });
+
+        it('clears relatedArticlePreview', function () {
+            PaneRelatedArticlesCtrl.clearPreview();
+            expect(PaneRelatedArticlesCtrl.relatedArticlePreview.title).toBe(null);
+            expect(PaneRelatedArticlesCtrl.relatedArticlePreview.lead).toBe(null);
+            expect(PaneRelatedArticlesCtrl.relatedArticlePreview.firstImage).toEqual(' ');
+            expect(fakePreviewArticle.contentFields).toBe(null);
+        });
+
+        it('sets showArticlePreview to FALSE', function () {
+            PaneRelatedArticlesCtrl.clearPreview();
+            expect(PaneRelatedArticlesCtrl.showArticlePreview).toBe(false);
         });
     });
 
