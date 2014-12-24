@@ -18,7 +18,7 @@ angular.module('authoringEnvironmentApp')
 
         self.article = articleService.articleInstance;
         self.articlesSearchResults = [];
-        self.articlesSearchResultsListRetrieved = false;
+        self.articlesSearchResultsListRetrieved = true;
         self.assignedRelatedArticles = [];
         self.assigningRelatedArticles = false;
 
@@ -73,7 +73,7 @@ angular.module('authoringEnvironmentApp')
          */
         self.clearPreview = function() {
             // clear the current previewArticle
-            if (self.relatedArticlePreview) { 
+            if (self.relatedArticlePreview) {
                 self.relatedArticlePreview.title = null;
                 self.relatedArticlePreview.lead = null;
                 self.relatedArticlePreview.firstImage = ' ';

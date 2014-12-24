@@ -83,8 +83,8 @@ describe('Controller: PaneRelatedArticlesCtrl', function () {
         expect(PaneRelatedArticlesCtrl.articlesSearchResults).toEqual([]);
     });
 
-    it('initializes articlesSearchResultsListRetrieved to false', function () {
-        expect(PaneRelatedArticlesCtrl.articlesSearchResultsListRetrieved).toBe(false);
+    it('initializes articlesSearchResultsListRetrieved to true', function () {
+        expect(PaneRelatedArticlesCtrl.articlesSearchResultsListRetrieved).toBe(true);
     });
 
     it('initializes assignedRelatedArticles to article list', function () {
