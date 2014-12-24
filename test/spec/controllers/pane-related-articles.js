@@ -95,6 +95,10 @@ describe('Controller: PaneRelatedArticlesCtrl', function () {
         expect(PaneRelatedArticlesCtrl.assigningRelatedArticles).toBe(false);
     });
 
+    it('initializes previewLoaded flag to true', function () {
+        expect(PaneRelatedArticlesCtrl.previewLoaded).toBe(true);
+    });
+
     it('initializes availablePublications with correct array', function () {
         expect(PaneRelatedArticlesCtrl.availablePublications).toEqual(mockedPublications);
     });
@@ -163,6 +167,12 @@ describe('Controller: PaneRelatedArticlesCtrl', function () {
 
             AES_SETTINGS.API.rootURI = oldRootURI;
         });
+
+        it('sets previewLoaded flag to true', function () {
+            deferedContentFields.resolve(['body', 'lead']);
+            $rootScope.$apply();
+            expect(PaneRelatedArticlesCtrl.previewLoaded).toBe(true);
+        });
     });
 
     describe('clearPreview() method', function () {
@@ -178,6 +188,11 @@ describe('Controller: PaneRelatedArticlesCtrl', function () {
            
             PaneRelatedArticlesCtrl.relatedArticlePreview = fakePreviewArticle;
         }));
+
+        it('sets previewLoaded flag to false', function () {
+            PaneRelatedArticlesCtrl.clearPreview();
+            expect(PaneRelatedArticlesCtrl.previewLoaded).toBe(false);
+        });
 
         it('clears relatedArticlePreview', function () {
             PaneRelatedArticlesCtrl.clearPreview();

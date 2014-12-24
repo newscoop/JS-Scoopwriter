@@ -21,6 +21,7 @@ angular.module('authoringEnvironmentApp')
         self.articlesSearchResultsListRetrieved = true;
         self.assignedRelatedArticles = [];
         self.assigningRelatedArticles = false;
+        self.previewLoaded = true;
 
         // load initial filter select options
         self.availablePublications = Publication.getAll();
@@ -52,15 +53,16 @@ angular.module('authoringEnvironmentApp')
         self.previewRelatedArticle = function(previewArticle) {
             self.clearPreview();
 
-            previewArticle.loadContentFields().then(function(contentFields) {
-                previewArticle.contentFields = contentFields;
-            });
             previewArticle.loadFirstImage().then(function(firstImage) {
                 // TODO: is this the best way to get full image url?
                 var url = AES_SETTINGS.API.rootURI + '/images/';
                 previewArticle.firstImage = (firstImage) ?
                     url + firstImage :
                     null;
+            });
+            previewArticle.loadContentFields().then(function(contentFields) {
+                previewArticle.contentFields = contentFields;
+                self.previewLoaded = true;
             });
             self.relatedArticlePreview = previewArticle;
             self.showArticlePreview = !self.showArticlePreview;
@@ -72,6 +74,7 @@ angular.module('authoringEnvironmentApp')
          * @method clearPreview 
          */
         self.clearPreview = function() {
+            self.previewLoaded = false;
             // clear the current previewArticle
             if (self.relatedArticlePreview) {
                 self.relatedArticlePreview.title = null;
