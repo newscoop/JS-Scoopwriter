@@ -2930,6 +2930,7 @@ a:hover {
                             a {
                                 font-size: 13px;
                                 color: #007fb3;
+                                cursor: pointer;
                             }       
                         }
                         .btn.pin {
@@ -3025,6 +3026,7 @@ a:hover {
                     font-style: normal;
                     line-height: 120%;
                     margin-bottom: 10px;
+                    word-wrap: break-word;
                 }
                 .preview-lead {
                     font-size: 14px;
@@ -3032,11 +3034,37 @@ a:hover {
                     font-style: normal;
                     line-height: 120%;
                     margin-bottom: 10px;
+                    word-wrap: break-word;                    
                 }
                 .preview-body {
                     img {
                         max-width: 100%;
                     }
+                    word-wrap: break-word;
+                }
+                h2 {
+                    font-size: 18px;
+                    font-weight: 500;
+                    font-style: normal;
+                    line-height: 120%;
+                    margin-bottom: 10px;
+                    word-wrap: break-word;
+                }
+                h3 {
+                    font-size: 16px;
+                    font-weight: 500;
+                    font-style: normal;
+                    line-height: 120%;
+                    margin-bottom: 10px;
+                    word-wrap: break-word;
+                }
+                h4 {
+                    font-size: 14px;
+                    font-weight: 500;
+                    font-style: normal;
+                    line-height: 120%;
+                    margin-bottom: 6px;
+                    word-wrap: break-word;
                 }
             }
         }
@@ -4277,3 +4305,50 @@ a:hover {
             }
         }
     }
+
+/* Spinner animation */
+.load-anim {
+    margin: 20px 0 0;
+    height: 27px;
+    text-align: center;
+    font-size: 8px;
+    > div {
+      background-color: #ccc;
+      height: 100%;
+      width: 4px;
+      display: inline-block; 
+      -webkit-animation: stretchdelay 1.2s infinite ease-in-out;
+      animation: stretchdelay 1.2s infinite ease-in-out;
+    }
+    .rect2 {
+        -webkit-animation-delay: -1.1s;
+        animation-delay: -1.1s;
+    }
+    .rect3 {
+        -webkit-animation-delay: -1.0s;
+        animation-delay: -1.0s;
+    }
+    .rect4 {
+        -webkit-animation-delay: -0.9s;
+        animation-delay: -0.9s;
+    }
+    .rect5 {
+        -webkit-animation-delay: -0.8s;
+        animation-delay: -0.8s;
+    }
+}
+
+@-webkit-keyframes stretchdelay {
+  0%, 40%, 100% { -webkit-transform: scaleY(0.4) }  
+  20% { -webkit-transform: scaleY(1.0) }
+}
+
+@keyframes stretchdelay {
+  0%, 40%, 100% { 
+    transform: scaleY(0.4);
+    -webkit-transform: scaleY(0.4);
+  }  20% { 
+    transform: scaleY(1.0);
+    -webkit-transform: scaleY(1.0);
+  }
+}
