@@ -50,6 +50,8 @@ angular.module('authoringEnvironmentApp')
          * @param article {Object} RelatedArtile
          */
         self.previewRelatedArticle = function(previewArticle) {
+            self.clearPreview();
+
             previewArticle.loadContentFields().then(function(contentFields) {
                 previewArticle.contentFields = contentFields;
             });
@@ -62,6 +64,22 @@ angular.module('authoringEnvironmentApp')
             });
             self.relatedArticlePreview = previewArticle;
             self.showArticlePreview = !self.showArticlePreview;
+        };
+
+        /**
+         * Clears the Related Articles preview pane
+         *
+         * @method clearPreview 
+         */
+        self.clearPreview = function() {
+            // clear the current previewArticle
+            if (self.relatedArticlePreview) { 
+                self.relatedArticlePreview.title = null;
+                self.relatedArticlePreview.lead = null;
+                self.relatedArticlePreview.firstImage = ' ';
+                self.relatedArticlePreview.contentFields = null;
+            }
+            self.showArticlePreview = false;
         };
 
         /**
