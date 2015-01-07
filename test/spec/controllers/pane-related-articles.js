@@ -208,6 +208,33 @@ describe('Controller: PaneRelatedArticlesCtrl', function () {
         });
     });
 
+    describe('clearSearch() method', function () {
+        var fakePreviewArticle;
+
+        beforeEach(inject(function ($q) {
+            fakePreviewArticle = {
+                articleId: 1,
+                title: 'title',
+                contentFields: [ 'content' ],
+                firstImage: 'image.png' 
+            };
+           
+            PaneRelatedArticlesCtrl.articlesSearchResults = [fakePreviewArticle];
+            PaneRelatedArticlesCtrl.query = 'query string';
+        }));
+
+        it('sets query to null', function () {
+            PaneRelatedArticlesCtrl.clearSearch();
+            expect(PaneRelatedArticlesCtrl.query).toBe(null);
+        });
+
+        it('clears articlesSearchResults', function () {
+            PaneRelatedArticlesCtrl.clearSearch();
+            expect(PaneRelatedArticlesCtrl.articlesSearchResults).toEqual([]);
+        });
+
+    });
+
     describe('buildFilters() method', function () {
         var filters,
             mockedFilters;

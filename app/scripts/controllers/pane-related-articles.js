@@ -133,6 +133,16 @@ angular.module('authoringEnvironmentApp')
         };
 
         /**
+        * Sets query and articleSearchResults to empty values 
+        *
+        * @method clearSearch
+        */
+        self.clearSearch = function () {
+            self.articlesSearchResults = [];
+            self.query = null;
+        };
+
+        /**
         * Returns an object continaing article search filters 
         *
         * @method assignSelectedToArticle
