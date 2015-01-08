@@ -44,7 +44,9 @@
                             <span class="glyphicon glyphicon-remove"></span>
                         </div>
                         <span class="input-group-btn">
-                            <button class="btn btn-primary btn-sm" type="submit">Filter</button>
+                            <button
+                                ng-disabled="!paneRelatedArticles.query" 
+                                class="btn btn-primary btn-sm" type="submit">Filter</button>
                         </span>
                     </div>
                 </form>
