@@ -621,9 +621,17 @@ angular.module('authoringEnvironmentApp').factory('Article', [
                 true
             );
 
+            // parse bools to int (api expects ints)
+            // remove pre-defined switches
+            // (don't ask why, some weird Newscoop stuff :))
             switchNames.forEach(function (name) {
-                postData.article.fields[name] = self.fields[name];
+                if ((name != 'show_on_front_page') &&
+                    (name != 'show_on_section_page')) {
+                    postData.article.fields[name] = self.fields[name] ? 1 : 0;;
+                }
             });
+
+            console.log(postData);
 
             $http.patch(
                 url, postData, {transformRequest: transform.formEncode}

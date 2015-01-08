@@ -27,7 +27,8 @@ angular.module('authoringEnvironmentApp').controller('PaneSwitchesCtrl', [
         ArticleType.getByName(self.article.type)
         .then(function (articleType) {
             articleType.fields.forEach(function (field) {
-                if (field.type === 'switch') {
+                if ((field.isHidden === 0) &&
+                    (field.type === 'switch')) {
                     self.switches.push({
                         name: field.name,
                         text: field.phrase || field.name
