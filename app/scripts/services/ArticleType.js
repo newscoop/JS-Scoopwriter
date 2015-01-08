@@ -26,8 +26,11 @@ angular.module('authoringEnvironmentApp').factory('ArticleType', [
             instance.name = data.name;
 
             instance.fields = [];
-            // XXX: convert 0/1 to false/true for specific fields?
+            // convert 0/1 to false/true for specific fields
             data.fields.forEach(function (field) {
+                field.isHidden = !!parseInt(field.isHidden);
+                field.showInEditor = !!parseInt(field.showInEditor);
+                field.isContentField = !!parseInt(field.isContentField);
                 instance.fields.push(angular.copy(field));
             });
 
