@@ -625,13 +625,15 @@ angular.module('authoringEnvironmentApp').factory('Article', [
             // remove pre-defined switches
             // (don't ask why, some weird Newscoop stuff :))
             switchNames.forEach(function (name) {
-                if ((name != 'show_on_front_page') &&
-                    (name != 'show_on_section_page')) {
-                    postData.article.fields[name] = self.fields[name] ? 1 : 0;;
+                if ((name !== 'show_on_front_page') &&
+                    (name !== 'show_on_section_page')) {
+                    postData.article.fields[name] = self.fields[name] ? 1 : 0;
                 }
             });
-
-            console.log(postData);
+            postData.article.onFrontPage = self.fields.show_on_front_page ?
+            1 : 0;
+            postData.article.onSection = self.fields.show_on_section_page ?
+            1 : 0;
 
             $http.patch(
                 url, postData, {transformRequest: transform.formEncode}
