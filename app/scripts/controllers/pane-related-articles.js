@@ -92,6 +92,8 @@ angular.module('authoringEnvironmentApp')
         * Used as a parameter to the drag-sort directive.
         *
         * @method orderChanged
+        * @param item {Object} relatedArticle 
+        * @param newIndex int position in list
         */
         self.orderChange = function(item, newIndex) {
             self.article.setOrderOfRelatedArticles(item, newIndex);
