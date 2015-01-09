@@ -753,8 +753,8 @@ angular.module('authoringEnvironmentApp').factory('Article', [
         * Sets a new order of related articles
         *
         * @method setOrderOfRelatedArticles
-        * @param relatedArticles {Object} 
-        *   array with article object(s) in desired order
+        * @param relatedArticle {Object} article
+        * @param index {Integer} position in list
         */
         Article.prototype.setOrderOfRelatedArticles =
         function (relatedArticle, index) {
