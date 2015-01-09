@@ -173,7 +173,10 @@
                     item = scope.items.splice(oldIndex, 1)[0];
                     scope.items.splice(newIdx, 0, item);
                     scope.$apply();
-                    scope.orderChangedCallback();
+                    scope.orderChangedCallback({
+                        affectedItem: item,
+                        newIndex: newIdx
+                    });
                 }
             });
         }
