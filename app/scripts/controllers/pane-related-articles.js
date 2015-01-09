@@ -86,9 +86,17 @@ angular.module('authoringEnvironmentApp')
         };
 
         /**
-        * TODO: finish this when the api endpoints are ready and working
+        * A handler to be called whenever the 
+        * order of related articles changes.
+        * It persists the new order on the server.
+        * Used as a parameter to the drag-sort directive.
+        *
+        * @method orderChanged
+        * @param item {Object} relatedArticle 
+        * @param newIndex int position in list
         */
-        self.orderChange = function() {
+        self.orderChange = function(item, newIndex) {
+            self.article.setOrderOfRelatedArticles(item, newIndex);
         };
 
         /**

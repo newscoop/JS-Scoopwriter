@@ -208,6 +208,37 @@ describe('Controller: PaneRelatedArticlesCtrl', function () {
         });
     });
 
+    describe('orderChange() method', function () {
+        var fakeArticle,
+            deferedOrder;
+        beforeEach(inject(function ($q) {
+            deferedOrder = $q.defer();
+            fakeArticle = {
+                articleId: 1,
+                title: 'title',
+                contentFields: [ 'content' ],
+                firstImage: 'image.png' 
+            };
+           
+            PaneRelatedArticlesCtrl.article.setOrderOfRelatedArticles = jasmine
+                .createSpy('setOrderOfRelatedArticles')
+                .andReturn(deferedOrder.promise); 
+            PaneRelatedArticlesCtrl.orderChange(fakeArticle, 1);
+        }));
+
+        it('invokes article\'s setOrderOfRelatedArticles() method ' +
+            'with correct parameters',
+            function () {
+                PaneRelatedArticlesCtrl.orderChange(fakeArticle, 1);
+                deferedOrder.resolve();
+                $rootScope.$apply();
+
+                expect(PaneRelatedArticlesCtrl.article.setOrderOfRelatedArticles).
+                    toHaveBeenCalledWith(fakeArticle, 1);
+            }
+        );
+    });
+
     describe('clearSearch() method', function () {
         var fakePreviewArticle;
 

@@ -63,7 +63,7 @@
                     <div class="title">Pinned articles</div>
                     <div class="related-articles-list"
                         drag-sort items="paneRelatedArticles.assignedRelatedArticles"
-                        on-order-changed="paneRelatedArticles.orderChange()">
+                        on-order-changed="paneRelatedArticles.orderChange(affectedItem, newIndex)">
                         <div ng-repeat="article in paneRelatedArticles.assignedRelatedArticles track by article.articleId"
                             class="related-article pinned">
                             <div class="drag-bar"></div>

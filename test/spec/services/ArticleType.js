@@ -29,12 +29,16 @@ describe('Factory: ArticleType', function () {
                     name: 'body',
                     type: 'body',
                     fieldWeight: 10,
-                    isHidden: 0
+                    isHidden: false,
+                    showInEditor: false,
+                    isContentField: false
                 }, {
                     name: 'teaser',
                     type: 'longtext',
                     fieldWeight: 8,
-                    isHidden: 0
+                    isHidden: false,
+                    showInEditor: false,
+                    isContentField: false
                 }]
             };
         });
@@ -54,13 +58,17 @@ describe('Factory: ArticleType', function () {
                     name: 'body',
                     type: 'body',
                     fieldWeight: 10,
-                    isHidden: 0
+                    isHidden: false,
+                    showInEditor: false,
+                    isContentField: false
             });
             expect(instance.fields[1]).toEqual({
                     name: 'teaser',
                     type: 'longtext',
                     fieldWeight: 8,
-                    isHidden: 0
+                    isHidden: false,
+                    showInEditor: false,
+                    isContentField: false
             });
         });
     });

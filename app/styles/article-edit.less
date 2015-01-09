@@ -2885,6 +2885,22 @@ a:hover {
 
                 .group {
                     margin: 0 0 20px 0;
+                    .related-articles-list {
+                        &::-webkit-scrollbar { width: 14px; height: 8px; margin: -1px 0; }
+                        &::-webkit-scrollbar-thumb { background: #949494; 
+                         border-left: 6px solid rgba(0,0,0,0);background-clip: padding-box;
+                        }
+                        &::-webkit-scrollbar-thumb:hover { background: #6e6e6e; border-left: 6px solid rgba(0,0,0,0);background-clip: padding-box; }
+
+                        .new-item-slot {
+                            height: 50px;
+                            border: 1px dashed #a6d9ee;
+                            background-color: #edf4f7;
+                            margin-top: 8px;
+                            margin-bottom: 8px;
+                            .border-radius(4px);
+                        }
+                    }
                     .title {
                         position:relative;
                         clear:both;

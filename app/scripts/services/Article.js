@@ -749,6 +749,51 @@ angular.module('authoringEnvironmentApp').factory('Article', [
             return deferred.promise;
         };
 
+        /**
+        * Sets a new order of related articles
+        *
+        * @method setOrderOfRelatedArticles
+        * @param relatedArticle {Object} article
+        * @param index {Integer} position in list
+        */
+        Article.prototype.setOrderOfRelatedArticles =
+        function (relatedArticle, index) {
+            var self = this,
+                defered = $q.defer(),
+                linkHeader = [];
+
+            linkHeader = [
+                '<' +
+                Routing.generate(
+                    'newscoop_gimme_articles_getarticle',
+                    {number: relatedArticle.articleId},
+                    false
+                ) +
+                '; rel="article">,' +
+                '<' +
+                (index + 1) +
+                '; rel="article-position">'
+            ].join('');
+
+            $http({
+                url: Routing.generate(
+                    'newscoop_gimme_articles_linkarticle',
+                    {number: self.articleId, language: self.language},
+                    true
+                ),
+                method: 'LINK',
+                headers: {link: linkHeader}
+            })
+            .success(function () {
+                defered.resolve();
+            })
+            .error(function (responseBody) {
+                defered.reject(responseBody);
+            });
+
+            return defered.promise;
+        };
+
         return Article;
     }
 

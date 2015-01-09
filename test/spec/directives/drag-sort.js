@@ -24,7 +24,7 @@ describe('Directive: dragSort', function () {
 
         html = [
             '<div id="list" drag-sort items="items"',
-                'on-order-changed="orderChanged()">',
+                'on-order-changed="orderChanged(affectedItem, newIndex)">',
             '</div>'
         ].join('');
 
@@ -527,7 +527,7 @@ describe('Directive: dragSort', function () {
                 it('invokes provided orderChanged callback', function () {
                     dragOverItem(4, false);  // behind item 4
                     $rootNode.trigger(evDrop);
-                    expect(scope.orderChanged).toHaveBeenCalled();
+                    expect(scope.orderChanged).toHaveBeenCalledWith({ id : 2 }, 4);
                 });
             });
 

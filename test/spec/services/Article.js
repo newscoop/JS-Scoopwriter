@@ -925,9 +925,11 @@ describe('Factory: Article', function () {
             article = new Article();
             article.articleId = 8;
             article.language = 'de';
+            article.onFrontPage = 0;
+            article.onSection = 0;
             article.fields = {
-                'switch_1': false,
-                'switch_2': true,
+                'switch_1': 0,
+                'switch_2': 1,
                 'content_field': 'foobar'
             };
 
@@ -953,9 +955,11 @@ describe('Factory: Article', function () {
             var requestData = {
                 article: {
                     fields: {
-                        'switch_1': false,
-                        'switch_2': true
-                    }
+                        'switch_1': 0,
+                        'switch_2': 1
+                    },
+                    onFrontPage: 0,
+                    onSection: 0,
                 }
             };
             requestData = $.param(requestData);
@@ -1213,6 +1217,82 @@ describe('Factory: Article', function () {
                 $httpBackend.whenDELETE(/.*/).respond(500, 'DB Error');
 
                 article.releaseLock().catch(onErrorSpy);
+                $httpBackend.flush();
+
+                expect(onErrorSpy).toHaveBeenCalledWith('DB Error');
+            }
+        );
+    });
+
+    describe('setOrderOfRelatedArticles() method', function () {
+        var article,
+            url,
+            expectedLinkHeader;
+
+        beforeEach(function() {
+            var expectedLinkHeader;
+
+            article = new Article();
+            article.articleId = 25;
+            article.language = 'de';
+
+            expectedLinkHeader = [
+                '<' +
+                Routing.generate(
+                    'newscoop_gimme_articles_getarticle',
+                    {number: 5},
+                    false
+                ) +
+                '; rel="article">,' +
+                '<2; rel="article-position">'
+            ].join('');
+
+            url = Routing.generate(
+                'newscoop_gimme_articles_linkarticle',
+                {number: 25, language: 'de'}, true
+            );
+
+            $httpBackend.expect(
+                'LINK',
+                url,
+                undefined,
+                function (headers) {
+                    return headers.link === expectedLinkHeader;
+                }
+            ).respond(201, '');
+        });
+
+        afterEach(function () {
+            $httpBackend.verifyNoOutstandingExpectation();
+        });
+        
+        it('sends a correct request to API', function () {
+            article.setOrderOfRelatedArticles({ articleId: 5 }, 1);
+        });
+
+        it ('resolves given promise',
+            function () {
+                var onSuccessSpy = jasmine.createSpy();
+
+                $httpBackend.resetExpectations();
+                $httpBackend.expect('LINK', url).respond(200);
+
+                article.setOrderOfRelatedArticles({ articleId: 5 }, 1).then(onSuccessSpy);
+                $httpBackend.flush(1);
+
+                expect(onSuccessSpy).toHaveBeenCalled();
+            }
+        );
+
+        it ('rejects given promise with error message on failure',
+            function () {
+                var onErrorSpy = jasmine.createSpy();
+
+                $httpBackend.resetExpectations();
+                $httpBackend.expect('LINK', url).respond(500, 'DB Error');
+
+                article.setOrderOfRelatedArticles({ articleId: 5 }, 1)
+                    .catch(onErrorSpy);
                 $httpBackend.flush();
 
                 expect(onErrorSpy).toHaveBeenCalledWith('DB Error');
