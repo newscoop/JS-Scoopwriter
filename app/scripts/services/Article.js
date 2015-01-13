@@ -671,8 +671,10 @@ angular.module('authoringEnvironmentApp').factory('Article', [
             );
 
             postData.article = {
-                comments_enabled: (newValue === Article.commenting.ENABLED),
-                comments_locked: (newValue === Article.commenting.LOCKED)
+                comments_enabled: (newValue === Article.commenting.ENABLED) ?
+                1 : 0,
+                comments_locked: (newValue === Article.commenting.LOCKED) ?
+                1 : 0
             };
 
             $http.patch(

@@ -1045,8 +1045,8 @@ describe('Factory: Article', function () {
                 postDataChecker = function (data) {
                     var expected = $.param({
                         article: {
-                            comments_enabled: true,
-                            comments_locked: false
+                            comments_enabled: 1,
+                            comments_locked: 0
                         }
                     });
                     return angular.equals(data, expected);
@@ -1061,8 +1061,8 @@ describe('Factory: Article', function () {
                 postDataChecker = function (data) {
                     var expected = $.param({
                         article: {
-                            comments_enabled: false,
-                            comments_locked: false
+                            comments_enabled: 0,
+                            comments_locked: 0 
                         }
                     });
                     return angular.equals(data, expected);
@@ -1077,8 +1077,8 @@ describe('Factory: Article', function () {
                 postDataChecker = function (data) {
                     var expected = $.param({
                         article: {
-                            comments_enabled: false,
-                            comments_locked: true
+                            comments_enabled: 0,
+                            comments_locked: 1 
                         }
                     });
                     return angular.equals(data, expected);
