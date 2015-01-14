@@ -23,6 +23,7 @@
     "grunt-contrib-watch": "~0.5.2",
     "grunt-devcode": "0.0.4-c",
     "grunt-google-cdn": "~0.2.0",
+    "grunt-jsdoc-ng": "0.0.3",
     "grunt-karma": "~0.6.2",
     "grunt-ngmin": "~0.0.2",
     "grunt-open": "~0.2.3",
