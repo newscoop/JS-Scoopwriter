@@ -10,6 +10,8 @@
     <link rel="stylesheet" href="css/plugin.css">
     <script src="{{ asset('bundles/fosjsrouting/js/router.js') }}"></script>
     <script src="{{ path('fos_js_routing_js', {'callback': 'fos.Router.setData'}) }}"></script>
+    <script src="{{ asset('bundles/bazingajstranslation/js/translator.min.js') }}"></script>
+    <script src="{{ url('bazinga_jstranslation_js') }}?locales={{ localeFromCookie }}"></script>
     <script type="text/javascript">
       //var CSClientId = '{{ clientId }}';
       var CSBaseUrl = '/bundles/newscoopeditor/';
@@ -25,6 +27,8 @@
     <!-- devcode: !newscoop -->
     <script src="scripts/routing/router.js"></script>
     <script src="scripts/routing/fos_js_routes.js"></script>
+    <script src="scripts/localization/translator.min.js"></script>
+    <script src="scripts/localization/translations.js"></script>
     <script type="text/javascript">
       //var CSClientId = '7_6203opwgvx8g4skgskksgkws8cs44ks8s4cw4sc8cg4wsk8c40';
       var CSBaseUrl = '';
