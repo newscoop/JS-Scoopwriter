@@ -5,6 +5,7 @@ module.exports = {
     },
     all: [
         'Gruntfile.js',
-        '<%= source %>/scripts/{,*/}*.js'
+        '<%= source %>/scripts/{,*/}*.js',
+        '!<%= source %>/scripts/localization/**',
     ]
 };

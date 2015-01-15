@@ -8,7 +8,7 @@
 */
 describe('Controller: RedirectToArticleCtrl', function () {
     var ctrl,
-        oldArticleInfo,
+        oldAES_SETTINGS,
         $controller,
         $location,
         $rootScope;
@@ -21,16 +21,18 @@ describe('Controller: RedirectToArticleCtrl', function () {
         $rootScope = _$rootScope_;
 
         // set a global variable as it exists in a real environment
-        oldArticleInfo = articleInfo;
-        articleInfo = {
-            articleNumber: 123,
-            language: 'en'
+        oldAES_SETTINGS = AES_SETTINGS;
+        AES_SETTINGS = {
+            articleInfo: {
+                articleNumber: 123,
+                language: 'en'
+            }
         };
     }));
 
     afterEach(function () {
         // cleanup: reset global articleInfo variable to its initial value
-        articleInfo = oldArticleInfo;
+        AES_SETTINGS = oldAES_SETTINGS;
     });
 
     it('redirects to the correct article', inject(function ($httpBackend) {
