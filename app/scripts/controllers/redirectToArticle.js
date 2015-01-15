@@ -1,4 +1,3 @@
-/*global articleInfo */
 'use strict';
 
 /**
@@ -24,7 +23,8 @@ angular.module('authoringEnvironmentApp').controller('RedirectToArticleCtrl', [
         // (with URL now containing the necessary part after '#').
 
         var newPath = [
-            '/', articleInfo.language, '/', articleInfo.articleNumber
+            '/', AES_SETTINGS.articleInfo.language,
+            '/', AES_SETTINGS.articleInfo.articleNumber
         ].join('');
 
         $location.path(newPath);
