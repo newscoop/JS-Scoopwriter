@@ -13,13 +13,6 @@
     <script src="{{ asset('bundles/bazingajstranslation/js/translator.min.js') }}"></script>
     <script src="{{ url('bazinga_jstranslation_js') }}?locales={{ localeFromCookie }}"></script>
     <script type="text/javascript">
-      //var CSClientId = '{{ clientId }}';
-      var CSBaseUrl = '/bundles/newscoopeditor/';
-      var articleInfo = {
-        articleNumber: {{ articleNumber }},
-        language: '{{ language }}'
-      };
-
       var AES_SETTINGS = {{ userSettings|raw }};
     </script>
     <!-- endcode -->
@@ -30,10 +23,11 @@
     <script src="scripts/localization/translator.min.js"></script>
     <script src="scripts/localization/translations.js"></script>
     <script type="text/javascript">
-      //var CSClientId = '7_6203opwgvx8g4skgskksgkws8cs44ks8s4cw4sc8cg4wsk8c40';
-      var CSBaseUrl = '';
-
       var AES_SETTINGS = {
+          articleInfo: {
+            articleNumber: 533522,
+            language: 'de'
+          },
           API: {
               rootURI: 'http://newscoop.aes.sourcefabric.net',
               endpoint: '/content-api',
@@ -182,18 +176,6 @@
     <script>
     var ngAlohaEditorConfig = { baseUrl: 'bower_components/ng-aloha-editor/' };
     </script>
-
-    <!-- devcode: !newscoop -->
-    <script type="text/javascript">
-        // In production mode this is provided by the PHP code responsible for
-        // generating the index.html template. An explanation on why this
-        // hack is needed can be found in RedirectToArticleCtrl.
-        var articleInfo = {
-            articleNumber: 533522,
-            language: 'de'
-        };
-    </script>
-    <!-- endcode -->
 
         <!-- build:js scripts/modules.js -->
         <script src="bower_components/angular-resource/angular-resource.js"></script>
