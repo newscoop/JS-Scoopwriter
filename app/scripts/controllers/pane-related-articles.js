@@ -147,6 +147,7 @@ angular.module('authoringEnvironmentApp')
         */
         self.clearSearch = function () {
             self.articlesSearchResults = [];
+            self.articlesSearchResultsListRetrieved = true;
             self.query = null;
         };
 
