@@ -931,6 +931,9 @@ a:hover {
     .switch-article-view {
         position:fixed;
         margin-left: -106px;
+        &.mobile-view {
+            margin-left: -56px;
+        } 
         .switch-view-tabs {
             background:#e5e5e5;
             .box-shadow (inset -5px 0px 8px -5px #999);  
@@ -1981,6 +1984,10 @@ a:hover {
     }
 
     @media (max-width: 480px) {
+        .switch-article-view {
+            display:none;
+        }
+
         .mobile-hide {
             display:none !important;
         }
