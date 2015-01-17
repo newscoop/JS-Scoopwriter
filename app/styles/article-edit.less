@@ -929,9 +929,11 @@ a:hover {
     }
 
     .switch-article-view {
-        position:absolute;
-        left:-47px;
-        margin-left: 1px;
+        position:fixed;
+        margin-left: -106px;
+        &.mobile-view {
+            margin-left: -56px;
+        } 
         .switch-view-tabs {
             background:#e5e5e5;
             .box-shadow (inset -5px 0px 8px -5px #999);  
@@ -1876,6 +1878,9 @@ a:hover {
     }
 
     @media only screen and (max-width: 1230px) {
+        .switch-article-view {
+            margin-left: -66px;
+        }
         .main-article-container {
             padding-left: 20px;
             padding-right: 20px;
@@ -1979,6 +1984,10 @@ a:hover {
     }
 
     @media (max-width: 480px) {
+        .switch-article-view {
+            display:none;
+        }
+
         .mobile-hide {
             display:none !important;
         }
