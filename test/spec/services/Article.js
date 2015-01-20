@@ -121,14 +121,14 @@ describe('Factory: Article', function () {
 
         it('converts image placeholders in fields to HTML', function () {
             var article;
-            articleData.fields.body = 'Foo <** Image 12 size="small" **> bar.';
+            articleData.fields.body = 'Foo <!** Image 12 size="small" > bar.';
 
             article = new Article(articleData);
 
             expect(article.fields.body).toEqual([
                 'Foo ',
                 '<div class="image" dropped-image ',
-                    'data-id="12" data-size="small"></div>',
+                    'data-article-image-id="12" data-size="small"></div>',
                 ' bar.'
             ].join(''));
         });
@@ -884,14 +884,15 @@ describe('Factory: Article', function () {
             it('serializes images in article body', function () {
                 article.fields.body = [
                     'Body text',
-                    '<div class="image" data-id="123" data-size="small">',
+                    '<div class="image" data-articleimageid="123" ',
+                        'data-size="small">',
                         '<img src="http://foo.com/bar.jpg" />',
                     '</div>',
                     'End of text.'
                 ].join('');
 
                 expectedReqData.article.fields.body =
-                    'Body text<** Image 123 size="small" **>End of text.';
+                    'Body text<!** Image 123 size="small" >End of text.';
                 expectedReqData.article.name = 'article title';
 
                 article.save();

@@ -302,6 +302,28 @@ angular.module('authoringEnvironmentApp').service('images', [
         };
 
         /**
+        * Retrieves an image from the list of images attached to the article
+        * by its articleImageId. If the image is not found, it an error is
+        * raised.
+        *
+        * @method byArticleImageId
+        * @param articleImageId {Number} ID of the image
+        * @return {Object} NcImage instance
+        */
+        self.byArticleImageId = function (articleImageId) {
+            var img = _.find(self.attached, {articleImageId: articleImageId});
+
+            if (img) {
+                return img;
+            } else {
+                throw new Error(
+                    'Could not find an image with the given ' +
+                    'articleImageId in the attached images list.'
+                );
+            }
+        };
+
+        /**
         * Checks if image is currently attached to the article or not.
         *
         * @method isAttached

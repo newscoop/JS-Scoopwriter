@@ -9,8 +9,8 @@ define(['aloha', 'aloha/plugin', 'jquery',  'aloha/console', 'block/block', 'blo
                 title: 'Image',
                 isDraggable: function() {return true;},
                 init: function($element, postProcessFn) { 
-                    // First we have to find the ImageId
-                    var imageId = $element.data('id');
+                    // First we have to find the articleImageId
+                    //var imageId = $element.data('articleImageId');
                     // we need the AngularJS injector
                     var $injector = angular.element($('body')).injector();
                     //var $droppedImage = jQuery('<div dropped-image></div>');

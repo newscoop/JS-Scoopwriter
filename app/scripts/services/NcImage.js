@@ -24,24 +24,24 @@ angular.module('authoringEnvironmentApp').factory('NcImage', [
         *   (NOTE: irrelevant keys are ignored)
         */
         NcImage = function (data) {
-            var that = this,
+            var self = this,
                 relevantKeys;
 
             relevantKeys  = [
-                'id', 'basename', 'thumbnailPath', 'description',
-                'photographer', 'photographerUrl'
+                'id', 'articleImageId', 'basename', 'thumbnailPath',
+                'description', 'photographer', 'photographerUrl'
             ];
 
             data = data || {};
             relevantKeys.forEach(function (key) {
-                that[key] = data[key];
+                self[key] = data[key];
             });
 
             // API data contains the width and the height as strings
-            that.width = ('width' in data) ?
+            self.width = ('width' in data) ?
                 parseInt(data.width, 10) : undefined;
 
-            that.height = ('height' in data) ?
+            self.height = ('height' in data) ?
                 parseInt(data.height, 10) : undefined;
         };
 

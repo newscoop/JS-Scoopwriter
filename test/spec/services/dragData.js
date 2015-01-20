@@ -29,7 +29,10 @@ describe('Service: Dragdata', function () {
     describe('converters', function () {
         var $el;
         beforeEach(function () {
-            $el = $('<div data-id="42" data-width="250"></div>');
+            $el = $(
+                '<div data-id="42" data-width="250" ' +
+                    'data-article-image-id="8"></div>'
+            );
         });
 
         describe('test', function () {
@@ -40,9 +43,11 @@ describe('Service: Dragdata', function () {
         });
 
         describe('image', function () {
-            it('returns an object with ID and width attributes', function () {
+            it('returns an object with expected attributes', function () {
                 var returned = Dragdata.converters.image($el);
-                expect(returned).toEqual({id: '42', width: '250'});
+                expect(returned).toEqual(
+                    {id: '42', articleImageId: '8', width: '250'}
+                );
             });
         });
 
@@ -114,12 +119,14 @@ describe('Service: Dragdata', function () {
             // initial element
             $i = $('<img>').attr({
                 'data-draggable-type': 'image',
-                'data-id': '3'
+                'data-id': '3',
+                'data-article-image-id': '8'
             });
             // expected intermediate data
             data = JSON.stringify({
                 type: 'image',
-                id: '3'
+                id: '3',
+                articleImageId: '8'
             });
         });
         it('finds no error', function () {
@@ -132,7 +139,7 @@ describe('Service: Dragdata', function () {
         it('returns a whole element to be attached to the editable', function () {
             var $r = Dragdata.getDropped(data);
             expect($r[0].outerHTML).toEqual('<div></div>');
-            expect($r.data()).toEqual({id: '3'});
+            expect($r.data()).toEqual({id: '3', articleimageid: '8'});
         });
     });
 

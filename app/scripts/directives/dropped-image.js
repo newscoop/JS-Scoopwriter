@@ -16,7 +16,7 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
             templateUrl: 'views/dropped-image.html',
             controller: 'DroppedImageCtrl',
             scope: {
-                imageId: '@imageId',
+                articleImageId: '@imageArticleimageid',
                 alignment: '@imageAlignment',
                 size: '@imageSize'
             },
@@ -49,7 +49,7 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                 function toolbarNode() {
                     var element;
                     if (!$toolbar || $toolbar.length < 1) {
-                        $toolbar = $('#img-toolbar-' + scope.imageId);
+                        $toolbar = $('#img-toolbar-' + scope.image.id);
                         element = $toolbar.detach();
                         $parent.append(element);
                     }
@@ -91,7 +91,7 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                     $parent.remove();
 
                     // notify controller about the removal
-                    ctrl.imageRemoved(parseInt(scope.imageId, 10));
+                    ctrl.imageRemoved(scope.image.id);
                 });
 
                 $element.find('.caption').click(function (e) {
@@ -240,12 +240,13 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
 
                 // set default values if needed and set image properties
                 // XXX: for some reason the directive is sometimes fired twice
-                // and values in scope (except for imageId) get lost. We thus
-                // copy image properties to imgConfig object to preserve them.
+                // and values in scope (except for articleImageId) get lost.
+                // We thus copy image properties to imgConfig object to
+                // preserve them.
                 imgConfig.alignment = scope.alignment || 'center';
                 imgConfig.size = scope.size || AES_SETTINGS.image_size;
 
-                ctrl.init(parseInt(scope.imageId, 10))
+                ctrl.init(parseInt(scope.articleImageId, 10))
                 .then(function () {
                     scope.setAlignment(imgConfig.alignment);
                     scope.setSize(imgConfig.size, true);
