@@ -50,10 +50,10 @@ By default it runs tests in Chrome and Firefox. If you don't have these
 browsers installed or if you want to run tests in a different browser, change
 the corresponding setting in the `karma.conf.js` file (the `browsers` option).
 
-### Coverage Report
-In order to get coverage reports, uncomment the
-`reporters` section in the `karma.conf.js` file. All test must pass, otherwise
-the reports will not be generated.
+### <a name="testCoverage"></a>Coverage Report
+In order to get coverage reports, uncomment the `reporters` section in the
+`karma.conf.js` file. All test must pass, otherwise the reports will not be
+generated.
 
 After running the tests, coverage reports are produced in the `coverage`
 subdirectory located directly under the the application's root directory.
@@ -83,7 +83,10 @@ TODO: what about mobile browsers?
 
 # <a name="contribute"></a>How to Contribute
 
-TODO: link to CONTRIBUTE.md
+You want to contribute to the project? That's great and we really appreciate
+it! Before sumbitting your work though, please read the
+[contributing guideline](CONTRIBUTING.md) for the details on how to do it.
+Thanks!
 
 ([Back to Top](#top))
 
