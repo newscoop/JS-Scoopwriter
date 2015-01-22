@@ -243,7 +243,7 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                 // and values in scope (except for imageId) get lost. We thus
                 // copy image properties to imgConfig object to preserve them.
                 imgConfig.alignment = scope.alignment || 'center';
-                imgConfig.size = scope.size || 'medium';
+                imgConfig.size = scope.size || AES_SETTINGS.image_size;
 
                 ctrl.init(parseInt(scope.imageId, 10))
                 .then(function () {
