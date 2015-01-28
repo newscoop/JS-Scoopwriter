@@ -55,24 +55,30 @@ angular.module('authoringEnvironmentApp').directive('sfDroppable', [
                 function onDrop(e) {
                     var dropped,
                         newNode,
-                        $target = $(e.target);
+                        $target = $(e.target),
+                        alohaEditable = Aloha.getEditableById(
+                            $element.attr('id')
+                        );
 
                     e.preventDefault();
                     e.stopPropagation();
 
                     counter = 0;
                     $(place).remove();  // remove all drag-drop placeholders
-
-                    dropped = Dragdata.getDropped(
-                        e.originalEvent.dataTransfer.getData('Text')
-                    );
-                    newNode = $compile(dropped)(scope);
+ 
+                    var data = e.originalEvent.dataTransfer.getData('Text');
+                    if (data) {
+                        dropped = Dragdata.getDropped(data);
+                        newNode = $compile(dropped)(scope);
+                    }
 
                     if ($target.is(sel)) {
                         $target.after(newNode);
                     } else {
                         $element.prepend(newNode);
                     }
+                    // force a change update to enable the save button
+                    scope.$emit('texteditor-content-changed', e, alohaEditable);
                 }
 
                 /// event listeners for Aloha editable's children ///

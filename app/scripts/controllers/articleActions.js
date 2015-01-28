@@ -54,10 +54,16 @@ angular.module('authoringEnvironmentApp').controller('ArticleActionsCtrl', [
                 reactOnTypes = {'keypress': true, 'paste': true, 'idle': true};
 
             if (!(alohaEditable.triggerType in reactOnTypes)) {
-                return;
+                // drag and drop change will not have a triggerType
+                // and we want them to enable the save button
+                if (alohaEditable.triggerType) {
+                    return;
+                }
             }
 
-            fieldName = alohaEditable.editable.originalObj.data('field-name');
+            // TODO:  Not sure why this was here, but doesn't look like
+            // its being used
+            //fieldName = alohaEditable.editable.originalObj.data('field-name');
 
             $scope.setModified(true);
         });
