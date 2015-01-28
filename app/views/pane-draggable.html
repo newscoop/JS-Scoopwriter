@@ -39,7 +39,7 @@
       <ul class="media-items media-images" id="media-images">
         <li
            class="media-image draggable"
-           ng-repeat="image in images.attached"
+           ng-repeat="image in images.attached track by image.id"
            sf-draggable="detachingAllowed(image.id)"
            data-draggable-type="image"
            data-width="{{defaultWidth}}"

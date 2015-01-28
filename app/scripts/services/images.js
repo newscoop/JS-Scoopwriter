@@ -207,9 +207,16 @@ angular.module('authoringEnvironmentApp').service('images', [
                 self.article.articleId, self.article.language, notYetAttached
             )
             .then(function () {
-                notYetAttached.forEach(function (image) {
-                    self.attached.push(image);
-                });
+                // notYetAttached.forEach(function (image) {
+                //     self.attached.push(image);
+                // });
+
+                // XXX: At the moment there is no other way to obtain
+                // articleImageId for the newly attached images other than
+                // reloading the whole list of attached images.
+                // Redundant, but unfortunately unavoidable until API is
+                // updated.
+                self.loadAttached(self.article);
             });
         };
 

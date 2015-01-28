@@ -617,7 +617,10 @@ describe('Service: Images', function () {
             }
         );
 
-        it('updates attached images list on success',
+        // XXX: this test case is temporarily replaced with the one directly
+        // below it for the time the workaround for reloading the attached images
+        // list is used
+        xit('updates attached images list on success',
             inject(function ($rootScope) {
                 images.collected = [
                     mock.items[0], mock.items[4], mock.items[6]
@@ -639,6 +642,22 @@ describe('Service: Images', function () {
                     _.contains(images.attached, mock.items[4])).toEqual(true);
                 expect(
                     _.contains(images.attached, mock.items[6])).toEqual(true);
+            })
+        );
+        it('updates attached images list on success',
+            inject(function ($rootScope) {
+                images.collected = [
+                    mock.items[0], mock.items[4], mock.items[6]
+                ];
+                images.attached = [mock.items[0]];
+
+                spyOn(images, 'loadAttached');
+
+                images.attachAllCollected();
+                deferredAdd.resolve();
+                $rootScope.$apply();
+
+                expect(images.loadAttached).toHaveBeenCalled();
             })
         );
     });
