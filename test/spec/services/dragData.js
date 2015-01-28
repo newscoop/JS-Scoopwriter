@@ -31,7 +31,7 @@ describe('Service: Dragdata', function () {
         beforeEach(function () {
             $el = $(
                 '<div data-id="42" data-width="250" ' +
-                    'data-article-image-id="8"></div>'
+                    'data-articleimageid="8"></div>'
             );
         });
 
@@ -120,7 +120,7 @@ describe('Service: Dragdata', function () {
             $i = $('<img>').attr({
                 'data-draggable-type': 'image',
                 'data-id': '3',
-                'data-article-image-id': '8'
+                'data-articleimageid': '8'
             });
             // expected intermediate data
             data = JSON.stringify({

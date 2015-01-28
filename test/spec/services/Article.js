@@ -128,7 +128,7 @@ describe('Factory: Article', function () {
             expect(article.fields.body).toEqual([
                 'Foo ',
                 '<div class="image" dropped-image ',
-                    'data-article-image-id="12" data-size="small"></div>',
+                    'data-articleimageid="12" data-size="small"></div>',
                 ' bar.'
             ].join(''));
         });

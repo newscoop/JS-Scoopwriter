@@ -9,7 +9,7 @@ angular.module('authoringEnvironmentApp').service('Dragdata', [
             'image': function ($e) {
                 return {
                     id: $e.attr('data-id'),
-                    articleImageId: $e.attr('data-article-image-id'),
+                    articleImageId: $e.attr('data-articleimageid'),
                     width: $e.attr('data-width')
                 };
             },

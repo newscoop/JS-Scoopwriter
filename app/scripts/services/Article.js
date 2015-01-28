@@ -105,7 +105,7 @@ angular.module('authoringEnvironmentApp').factory('Article', [
                 imagePattern,
                 function (whole, articleImageId, imageAttributes) {
                     var imageDiv = '<div class="image" dropped-image ' +
-                        'data-article-image-id="' + articleImageId + '"';
+                        'data-articleimageid="' + articleImageId + '"';
                     var tmpElement = document.createElement('div');
                     tmpElement.innerHTML = '<div '+imageAttributes+'></div>';
                     var attributes = tmpElement.childNodes[0].attributes;
