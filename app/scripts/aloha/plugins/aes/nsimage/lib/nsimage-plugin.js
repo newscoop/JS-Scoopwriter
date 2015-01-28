@@ -7,7 +7,9 @@ define(['aloha', 'aloha/plugin', 'jquery',  'aloha/console', 'block/block', 'blo
             // Define Page Break Block
             var ImageBlock = block.AbstractBlock.extend({
                 title: 'Image',
-                isDraggable: function() {return true;},
+                // we will use our own drag and drop directives
+                // instead of alohas
+                isDraggable: function() {return false;},
                 init: function($element, postProcessFn) { 
                     // First we have to find the ImageId
                     var imageId = $element.data('id');
@@ -23,7 +25,22 @@ define(['aloha', 'aloha/plugin', 'jquery',  'aloha/console', 'block/block', 'blo
                     $injector.invoke(function($rootScope, $compile) {
                         // finally place the element and $compile it into AngularJS
                         $element.empty().append($compile('<div dropped-image '+contents+'></div>')($rootScope));
+
+                        $element.on('dragstart', function (e) {
+                            var data = {
+                                type: 'image',
+                                id: $element.attr('data-id'),
+                                width: '100%' 
+                            }
+                            e.originalEvent.dataTransfer.setData('Text', JSON.stringify(data));
+                        });
+
+                        $element.on('dragend', function (e) {
+                            $element.remove();
+                            // emit texteditor-content-changed event here
+                        });
                     });
+
                     return postProcessFn();
                 },
                 update: function($element, postProcessFn) {

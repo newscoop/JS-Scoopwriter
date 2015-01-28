@@ -59,7 +59,7 @@ angular.module('authoringEnvironmentApp').service('Dragdata', [
                         {'data-snippet-id': data.id}
                     )
                 )
-                .alohaBlock();
+                .alohaBlock({'aloha-block-type': 'SnippetBlock'});
             default:
                 $log.debug('getDropped function called on a malformed data ' +
                     'object, no known type into it');
