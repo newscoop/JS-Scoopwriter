@@ -50,8 +50,7 @@ angular.module('authoringEnvironmentApp').controller('ArticleActionsCtrl', [
         $rootScope.$on('texteditor-content-changed', function (
             eventObj, jqEvent, alohaEditable
         ) {
-            var fieldName,
-                reactOnTypes = {'keypress': true, 'paste': true, 'idle': true};
+            var reactOnTypes = {'keypress': true, 'paste': true, 'idle': true};
 
             if (!(alohaEditable.triggerType in reactOnTypes)) {
                 // drag and drop change will not have a triggerType
@@ -60,10 +59,6 @@ angular.module('authoringEnvironmentApp').controller('ArticleActionsCtrl', [
                     return;
                 }
             }
-
-            // TODO:  Not sure why this was here, but doesn't look like
-            // its being used
-            //fieldName = alohaEditable.editable.originalObj.data('field-name');
 
             $scope.setModified(true);
         });

@@ -78,7 +78,10 @@ angular.module('authoringEnvironmentApp').directive('sfDroppable', [
                         $element.prepend(newNode);
                     }
                     // force a change update to enable the save button
-                    scope.$emit('texteditor-content-changed', e, alohaEditable);
+                    scope.$emit(
+                        'texteditor-content-changed',
+                        e,
+                        alohaEditable);
                 }
 
                 /// event listeners for Aloha editable's children ///

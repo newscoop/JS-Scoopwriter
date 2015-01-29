@@ -30,6 +30,7 @@ define(['aloha', 'aloha/plugin', 'jquery',  'aloha/console', 'block/block', 'blo
                             var data = {
                                 type: 'image',
                                 id: $element.attr('data-id'),
+                                articleImageId: $element.attr('data-articleimageid'),
                                 width: '100%' 
                             }
                             e.originalEvent.dataTransfer.setData('Text', JSON.stringify(data));
