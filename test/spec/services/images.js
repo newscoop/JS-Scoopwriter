@@ -617,7 +617,10 @@ describe('Service: Images', function () {
             }
         );
 
-        it('updates attached images list on success',
+        // XXX: this test case is temporarily replaced with the one directly
+        // below it for the time the workaround for reloading the attached images
+        // list is used
+        xit('updates attached images list on success',
             inject(function ($rootScope) {
                 images.collected = [
                     mock.items[0], mock.items[4], mock.items[6]
@@ -639,6 +642,22 @@ describe('Service: Images', function () {
                     _.contains(images.attached, mock.items[4])).toEqual(true);
                 expect(
                     _.contains(images.attached, mock.items[6])).toEqual(true);
+            })
+        );
+        it('updates attached images list on success',
+            inject(function ($rootScope) {
+                images.collected = [
+                    mock.items[0], mock.items[4], mock.items[6]
+                ];
+                images.attached = [mock.items[0]];
+
+                spyOn(images, 'loadAttached');
+
+                images.attachAllCollected();
+                deferredAdd.resolve();
+                $rootScope.$apply();
+
+                expect(images.loadAttached).toHaveBeenCalled();
             })
         );
     });
@@ -761,7 +780,7 @@ describe('Service: Images', function () {
     });
 
     describe('byId() method', function () {
-        it('returns correct image from the the attached images list',
+        it('returns correct image from the attached images list',
             function () {
                 var returned = null;
 
@@ -787,6 +806,34 @@ describe('Service: Images', function () {
                 expect(function () { images.byId(42); }).toThrow();
         });
     });
+
+
+    describe('byArticleImageId() method', function () {
+        beforeEach(function () {
+            images.attached = [
+                {id: 5, articleImageId: 3},
+                {id: 8, articleImageId: 4},
+                {id: 3, articleImageId: 15},
+                {id: 2, articleImageId: 11},
+            ];
+        });
+
+        it('returns correct image from the attached images list',
+            function () {
+                var returned = images.byArticleImageId(4);
+                expect(returned).toBe(images.attached[1]);
+            }
+        );
+
+        it('raises an error if image is not in the attached images list',
+            function () {
+                expect(function () {
+                    images.byArticleImageId(8);
+                }).toThrow();
+            }
+        );
+    });
+
 
     describe('isAttached() method', function () {
         it('returns true for attached image', function () {

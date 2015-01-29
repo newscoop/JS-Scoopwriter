@@ -9,6 +9,7 @@ angular.module('authoringEnvironmentApp').service('Dragdata', [
             'image': function ($e) {
                 return {
                     id: $e.attr('data-id'),
+                    articleImageId: $e.attr('data-articleimageid'),
                     width: $e.attr('data-width')
                 };
             },
@@ -49,6 +50,7 @@ angular.module('authoringEnvironmentApp').service('Dragdata', [
             case 'image':
                 return Aloha.jQuery('<div>')
                 .data({'id': data.id})
+                .data({'articleimageid': data.articleImageId})
                 .alohaBlock({'aloha-block-type': 'ImageBlock'});
             case 'embed':
                 return Aloha.jQuery('<div>')

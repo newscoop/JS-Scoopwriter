@@ -12,6 +12,7 @@ describe('Directive: droppedImage', function () {
         $element,
         $root,
         scope,
+        elementIsoScope,
         templates;
 
     beforeEach(module(
@@ -54,22 +55,24 @@ describe('Directive: droppedImage', function () {
             html = [
                 '<div id="wrapper" dropped-images-container>',
                   '<div id="aloha-block">',
-                    '<div dropped-image data-image-id="4"></div>',
+                    '<div dropped-image ',
+                         'data-image-articleimageid="4"></div>',
                   '</div>',
                 '</div>'
             ].join('');
 
             scope = $rootScope.$new();
             $root = $compile(html)(scope);
+            scope.$digest();
 
             $root = $($root[0]);  // make it a "true jQuery" object
             $element = $root.find('[dropped-image]');
 
-            scope.$digest();
+            elementIsoScope = angular.element($element[0]).isolateScope();
         }
     ));
 
-    it('triggers controller initialization with correct image ID',
+    it('triggers controller initialization with correct articleImage ID',
         function () {
             expect(fakeCtrl.init.callCount).toEqual(1);
             expect(fakeCtrl.init).toHaveBeenCalledWith(4);
@@ -81,6 +84,8 @@ describe('Directive: droppedImage', function () {
             $button;
 
         beforeEach(function () {
+            elementIsoScope.image = {id: 567};
+
             $button = $element.find('.close');
             ev = $.Event('click');
             spyOn(ev, 'stopPropagation');
@@ -95,7 +100,7 @@ describe('Directive: droppedImage', function () {
 
         it('notifies controller about the element removal', function () {
             $button.triggerHandler(ev);
-            expect(fakeCtrl.imageRemoved).toHaveBeenCalledWith(4);
+            expect(fakeCtrl.imageRemoved).toHaveBeenCalledWith(567);
         });
     });
 

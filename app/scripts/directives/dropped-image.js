@@ -16,8 +16,8 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
             templateUrl: 'views/dropped-image.html',
             controller: 'DroppedImageCtrl',
             scope: {
-                imageId: '@imageId',
-                alignment: '@imageAlignment',
+                articleImageId: '@imageArticleimageid',
+                alignment: '@imageAlign',
                 size: '@imageSize'
             },
             require: ['dropped-image', '^^dropped-images-container'],
@@ -49,7 +49,7 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                 function toolbarNode() {
                     var element;
                     if (!$toolbar || $toolbar.length < 1) {
-                        $toolbar = $('#img-toolbar-' + scope.imageId);
+                        $toolbar = $('#img-toolbar-' + scope.image.id);
                         element = $toolbar.detach();
                         $parent.append(element);
                     }
@@ -91,7 +91,7 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                     $parent.remove();
 
                     // notify controller about the removal
-                    ctrl.imageRemoved(parseInt(scope.imageId, 10));
+                    ctrl.imageRemoved(scope.image.id);
                 });
 
                 $element.find('.caption').click(function (e) {
@@ -113,7 +113,7 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                 *
                 * @method setAlignment
                 * @param position {String} new image alignment (should be one
-                *   of the 'left', 'right' or 'center')
+                *   of the 'left', 'right' or 'middle')
                 */
                 scope.setAlignment = function (position) {
                     var cssFloat,
@@ -130,10 +130,10 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                         cssMargin = '2% 0 2% 2%';
                         scope.activeAlignment = 'right';
                         break;
-                    case 'center':
+                    case 'middle':
                         cssFloat = 'none';
                         cssMargin = '2% auto';
-                        scope.activeAlignment = 'center';
+                        scope.activeAlignment = 'middle';
                         break;
                     default:
                         $log.warn('unknown image alignment:', position);
@@ -150,11 +150,11 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                         'margin': cssMargin
                     });
 
-                    if (position === 'center') {
+                    if (position === 'middle') {
                         $parent.css({margin: 'auto'});
                     }
 
-                    $parent.attr('data-alignment', position);
+                    $parent.attr('data-align', position);
 
                     positionToolbar();
                 };
@@ -240,12 +240,13 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
 
                 // set default values if needed and set image properties
                 // XXX: for some reason the directive is sometimes fired twice
-                // and values in scope (except for imageId) get lost. We thus
-                // copy image properties to imgConfig object to preserve them.
-                imgConfig.alignment = scope.alignment || 'center';
+                // and values in scope (except for articleImageId) get lost.
+                // We thus copy image properties to imgConfig object to
+                // preserve them.
+                imgConfig.alignment = scope.alignment || 'middle';
                 imgConfig.size = scope.size || AES_SETTINGS.image_size;
 
-                ctrl.init(parseInt(scope.imageId, 10))
+                ctrl.init(parseInt(scope.articleImageId, 10))
                 .then(function () {
                     scope.setAlignment(imgConfig.alignment);
                     scope.setSize(imgConfig.size, true);

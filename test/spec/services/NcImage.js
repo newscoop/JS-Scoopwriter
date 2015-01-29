@@ -27,6 +27,7 @@ describe('Factory: NcImage', function () {
 
             data = {
                 id: 42,
+                articleImageId: 6,
                 basename: 'img.jpg', thumbnailPath: 'img_thumb.jpg',
                 description: 'foo bar',
                 width: 100, height: 150,
@@ -47,8 +48,9 @@ describe('Factory: NcImage', function () {
                     keys;
 
                 keys = [
-                    'id', 'basename', 'thumbnailPath', 'description',
-                    'width', 'height', 'photographer', 'photographerUrl'
+                    'id', 'articleImageId', 'basename', 'thumbnailPath',
+                    'description', 'width', 'height', 'photographer',
+                    'photographerUrl'
                 ];
 
                 instance = new NcImage();
@@ -56,7 +58,7 @@ describe('Factory: NcImage', function () {
                 keys.forEach(function (key) {
                     expect(instance.hasOwnProperty(key)).toBe(true);
                     expect(instance[key]).toBeUndefined();
-                })
+                });
             }
         );
 
