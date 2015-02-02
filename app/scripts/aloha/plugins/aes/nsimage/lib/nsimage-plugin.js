@@ -37,8 +37,16 @@ define(['aloha', 'aloha/plugin', 'jquery',  'aloha/console', 'block/block', 'blo
                         });
 
                         $element.on('dragend', function (e) {
+                            var alohaEditable = Aloha.getEditableById(
+                                $element.parent('.aloha-editable-active').attr('id')
+                            );
                             $element.remove();
                             // emit texteditor-content-changed event here
+                            Aloha.trigger('aloha-smart-content-changed', {
+                                'editable': alohaEditable,
+                                'triggerType': 'paste',
+                                'snapshotContent': alohaEditable.getContents()
+                            });
                         });
                     });
 
