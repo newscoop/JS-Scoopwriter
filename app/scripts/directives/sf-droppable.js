@@ -55,10 +55,7 @@ angular.module('authoringEnvironmentApp').directive('sfDroppable', [
                 function onDrop(e) {
                     var dropped,
                         newNode,
-                        $target = $(e.target),
-                        alohaEditable = Aloha.getEditableById(
-                            $element.attr('id')
-                        );
+                        $target = $(e.target);
 
                     e.preventDefault();
                     e.stopPropagation();
