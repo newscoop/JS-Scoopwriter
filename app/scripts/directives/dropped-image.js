@@ -91,7 +91,6 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                 * @function triggerChangeEvent
                 */
                 function triggerChangeEvent() {
-                    // emit text editor change event
                     var alohaEditable = Aloha.getEditableById(
                         $parent.parent('.aloha-editable-active').attr('id')
                     );
@@ -102,7 +101,7 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                             'snapshotContent': alohaEditable.getContents()
                         });
                     }
-                };
+                }
 
 
                 // close button's onClick handler
