@@ -1,5 +1,4 @@
-Newscoop Article Edit Screen API Routing
-===================
+#Newscoop Article Edit Screen API Routing
 
 The Newscoop API is implemented as a Symfony bundle and therefore all endpoint routing is handled by pre-compiled FOSJsRoutingBundle files:
 
@@ -15,7 +14,7 @@ More information about FOSJsRoutingBundle (Friends of Symfony) can be found here
 
 ***
 
-##### Generating the route URIs
+### Generating the route URIs
 Usage:  
 
     Routing.generate('route_id', /* your params */)
@@ -37,7 +36,7 @@ The example above would produce the following URI:
     
     
 
-##### Finding the route_id
+### Finding the route_id
 
 Route ids have the following format:
 
@@ -47,7 +46,9 @@ Route ids have the following format:
 where {controller} and {function} refer to the Newscoop API Symfony Bundle Controller and Function definitions.  To find out what routes are available reference the Newscoop API documentation, which can be found here:
 
 [http://newscoop.aes.sourcefabric.net/documentation/rest-api/](http://newscoop.aes.sourcefabric.net/documentation/rest-api/)
-
+  
+  
+  
 You can also get a list of route_ids directly from your Newscoop instance by running the following command from the 'newscoop' directory of your installed instance:
 
 
