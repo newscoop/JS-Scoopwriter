@@ -10,7 +10,7 @@ a Symfony bundle.
 ***
 
 More information about The Article Edit Screen Newscoop Plugin can be found here:  
-[http://docs.sourcefabric.org/projects/newscoop-plugins/en/latest/](https://github.com/newscoop/Newscoop-Plugin-ArticleEditScreenhttp://docs.sourcefabric.org/projects/newscoop-plugins/en/latest/)
+[http://docs.sourcefabric.org/projects/newscoop-plugins/en/latest/](http://docs.sourcefabric.org/projects/newscoop-plugins/en/latest/)
 
 ***
 
