@@ -2,8 +2,14 @@
 This project is at the moment mainly targeted at `Newscoop` which is an open source CMS for news by Sourcefabric. However it should be flexible enough to be used for other projects too.
 
 # Getting started
+## Dependencies
+* `node` - http://nodejs.org/download/ (follow instruction for your specific platform) 
+* `npm` - comes with node now
+* `grunt` - npm install -g grunt-cli
+* `bower` - npm install -g bower
+
 ## Setup
-In order to run this you need `node.js` and `npm`. Checkout the repo,
+In order to run this you need all the dependencies listed above. Checkout the repo,
 then install the dependencies:
 
     $ git clone <repo address>
