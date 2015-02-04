@@ -40,12 +40,6 @@ describe('Directive: sfDroppable', function () {
         return ev;
     }
 
-    function addNewImageBlock(id) {
-    }
-
-    function addNewSnippetBlock(id) {
-    }
-
     it('appends an element on drop', function () {
         var evDrop = createEventMock('drop');
 
