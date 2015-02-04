@@ -134,7 +134,7 @@ angular.module('authoringEnvironmentApp').controller('PaneTopicsCtrl', [
 
             // topics list is long, thus we only retrieve it once
             if (!topicListRetrieved) {
-                availableTopics = Topic.getAll();
+                availableTopics = Topic.getAll(article.language);
             }
 
             availableTopics.$promise.then(function () {
