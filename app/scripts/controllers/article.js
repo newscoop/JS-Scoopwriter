@@ -75,7 +75,7 @@ angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
             fieldName = alohaEditable.editable.originalObj.data('field-name');
             statsText = self.fieldStatsText(fieldName);
 
-            $scope.$apply(function () {
+            $scope.$evalAsync(function () {
                 var field = _($scope.editableFields).find({name: fieldName});
                 field.statsText = statsText;
             });
@@ -164,5 +164,6 @@ angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
         $scope.nonContentFieldChanged = function () {
             articleService.modified = true;
         };
+
     }
 ]);

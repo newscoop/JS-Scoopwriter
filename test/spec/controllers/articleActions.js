@@ -118,6 +118,18 @@ describe('Controller: ArticleActionsCtrl', function () {
             }
         );
 
+        it('sets the article modified flag on editable change without triggerType (drag and drop)',
+            function () {
+                articleService.modified = false;
+
+                scope.article.fields.body = 'New body text.';
+                delete alohaEditable.triggerType;
+                scope.$emit('texteditor-content-changed', {}, alohaEditable);
+
+                expect(articleService.modified).toBe(true);
+            }
+        );
+
         it('does *not* set the article modified flag if event\'s trigger ' +
             'type is "blur"',
             function () {

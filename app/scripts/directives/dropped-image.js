@@ -85,6 +85,24 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                     toolbarNode().css({left: left, top: top});
                 }
 
+                /**
+                * Emits an aloha event which triggers the editor save button
+                *
+                * @function triggerChangeEvent
+                */
+                function triggerChangeEvent() {
+                    var alohaEditable = Aloha.getEditableById(
+                        $parent.parent('.aloha-editable-active').attr('id')
+                    );
+                    if (alohaEditable) {
+                        Aloha.trigger('aloha-smart-content-changed', {
+                            'editable': alohaEditable,
+                            'triggerType': 'paste',
+                            'snapshotContent': alohaEditable.getContents()
+                        });
+                    }
+                }
+
 
                 // close button's onClick handler
                 $element.find('button.close').click(function (e) {
@@ -156,6 +174,7 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
 
                     $parent.attr('data-align', position);
 
+                    triggerChangeEvent();
                     positionToolbar();
                 };
 
@@ -206,6 +225,7 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                         scope.widthPx -= 2;
                     }
 
+                    triggerChangeEvent();
                     positionToolbar();
                 };
 
@@ -233,11 +253,12 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
 
                         scope.widthPx = width;
                         scope.activeSize = 'custom';
-
+                        
+                        triggerChangeEvent();
                         positionToolbar();
                     }
                 };
-
+                
                 // set default values if needed and set image properties
                 // XXX: for some reason the directive is sometimes fired twice
                 // and values in scope (except for articleImageId) get lost.

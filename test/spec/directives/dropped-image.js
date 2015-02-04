@@ -72,6 +72,24 @@ describe('Directive: droppedImage', function () {
         }
     ));
 
+    /**
+    * Creates a new mocked event object that can be used as an argument to
+    * event handlers.
+    *
+    * @function createEventMock
+    * @param eventType {String} type of event (e.g. 'dragover')
+    * @return {Object} new mocked event instance
+    */
+    function createEventMock(eventType) {
+        var ev = $.Event(eventType);
+        ev.originalEvent = {
+            preventDefault: jasmine.createSpy(),
+            stopPropagation: jasmine.createSpy(),
+            dataTransfer: {}
+        };
+        return ev;
+    }
+
     it('triggers controller initialization with correct articleImage ID',
         function () {
             expect(fakeCtrl.init.callCount).toEqual(1);
@@ -79,27 +97,50 @@ describe('Directive: droppedImage', function () {
         }
     );
 
+    describe('setAlignment', function () {
+        
+    });
+
+    describe('onCaptionClick', function () {
+        var evClick,
+            stopPropigationSpy,
+            $button;
+
+        beforeEach(function () {
+            elementIsoScope.image = {id: 567};
+
+            $button = $element.find('.caption');
+            evClick = createEventMock('click');
+            stopPropigationSpy = spyOn(evClick, 'stopPropagation');
+        });
+
+        it('stops default browser propigation', function () {
+            $button.trigger(evClick);
+            expect(stopPropigationSpy).toHaveBeenCalled();
+        });
+    });
+
     describe('the Close button\'s onClick handler', function () {
-        var ev,
+        var evClick,
             $button;
 
         beforeEach(function () {
             elementIsoScope.image = {id: 567};
 
             $button = $element.find('.close');
-            ev = $.Event('click');
-            spyOn(ev, 'stopPropagation');
+            evClick = createEventMock('click');
+            spyOn(evClick, 'stopPropagation');
         });
 
         it('removes the element itself', function () {
             var $node;
-            $button.triggerHandler(ev);
+            $button.triggerHandler(evClick);
             $node = $root.find('[dropped-image]');
             expect($node.length).toEqual(0);
         });
 
         it('notifies controller about the element removal', function () {
-            $button.triggerHandler(ev);
+            $button.triggerHandler(evClick);
             expect(fakeCtrl.imageRemoved).toHaveBeenCalledWith(567);
         });
     });

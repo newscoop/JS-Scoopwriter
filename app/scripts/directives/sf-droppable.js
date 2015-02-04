@@ -45,6 +45,25 @@ angular.module('authoringEnvironmentApp').directive('sfDroppable', [
                 }
 
                 /**
+                * Emits an aloha event which triggers the editor save button
+                *
+                * @function triggerChangeEvent
+                */
+                function triggerChangeEvent() {
+                    var alohaEditable = Aloha.getEditableById(
+                        $element.attr('id')
+                    );
+                    if (alohaEditable) {
+                        alohaEditable.activate();
+                        Aloha.trigger('aloha-smart-content-changed', {
+                            'editable': alohaEditable,
+                            'triggerType': 'paste',
+                            'snapshotContent': alohaEditable.getContents()
+                        });
+                    }
+                }
+
+                /**
                 * onDrop event handler. Resets counter, removes all drag-drop
                 * placeholders and creates a new DOM node in the editable
                 * based on the drop event data.
@@ -62,17 +81,20 @@ angular.module('authoringEnvironmentApp').directive('sfDroppable', [
 
                     counter = 0;
                     $(place).remove();  // remove all drag-drop placeholders
-
-                    dropped = Dragdata.getDropped(
-                        e.originalEvent.dataTransfer.getData('Text')
-                    );
-                    newNode = $compile(dropped)(scope);
+ 
+                    var data = e.originalEvent.dataTransfer.getData('Text');
+                    if (data) {
+                        dropped = Dragdata.getDropped(data);
+                        newNode = $compile(dropped)(scope);
+                    }
 
                     if ($target.is(sel)) {
                         $target.after(newNode);
                     } else {
                         $element.prepend(newNode);
                     }
+                    
+                    triggerChangeEvent();
                 }
 
                 /// event listeners for Aloha editable's children ///
