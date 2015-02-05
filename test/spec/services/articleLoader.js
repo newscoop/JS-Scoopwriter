@@ -40,9 +40,8 @@ describe('Factory: articleLoader', function () {
         getArticleDeferred = $q.defer();
         spyOn(Article, 'getById').andReturn(getArticleDeferred.promise);
 
-        $httpBackend.whenGET('views/main.html').respond(200, {});
+        $httpBackend.whenGET('views/error.html').respond(200, {});
     }));
-
 
     it('returns a function', function () {
         expect(typeof articleLoader).toBe('function');

@@ -74,7 +74,7 @@ describe('Factory: Topic', function () {
 
             url = Routing.generate(
                 'newscoop_gimme_topics_gettopics',
-                {items_per_page: 9999}, true
+                {language: 'de', items_per_page: 9999}, true
             );
 
             $httpBackend.expectGET(url).respond(200, response);
@@ -85,12 +85,12 @@ describe('Factory: Topic', function () {
         });
 
         it('sends a correct request to API', function () {
-            Topic.getAll();
+            Topic.getAll('de');
         });
 
         it('returns an empty array which is populated on successful response',
             function () {
-                var result = Topic.getAll();
+                var result = Topic.getAll('de');
                 expect(result instanceof Array).toBe(true);
                 expect(result.length).toEqual(0);
 
@@ -103,7 +103,7 @@ describe('Factory: Topic', function () {
                 var result,
                     spy = jasmine.createSpy();
 
-                result = Topic.getAll();
+                result = Topic.getAll('de');
                 result.$promise.then(spy);
                 expect(spy).not.toHaveBeenCalled();
 
@@ -117,7 +117,7 @@ describe('Factory: Topic', function () {
                 var result,
                     spy = jasmine.createSpy();
 
-                result = Topic.getAll();
+                result = Topic.getAll('de');
                 $httpBackend.flush(1);
 
                 result.forEach(function (item) {
@@ -133,7 +133,7 @@ describe('Factory: Topic', function () {
             });
 
             it('returned array is not populated', function () {
-                var result = Topic.getAll();
+                var result = Topic.getAll('de');
                 expect(result.length).toEqual(0);
                 $httpBackend.flush(1);
                 expect(result.length).toEqual(0);  // still empty
@@ -143,7 +143,7 @@ describe('Factory: Topic', function () {
                 var result,
                     spy = jasmine.createSpy();
 
-                result = Topic.getAll();
+                result = Topic.getAll('de');
                 result.$promise.catch(function (reason) {
                     spy(reason);
                 });
