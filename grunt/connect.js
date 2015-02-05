@@ -1,7 +1,7 @@
 module.exports = {
     options: {
+        hostname: 'localhost',
         port: 9000,
-        hostname: '0.0.0.0',
         livereload: 35729
     },
     livereload: {
@@ -15,6 +15,7 @@ module.exports = {
     },
     test: {
         options: {
+            hostname: '0.0.0.0',
             port: 9001,
             base: [
                 '.tmp',
