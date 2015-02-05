@@ -1,5 +1,5 @@
-var rootURI = 'http://newscoop.aes.sourcefabric.net/content-api',
-    apiEndpoint = '/content-api',
+var rootURI = 'http://newscoop.aes.sourcefabric.net/api',
+    apiEndpoint = '/api',
     CSClientId = '123_qwertz',
     articleInfo = {},
     AES_SETTINGS = {
