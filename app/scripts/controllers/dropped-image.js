@@ -18,6 +18,7 @@ angular.module('authoringEnvironmentApp').controller('DroppedImageCtrl', [
         *    a particular article)
         */
         this.init = function (articleImageId) {
+console.log('controller.init', articleImageId);
             var deferred = $q.defer();
 
             images.attachedLoaded.then(function () {

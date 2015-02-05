@@ -56,7 +56,7 @@ define(['aloha', 'aloha/plugin', 'jquery',  'aloha/console', 'block/block', 'blo
                         var $this = jQuery(this);
                         var output = '';
                         if ($this.data('id') !== undefined) {
-                            output += '<div class="snippet" data-id="'+ parseInt($this.data('id')) +'"';
+                            output += '<div class="snippet aloha-snippet-block" data-id="'+ parseInt($this.data('id')) +'"';
                             if ($this.data('snippetAlign') !== undefined) {
                                 output += ' align="'+ $this.data('snippetAlign') +'"';
                             }

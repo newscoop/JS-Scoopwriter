@@ -26,6 +26,7 @@ angular.module('authoringEnvironmentApp').directive('sfAlohaFormatGeneric', [
 
                 supported = Aloha.queryCommandSupported(scope.alohaElement);
                 enabled = Aloha.queryCommandEnabled(scope.alohaElement);
+
                 if (typeof enabled === 'undefined') {
                     // in chrome we get undefined, but that's just fine...
                     enabled = true;

@@ -12,17 +12,20 @@ define(['aloha', 'aloha/plugin', 'jquery',  'aloha/console', 'block/block', 'blo
                 isDraggable: function() {return false;},
                 init: function($element, postProcessFn) { 
                     // First we have to find the articleImageId
-                    //var imageId = $element.data('articleImageId');
                     // we need the AngularJS injector
                     var $injector = angular.element($('body')).injector();
-                    //var $droppedImage = jQuery('<div dropped-image></div>');
                     var contents = '';
                     $.each( $element.data(),function(name, value) {
+console.log('plugin', name, value);
                         if (name !== 'alohaBlockType') {
                             contents += ' data-image-'+name+'="'+value+'"';
                         }
+//                        if (name === 'articleimageid') {
+//                            contents += ' image-articleimageid="'+value+'"';
+//                        }
                     });
                     $injector.invoke(function($rootScope, $compile) {
+console.log('final', contents);
                         // finally place the element and $compile it into AngularJS
                         $element.empty().append($compile('<div dropped-image '+contents+'></div>')($rootScope));
 
@@ -64,10 +67,11 @@ define(['aloha', 'aloha/plugin', 'jquery',  'aloha/console', 'block/block', 'blo
                         var $this = jQuery(this);
                         var output = '';
                         if ($this.data('articleimageid') !== undefined) {
-                            output += '<div class="image"';
+                            output += '<div class="image aloha-image-block"';
 
                             var contents = '';
                             $.each( $this.data(),function(name, value) {
+console.log('make-clean', name, value);
                                 if (name !== 'alohaBlockType' && name !== 'sortableitem') {
                                     contents += ' data-'+name+'="'+value+'"';
                                 }

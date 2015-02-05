@@ -51,7 +51,7 @@ angular.module('authoringEnvironmentApp').factory('Article', [
             var snippetPattern = new RegExp(snippetRex, 'ig');
 
             var converted = text.replace(snippetPattern, function(whole, id) {
-                var output = '<div class="snippet" data-id="';
+                var output = '<div class="snippet aloha-snippet-block" data-id="';
                 output += parseInt(id);
                 output += '"></div>';
                 return output;
@@ -104,7 +104,7 @@ angular.module('authoringEnvironmentApp').factory('Article', [
             var converted = text.replace(
                 imagePattern,
                 function (whole, articleImageId, imageAttributes) {
-                    var imageDiv = '<div class="image" dropped-image ' +
+                    var imageDiv = '<div class="image aloha-image-block" dropped-image ' +
                         'data-articleimageid="' + articleImageId + '"';
                     var tmpElement = document.createElement('div');
                     tmpElement.innerHTML = '<div '+imageAttributes+'></div>';

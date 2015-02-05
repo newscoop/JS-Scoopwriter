@@ -266,7 +266,7 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                 // preserve them.
                 imgConfig.alignment = scope.alignment || 'middle';
                 imgConfig.size = scope.size || AES_SETTINGS.image_size;
-
+console.log('scope', scope);
                 ctrl.init(parseInt(scope.articleImageId, 10))
                 .then(function () {
                     scope.setAlignment(imgConfig.alignment);
