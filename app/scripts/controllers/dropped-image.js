@@ -13,13 +13,15 @@ angular.module('authoringEnvironmentApp').controller('DroppedImageCtrl', [
         * the images-in-article list.
         *
         * @method init
-        * @param imageId {Number} ID of the image to find
+        * @param articleImageId {Number} ID of the (imageId, articleId) pair
+        *   (the pair denotes that a particluar image is attached to
+        *    a particular article)
         */
-        this.init = function (imageId) {
+        this.init = function (articleImageId) {
             var deferred = $q.defer();
 
             images.attachedLoaded.then(function () {
-                $scope.image = images.byId(imageId);
+                $scope.image = images.byArticleImageId(articleImageId);
                 images.addToIncluded($scope.image.id);
                 $scope.newCaption = $scope.image.description;
 

@@ -25,13 +25,13 @@
     <script type="text/javascript">
       var AES_SETTINGS = {
           articleInfo: {
-            articleNumber: 533522,
-            language: 'de'
+            articleNumber: 2,
+            language: 'en'
           },
           API: {
               rootURI: 'http://newscoop.aes.sourcefabric.net',
-              endpoint: '/content-api',
-              full: 'http://newscoop.aes.sourcefabric.net/content-api'
+              endpoint: '/api',
+              full: 'http://newscoop.aes.sourcefabric.net/api'
           },
           auth: {
               client_id: '7_6203opwgvx8g4skgskksgkws8cs44ks8s4cw4sc8cg4wsk8c40',
@@ -53,6 +53,7 @@
               },
               float: 'none'
           },
+          image_size: 'small',
           // default text for empty article fields
           placeholder: '[please provide your content]',
           showSwitches: true,
@@ -95,7 +96,12 @@
         <!-- endbuild -->
 
         <!-- custom content stylesheet -->
-         <link rel="stylesheet" href="css/aes-custom-styles.css">
+        <link rel="stylesheet" href="css/aes-custom-styles.css">
+        <!-- devcode: newscoop -->
+        <style rel="stylesheet">
+            {{ custom_styles }}
+        </style>
+        <!-- endcode -->
 
 </head>
   <body ng-app="authoringEnvironmentApp">

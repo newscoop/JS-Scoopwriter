@@ -7,10 +7,12 @@ define(['aloha', 'aloha/plugin', 'jquery',  'aloha/console', 'block/block', 'blo
             // Define Page Break Block
             var ImageBlock = block.AbstractBlock.extend({
                 title: 'Image',
-                isDraggable: function() {return true;},
+                // we will use our own drag and drop directives
+                // instead of alohas
+                isDraggable: function() {return false;},
                 init: function($element, postProcessFn) { 
-                    // First we have to find the ImageId
-                    var imageId = $element.data('id');
+                    // First we have to find the articleImageId
+                    //var imageId = $element.data('articleImageId');
                     // we need the AngularJS injector
                     var $injector = angular.element($('body')).injector();
                     //var $droppedImage = jQuery('<div dropped-image></div>');
@@ -23,7 +25,31 @@ define(['aloha', 'aloha/plugin', 'jquery',  'aloha/console', 'block/block', 'blo
                     $injector.invoke(function($rootScope, $compile) {
                         // finally place the element and $compile it into AngularJS
                         $element.empty().append($compile('<div dropped-image '+contents+'></div>')($rootScope));
+
+                        $element.on('dragstart', function (e) {
+                            var data = {
+                                type: 'image',
+                                id: $element.attr('data-id'),
+                                articleImageId: $element.attr('data-articleimageid'),
+                                width: '100%' 
+                            }
+                            e.originalEvent.dataTransfer.setData('Text', JSON.stringify(data));
+                        });
+
+                        $element.on('dragend', function (e) {
+                            var alohaEditable = Aloha.getEditableById(
+                                $element.parent('.aloha-editable-active').attr('id')
+                            );
+                            $element.remove();
+                            // emit texteditor-content-changed event here
+                            Aloha.trigger('aloha-smart-content-changed', {
+                                'editable': alohaEditable,
+                                'triggerType': 'paste',
+                                'snapshotContent': alohaEditable.getContents()
+                            });
+                        });
                     });
+
                     return postProcessFn();
                 },
                 update: function($element, postProcessFn) {
@@ -37,7 +63,7 @@ define(['aloha', 'aloha/plugin', 'jquery',  'aloha/console', 'block/block', 'blo
                     jQuery(obj).find('.aloha-block-ImageBlock').each(function() {
                         var $this = jQuery(this);
                         var output = '';
-                        if ($this.data('id') !== undefined) {
+                        if ($this.data('articleimageid') !== undefined) {
                             output += '<div class="image"';
 
                             var contents = '';

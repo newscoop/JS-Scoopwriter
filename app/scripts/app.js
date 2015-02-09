@@ -38,9 +38,12 @@ angular.module('authoringEnvironmentApp', [
             }
         )
         .when(
+            // when properlly configured user will be redirected
+            // otherwise show them the error page
             '/', {
-                template: '',
-                controller: 'RedirectToArticleCtrl'
+                templateUrl: 'views/error.html',
+                controller: 'RedirectToArticleCtrl',
+                controllerAs: 'redirectToArticleCtrl'
             }
         )
         .when(

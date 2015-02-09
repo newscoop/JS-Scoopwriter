@@ -17,7 +17,8 @@ describe('Controller: DroppedImageCtrl', function () {
             removeFromIncluded: jasmine.createSpy(),
             inArticleBody: {},
             attached: [],
-            byId: function () {}
+            byId: function () {},
+            byArticleImageId: function () {},
         };
 
     // Initialize the controller and a mock scope
@@ -58,7 +59,7 @@ describe('Controller: DroppedImageCtrl', function () {
                 id: 5,
                 description: 'My image'
             };
-            spyOn(images, 'byId').andReturn(mockedImage);
+            spyOn(images, 'byArticleImageId').andReturn(mockedImage);
 
             deferredAttachedLoaded = $q.defer();
             images.attachedLoaded = deferredAttachedLoaded.promise;

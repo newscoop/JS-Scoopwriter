@@ -1,0 +1,40 @@
+<div>
+  <div
+     class="authoring-environment"
+     ng-class="{'zen-mode': mode.zen}"
+     >
+    <div class="main-article-container-container">
+
+      <div ng-hide="redirectToArticleCtrl.hasErrors">
+        <h3>Loading</h3>
+      </div>
+
+      <div
+        class="container text-left"
+        ng-show="redirectToArticleCtrl.hasErrors">
+        <h3>Something went wrong.</h3>
+        <div>
+          <ul class="list">
+              <li>
+                  <span>If you are running as a Newscoop Plugin, please check your plugin settings in the Admin -> Plugins -> Editor dialog.</span>
+              </li>
+              <li>
+                  <span>If you are running as a standalone app, please check the AES_SETTINGS object in app/index.html.</span>
+              </li>
+              <li>
+                  <span>Make sure any article referrenced in the settings actually exists on the instance you are connecting to, and that you are setting the correct language code with it.</span>
+              </li>
+              <li>
+                  <span>Check API clients and make sure you are using the correct client_id and redirect url.</span>
+              </li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<toaster-container
+    toaster-options="{'time-out': 4000}"
+    ></toaster-container>

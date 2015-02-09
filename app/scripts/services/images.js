@@ -207,9 +207,16 @@ angular.module('authoringEnvironmentApp').service('images', [
                 self.article.articleId, self.article.language, notYetAttached
             )
             .then(function () {
-                notYetAttached.forEach(function (image) {
-                    self.attached.push(image);
-                });
+                // notYetAttached.forEach(function (image) {
+                //     self.attached.push(image);
+                // });
+
+                // XXX: At the moment there is no other way to obtain
+                // articleImageId for the newly attached images other than
+                // reloading the whole list of attached images.
+                // Redundant, but unfortunately unavoidable until API is
+                // updated.
+                self.loadAttached(self.article);
             });
         };
 
@@ -298,6 +305,28 @@ angular.module('authoringEnvironmentApp').service('images', [
             } else {
                 throw new Error('asking details about an image which is not ' +
                     'attached to the article is not supported');
+            }
+        };
+
+        /**
+        * Retrieves an image from the list of images attached to the article
+        * by its articleImageId. If the image is not found, it an error is
+        * raised.
+        *
+        * @method byArticleImageId
+        * @param articleImageId {Number} ID of the image
+        * @return {Object} NcImage instance
+        */
+        self.byArticleImageId = function (articleImageId) {
+            var img = _.find(self.attached, {articleImageId: articleImageId});
+
+            if (img) {
+                return img;
+            } else {
+                throw new Error(
+                    'Could not find an image with the given ' +
+                    'articleImageId in the attached images list.'
+                );
             }
         };
 
