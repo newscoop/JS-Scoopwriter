@@ -929,9 +929,11 @@ a:hover {
     }
 
     .switch-article-view {
-        position:absolute;
-        left:-47px;
-        margin-left: 1px;
+        position:fixed;
+        margin-left: -106px;
+        &.mobile-view {
+            margin-left: -56px;
+        } 
         .switch-view-tabs {
             background:#e5e5e5;
             .box-shadow (inset -5px 0px 8px -5px #999);  
@@ -1876,6 +1878,9 @@ a:hover {
     }
 
     @media only screen and (max-width: 1230px) {
+        .switch-article-view {
+            margin-left: -66px;
+        }
         .main-article-container {
             padding-left: 20px;
             padding-right: 20px;
@@ -1979,6 +1984,10 @@ a:hover {
     }
 
     @media (max-width: 480px) {
+        .switch-article-view {
+            display:none;
+        }
+
         .mobile-hide {
             display:none !important;
         }
@@ -2824,9 +2833,12 @@ a:hover {
                     &+ select {
                         margin-top: 10px;
                     }
+                    &:last-child {
+                        margin-bottom: 10px;
+                    }
                 }
                 .input-group {
-                    margin-top: 10px;
+                    margin-top: 0;
                     .editor-input {                    
                         border: 1px solid #ccc;
                         resize: none;
@@ -2861,10 +2873,10 @@ a:hover {
         .wrapper {
             position: absolute;
             &.low {
-                top: 285px;
+                top: 280px;
             }
             &.high {
-                top: 115px;
+                top: 180px;
             }
             bottom: 18px;
             left: 0;
@@ -2911,10 +2923,21 @@ a:hover {
                             content: " ";
                             position: absolute;
                             top: 10px;
-                            left: 100px;
+                            left: 112px;
                             right: 0px;
                             background: #dcdcdc;
                             height: 1px;
+                        }
+                        &.pinned {
+                            cursor: pointer;
+                            &:before {
+                                left:114px;
+                            }
+                        }
+                        span {
+                            &.glyphicon {
+                                margin-right: 4px;
+                            }
                         }
                     }
 

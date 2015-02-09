@@ -50,9 +50,10 @@ angular.module('authoringEnvironmentApp').factory('Topic', [
         * is resolved (exposed as a $promise property of the returned array).
         *
         * @method getAll
+        * @param language {String} article language code, e.g. 'de'
         * @return {Object} array of topics
         */
-        Topic.getAll = function () {
+        Topic.getAll = function (language) {
             var topics = [],
                 deferredGet = $q.defer(),
                 url;
@@ -61,7 +62,7 @@ angular.module('authoringEnvironmentApp').factory('Topic', [
 
             url = Routing.generate(
                 'newscoop_gimme_topics_gettopics',
-                {items_per_page: 9999},  // de facto "all"
+                {language: language, items_per_page: 9999},  // de facto "all"
                 true
             );
 

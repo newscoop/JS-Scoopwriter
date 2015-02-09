@@ -259,6 +259,11 @@ describe('Controller: PaneRelatedArticlesCtrl', function () {
             expect(PaneRelatedArticlesCtrl.query).toBe(null);
         });
 
+        it('sets articlesSearchResultsListRetrieved to true', function () {
+            PaneRelatedArticlesCtrl.clearSearch();
+            expect(PaneRelatedArticlesCtrl.articlesSearchResultsListRetrieved).toBe(true);
+        });
+
         it('clears articlesSearchResults', function () {
             PaneRelatedArticlesCtrl.clearSearch();
             expect(PaneRelatedArticlesCtrl.articlesSearchResults).toEqual([]);

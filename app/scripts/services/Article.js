@@ -61,10 +61,10 @@ angular.module('authoringEnvironmentApp').factory('Article', [
 
         /**
         * Finds images placeholders in text and converts them to
-        * images HTML (thiscan be later converted to Aloha blocks).
+        * images HTML (these can be then converted to Aloha blocks).
         *
         * An example of such placeholder:
-        *     <** Image 1234 float="left" size="small" **>
+        *     <!** Image 1234 float="left" size="small" >
         *
         * @function imageCommentsToDivs
         * @param text {String} text to convert
@@ -72,7 +72,7 @@ angular.module('authoringEnvironmentApp').factory('Article', [
         */
         function imageCommentsToDivs(text) {
             // the extra backslash (\) is because of Javascript being picky
-            var imageReg  = '<';         // exact match
+            var imageReg  = '<!';         // exact match
             imageReg     += '\\*\\*';    // exact match on **
             imageReg     += '[\\s]*';    // optional whitespace
             imageReg     += 'Image';     // exact match
@@ -94,15 +94,18 @@ angular.module('authoringEnvironmentApp').factory('Article', [
             imageReg     +=     ')*';        //end capture group 3 (0 or more)
             imageReg     += ')';           // end capture group 2
             imageReg     += '[\\s]*';      // optional whitespace
-            imageReg     += '\\*\\*';      // exact match on **
             imageReg     += '>';           // exact match
             var imagePattern = new RegExp(imageReg, 'ig');
 
+            // NOTE: capture group 1 catches articleImageId which is NOT the
+            // same as imageId - it represents an ID of a (imageId, articleId)
+            // pair from database, meaning "image X is attached to article Y"
+
             var converted = text.replace(
                 imagePattern,
-                function(whole, imageId, imageAttributes) {
+                function (whole, articleImageId, imageAttributes) {
                     var imageDiv = '<div class="image" dropped-image ' +
-                        'data-id="' + imageId + '"';
+                        'data-articleimageid="' + articleImageId + '"';
                     var tmpElement = document.createElement('div');
                     tmpElement.innerHTML = '<div '+imageAttributes+'></div>';
                     var attributes = tmpElement.childNodes[0].attributes;
@@ -125,49 +128,53 @@ angular.module('authoringEnvironmentApp').factory('Article', [
         * back to original content.
         *
         * @function serializeAlohaBlocks
-        * @param type {String} the type of Aloha blocks to search for and
-        *   convert ('snippet' or 'image')
         * @param text {String} text to convert
         * @return {String} converted text
         */
-        function serializeAlohaBlocks(type, text) {
+        function serializeAlohaBlocks(text) {
             var content,
                 matches,
                 sep;
 
-            if ((type !== 'snippet' && type !== 'image') || text === null) {
+            if (text === null) {
                 return text;
             }
 
             sep = {snippet: '--', image: '**'};
             content = $('<div/>').html(text);
 
-            matches = content.contents().filter('div.' + type);
+            ['image', 'snippet'].forEach(function (type) {
+                matches = content.contents().filter('div.' + type);
 
-            // replace each matching div with its serialized version
-            matches.replaceWith(function() {
-                var serialized,
-                    $match = $(this);
+                // replace each matching div with its serialized version
+                matches.replaceWith(function () {
+                    var dataItemName,
+                        serialized,
+                        $match = $(this);
 
-                serialized = [
-                    '<', sep[type], ' ',
-                    type.charAt(0).toUpperCase(), type.slice(1), ' ',
-                    parseInt($match.data('id'), 10)
-                ];
+                    serialized = [
+                        '<', sep[type], ' ',
+                        type.charAt(0).toUpperCase(), type.slice(1), ' '
+                    ];
 
-                $.each($match.data(), function (name, value) {
-                    if (name !== 'id') {
-                        serialized.push(' ', name, '="', value, '"');
-                    }
+                    dataItemName = (type === 'snippet') ?
+                                    'id' : 'articleimageid';
+                    serialized.push(parseInt($match.data(dataItemName)));
+
+                    $.each($match.data(), function (name, value) {
+                        if ((name !== 'id') && (name !== 'articleimageid')) {
+                            serialized.push(' ', name, '="', value, '"');
+                        }
+                    });
+
+                    serialized.push(' ', sep[type], '>');
+                    return serialized.join('');
                 });
-
-                serialized.push(' ', sep[type], '>');
-                return serialized.join('');
             });
 
             return content.html()
-                .replace(/\&lt\;\*\*/g,'<**')   // replace &lt;** with <**
-                .replace(/\*\*\&gt\;/g, '**>')  // replace **&gt; with **>
+                .replace(/\&lt\;\*\*/g, '<!**')  // replace &lt;** with <!**
+                .replace(/\*\*\&gt\;/g, '>')  // replace **&gt; with >
                 .replace(/\&lt\;\-\-/g,'<--')   // replace &lt;-- with <--
                 .replace(/\-\-\&gt\;/g, '-->');  // replace --&gt; with -->
         }
@@ -580,11 +587,8 @@ angular.module('authoringEnvironmentApp').factory('Article', [
 
             // serialize objects (images, snippets) in all article fields
             Object.keys(postData.article.fields).forEach(function (key) {
-                var serialized = serializeAlohaBlocks(
-                    'image', postData.article.fields[key]
-                );
                 postData.article.fields[key] = serializeAlohaBlocks(
-                    'snippet', serialized
+                    postData.article.fields[key]
                 );
             });
 

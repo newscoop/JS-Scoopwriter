@@ -54,7 +54,7 @@ describe('Service: authInterceptor', function () {
                     returned;
 
                 config = {
-                    url: 'http://backend.com/content-api/articles/8/en'
+                    url: 'http://backend.com/api/articles/8/en'
                 };
                 fakeUserAuth.token.andReturn(undefined);
 
@@ -70,7 +70,7 @@ describe('Service: authInterceptor', function () {
                     returned;
 
                 config = {
-                    url: 'http://backend.com/content-api/articles/8/en',
+                    url: 'http://backend.com/api/articles/8/en',
                     headers: {}
                 };
                 fakeUserAuth.token.andReturn('abcd1234');
