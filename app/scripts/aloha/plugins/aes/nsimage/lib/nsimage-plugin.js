@@ -16,16 +16,12 @@ define(['aloha', 'aloha/plugin', 'jquery',  'aloha/console', 'block/block', 'blo
                     var $injector = angular.element($('body')).injector();
                     var contents = '';
                     $.each( $element.data(),function(name, value) {
-console.log('plugin', name, value);
                         if (name !== 'alohaBlockType') {
                             contents += ' data-image-'+name+'="'+value+'"';
                         }
-//                        if (name === 'articleimageid') {
-//                            contents += ' image-articleimageid="'+value+'"';
-//                        }
                     });
+
                     $injector.invoke(function($rootScope, $compile) {
-console.log('final', contents);
                         // finally place the element and $compile it into AngularJS
                         $element.empty().append($compile('<div dropped-image '+contents+'></div>')($rootScope));
 
@@ -64,6 +60,7 @@ console.log('final', contents);
             return Plugin.create('image', {
                 makeClean: function(obj) {
                     jQuery(obj).find('.aloha-block-ImageBlock').each(function() {
+                        var $injector = angular.element($('body')).injector();
                         var $this = jQuery(this);
                         var output = '';
                         if ($this.data('articleimageid') !== undefined) {
@@ -71,7 +68,6 @@ console.log('final', contents);
 
                             var contents = '';
                             $.each( $this.data(),function(name, value) {
-console.log('make-clean', name, value);
                                 if (name !== 'alohaBlockType' && name !== 'sortableitem') {
                                     contents += ' data-'+name+'="'+value+'"';
                                 }
@@ -80,7 +76,9 @@ console.log('make-clean', name, value);
                             output += contents + '></div>';
                         }
 
-                        $this.replaceWith(output);
+                        $injector.invoke(function($rootScope, $compile) {
+                            $this.replaceWith($compile(output)($rootScope));
+                        });
                     });
                 },
                    init: function () {

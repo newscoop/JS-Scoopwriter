@@ -318,7 +318,6 @@ angular.module('authoringEnvironmentApp').service('images', [
         * @return {Object} NcImage instance
         */
         self.byArticleImageId = function (articleImageId) {
-console.log('service', articleImageId);
             var img = _.find(self.attached, {articleImageId: articleImageId});
 
             if (img) {

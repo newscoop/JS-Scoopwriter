@@ -31,13 +31,12 @@ function(Aloha, jQuery, Plugin, Ui, Button, Console) {
          * re-enable all blocks instead of just the active
          * editable blocks
          */
-        //var editable = plugin.getRootEditable(Aloha.getActiveEditable());
         $.each(Aloha.editables, function () {
             var editable = this;
             if ( editable !== null ) {
                 var $editor = jQuery(editable.obj);
                 jQuery.each( Aloha.settings.plugins.block.defaults, function(selector, instanceDefaults) {
-                   $editor.find(selector).alohaBlock(instanceDefaults);
+                    $editor.find(selector).alohaBlock(instanceDefaults);
                 });
             }
         });
