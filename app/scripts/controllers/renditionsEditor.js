@@ -11,7 +11,7 @@
             url;
 
         url = [
-            AES_SETTINGS.API.rootURIrcefabric.net,
+            AES_SETTINGS.API.rootURI,
             '/admin/image/article',
             '/article_number/', articleInfo.articleId,
             '/language_id/', articleInfo.languageId
