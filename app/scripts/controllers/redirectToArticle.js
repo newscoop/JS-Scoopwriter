@@ -33,27 +33,29 @@ angular.module('authoringEnvironmentApp').controller('RedirectToArticleCtrl', [
         if (AES_SETTINGS) {
             if (AES_SETTINGS.articleInfo) {
                 if (AES_SETTINGS.articleInfo.articleNumber) {
-                    self.articleNumber = AES_SETTINGS.articleInfo.articleNumber;
+                    self.articleNumber =
+                        AES_SETTINGS.articleInfo.articleNumber;
                 } else {
                     toaster.add({
                         type: 'sf-error',
-                        message: 'You are missing AES_SETTINGS.artcleInfo config.'
+                        message:
+                            'You are missing AES_SETTINGS.artcleInfo config.'
                     });
-                    self.hasErrors = true;        
+                    self.hasErrors = true;
                 }
             } else {
                 toaster.add({
                     type: 'sf-error',
                     message: 'You are missing AES_SETTINGS.artcleInfo config.'
                 });
-                self.hasErrors = true;        
+                self.hasErrors = true;
             }
         } else {
             toaster.add({
                 type: 'sf-error',
                 message: 'You are missing AES_SETTINGS config.'
             });
-            self.hasErrors = true;        
+            self.hasErrors = true;
         }
 
         // if all is well, redirect to the article

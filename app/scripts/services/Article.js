@@ -638,6 +638,7 @@ angular.module('authoringEnvironmentApp').factory('Article', [
             1 : 0;
             postData.article.onSection = self.fields.show_on_section_page ?
             1 : 0;
+            postData.article.name = self.title;
 
             $http.patch(
                 url, postData, {transformRequest: transform.formEncode}
@@ -680,6 +681,7 @@ angular.module('authoringEnvironmentApp').factory('Article', [
                 comments_locked: (newValue === Article.commenting.LOCKED) ?
                 1 : 0
             };
+            postData.article.name = self.title;
 
             $http.patch(
                 url, postData, {transformRequest: transform.formEncode}

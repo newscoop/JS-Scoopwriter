@@ -924,6 +924,7 @@ describe('Factory: Article', function () {
 
         beforeEach(function () {
             article = new Article();
+            article.title = 'article title';
             article.articleId = 8;
             article.language = 'de';
             article.onFrontPage = 0;
@@ -961,6 +962,7 @@ describe('Factory: Article', function () {
                     },
                     onFrontPage: 0,
                     onSection: 0,
+                    name: 'article title'
                 }
             };
             requestData = $.param(requestData);
@@ -1013,6 +1015,7 @@ describe('Factory: Article', function () {
         beforeEach(function () {
             article = new Article();
             article.articleId = 6;
+            article.title = 'article title';
             article.language = 'pl';
 
             url = Routing.generate(
@@ -1047,7 +1050,8 @@ describe('Factory: Article', function () {
                     var expected = $.param({
                         article: {
                             comments_enabled: 1,
-                            comments_locked: 0
+                            comments_locked: 0,
+                            name: 'article title'
                         }
                     });
                     return angular.equals(data, expected);
@@ -1063,7 +1067,8 @@ describe('Factory: Article', function () {
                     var expected = $.param({
                         article: {
                             comments_enabled: 0,
-                            comments_locked: 0 
+                            comments_locked: 0,
+                            name: 'article title'
                         }
                     });
                     return angular.equals(data, expected);
@@ -1079,7 +1084,8 @@ describe('Factory: Article', function () {
                     var expected = $.param({
                         article: {
                             comments_enabled: 0,
-                            comments_locked: 1 
+                            comments_locked: 1,
+                            name: 'article title'
                         }
                     });
                     return angular.equals(data, expected);
