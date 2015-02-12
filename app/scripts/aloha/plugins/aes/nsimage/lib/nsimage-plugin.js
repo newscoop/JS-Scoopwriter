@@ -65,17 +65,20 @@ define(['aloha', 'aloha/plugin', 'jquery',  'aloha/console', 'block/block', 'blo
                         var output = '';
                         if ($this.data('articleimageid') !== undefined) {
                             output += '<div class="image"';
-
                             var contents = '';
                             $.each( $this.data(),function(name, value) {
-                                if (name !== 'alohaBlockType' && name !== 'sortableitem') {
+                                if (name !== 'width' &&
+                                    name !== 'alohaBlockType' &&
+                                    name !== 'sortableitem') {
                                     contents += ' data-'+name+'="'+value+'"';
                                 }
                             });
+                                
+                            // add width for newsccop render
+                            contents += ' data-width="' + $this.width() + '%"';
 
                             output += contents + '></div>';
                         }
-
                         $this.replaceWith(output);
                     });
                 },

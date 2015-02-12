@@ -105,7 +105,7 @@ describe('Controller: RenditionsEditorCtrl', function () {
 
         it('exposes correct preview URL', function () {
             var expectedUrl = [
-                'http://newscoop.aes.sourcefabric.net',
+                'http://server.net',
                 '/admin/image/article',
                 '/article_number/111',
                 '/language_id/5'
