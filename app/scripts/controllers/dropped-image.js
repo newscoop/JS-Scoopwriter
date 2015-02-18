@@ -70,6 +70,19 @@ angular.module('authoringEnvironmentApp').controller('DroppedImageCtrl', [
             });
         };
 
+        /**
+        * Updates image's caption via paste event 
+        * This is a hack to get around an issue with aloha 
+        * and inline blocks where the active editable will steal
+        * the image captions paste event
+        *
+        * @method pasteCaption
+        * @param event {Event} the paste event
+        */
+        $scope.pasteCaption = function (event) {
+            $scope.newCaption = event.originalEvent.clipboardData.getData('text/plain');
+        }
+
         $scope.editingCaption = false;
         $scope.newCaption = '';  // temp value of image's new description
 
