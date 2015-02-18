@@ -22,7 +22,7 @@ angular.module('authoringEnvironmentApp').directive('sfAlohaUndoButton', [
                     available = Aloha.canUndo();
                     element.attr('disabled', !available);
                 }
-                
+
                 updateButtonState();
 
                 $rootScope.$on('texteditor-content-changed', function () {
