@@ -164,7 +164,7 @@
     // Load your Plugins here, can't be done after Aloha has loaded
     Aloha.settings = {
         plugins: {
-            load: "common/ui, common/format, common/paste, common/block, common/list, common/table, aes/snippet, aes/nsimage"
+            load: "common/ui, common/format, common/paste, common/block, common/list, common/table, common/contenthandler, aes/snippet, aes/nsimage"
         },
         bundles: {
             aes: '../../../../../../scripts/aloha/plugins/aes'
@@ -172,6 +172,21 @@
         smartContentChange: {
             idle: 500,
             delay: 250
+        },
+        contentHandler: {
+            insertHtml: [ 'sanitize' ],
+            initEditable: [],
+            getContents: [],
+            handler: {
+                sanitize: {
+                    '.aloha-editable': { 
+                        elements: ['strong', 'em', 'i', 'b', 'blockquote', 'br', 'cite',
+                            'code', 'dd', 'div', 'dl', 'dt', 'em', 'i', 'li', 'ol', 'p',
+                            'pre', 'q', 'small', 'strike', 'sub', 'sup', 'u', 'ul', 'h1',
+                            'h2', 'h3', 'h4', 'h5', 'img', 'video', 'audio']
+                    }
+                }
+            }
         }
     }
     // Restore the global $ and jQuery variables of your project's jQuery
