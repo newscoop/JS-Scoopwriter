@@ -162,9 +162,21 @@
     <script type="text/javascript">
     var Aloha = window.Aloha || ( window.Aloha = {} );
     // Load your Plugins here, can't be done after Aloha has loaded
+    // block.defaults is required for undo/redo in order to re-create
+    // custom blocks after undo/redo actions
     Aloha.settings = {
         plugins: {
-            load: "common/ui, common/format, common/paste, common/block, common/list, common/table, common/contenthandler, aes/snippet, aes/nsimage"
+            load: "common/ui, common/format, common/paste, common/block, common/list, common/table, common/contenthandler, aes/snippet, aes/nsimage, aes/undo",
+            block: {
+                defaults: {
+                    '.aloha-image-block': {
+                        "aloha-block-type": "ImageBlock"
+                    },
+                    '.aloha-snippet-block': {
+                        "aloha-block-type": "SnippetBlock"
+                    }
+                }
+            }
         },
         bundles: {
             aes: '../../../../../../scripts/aloha/plugins/aes'
@@ -303,6 +315,7 @@
         <script src="scripts/services/Publication.js"></script>
         <script src="scripts/services/Issue.js"></script>
         <script src="scripts/services/Section.js"></script>
+        <script src="scripts/directives/sf-aloha-command-button.js"></script>
         <!-- endbuild -->
 </body>
 </html>

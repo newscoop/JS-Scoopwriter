@@ -138,7 +138,7 @@ describe('Service: Dragdata', function () {
         });
         it('returns a whole element to be attached to the editable', function () {
             var $r = Dragdata.getDropped(data);
-            expect($r[0].outerHTML).toEqual('<div></div>');
+            expect($r[0].outerHTML).toEqual('<div class="aloha-image-block"></div>');
             expect($r.data()).toEqual({id: '3', articleimageid: '8'});
         });
     });
@@ -165,7 +165,7 @@ describe('Service: Dragdata', function () {
                 var $r = Dragdata.getDropped(data);
 
                 expect($r[0].outerHTML).toEqual([
-                    '<div class="snippet">',
+                    '<div class="snippet aloha-snippet-block">',
                         '<dropped-snippet data-snippet-id="5">',
                         '</dropped-snippet>',
                     '</div>'

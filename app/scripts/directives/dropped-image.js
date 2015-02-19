@@ -90,10 +90,12 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                 *
                 * @function triggerChangeEvent
                 */
-                function triggerChangeEvent() {
-                    var alohaEditable = Aloha.getEditableById(
-                        $parent.parent('.aloha-editable-active').attr('id')
-                    );
+                function triggerChangeEvent(alohaEditable) {
+                    if (!alohaEditable) {
+                        alohaEditable = Aloha.getEditableById(
+                            $parent.parent('.aloha-editable-active').attr('id')
+                        );
+                    }
                     if (alohaEditable) {
                         Aloha.trigger('aloha-smart-content-changed', {
                             'editable': alohaEditable,
@@ -106,10 +108,14 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
 
                 // close button's onClick handler
                 $element.find('button.close').click(function (e) {
+                    var alohaEditable = Aloha.getEditableById(
+                        $parent.parent('.aloha-editable-active').attr('id')
+                    );
                     $parent.remove();
 
                     // notify controller about the removal
                     ctrl.imageRemoved(scope.image.id);
+                    triggerChangeEvent(alohaEditable);
                 });
 
                 $element.find('.caption').click(function (e) {
@@ -266,7 +272,6 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                 // preserve them.
                 imgConfig.alignment = scope.alignment || 'middle';
                 imgConfig.size = scope.size || AES_SETTINGS.image_size;
-
                 ctrl.init(parseInt(scope.articleImageId, 10))
                 .then(function () {
                     scope.setAlignment(imgConfig.alignment);
