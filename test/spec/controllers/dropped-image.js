@@ -181,4 +181,22 @@ describe('Controller: DroppedImageCtrl', function () {
                 expect(scope.newCaption).toEqual('Image foo');
         });
     });
+
+    describe('scope\'s pasteCaption() method', function () {
+        var ev = $.Event('paste');
+        ev.originalEvent = {
+            clipboardData: {
+                getData: function () {
+                    return "this text";
+                }
+            }
+        };
+
+        it('sets the newCaption varible with paste text', function () {
+            scope.newCapion = '';
+            scope.pasteCaption(ev);
+            expect(scope.newCaption).toEqual('this text');
+        });
+        
+    });
 });
