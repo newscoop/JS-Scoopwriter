@@ -122,7 +122,7 @@ describe('Controller: PaneTopicsCtrl', function () {
         it('tries to create a new topic with correct data (no parent topic)',
             function () {
                 scope.addNewTopicToArticle({title: 'foo'});
-                expect(Topic.create).toHaveBeenCalledWith('foo', undefined);
+                expect(Topic.create).toHaveBeenCalledWith('foo', undefined, 'it');
             }
         );
 
@@ -132,7 +132,7 @@ describe('Controller: PaneTopicsCtrl', function () {
                     title: 'foo',
                     parentTopic: {id: 17}
                 });
-                expect(Topic.create).toHaveBeenCalledWith('foo', 17);
+                expect(Topic.create).toHaveBeenCalledWith('foo', 17, 'it');
             }
         );
 
