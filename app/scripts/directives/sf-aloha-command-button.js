@@ -28,23 +28,23 @@ angular.module('authoringEnvironmentApp').directive('sfAlohaCommandButton', [
                 if (scope.buttonCommand === 'undo') {
                     checkAvailable = function () {
                         return Aloha.canUndo();
-                    }
+                    };
                     checkEvent = 'aloha-redo-clicked';
                     clickEvent = 'aloha-undo-clicked';
                     clickFunction = function () {
                         Aloha.undo();
-                    }
+                    };
                 }
 
                 if (scope.buttonCommand === 'redo') {
                     checkAvailable = function () {
                         return Aloha.canRedo();
-                    }
+                    };
                     checkEvent = 'aloha-undo-clicked';
                     clickEvent = 'aloha-redo-clicked';
                     clickFunction = function () {
                         Aloha.redo();
-                    }
+                    };
                 }
 
                 function updateButtonState() {
