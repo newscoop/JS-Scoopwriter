@@ -4,9 +4,9 @@ angular.module('authoringEnvironmentApp').directive('sfAlohaCommandButton', [
     function ($rootScope) {
         var template = [
             '<button class="btn btn-default btn-sm action strong" ',
-            '    rel="tooltip" title="{{ buttonName }}">',
-            '    <i class="editoricon-{{ buttonIcon }} ',
-            '              fa fa-{{ buttonIcon }}"></i>',
+            '    rel="tooltip" title="{{ ::buttonName }}">',
+            '    <i class="editoricon-{{ ::buttonIcon }} ',
+            '              fa fa-{{ ::buttonIcon }}"></i>',
             '</button>'
         ].join('');
  
