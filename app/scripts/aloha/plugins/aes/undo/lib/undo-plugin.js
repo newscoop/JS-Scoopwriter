@@ -10,7 +10,7 @@ define([
 ],
 function(Aloha, jQuery, Plugin, Ui, Button, Console) {
  
-    var dmp = new diff_match_patch;
+    var dmp = new diff_match_patch();
  
     function reversePatch(patch) {
         var reversed = dmp.patch_deepCopy(patch);
@@ -35,9 +35,11 @@ function(Aloha, jQuery, Plugin, Ui, Button, Console) {
             var editable = this;
             if ( editable !== null ) {
                 var $editor = jQuery(editable.obj);
-                jQuery.each( Aloha.settings.plugins.block.defaults, function(selector, instanceDefaults) {
-                    $editor.find(selector).alohaBlock(instanceDefaults);
-                });
+                jQuery.each(Aloha.settings.plugins.block.defaults, 
+                    function(selector, instanceDefaults) {
+                        $editor.find(selector).alohaBlock(instanceDefaults);
+                    }
+                );
             }
         });
     }
@@ -61,9 +63,6 @@ function(Aloha, jQuery, Plugin, Ui, Button, Console) {
                 applied = dmp.patch_apply(patch, contents),
                 newValue = applied[0],
                 didNotApply = applied[1];
-            if (didNotApply.length) {
-                //error
-            }
             this.reset(newValue);
         },
         reset: function(val) {
@@ -97,7 +96,6 @@ function(Aloha, jQuery, Plugin, Ui, Button, Console) {
  
             plugin.createButtons();
  
-            // @todo use aloha hotkeys here
             jQuery(document).keydown(function(event) {
                 if (!event.metaKey || event.keyCode != 90) {
                     return;
@@ -174,7 +172,7 @@ function(Aloha, jQuery, Plugin, Ui, Button, Console) {
                     return editable;
                 }
                 else {
-                    // Sometimes the editable is dettached from DOM (deleted blocks?)
+                    // Sometimes the editable is detached from DOM (deleted blocks?)
                     Console.warn('undo', 'Dettached editable, falling back to editable[0]');
                     return Aloha.editables[0];
                 }
