@@ -80,8 +80,9 @@ angular.module('authoringEnvironmentApp').controller('DroppedImageCtrl', [
         * @param event {Event} the paste event
         */
         $scope.pasteCaption = function (event) {
-            $scope.newCaption = event.originalEvent.clipboardData.getData('text/plain');
-        }
+            $scope.newCaption = event.originalEvent
+                .clipboardData.getData('text/plain');
+        };
 
         $scope.editingCaption = false;
         $scope.newCaption = '';  // temp value of image's new description

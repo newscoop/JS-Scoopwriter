@@ -193,6 +193,7 @@ describe('Controller: DroppedImageCtrl', function () {
         };
 
         it('sets the newCaption varible with paste text', function () {
+            scope.newCapion = '';
             scope.pasteCaption(ev);
             expect(scope.newCaption).toEqual('this text');
         });
