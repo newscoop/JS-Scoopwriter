@@ -5,7 +5,7 @@ angular.module('authoringEnvironmentApp').directive('sfAlohaCommandButton', [
         var template = [
             '<button class="btn btn-default btn-sm action strong" ',
             '    rel="tooltip" title="{{ buttonName }}">',
-            '    <i class="editoricon-undo ',
+            '    <i class="editoricon-{{ buttonIcon }} ',
             '              fa fa-{{ buttonIcon }}"></i>',
             '</button>'
         ].join('');
