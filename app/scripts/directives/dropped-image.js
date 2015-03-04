@@ -35,6 +35,15 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                 scope.activeAlignment = null;
 
                 /**
+                * Finds parent, in case element was dragged
+                * and parent was re-created
+                */
+                function findParent() {
+                    return $('.aloha-image-block[data-articleimageid="' +
+                        scope.articleImageId + '"]');
+                }
+
+                /**
                 * Retrieves a jQuery reference to the image toolbar node. It
                 * also makes sure that the toolbar is a direct child of the
                 * Aloha block node.
@@ -48,6 +57,12 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                 */
                 function toolbarNode() {
                     var element;
+
+                    // we must reselect parent here, in case image has been
+                    // drag-dropped, which creates a new parent
+                    $parent = findParent();
+
+                    $toolbar = $('#img-toolbar-' + scope.image.id);
                     if (!$toolbar || $toolbar.length < 1) {
                         $toolbar = $('#img-toolbar-' + scope.image.id);
                         element = $toolbar.detach();
@@ -67,6 +82,10 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                         left,
                         top,
                         $bar = toolbarNode();
+
+                    // we must reselect parent here, in case image has been
+                    // drag-dropped, which creates a new parent
+                    $parent = findParent();
 
                     cssFloat = $parent.css('float');
                     if (cssFloat === 'left') {
@@ -169,6 +188,10 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                         'float': cssFloat
                     });
 
+                    // we must reselect parent here, in case image has been
+                    // drag-dropped, which creates a new parent
+                    $parent = findParent();
+
                     $parent.css({
                         'float': cssFloat,
                         'margin': cssMargin
@@ -217,6 +240,10 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                         scope.activeSize = 'original';
                     }
 
+                    // we must reselect parent here, in case image has been
+                    // drag-dropped, which creates a new parent
+                    $parent = findParent();
+
                     // NOTE: use .css() instead of .width() as the latter
                     // does not set the desired pixel width due to "border-box"
                     // box-sizing CSS property that we use
@@ -249,6 +276,10 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                     if (angular.isNumber(width) && width > 0) {
                         width = Math.round(width);
                         $element.css('width', width + 'px');
+
+                        // we must reselect parent here, in case image has been
+                        // drag-dropped, which creates a new parent
+                        $parent = findParent();
 
                         // add 2px to parent to account for child's border
                         // NOTE: must use .css() instead of .width() to set
