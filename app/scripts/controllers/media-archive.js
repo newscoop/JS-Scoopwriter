@@ -21,6 +21,16 @@ angular.module('authoringEnvironmentApp').controller('MediaArchiveCtrl', [
         });
 
         /**
+        * Reset search results and clear search text field
+        *
+        * @method clearSearch
+        */
+        $scope.clearSearch = function () {
+            images.searchFilter = '';
+            images.query();
+        };
+
+        /**
         * Event handler for clicking a thumbnail. If the image is not attached
         * to the article and not in the basket (not collected), it is added
         * to the basket, otherwise nothing happens.

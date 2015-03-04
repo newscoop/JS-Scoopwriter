@@ -23,6 +23,11 @@ angular.module('authoringEnvironmentApp').controller('ImagePaneCtrl', [
         * @method attachModal
         */
         $scope.attachModal = function () {
+            // Clear search text and load default results
+            // on load.
+            images.searchFilter = '';
+            images.query();
+
             modal.show({
                 title: 'Attach Image',
                 templateUrl: 'views/attach-image.html'

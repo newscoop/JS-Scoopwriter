@@ -4,17 +4,17 @@
    >
 
   <div class="search">
-    <form ng-submit="searchArchive(searchFilter)">
+    <form ng-submit="searchArchive(images.searchFilter)">
       <div class="input">
         <input
           type="text"
-          ng-model="searchFilter"
+          ng-model="images.searchFilter"
           placeholder="Search Media Archive"
           />
         <div 
           class="remove" 
           title="Remove" 
-          ng-click=""
+          ng-click="clearSearch()"
           ><span class="glyphicon glyphicon-remove"></span>
         </div>
       </div>
