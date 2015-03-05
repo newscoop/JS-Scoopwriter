@@ -10,7 +10,7 @@
     "angular-sanitize": "~1.3.0",
     "angular-route": "~1.3.0",
     "angular-animate": "~1.3.0",
-    "ng-aloha-editor": "https://github.com/plamut/ng-aloha-editor.git#newer-aloha",
+    "ng-aloha-editor": "https://github.com/newscoop/ng-aloha-editor.git",
     "requirejs": "~2.1.9",
     "bootstrap": "~3.2.0",
     "lodash": "~2.4.1",
