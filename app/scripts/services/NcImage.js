@@ -324,13 +324,12 @@ angular.module('authoringEnvironmentApp').factory('NcImage', [
             );
 
             params = {
-                number: self.id,
                 image: {
                     description: newDesc
                 }
             };
 
-            $http.patch(
+            $http.post(
                 url,
                 params,
                 {transformRequest: transform.formEncode}

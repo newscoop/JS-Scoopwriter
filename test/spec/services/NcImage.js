@@ -655,7 +655,7 @@ describe('Factory: NcImage', function () {
                 'newscoop_gimme_images_updateimage', {number: 5}, true
             );
             $httpBackend.expect(
-                'PATCH',
+                'POST',
                 url
             ).respond(200, {});
         });
@@ -705,7 +705,7 @@ describe('Factory: NcImage', function () {
 
             $httpBackend.resetExpectations();
             $httpBackend.expect(
-                'PATCH',
+                'POST',
                 url
             ).respond(500, 'Error :(');
 
