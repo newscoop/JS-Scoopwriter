@@ -2290,19 +2290,46 @@ a:hover {
                 border-bottom: 1px solid #e8e8e8;
                 background: #f1f1f1;
                 .box-sizing(border-box);
-            
-                input[type="text"] {
-                    width: 300px;
-                    padding: 5px 7px 5px 26px;
-                    border:1px solid #ccc;
-                    margin: 2px 6px 0 0;
-                    @shadow: inset 0 1px 2px rgba(0,0,0,.05);
-                    .box-shadow(@shadow);
-                    .border-radius(2px);
-                    background: #fff url("../images/search-icon.png") no-repeat 6px center;
+                
+                .input {
+                    position: relative;
+                    display: inline-block;
+                    input[type="text"] {
+                        width: 300px;
+                        padding: 5px 7px 5px 26px;
+                        border:1px solid #ccc;
+                        margin: 1px 6px 0 0;
+                        @shadow: inset 0 1px 2px rgba(0,0,0,.05);
+                        .box-shadow(@shadow);
+                        .border-radius(2px);
+                        background: #fff url("../images/search-icon.png") no-repeat 6px center;
+                        vertical-align: middle;
+                        &:hover {
+                            border: 1px solid #bbb;
+                        }
+                        &:focus {
+                            border: #52a8ec solid 1px !important;
+                            outline: none !important;
+                        }
+                    }                    
+                    .remove {
+                        position: absolute;
+                        top: 4px;
+                        right: 9px;                        
+                        cursor: pointer;
+                        padding: 4px 6px;
+                        span {
+                            color: gainsboro;
+                            margin: 0;
+                        }
+                        &:hover {
+                            span {
+                                color: gray;
+                            }
+                        }
+                    }
                 }
                 .btn.btn-sm {
-                    margin-top: -2px;
                     margin-right: 22px;
                 }
                 span { 
