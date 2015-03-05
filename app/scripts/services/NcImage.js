@@ -319,7 +319,7 @@ angular.module('authoringEnvironmentApp').factory('NcImage', [
 
             url = Routing.generate(
                 'newscoop_gimme_images_updateimage',
-                {number: self.id},
+                {number: self.id, _method: 'PATCH'},
                 true
             );
 

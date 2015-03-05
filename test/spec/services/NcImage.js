@@ -652,7 +652,8 @@ describe('Factory: NcImage', function () {
             image.description = 'foo';
 
             url = Routing.generate(
-                'newscoop_gimme_images_updateimage', {number: 5}, true
+                'newscoop_gimme_images_updateimage', 
+                {number: 5, _method: 'PATCH'}, true
             );
             $httpBackend.expect(
                 'POST',
