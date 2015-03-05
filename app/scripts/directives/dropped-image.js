@@ -58,8 +58,6 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                 function toolbarNode() {
                     var element;
 
-                    // we must reselect parent here, in case image has been
-                    // drag-dropped, which creates a new parent
                     $parent = findParent();
 
                     $toolbar = $('#img-toolbar-' + scope.image.id);
@@ -83,8 +81,6 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                         top,
                         $bar = toolbarNode();
 
-                    // we must reselect parent here, in case image has been
-                    // drag-dropped, which creates a new parent
                     $parent = findParent();
 
                     cssFloat = $parent.css('float');
@@ -188,8 +184,6 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                         'float': cssFloat
                     });
 
-                    // we must reselect parent here, in case image has been
-                    // drag-dropped, which creates a new parent
                     $parent = findParent();
 
                     $parent.css({
@@ -240,8 +234,6 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                         scope.activeSize = 'original';
                     }
 
-                    // we must reselect parent here, in case image has been
-                    // drag-dropped, which creates a new parent
                     $parent = findParent();
 
                     // NOTE: use .css() instead of .width() as the latter
