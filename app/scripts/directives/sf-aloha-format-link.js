@@ -276,7 +276,6 @@
                                 message: 'Invalid selection.  ' +
                                     'Please only select text.'
                             });
-                            console.log('Error: ', exception);
                         }
                     }
 
