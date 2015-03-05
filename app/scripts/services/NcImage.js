@@ -12,8 +12,9 @@ angular.module('authoringEnvironmentApp').factory('NcImage', [
     '$http',
     '$q',
     '$upload',
+    'transform',
     'formDataFactory',
-    function ($http, $q, $upload, formDataFactory) {
+    function ($http, $q, $upload, transform, formDataFactory) {
         var NcImage;
 
         /**
@@ -329,11 +330,11 @@ angular.module('authoringEnvironmentApp').factory('NcImage', [
                 }
             };
 
-            $http({
-                method: 'PATCH',
-                url: url,
-                data: params
-            })
+            $http.patch(
+                url,
+                params,
+                {transformRequest: transform.formEncode}
+            )
             .success(function (response) {
                 self.description = newDesc;
                 deferredPatch.resolve();
