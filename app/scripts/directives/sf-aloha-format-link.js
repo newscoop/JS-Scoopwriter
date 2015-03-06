@@ -48,7 +48,7 @@
     *
     * @class sfAlohaFormatLink
     */
-    function directiveConstructor($rootScope, $modal, $window) {
+    function directiveConstructor($rootScope, $modal, $window, toaster) {
         var template = [
             '<div>',
             '  <button class="btn btn-default btn-sm" title="Add Link">',
@@ -79,19 +79,38 @@
             */
             function updateButtonsMode() {
                 var editables,
+                    blocks,
                     selection = $window.getSelection(),
+                    testRange,
                     selectionInEditor,
                     textSelected,
+                    canSurround = true,
                     title;
 
                 editables = $(selection.anchorNode).parents('.aloha-editable');
-                selectionInEditor = editables.length > 0;
+                blocks = $(selection.anchorNode).parents('.aloha-block');
+                selectionInEditor = editables.length > 0 || blocks.length > 0;
+
+                /**
+                * test if we can surround text
+                * this will fail if divs are present due to an issue
+                * calling surroundContents wih divs
+                */
+                if (selection.type === 'Range') {
+                    testRange = selection.getRangeAt(0);
+                    if (testRange
+                        .commonAncestorContainer instanceof HTMLDivElement) {
+                        canSurround = false;
+                    } else {
+                        canSurround = true;
+                    }
+                }
 
                 textSelected = !selection.isCollapsed;
 
                 $btnLink.attr(
                     'disabled',
-                    !cmdLinkSupported || !cmdLinkEnabled ||
+                    !cmdLinkSupported || !cmdLinkEnabled || !canSurround ||
                     !selectionInEditor || (!linkPresent && !textSelected)
                 );
 
@@ -243,13 +262,21 @@
                     if (addingNew) {
                         // a new link must be created
                         $link = jQuery('<a/>');
-                        range.surroundContents($link[0]);
+                        try {
+                            range.surroundContents($link[0]);
 
-                        // also remove any existing nested links
-                        $link.find('a').each(function (i, item) {
-                            var $nestedLink = $(item);
-                            $nestedLink.replaceWith($nestedLink.html());
-                        });
+                            // also remove any existing nested links
+                            $link.find('a').each(function (i, item) {
+                                var $nestedLink = $(item);
+                                $nestedLink.replaceWith($nestedLink.html());
+                            });
+                        } catch (exception) {
+                            toaster.add({
+                                type: 'sf-error',
+                                message: 'Invalid selection.  ' +
+                                    'Please only select text.'
+                            });
+                        }
                     }
 
                     $link.attr('href', newData.url);
@@ -292,7 +319,7 @@
 
     angular.module('authoringEnvironmentApp')
         .directive('sfAlohaFormatLink', [
-            '$rootScope', '$modal', '$window', directiveConstructor
+            '$rootScope', '$modal', '$window', 'toaster', directiveConstructor
         ]);
 
 }());
