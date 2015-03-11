@@ -64,6 +64,14 @@ angular.module('authoringEnvironmentApp')
                 previewArticle.contentFields = contentFields;
                 self.previewLoaded = true;
             });
+
+            // use router to set articleUrl
+            previewArticle.editorUrl = Routing.generate(
+                'newscoop_admin_aes',
+                {articleNumber: previewArticle.articleId, language: previewArticle.language},
+                true
+            );
+ 
             self.relatedArticlePreview = previewArticle;
             self.showArticlePreview = !self.showArticlePreview;
         };
@@ -76,7 +84,7 @@ angular.module('authoringEnvironmentApp')
         self.clearPreview = function() {
             self.previewLoaded = false;
             // clear the current previewArticle
-            if (self.relatedArticlePreview) {
+            if (self.relatedArticlereview) {
                 self.relatedArticlePreview.title = null;
                 self.relatedArticlePreview.lead = null;
                 self.relatedArticlePreview.firstImage = ' ';
