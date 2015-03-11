@@ -68,7 +68,10 @@ angular.module('authoringEnvironmentApp')
             // use router to set articleUrl
             previewArticle.editorUrl = Routing.generate(
                 'newscoop_admin_aes',
-                {articleNumber: previewArticle.articleId, language: previewArticle.language},
+                {
+                    articleNumber: previewArticle.articleId,
+                    language: previewArticle.language
+                },
                 true
             );
  
@@ -84,7 +87,7 @@ angular.module('authoringEnvironmentApp')
         self.clearPreview = function() {
             self.previewLoaded = false;
             // clear the current previewArticle
-            if (self.relatedArticlereview) {
+            if (self.relatedArticlePreview) {
                 self.relatedArticlePreview.title = null;
                 self.relatedArticlePreview.lead = null;
                 self.relatedArticlePreview.firstImage = ' ';
