@@ -20,9 +20,9 @@
 
   <div class="basket-container">
     <div class="basket-head">
-      <span class="description">SELECTED IMAGES</span>
+      <span class="description">{{'aes.label.selectedimages'|trans}}</span>
       <span class="badge" ng-bind="images.collected.length"></span>
-      image{{(images.collected.length !== 1) ? 's' : ''}}
+      {{'aes.label.imagescount'|transChoice: images.collected.length }}
     </div>
 
     <div class="basket">
@@ -31,7 +31,7 @@
          class="thumbnail-wrapper"
          ng-class="{attached: images.isAttached(image.id)}"
          ng-click="images.toggleCollect(image.id)"
-         title="{{image.description || 'No description'}}"
+         title="{{image.description || 'aes.label.nodescription'|trans}}"
          >
         <div class="toggler">
           <span class="glyphicon glyphicon-minus"></span>
@@ -39,10 +39,10 @@
         <img
            class="thumbnail" 
            ng-src="{{root}}/images/thumbnails/{{image.thumbnailPath}}"
-           alt="{{image.description || 'No description'}}"
+           alt="{{image.description || 'aes.label.nodescription'|trans}}"
            >
         <div class="img-metadata">
-          {{image.description || "No description"}}<br/>
+          {{image.description || 'aes.label.nodescription'|trans}}<br/>
           <span class="size-info">{{image.width}} x {{image.height}}</span>
         </div>
       </div>
@@ -57,14 +57,14 @@
        ng-click="discardChanges($event)"
        data-test-button="modal-close"
        data-dismiss="modal">
-      Discard
+      {{'aes.btn.discard'|trans}}
     </button>
     <button
        type="button"
        class="btn btn-primary"
        ng-disabled="images.collected.length < 1 || images.images2upload.length > 0"
        ng-click="attachCollected()">
-      Attach Images
+      {{'aes.label.attachimages'|trans}}
     </button>
   </div>
 </div>
