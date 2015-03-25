@@ -209,7 +209,7 @@ angular.module('authoringEnvironmentApp')
             title = 'Do you really want to unassign ' +
                 'this relatedArticle from the article?';
             text = 'Should you change your mind, the ' +
-                'relatedArticle canalways be re-assigned again.';
+                'relatedArticle can always be re-assigned again.';
 
             modal = modalFactory.confirmLight(title, text);
 

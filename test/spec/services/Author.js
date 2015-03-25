@@ -111,7 +111,7 @@ describe('Factory: Author', function () {
                 delete data.author.image;
                 instance = Author.createFromApiData(data);
                 expect(instance.avatarUrl).toEqual(
-                    '/images/authors-default-avatar.png');
+                    '/bundles/newscoopeditor/images/authors-default-avatar.png');
             }
         );
     });

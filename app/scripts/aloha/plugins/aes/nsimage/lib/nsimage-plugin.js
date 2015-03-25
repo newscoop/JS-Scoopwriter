@@ -12,16 +12,15 @@ define(['aloha', 'aloha/plugin', 'jquery',  'aloha/console', 'block/block', 'blo
                 isDraggable: function() {return false;},
                 init: function($element, postProcessFn) { 
                     // First we have to find the articleImageId
-                    //var imageId = $element.data('articleImageId');
                     // we need the AngularJS injector
                     var $injector = angular.element($('body')).injector();
-                    //var $droppedImage = jQuery('<div dropped-image></div>');
                     var contents = '';
                     $.each( $element.data(),function(name, value) {
                         if (name !== 'alohaBlockType') {
                             contents += ' data-image-'+name+'="'+value+'"';
                         }
                     });
+
                     $injector.invoke(function($rootScope, $compile) {
                         // finally place the element and $compile it into AngularJS
                         $element.empty().append($compile('<div dropped-image '+contents+'></div>')($rootScope));
@@ -61,22 +60,29 @@ define(['aloha', 'aloha/plugin', 'jquery',  'aloha/console', 'block/block', 'blo
             return Plugin.create('image', {
                 makeClean: function(obj) {
                     jQuery(obj).find('.aloha-block-ImageBlock').each(function() {
+                        var $injector = angular.element($('body')).injector();
                         var $this = jQuery(this);
                         var output = '';
                         if ($this.data('articleimageid') !== undefined) {
-                            output += '<div class="image"';
-
+                            output += '<div class="image aloha-image-block"';
                             var contents = '';
                             $.each( $this.data(),function(name, value) {
-                                if (name !== 'alohaBlockType' && name !== 'sortableitem') {
+                                if (name !== 'width' &&
+                                    name !== 'alohaBlockType' &&
+                                    name !== 'sortableitem') {
                                     contents += ' data-'+name+'="'+value+'"';
                                 }
                             });
+                                
+                            // add width for newsccop render
+                            contents += ' data-width="' + $this.width() + '%"';
 
                             output += contents + '></div>';
                         }
 
-                        $this.replaceWith(output);
+                        $injector.invoke(function($rootScope, $compile) {
+                            $this.replaceWith($compile(output)($rootScope));
+                        });
                     });
                 },
                    init: function () {

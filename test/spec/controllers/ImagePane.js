@@ -43,6 +43,8 @@ describe('Controller: ImagepaneCtrl', function () {
         beforeEach(inject(function (_modal_) {
             modal = _modal_;
             spyOn(modal, 'show');
+            fakeImagesService.query = jasmine.createSpy();
+            fakeImagesService.searchFilter = 'search text';
         }));
 
         it('opens a modal dialog', function () {

@@ -12,8 +12,9 @@ angular.module('authoringEnvironmentApp').factory('NcImage', [
     '$http',
     '$q',
     '$upload',
+    'transform',
     'formDataFactory',
-    function ($http, $q, $upload, formDataFactory) {
+    function ($http, $q, $upload, transform, formDataFactory) {
         var NcImage;
 
         /**
@@ -318,22 +319,21 @@ angular.module('authoringEnvironmentApp').factory('NcImage', [
 
             url = Routing.generate(
                 'newscoop_gimme_images_updateimage',
-                {number: self.id},
+                {number: self.id, _method: 'PATCH'},
                 true
             );
 
             params = {
-                number: self.id,
                 image: {
                     description: newDesc
                 }
             };
 
-            $http({
-                method: 'PATCH',
-                url: url,
-                data: params
-            })
+            $http.post(
+                url,
+                params,
+                {transformRequest: transform.formEncode}
+            )
             .success(function (response) {
                 self.description = newDesc;
                 deferredPatch.resolve();

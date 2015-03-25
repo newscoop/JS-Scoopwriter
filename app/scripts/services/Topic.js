@@ -197,10 +197,11 @@ angular.module('authoringEnvironmentApp').factory('Topic', [
         * @method create
         * @param title {String} new topics's name
         * @param [parentId] {Number} ID of the parent topic
+        * @param language {String} article language code (e.g. 'de')
         * @return {Object} promise object which is resolved with new Topic
         *   instance on success and rejected on error
         */
-        Topic.create = function (title, parentId) {
+        Topic.create = function (title, parentId, language) {
             var deferredPost = $q.defer(),
                 requestData = {topic: {}},
                 url;
@@ -209,6 +210,8 @@ angular.module('authoringEnvironmentApp').factory('Topic', [
             if (typeof parentId !== 'undefined') {
                 requestData.topic.parent = parentId;
             }
+
+            requestData.topic.locale = language;
 
             url = Routing.generate(
                 'newscoop_gimme_topics_createtopic', {}, true
