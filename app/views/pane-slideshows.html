@@ -1,0 +1,68 @@
+<section
+   class="tabcontent image-panel slideshow"
+   id="media-tab"
+   style="display: block;"
+   ng-controller="ImagePaneCtrl"
+   >
+  <div class="panel-title">
+    Slideshows
+  </div>
+  <div class="attach-image-section">
+    <button
+       class="btn btn-default btn-sm"
+       id="add-media"
+       data-test-button="slideshow-attach"
+       role="button"
+       title="Attach Slideshow from library"
+       ng-click=""
+       >
+       <i class="fa fa-picture-o"></i> 
+       Attach / Detach
+    </button>
+
+    <div
+        ng-controller=""
+        class="renditions-btn">
+      <button
+        type="button"
+        class="btn btn-default btn-sm"
+        title="Create Slideshow"
+        ng-click=""
+        >
+        <i class="fa fa-plus"></i> 
+        Create Slideshow
+      </button>
+    </div>
+
+  </div>
+  <div class="images-wrapper">
+    <div class="attached-title">Attached Slideshows</div>
+    <div class="media-tab">
+      <ul class="media-items media-images" id="media-images">
+        <li 
+          class="media-image"
+          ng-click=""
+          >
+          <div class="detach" title="Remove">
+            <span class="glyphicon glyphicon-remove"></span>
+          </div>
+          <div ng-if="" class="attached">
+            <span class="glyphicon glyphicon-ok"></span>
+          </div>
+          <figure>
+            <img ng-src="http://newscoop.aes.sourcefabric.net/images/thumbnails/cms-thumb-000000008.JPG" src="http://newscoop.aes.sourcefabric.net/images/thumbnails/cms-thumb-000000008.JPG">
+          </figure>
+          <div class="media-description approved">
+            <span class="number">
+              <span class="badge">3</span>
+              Images
+            </span>
+            <span class="description">
+              Slideshow title here
+            </span>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>

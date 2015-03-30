@@ -2623,6 +2623,57 @@ a:hover {
                 }
             }
         }
+        /* custom styles for slideshows tab */
+        &.slideshow {
+            .images-wrapper {
+                .media-tab {
+                    .media-items {
+                        li {
+                            &:hover {
+                                cursor: pointer;
+                            }
+                            &.media-image {
+                                figure {
+                                    margin-right: 16px;
+                                    border: none;
+                                    padding: 3px;
+                                    background: url(../images/slideshow-bg.png) no-repeat;
+                                    width: 76px;
+                                    height: 54px;
+                                    img {
+                                        max-height: 42px;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                .attached-title {
+                     &:before {
+                        left: 140px;
+                     }
+                }
+                .media-description {
+                    &.approved {
+                        &:before {
+                            content: '' !important;
+                        }                        
+                    }
+                    .number {
+                        color: #808080;
+                        font-size: 11px;
+                        text-transform: uppercase;
+                        float: left;
+                        .badge {
+                            background: #aaa;   
+                            font-size: 11px;    
+                            padding: 2px 7px;
+                            font-weight: normal;                     
+                        }
+                    }
+                }
+            }
+        }
     }
 
     .authors-panel {
