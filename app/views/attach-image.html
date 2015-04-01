@@ -20,7 +20,7 @@
 
   <div class="basket-container">
     <div class="basket-head">
-      <span class="description">{{'aes.label.selectedimages'|trans}}</span>
+      <span class="description">{{ ::('aes.label.selectedimages'|trans) }}</span>
       <span class="badge" ng-bind="images.collected.length"></span>
       {{'aes.label.imagescount'|transChoice: images.collected.length }}
     </div>
@@ -57,14 +57,14 @@
        ng-click="discardChanges($event)"
        data-test-button="modal-close"
        data-dismiss="modal">
-      {{'aes.btn.discard'|trans}}
+      {{ ::('aes.btn.discard'|trans) }}
     </button>
     <button
        type="button"
        class="btn btn-primary"
        ng-disabled="images.collected.length < 1 || images.images2upload.length > 0"
        ng-click="attachCollected()">
-      {{'aes.label.attachimages'|trans}}
+      {{ ::('aes.label.attachimages'|trans) }}
     </button>
   </div>
 </div>

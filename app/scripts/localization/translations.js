@@ -20,10 +20,13 @@
     Translator.add("Add Article", "Add Article", "messages", "en");
     Translator.add("Fields", "Fields", "messages", "en");
     Translator.add("Delete", "Delete", "messages", "en");
+    Translator.add("Recommend", "Recommend", "messages", "en");
+    Translator.add("Unrecommend", "Unrecommend", "messages", "en");
     Translator.add("Type", "Type", "messages", "en");
     Translator.add("Name", "Name", "messages", "en");
     Translator.add("Code", "Code", "messages", "en");
     Translator.add("Edit", "Edit", "messages", "en");
+    Translator.add("Collapse", "Collapse", "messages", "en");
     Translator.add("Login", "Login", "messages", "en");
     Translator.add("Password", "Password", "messages", "en");
     Translator.add("Site", "Site", "messages", "en");
@@ -190,6 +193,9 @@
     Translator.add("Done", "Done", "messages", "en");
     Translator.add("OK", "OK", "messages", "en");
     Translator.add("Save", "Save", "messages", "en");
+    Translator.add("Undo", "Undo", "messages", "en");
+    Translator.add("Redo", "Redo", "messages", "en");
+    Translator.add("Reply", "Reply", "messages", "en");
     Translator.add("Search", "Search", "messages", "en");
     Translator.add("Make a selection", "Make a selection", "messages", "en");
     Translator.add("You must input a number greater than 0 into the $1 field.", "You must input a number greater than 0 into the $1 field.", "messages", "en");
@@ -323,11 +329,14 @@
     Translator.add("aes.btn.hide", "Hide", "messages", "en");
     Translator.add("aes.btn.delete", "Delete", "messages", "en");
     Translator.add("aes.btn.filter", "Filter", "messages", "en");
+    Translator.add("aes.btn.reply", "Reply", "messages", "en");
     Translator.add("aes.btn.zenmode", "Zen mode", "messages", "en");
     Translator.add("aes.btn.previewarticle", "Preview article", "messages", "en");
     Translator.add("aes.btn.editcaption", "Edit Caption", "messages", "en");
     Translator.add("aes.btn.upload", "Upload", "messages", "en");
     Translator.add("aes.btn.discard", "Discard", "messages", "en");
+    Translator.add("aes.btn.insertorderedlist", "Insert Ordered List", "messages", "en");
+    Translator.add("aes.btn.insertunorderedlist", "Insert Unordered List", "messages", "en");
     Translator.add("aes.tip", "The title of an article is per default ranked as the first item of an article. If you want it to go to a different position, below another article type field (for example the Catchline) please do so here.", "messages", "en");
     Translator.add("aes.tippermissions", "Please enable the checkbox for all users who should work with the Article Edit Screen plugin.", "messages", "en");
     Translator.add("aes.stylestip", "You can overwrite the default style of the Article Edit Screen view by providing your own css.", "messages", "en");
@@ -405,6 +414,11 @@
     Translator.add("aes.settings.form.imagesize.small", "small", "messages", "en");
     Translator.add("aes.settings.form.imagesize.medium", "medium", "messages", "en");
     Translator.add("aes.settings.form.imagesize.big", "big", "messages", "en");
+    Translator.add("aes.settings.form.imagesize.original", "original", "messages", "en");
+    Translator.add("aes.label.finishingauth", "Finishing authentication", "messages", "en");
+    Translator.add("aes.label.selectedtext", "Selected text", "messages", "en");
+    Translator.add("aes.label.linktext", "Link text", "messages", "en");
+    Translator.add("aes.label.openlink.newwindow", "Open link in New window", "messages", "en");
     Translator.add("aes.label.attachedimages", "Attached Images", "messages", "en");
     Translator.add("aes.label.approved", "Approved", "messages", "en");
     Translator.add("aes.label.remove", "Remove", "messages", "en");
@@ -414,8 +428,10 @@
     Translator.add("aes.label.title", "Title", "messages", "en");
     Translator.add("aes.label.snippettemplate", "Snippet Template", "messages", "en");
     Translator.add("aes.label.choosetemplate", "choose a template", "messages", "en");
+    Translator.add("aes.label.templatefields", "template fields marked with (*) are required", "messages", "en");
     Translator.add("aes.label.attachedsnippets", "Attached code snippets", "messages", "en");
     Translator.add("aes.label.comments", "Comments", "messages", "en");
+    Translator.add("aes.label.postcomment", "Post a Comment", "messages", "en");
     Translator.add("aes.label.enabled", "Enabled", "messages", "en");
     Translator.add("aes.label.disabled", "Disabled", "messages", "en");
     Translator.add("aes.label.locked", "Locked", "messages", "en");
@@ -431,7 +447,7 @@
     Translator.add("aes.label.nested", "Nested", "messages", "en");
     Translator.add("aes.label.chronological", "Chronological", "messages", "en");
     Translator.add("aes.label.chronologicalasc", "Chronological (asc.)", "messages", "en");
-    Translator.add("aes.label.nocomments", "No any comment matches your selection", "messages", "en");
+    Translator.add("aes.label.nocomments", "No comment matches your selection", "messages", "en");
     Translator.add("aes.label.articleinfo", "Article Info", "messages", "en");
     Translator.add("aes.label.created", "Created", "messages", "en");
     Translator.add("aes.label.lastupdated", "Last updated", "messages", "en");
@@ -470,6 +486,7 @@
     Translator.add("aes.label.currentfilter", "Current filter", "messages", "en");
     Translator.add("aes.label.nodescription", "No description", "messages", "en");
     Translator.add("aes.label.loadmore", "Load More", "messages", "en");
+    Translator.add("aes.label.showmorecomments", "Show more comments", "messages", "en");
     Translator.add("aes.label.draghere", "Drag Your Images Here", "messages", "en");
     Translator.add("aes.label.orselect", "or Select them from folder", "messages", "en");
     Translator.add("aes.label.useforall", "Use for all", "messages", "en");
@@ -479,6 +496,10 @@
     Translator.add("aes.label.selectedimages", "SELECTED IMAGES", "messages", "en");
     Translator.add("aes.label.imagescount", "{1} image|[0,Inf] images", "messages", "en");
     Translator.add("aes.label.attachimages", "Attach Images", "messages", "en");
+    Translator.add("aes.label.authenticating", "Authenticating", "messages", "en");
+    Translator.add("aes.label.replycomment", "Reply to this comment", "messages", "en");
+    Translator.add("aes.label.articlepreview", "Article Preview", "messages", "en");
+    Translator.add("aes.label.articleeditingenv", "Article Editing Environment", "messages", "en");
     Translator.add("aes.msgs.comments.add.success", "The comment has been added successfully.", "messages", "en");
     Translator.add("aes.msgs.comments.add.error", "The comment could not be added, please try again.", "messages", "en");
     Translator.add("aes.msgs.comments.change.success", "Comments settings updated successfully.", "messages", "en");
@@ -529,6 +550,7 @@
     Translator.add("aes.msgs.switches.error", "Failed to save switches.", "messages", "en");
     Translator.add("aes.msgs.topics.add.success", "The topic(s) have been added and assigned successfully to this article.", "messages", "en");
     Translator.add("aes.msgs.topics.add.error", "Failed to add and assign new topic(s) to the article.", "messages", "en");
+    Translator.add("aes.msgs.topics.add.exists", "A topic with the same name already exists.", "messages", "en");
     Translator.add("aes.msgs.topics.assign.success", "The topic has been assigned successfully to this article", "messages", "en");
     Translator.add("aes.msgs.topics.assign.error", "Assigning the topic to this article failed.", "messages", "en");
     Translator.add("aes.msgs.topics.unassign.popupHead", "Do you really want to unassign this topic from the article?", "messages", "en");

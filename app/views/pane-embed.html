@@ -4,7 +4,7 @@
   auto-list-offset>
 
   <div class="panel-title">
-    Embed Code
+    {{ ::('aes.label.embedcode'|trans) }}
   </div>
 
   <div class="paneFormWrapper">
@@ -15,29 +15,29 @@
         <span class="glyphicon"
               ng-class="{'glyphicon-plus': !showAddSnippet,
                          'glyphicon-minus': showAddSnippet}"
-              ></span><span class="add-text">ADD A SNIPPET</span>
+              ></span><span class="add-text">{{ ::('aes.label.addsnippet'|trans) }}</span>
       </button>
     </div>
 
     <form name="addSnippet" class="body" ng-show="showAddSnippet">
-      <div class="input-name">Title</div>
+      <div class="input-name">{{ ::('aes.label.title'|trans) }}</div>
       <input name="snippetTitle" required
           class="editor-input"
           placeholder="Title"
           ng-model="newSnippet.name">
 
-      <div class="input-name">Snippet Template</div>
+      <div class="input-name">{{ ::('aes.label.snippettemplate'|trans) }}</div>
       <select name="snippetTemplate" required
           ng-model="newSnippet.template"
           ng-options="template as template.name for
                       template in snippetTemplates"
           ng-disabled="addingNewSnippet"
           >
-        <option value="">-- choose a template --</option>
+        <option value="">-- {{ ::('aes.label.choosetemplate'|trans) }} --</option>
       </select>
 
       <label ng-if="newSnippet.template"
-          >(template fields marked with (*) are required)</label>
+          >({{ ::('aes.label.templatefields'|trans) }})</label>
 
       <div class="input-name"
            ng-repeat-start="field in (newSnippet ? newSnippet.template.fields : [])"
@@ -63,13 +63,13 @@
             data-test-button="new"
             ng-click="addSnippet.$valid && addNewSnippetToArticle(newSnippet)"
             ng-disabled="addingNewSnippet"
-            >Add</button>
+            >{{ ::('aes.btn.add'|trans) }}</button>
         <button
             class="btn btn-default btn-sm pull-right"
             ng-click="clearNewSnippetForm()"
             ng-disabled="addingNewSnippet ||
                         (!newSnippet.name && !newSnippet.template)"
-            >Clear</button>
+            >{{ ::('aes.btn.clear'|trans) }}</button>
       </div>
     </form>
   </div>

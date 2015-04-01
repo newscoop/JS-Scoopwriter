@@ -16,13 +16,13 @@
           </button>
           <ul class="dropdown-menu">
             <li ng-click="model.changeStatus('pending')">
-              Pending
+              {{ ::('aes.label.pending'|trans) }}
             </li>
             <li ng-click="model.changeStatus('approved')">
-              Approved
+              {{ ::('aes.label.approved'|trans) }}
             </li>
             <li ng-click="onHide({commentId: model.id})">
-              Hidden
+              {{ ::('aes.label.hidden'|trans) }}
             </li>
           </ul>
         </div>
@@ -64,7 +64,7 @@
     <div class="add-reply right" ng-show="model.isReplyMode">
 
       <div class="heading">
-        <span class="add-reply-text">REPLY TO THIS COMMENT</span>
+        <span class="add-reply-text">{{ ::('aes.label.replycomment'|trans) }}</span>
       </div>
 
       <div class="body">
@@ -88,14 +88,14 @@
              ng-click="model.sendReply()"
              ng-disabled="model.sendingReply"
              >
-            Reply
+            {{ ::('aes.btn.reply'|trans) }}
           </button>
           <button
              class="btn btn-default btn-sm pull-right"
              ng-click="model.cancelReply()"
              ng-disabled="model.sendingReply"
              >
-            Cancel
+            {{ ::('aes.btn.cancel'|trans) }}
           </button>
         </div>
       </div>
@@ -107,31 +107,31 @@
          class="glyphicon glyphicon-chevron-up"
          ng-hide="model.isEdited"
          ng-click="model.collapse()"
-         title="Collapse"
+         title="{{ ::('Collapse'|trans) }}"
          ></span>
       <span
          class="glyphicon glyphicon-pencil"
          ng-click="model.edit()"
          ng-hide="model.isEdited"
-         title="Edit"
+         title="{{ ::('Edit'|trans) }}"
          ></span>
       <span
          class="glyphicon glyphicon-floppy-disk"
          ng-click="model.save()"
          ng-show="model.isEdited"
-         title="Save"
+         title="{{ ::('Save'|trans) }}"
          ></span>
       <span
          class="glyphicon glyphicon-remove"
          ng-click="model.cancel()"
          ng-show="model.isEdited"
-         title="Cancel"
+         title="{{ ::('Cancel'|trans) }}"
          ></span>
       <span
          class="fa fa-reply"
          ng-class="{disabled: !allowreplying }"
          ng-hide="model.isEdited"
-         title="{{allowreplying ? 'Reply' : ''}}"
+         title="{{allowreplying ? ('Reply'|trans) : ''}}"
          ng-click="allowreplying &amp;&amp; model.replyTo()"
          ></span>
       <span
@@ -139,13 +139,13 @@
          ng-class="{recommended: model.recommended}"
          ng-hide="model.isEdited"
          ng-click="model.toggleRecommended()"
-         title="{{model.recommended ? 'Unrecommend' : 'Recommend'}}"
+         title="{{model.recommended ? ('Unrecommend'|trans) : ('Recommend'|trans)}}"
          ></span>
       <span
          class="glyphicon glyphicon-trash"
          ng-hide="model.isEdited"
          ng-click="onDelete({commentId: model.id})"
-         title="Delete"
+         title="{{ ::('Delete'|trans) }}"
          ></span>
     </div>
   </div>

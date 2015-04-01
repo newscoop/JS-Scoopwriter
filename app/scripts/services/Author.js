@@ -45,7 +45,8 @@ angular.module('authoringEnvironmentApp').factory('Author', [
             if (data.author.image) {
                 author.avatarUrl = decodeURIComponent(data.author.image);
             } else {
-                author.avatarUrl = '/bundles/newscoopeditor/images/authors-default-avatar.png';
+                author.avatarUrl = '/bundles/newscoopeditor/images/' +
+                    'authors-default-avatar.png';
             }
 
             author.sortOrder = data.order;

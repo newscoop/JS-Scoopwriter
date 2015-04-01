@@ -35,21 +35,27 @@
   </div>
 
   <div class="btn-group">
-    <button 
+    <button
         sf-aloha-command-button
-        data-button-name="Undo"
+        data-button-name="{{ ::('Undo'|trans) }}"
         data-button-icon="undo"
         data-button-command="undo" > </button>
-    <button 
+    <button
         sf-aloha-command-button
-        data-button-name="Redo"
+        data-button-name="{{ ::('Redo'|trans) }}"
         data-button-icon="repeat"
         data-button-command="redo" > </button>
   </div>
 
   <div class="btn-group">
-    <button sf-aloha-format-generic data-aloha-element="Insertunorderedlist" data-button-name="Insert Unordered List"></button>
-    <button sf-aloha-format-generic data-aloha-element="Insertorderedlist" data-button-name="Insert Ordered List"></button>
+    <button
+        sf-aloha-format-generic
+        data-aloha-element="Insertunorderedlist"
+        data-button-name="{{ ::('aes.btn.insertunorderedlist'|trans) }}"></button>
+    <button
+        sf-aloha-format-generic
+        data-aloha-element="Insertorderedlist"
+        data-button-name="{{ ::('aes.btn.insertorderedlist'|trans) }}"></button>
   </div>
 </div>
 

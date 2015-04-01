@@ -6,7 +6,7 @@
     </div>
 
     <div class="modal-body">
-        <label>{{addingNew ? 'Selected' : 'Link'}} text:</label>
+        <label>{{addingNew ? ('aes.label.selectedtext'|trans) : ('aes.label.linktext'|trans) }} :</label>
         {{linkData.text}}
 
         <input type="text" ng-model="linkData.url" required
@@ -16,15 +16,15 @@
         <div class="checkbox">
             <label>
                 <input type="checkbox" ng-model="linkData.openNewWindow">
-                Open link in New window
+                {{ ::('aes.label.openlink.newwindow'|trans) }}
             </label>
         </div>
     </div>
     <div class="modal-footer">
       <button class="btn btn-primary"
-          ng-click="linkForm.$valid && ok()">OK</button>
+          ng-click="linkForm.$valid && ok()">{{ ::('OK'|trans) }}</button>
       <button class="btn btn-default" ng-click="cancel()"
-          formnovalidate>Cancel</button>
+          formnovalidate>{{ ::('Cancel'|trans) }}</button>
     </div>
 
   </form>
