@@ -10,8 +10,17 @@
       <div ng-include src="'views/article.html'"
            class="main-article-container-container"
            ></div>
+      <div 
+        ng-controller="FeedbackForm"
+        >
+        <div 
+          class="feedback-button"
+          ng-click="feedbackModal()"
+          >
+          <i class="fa fa-envelope"></i>Feedback
+        </div>
+      </div>
       <div ng-include src="'views/modal.html'"></div>
-
   </div>
   <div
       class="auth"
