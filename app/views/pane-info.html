@@ -58,6 +58,46 @@
           </ul>
         </div>
       </li>
+      <li>
+        <div class="field-description">
+          Language:
+        </div>
+        <div class="field-value">
+          <ul>
+            <li>{{::infoCtrl.article.languageData.name}} ({{::infoCtrl.article.languageData.RFC3066bis}})</li>
+          </ul>
+        </div>
+      </li>
+      <li>
+        <div class="field-description">
+          Publication:
+        </div>
+        <div class="field-value">
+          <ul>
+            <li>{{::infoCtrl.article.publication.name}}</li>
+          </ul>
+        </div>
+      </li>
+      <li ng-if="infoCtrl.article.issue">
+        <div class="field-description">
+          Issue:
+        </div>
+        <div class="field-value">
+          <ul>
+            <li>{{::infoCtrl.article.issue.title}}</li>
+          </ul>
+        </div>
+      </li>
+      <li ng-if="infoCtrl.article.section">
+        <div class="field-description">
+          Section:
+        </div>
+        <div class="field-value">
+          <ul>
+            <li>{{::infoCtrl.article.section.title}}</li>
+          </ul>
+        </div>
+      </li>
     </ul>
   </div>
 
