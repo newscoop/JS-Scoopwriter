@@ -9,9 +9,21 @@ describe('Directive: comment', function () {
     ));
 
     var element,
-    scope;
+    scope,
+    $window,
+    Translator,
+    mockTranslator;
 
-    beforeEach(inject(function ($rootScope, $templateCache) {
+    beforeEach(inject(function ($rootScope, $templateCache, $injector) {
+        mockTranslator = {
+            trans: function () {}
+        };
+
+        $window = $injector.get('$window');
+        $window.Translator = mockTranslator;
+
+        Translator = $injector.get('Translator');
+
         var template = $templateCache.get('app/views/comment.html');
         $templateCache.put('views/comment.html', template);
         
