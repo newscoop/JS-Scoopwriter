@@ -46,6 +46,24 @@ describe('Controller: MediaArchiveCtrl', function () {
         expect(scope.root).toEqual(AES_SETTINGS.API.rootURI);
     });
 
+    describe('scope\'s clearSearch() method', function () {
+        beforeEach(function () {
+            fakeImagesService.query = jasmine.createSpy();
+            fakeImagesService.searchFilter = 'search text';
+        });
+
+        it('clears the searchFilter var', function () {
+            scope.clearSearch();
+            expect(fakeImagesService.searchFilter).toEqual('');
+        });
+
+        it('calls the images.query function', function () {
+            scope.clearSearch();
+            expect(fakeImagesService.query).toHaveBeenCalled();
+        });
+
+    });
+
     describe('scope\'s thumbnailClicked() method', function () {
         beforeEach(function () {
             fakeImagesService.toggleCollect = jasmine.createSpy();

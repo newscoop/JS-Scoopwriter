@@ -457,14 +457,17 @@ describe('Factory: Topic', function () {
             'with no parent topic',
             function () {
                 var expectedPostData = $.param({
-                    topic: {title: 'News'}
+                    topic: {
+                        title: 'News',
+                        locale: 'en'
+                    }
                 });
 
                 $httpBackend.expectPOST(
                     urlCreate, expectedPostData, headersCheck
                 ).respond(201, '', {'x-location': urlGet});
 
-                Topic.create('News');
+                Topic.create('News', undefined, 'en');
 
                 $httpBackend.verifyNoOutstandingExpectation();
             }
@@ -474,14 +477,18 @@ describe('Factory: Topic', function () {
             'with a parent topic',
             function () {
                 var expectedPostData = $.param({
-                    topic: {title: 'News', parent: 4}
+                    topic: {
+                        title: 'News',
+                        parent: 4,
+                        locale: 'en'
+                    }
                 });
 
                 $httpBackend.expectPOST(
                     urlCreate, expectedPostData, headersCheck
                 ).respond(201, '', {'x-location': urlGet});
 
-                Topic.create('News', 4);
+                Topic.create('News', 4, 'en');
 
                 $httpBackend.verifyNoOutstandingExpectation();
             }

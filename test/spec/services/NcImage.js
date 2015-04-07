@@ -651,17 +651,14 @@ describe('Factory: NcImage', function () {
             image.id = 5;
             image.description = 'foo';
 
-            requestData = {
-                number: 5,
-                image: {
-                    description: 'bar'
-                }
-            };
-
             url = Routing.generate(
-                'newscoop_gimme_images_updateimage', {number: 5}, true
+                'newscoop_gimme_images_updateimage', 
+                {number: 5, _method: 'PATCH'}, true
             );
-            $httpBackend.expectPATCH(url, requestData).respond(200);
+            $httpBackend.expect(
+                'POST',
+                url
+            ).respond(200, {});
         });
 
         afterEach(function () {
@@ -708,8 +705,9 @@ describe('Factory: NcImage', function () {
                 };
 
             $httpBackend.resetExpectations();
-            $httpBackend.expectPATCH(
-                url, requestData
+            $httpBackend.expect(
+                'POST',
+                url
             ).respond(500, 'Error :(');
 
             image.updateDescription('bar').catch(spyHelper.errorCallback);

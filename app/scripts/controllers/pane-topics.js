@@ -51,7 +51,8 @@ angular.module('authoringEnvironmentApp').controller('PaneTopicsCtrl', [
 
             Topic.create(
                 topicData.title,
-                topicData.parentTopic ? topicData.parentTopic.id : undefined
+                topicData.parentTopic ? topicData.parentTopic.id : undefined,
+                article.language
             )
             .then(function (topic) {
                 newTopic = topic;

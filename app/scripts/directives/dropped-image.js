@@ -35,6 +35,15 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                 scope.activeAlignment = null;
 
                 /**
+                * Finds parent, in case element was dragged
+                * and parent was re-created
+                */
+                function findParent() {
+                    return $('.aloha-image-block[data-articleimageid="' +
+                        scope.articleImageId + '"]');
+                }
+
+                /**
                 * Retrieves a jQuery reference to the image toolbar node. It
                 * also makes sure that the toolbar is a direct child of the
                 * Aloha block node.
@@ -48,6 +57,10 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                 */
                 function toolbarNode() {
                     var element;
+
+                    $parent = findParent();
+
+                    $toolbar = $('#img-toolbar-' + scope.image.id);
                     if (!$toolbar || $toolbar.length < 1) {
                         $toolbar = $('#img-toolbar-' + scope.image.id);
                         element = $toolbar.detach();
@@ -67,6 +80,8 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                         left,
                         top,
                         $bar = toolbarNode();
+
+                    $parent = findParent();
 
                     cssFloat = $parent.css('float');
                     if (cssFloat === 'left') {
@@ -90,10 +105,12 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                 *
                 * @function triggerChangeEvent
                 */
-                function triggerChangeEvent() {
-                    var alohaEditable = Aloha.getEditableById(
-                        $parent.parent('.aloha-editable-active').attr('id')
-                    );
+                function triggerChangeEvent(alohaEditable) {
+                    if (!alohaEditable) {
+                        alohaEditable = Aloha.getEditableById(
+                            $parent.parent('.aloha-editable-active').attr('id')
+                        );
+                    }
                     if (alohaEditable) {
                         Aloha.trigger('aloha-smart-content-changed', {
                             'editable': alohaEditable,
@@ -106,10 +123,14 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
 
                 // close button's onClick handler
                 $element.find('button.close').click(function (e) {
+                    var alohaEditable = Aloha.getEditableById(
+                        $parent.parent('.aloha-editable-active').attr('id')
+                    );
                     $parent.remove();
 
                     // notify controller about the removal
                     ctrl.imageRemoved(scope.image.id);
+                    triggerChangeEvent(alohaEditable);
                 });
 
                 $element.find('.caption').click(function (e) {
@@ -163,6 +184,8 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                         'float': cssFloat
                     });
 
+                    $parent = findParent();
+
                     $parent.css({
                         'float': cssFloat,
                         'margin': cssMargin
@@ -211,6 +234,8 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                         scope.activeSize = 'original';
                     }
 
+                    $parent = findParent();
+
                     // NOTE: use .css() instead of .width() as the latter
                     // does not set the desired pixel width due to "border-box"
                     // box-sizing CSS property that we use
@@ -244,6 +269,10 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                         width = Math.round(width);
                         $element.css('width', width + 'px');
 
+                        // we must reselect parent here, in case image has been
+                        // drag-dropped, which creates a new parent
+                        $parent = findParent();
+
                         // add 2px to parent to account for child's border
                         // NOTE: must use .css() instead of .width() to set
                         // the exact size in pixels (b/c we use "border-box"
@@ -266,7 +295,6 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                 // preserve them.
                 imgConfig.alignment = scope.alignment || 'middle';
                 imgConfig.size = scope.size || AES_SETTINGS.image_size;
-
                 ctrl.init(parseInt(scope.articleImageId, 10))
                 .then(function () {
                     scope.setAlignment(imgConfig.alignment);

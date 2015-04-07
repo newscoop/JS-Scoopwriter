@@ -127,7 +127,7 @@ describe('Factory: Article', function () {
 
             expect(article.fields.body).toEqual([
                 'Foo ',
-                '<div class="image" dropped-image ',
+                '<div class="image aloha-image-block" dropped-image ',
                     'data-articleimageid="12" data-size="small"></div>',
                 ' bar.'
             ].join(''));
@@ -141,7 +141,7 @@ describe('Factory: Article', function () {
 
             expect(article.fields.body).toEqual([
                 'Foo ',
-                '<div class="snippet" data-id="10"></div>',
+                '<div class="snippet aloha-snippet-block" data-id="10"></div>',
                 ' bar.'
             ].join(''));
         });
@@ -884,7 +884,7 @@ describe('Factory: Article', function () {
             it('serializes images in article body', function () {
                 article.fields.body = [
                     'Body text',
-                    '<div class="image" data-articleimageid="123" ',
+                    '<div class="image aloha-image-block" data-articleimageid="123" ',
                         'data-size="small">',
                         '<img src="http://foo.com/bar.jpg" />',
                     '</div>',
@@ -901,7 +901,7 @@ describe('Factory: Article', function () {
             it('serializes snippets in article body', function () {
                 article.fields.body = [
                     'Body text',
-                    '<div class="snippet" data-id="99">',
+                    '<div class="snippet aloha-snippet-block" data-id="99">',
                         '<div>Some<b>bold</b> text</div>',
                     '</div>',
                     'End of text.'
