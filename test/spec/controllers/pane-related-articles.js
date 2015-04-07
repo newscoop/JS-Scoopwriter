@@ -129,6 +129,7 @@ describe('Controller: PaneRelatedArticlesCtrl', function () {
 
     describe('previewRelatedArticle() method', function () {
         var fakePreviewArticle,
+            fakePreviewUrl,
             deferedContentFields,
             deferedFirstImage;
 
@@ -137,9 +138,19 @@ describe('Controller: PaneRelatedArticlesCtrl', function () {
             deferedFirstImage = $q.defer();
             fakePreviewArticle = {
                 articleId: 1,
+                language: 'en',
                 contentFields: null,
-                firstImage: null
-            };
+                firstImage: null,
+                editorUrl: null
+            },
+            fakePreviewUrl = Routing.generate(
+                'newscoop_admin_aes',
+                {
+                    articleNumber: 1,
+                    language: 'en'
+                },
+                true
+            );
            
             fakePreviewArticle.loadContentFields = jasmine
                 .createSpy('loadContentFields')
@@ -150,6 +161,12 @@ describe('Controller: PaneRelatedArticlesCtrl', function () {
             PaneRelatedArticlesCtrl.previewRelatedArticle(fakePreviewArticle);
         }));
 
+        it('sets the correct previewArticle.editorUrl', function () {
+            expect(fakePreviewArticle.loadContentFields).toHaveBeenCalled();
+            deferedContentFields.resolve(['body', 'lead']);
+            $rootScope.$apply();
+            expect(fakePreviewArticle.editorUrl).toEqual(fakePreviewUrl);
+        });
         it('sets contentFields on the previewArticle', function () {
             expect(fakePreviewArticle.loadContentFields).toHaveBeenCalled();
             deferedContentFields.resolve(['body', 'lead']);
@@ -167,7 +184,6 @@ describe('Controller: PaneRelatedArticlesCtrl', function () {
 
             AES_SETTINGS.API.rootURI = oldRootURI;
         });
-
         it('sets previewLoaded flag to true', function () {
             deferedContentFields.resolve(['body', 'lead']);
             $rootScope.$apply();
