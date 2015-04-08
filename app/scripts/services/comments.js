@@ -14,9 +14,11 @@ angular.module('authoringEnvironmentApp').service('comments', [
     'pageTracker',
     '$log',
     'nestedSort',
+    'toaster',
+    'TranslationService',
     function comments(
         articleService, $http, $q, $resource, transform, pageTracker,
-        $log, nestedSort
+        $log, nestedSort, toaster, TranslationService
     ) {
         /* max number of comments per page, decrease it in order to
          * test pagination, and sorting change with paginated
@@ -502,6 +504,19 @@ angular.module('authoringEnvironmentApp').service('comments', [
                     comment.subject = comment.editing.subject;
                     comment.message = comment.editing.message;
                     comment.isEdited = false;
+                    toaster.add({
+                        type: 'sf-info',
+                        message: TranslationService.trans(
+                            'aes.msgs.comments.edit.success'
+                        )
+                    });
+                }, function () {
+                    toaster.add({
+                        type: 'sf-error',
+                        message: TranslationService.trans(
+                            'aes.msgs.comments.edit.success'
+                        )
+                    });
                 });
             };
 
@@ -558,6 +573,19 @@ angular.module('authoringEnvironmentApp').service('comments', [
                         subject: 'Re: ' + comment.subject,
                         message: ''
                     };
+                    toaster.add({
+                        type: 'sf-info',
+                        message: TranslationService.trans(
+                            'aes.msgs.comments.reply.success'
+                        )
+                    });
+                }, function () {
+                    toaster.add({
+                        type: 'sf-error',
+                        message: TranslationService.trans(
+                            'aes.msgs.comments.reply.error'
+                        )
+                    });
                 });
             };
 

@@ -13,6 +13,9 @@ describe('Controller: CommentsCtrl', function () {
 
     var CommentsCtrl,
     scope,
+    $window,
+    Translator,
+    mockTranslator,
     commentsThenMethod = function (callback) {
         callback();
     },
@@ -53,8 +56,22 @@ describe('Controller: CommentsCtrl', function () {
 
 
     // Initialize the controller and a mock scope
-    beforeEach(inject(function ($controller, $rootScope, _Article_) {
+    beforeEach(inject(function (
+        $controller,
+        $rootScope, 
+        $injector,
+        _Article_) {
         var articleService
+
+        mockTranslator = {
+            trans: function (value) {
+                return value;
+            }
+        };
+
+        $window = $injector.get('$window');
+        $window.Translator = mockTranslator;
+        Translator = $injector.get('Translator');
 
         Article = _Article_;
 
@@ -89,6 +106,10 @@ describe('Controller: CommentsCtrl', function () {
             $log: log
         });
     }));
+
+    afterEach(function () {
+        delete $window.Translator;
+    });
 
     it('proxies comments', function () {
         expect(scope.comments).toBeDefined();
