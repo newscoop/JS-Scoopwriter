@@ -58,14 +58,14 @@
       ng-disabled="articleService.modified"
       ng-click="close()"
       >
-      Close
+      {{ ::('Close'|trans) }}
     </button>
     <button
       class="btn btn-primary btn-sm"
       ng-disabled="!articleService.modified"
       ng-click="save()"
       >
-      Save
+      {{ ::('Save'|trans) }}
     </button>
   </div>
   

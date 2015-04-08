@@ -3,7 +3,7 @@
     class="tabcontent switches-panel">
 
   <div class="panel-title">
-    Switches
+    {{ ::('aes.settings.label.switches'|trans) }}
   </div>
 
   <div class="switches-list">
@@ -24,7 +24,7 @@
         class="btn btn-primary btn-sm save-button"
         ng-disabled="!psCtrl.modified || psCtrl.saveInProgress"
         ng-click="psCtrl.save()"
-        >Save</button>
+        >{{ ::('Save'|trans) }}</button>
     </div>
   </div>
 

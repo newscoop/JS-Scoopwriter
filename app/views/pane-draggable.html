@@ -5,7 +5,7 @@
    ng-controller="ImagePaneCtrl"
    >
   <div class="panel-title">
-    Images
+    {{ ::('aes.label.images'|trans) }}
   </div>
   <div class="attach-image-section">
     <button
@@ -15,7 +15,7 @@
        role="button"
        ng-click="attachModal()"
        ><span class="glyphicon glyphicon-plus-sign"></span>
-      Attach image
+      {{ ::('aes.btn.attachimage'|trans) }}
     </button>
 
     <div
@@ -28,13 +28,15 @@
         ng-click="renditionsCtrl.openRenditionsEditor()"
       >
         <i class="fa fa-crop"></i>
-        Set renditions
+        {{ ::('aes.btn.setrenditions'|trans) }}
       </button>
     </div>
 
   </div>
   <div class="images-wrapper">
-    <div class="attached-title">Attached Images</div>
+    <div class="attached-title">
+        {{ ::('aes.label.attachedimages'|trans) }}
+    </div>
     <div class="media-tab">
       <ul class="media-items media-images" id="media-images">
         <li
@@ -63,7 +65,7 @@
           <div class="media-description approved">
             <span class="size-info">{{image.width}} x {{image.height}}</span>
             <span class="description">
-              {{image.description || "No description"}}
+              {{image.description || ('aes.label.nodescription'|trans) }}
             </span>
             <span ng-if="image.photographer"
                 class="photographer-info">&copy; {{image.photographer}}</span>

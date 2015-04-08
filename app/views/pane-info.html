@@ -3,14 +3,14 @@
     ng-controller="PaneInfoCtrl as infoCtrl">
 
   <div class="panel-title">
-    Article Info
+    {{ ::('aes.label.articleinfo'|trans) }}
   </div>
 
   <div class="info-list">
     <ul>
       <li>
         <div class="field-description">
-          Created:
+          {{ ::('aes.label.created'|trans) }}:
         </div>
         <div class="field-value">
           <ul>
@@ -20,7 +20,7 @@
       </li>
       <li>
         <div class="field-description">
-          Last updated:
+          {{ ::('aes.label.lastupdated'|trans) }}:
         </div>
         <div class="field-value">
           <ul>
@@ -30,7 +30,7 @@
       </li>
       <li>
         <div class="field-description">
-          Published on:
+          {{ ::('aes.label.publishedon'|trans) }}:
         </div>
         <div class="field-value">
           <ul>
@@ -40,7 +40,7 @@
       </li>
       <li>
         <div class="field-description">
-          Type:
+          {{ ::('aes.label.type'|trans) }}:
         </div>
         <div class="field-value">
           <ul>
@@ -50,7 +50,7 @@
       </li>
       <li>
         <div class="field-description">
-          Webcode:
+          {{ ::('aes.label.webcode'|trans) }}:
         </div>
         <div class="field-value">
           <ul>

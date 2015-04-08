@@ -13,6 +13,9 @@ describe('Directive: droppedImage', function () {
         $root,
         scope,
         elementIsoScope,
+        $window,
+        Translator,
+        mockTranslator,
         templates;
 
     beforeEach(module(
@@ -21,11 +24,27 @@ describe('Directive: droppedImage', function () {
 
     beforeEach(inject(
         function (
-            $rootScope, $templateCache, $compile, $q, droppedImageDirective
+            $rootScope,
+            $templateCache,
+            $compile,
+            $q,
+            droppedImageDirective,
+            $injector
         ) {
             var directive = droppedImageDirective[0],
                 html,
                 initDeferred = $q.defer();
+
+            mockTranslator = {
+                trans: function (value) {
+                    return value;
+                }
+            };
+
+            $window = $injector.get('$window');
+            $window.Translator = mockTranslator;
+
+            Translator = $injector.get('Translator');
 
             // for some reason jQuery in test does not have this extension,
             // thus we have to mock it here
@@ -71,6 +90,10 @@ describe('Directive: droppedImage', function () {
             elementIsoScope = angular.element($element[0]).isolateScope();
         }
     ));
+
+    afterEach(function () {
+        delete $window.Translator;
+    });
 
     /**
     * Creates a new mocked event object that can be used as an argument to
