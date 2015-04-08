@@ -16,7 +16,9 @@ describe('Directive: comment', function () {
 
     beforeEach(inject(function ($rootScope, $templateCache, $injector) {
         mockTranslator = {
-            trans: function () {}
+            trans: function (value) {
+                return value;
+            }
         };
 
         $window = $injector.get('$window');

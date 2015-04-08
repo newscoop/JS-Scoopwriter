@@ -36,7 +36,9 @@ describe('Directive: droppedImage', function () {
                 initDeferred = $q.defer();
 
             mockTranslator = {
-                trans: function () {}
+                trans: function (value) {
+                    return value;
+                }
             };
 
             $window = $injector.get('$window');
