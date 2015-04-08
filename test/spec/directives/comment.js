@@ -39,6 +39,10 @@ describe('Directive: comment', function () {
         };
     }));
 
+    afterEach(function () {
+        delete $window.Translator;
+    });
+
     describe('compiled', function () {
         beforeEach(inject(function($compile) {
             element = angular.element('<comment model="model"></comment>');
