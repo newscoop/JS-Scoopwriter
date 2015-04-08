@@ -107,7 +107,7 @@
          class="glyphicon glyphicon-chevron-up"
          ng-hide="model.isEdited"
          ng-click="model.collapse()"
-         title="{{ ::('Collapse'|trans) }}"
+         title="{{ ::('aes.label.collapse'|trans) }}"
          ></span>
       <span
          class="glyphicon glyphicon-pencil"
@@ -131,7 +131,7 @@
          class="fa fa-reply"
          ng-class="{disabled: !allowreplying }"
          ng-hide="model.isEdited"
-         title="{{allowreplying ? ('Reply'|trans) : ''}}"
+         title="{{allowreplying ? ('aes.label.reply'|trans) : ''}}"
          ng-click="allowreplying &amp;&amp; model.replyTo()"
          ></span>
       <span
@@ -139,7 +139,7 @@
          ng-class="{recommended: model.recommended}"
          ng-hide="model.isEdited"
          ng-click="model.toggleRecommended()"
-         title="{{model.recommended ? ('Unrecommend'|trans) : ('Recommend'|trans)}}"
+         title="{{model.recommended ? ('aes.label.unrecommend'|trans) : ('aes.label.recommend'|trans)}}"
          ></span>
       <span
          class="glyphicon glyphicon-trash"

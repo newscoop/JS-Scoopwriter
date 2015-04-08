@@ -7,7 +7,7 @@
     <button type="button"
         class="btn btn-default"
         ng-class="{active: {{globalShowStatus === 'expanded'}} }"
-        title="{{globalShowStatus === 'expanded' ? 'Collapse' : 'Expand'}} Comments"
+        title="{{globalShowStatus === 'expanded' ? ('aes.label.collapse'|trans) : ('aes.label.expand'|trans) }} Comments"
         ng-click="toggleShowStatus()"
         ><i class="fa fa-sort"></i></button>
   </div>

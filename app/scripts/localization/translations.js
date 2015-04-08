@@ -20,13 +20,10 @@
     Translator.add("Add Article", "Add Article", "messages", "en");
     Translator.add("Fields", "Fields", "messages", "en");
     Translator.add("Delete", "Delete", "messages", "en");
-    Translator.add("Recommend", "Recommend", "messages", "en");
-    Translator.add("Unrecommend", "Unrecommend", "messages", "en");
     Translator.add("Type", "Type", "messages", "en");
     Translator.add("Name", "Name", "messages", "en");
     Translator.add("Code", "Code", "messages", "en");
     Translator.add("Edit", "Edit", "messages", "en");
-    Translator.add("Collapse", "Collapse", "messages", "en");
     Translator.add("Login", "Login", "messages", "en");
     Translator.add("Password", "Password", "messages", "en");
     Translator.add("Site", "Site", "messages", "en");
@@ -415,6 +412,13 @@
     Translator.add("aes.settings.form.imagesize.medium", "medium", "messages", "en");
     Translator.add("aes.settings.form.imagesize.big", "big", "messages", "en");
     Translator.add("aes.settings.form.imagesize.original", "original", "messages", "en");
+    Translator.add("aes.label.undo", "Undo", "messages", "en");
+    Translator.add("aes.label.redo", "Redo", "messages", "en");
+    Translator.add("aes.label.reply", "Reply", "messages", "en");
+    Translator.add("aes.label.collapse", "Collapse", "messages", "en");
+    Translator.add("aes.label.expand", "Expand", "messages", "en");
+    Translator.add("aes.label.recommend", "Recommend", "messages", "en");
+    Translator.add("aes.label.unrecommend", "Unrecommend", "messages", "en");
     Translator.add("aes.label.finishingauth", "Finishing authentication", "messages", "en");
     Translator.add("aes.label.selectedtext", "Selected text", "messages", "en");
     Translator.add("aes.label.linktext", "Link text", "messages", "en");
