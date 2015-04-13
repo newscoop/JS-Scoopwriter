@@ -20,6 +20,9 @@ describe('Controller: PaneAuthorsCtrl', function () {
         roles,
         rolesDeferred,
         scope,
+        $window,
+        Translator,
+        mockTranslator,
         $q;
 
     mockedRoles = [
@@ -56,6 +59,18 @@ describe('Controller: PaneAuthorsCtrl', function () {
         }
     ];
 
+    beforeEach(inject(function ($injector) {
+        mockTranslator = {
+            trans: function (value) {
+                return value;
+            }
+        };
+
+        $window = $injector.get('$window');
+        $window.Translator = mockTranslator;
+        Translator = $injector.get('Translator');
+    }));
+
     beforeEach(inject(
         function ($controller, $rootScope, _$q_, _article_, _Author_) {
             $q = _$q_;
@@ -82,6 +97,10 @@ describe('Controller: PaneAuthorsCtrl', function () {
             });
         }
     ));
+
+    afterEach(function () {
+        delete $window.Translator;
+    });
 
     it('initializes a list of author roles in scope', function () {
         expect(Author.getRoleList).toHaveBeenCalled();

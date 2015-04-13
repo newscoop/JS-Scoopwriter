@@ -11,7 +11,16 @@ angular.module('authoringEnvironmentApp').factory('Author', [
     '$timeout',
     'dateFactory',
     'pageTracker',
-    function ($http, $q, $timeout, dateFactory, pageTracker) {
+    'toaster',
+    'TranslationService',
+    function (
+        $http,
+        $q,
+        $timeout,
+        dateFactory,
+        pageTracker,
+        toaster,
+        TranslationService) {
         var SEARCH_DELAY_MS = 250,  // after the last search term change
             lastContext = null,  // most recent live search context
             lastTermChange = 0,  // time of the most recent search term change
@@ -274,9 +283,21 @@ angular.module('authoringEnvironmentApp').factory('Author', [
                 author.articleRole = author.articleRole || {};
                 author.articleRole.id = roleId;
                 deferred.resolve();
+                toaster.add({
+                    type: 'sf-info',
+                    message: TranslationService.trans(
+                        'aes.msgs.authors.add.success'
+                    )
+                });
             })
             .error(function (responseBody) {
                 deferred.reject(responseBody);
+                toaster.add({
+                    type: 'sf-error',
+                    message: TranslationService.trans(
+                        'aes.msgs.authors.add.error'
+                    )
+                });
             });
 
             return deferred.promise;
@@ -332,9 +353,21 @@ angular.module('authoringEnvironmentApp').factory('Author', [
             })
             .success(function () {
                 deferred.resolve();
+                toaster.add({
+                    type: 'sf-info',
+                    message: TranslationService.trans(
+                        'aes.msgs.authors.remove.success'
+                    )
+                });
             })
             .error(function (responseBody) {
                 deferred.reject(responseBody);
+                toaster.add({
+                    type: 'sf-error',
+                    message: TranslationService.trans(
+                        'aes.msgs.authors.remove.error'
+                    )
+                });
             });
 
             return deferred.promise;

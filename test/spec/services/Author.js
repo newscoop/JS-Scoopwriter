@@ -12,6 +12,9 @@ describe('Factory: Author', function () {
         authorsResponse,
         authorsSearchResponse,
         rolesResponse,
+        $window,
+        Translator,
+        mockTranslator,
         $httpBackend;
 
     rolesResponse = {
@@ -53,6 +56,22 @@ describe('Factory: Author', function () {
     };
 
     beforeEach(module('authoringEnvironmentApp'));
+
+    beforeEach(inject(function ($injector) {
+        mockTranslator = {
+            trans: function (value) {
+                return value;
+            }
+        };
+
+        $window = $injector.get('$window');
+        $window.Translator = mockTranslator;
+        Translator = $injector.get('Translator');
+    }));
+
+    afterEach(function () {
+        delete $window.Translator;
+    });
 
     beforeEach(inject(function (_Author_, _$httpBackend_) {
         Author = _Author_;
