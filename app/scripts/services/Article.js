@@ -678,8 +678,20 @@ angular.module('authoringEnvironmentApp').factory('Article', [
                 url, postData, {transformRequest: transform.formEncode}
             ).success(function () {
                 deferred.resolve();
+                toaster.add({
+                    type: 'sf-info',
+                    message: TranslationService.trans(
+                        'aes.msgs.switches.success'
+                    )
+                });
             }).error(function (responseBody) {
                 deferred.reject(responseBody);
+                toaster.add({
+                    type: 'sf-error',
+                    message: TranslationService.trans(
+                        'aes.msgs.switches.error'
+                    )
+                });
             });
 
             return deferred.promise;

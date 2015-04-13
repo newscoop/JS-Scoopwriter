@@ -7,9 +7,10 @@ angular.module('authoringEnvironmentApp').controller('PaneSnippetsCtrl', [
     'SnippetTemplate',
     'snippets',
     'modalFactory',
+    'TranslationService',
     function (
         $scope, $q, articleService, Snippet, SnippetTemplate, snippets,
-        modalFactory
+        modalFactory, TranslationService
     ) {
         var article = articleService.articleInstance;
 
@@ -83,12 +84,12 @@ angular.module('authoringEnvironmentApp').controller('PaneSnippetsCtrl', [
                 title,
                 text;
 
-            // XXX: for now these texts stays in the controller, but should be
-            // moved to some general config section at some point, when we
-            // implement it in some refactoring sprint
-            title = 'Do you really want to remove this snippet?';
-            text = 'Should you change your mind, the snippet can ' +
-                'always be added again.';
+            title = TranslationService.trans(
+                'aes.msgs.snippets.remove.popupHead'
+            );
+            text = TranslationService.trans(
+                'aes.msgs.snippets.remove.popup'
+            );
 
             modal = modalFactory.confirmLight(title, text);
 

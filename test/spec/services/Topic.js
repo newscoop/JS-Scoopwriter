@@ -9,15 +9,33 @@
 describe('Factory: Topic', function () {
 
     var Topic,
+        $window,
+        Translator,
+        mockTranslator,
         $httpBackend;
 
     beforeEach(module('authoringEnvironmentApp'));
+
+    beforeEach(inject(function ($injector) {
+        mockTranslator = {
+            trans: function (value) {
+                return value;
+            }
+        };
+
+        $window = $injector.get('$window');
+        $window.Translator = mockTranslator;
+        Translator = $injector.get('Translator');
+    }));
 
     beforeEach(inject(function (_Topic_, _$httpBackend_) {
         Topic = _Topic_;
         $httpBackend = _$httpBackend_;
     }));
 
+    afterEach(function () {
+        delete $window.Translator;
+    });
 
     describe('createFromApiData() method', function () {
         var data;

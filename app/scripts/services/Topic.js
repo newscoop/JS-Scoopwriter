@@ -12,7 +12,17 @@ angular.module('authoringEnvironmentApp').factory('Topic', [
     'dateFactory',
     'pageTracker',
     'transform',
-    function ($http, $q, $timeout, dateFactory, pageTracker, transform) {
+    'toaster',
+    'TranslationService',
+    function (
+        $http,
+        $q,
+        $timeout,
+        dateFactory,
+        pageTracker,
+        transform,
+        toaster,
+        TranslationService) {
         var SEARCH_DELAY_MS = 250,  // after the last search term change
             lastContext = null,  // most recent live search context
             lastTermChange = 0,  // time of the most recent search term change
@@ -228,8 +238,20 @@ angular.module('authoringEnvironmentApp').factory('Topic', [
             .then(function (response) {
                 var topic = Topic.createFromApiData(response.data);
                 deferredPost.resolve(topic);
+                toaster.add({
+                    type: 'sf-info',
+                    message: TranslationService.trans(
+                        'aes.msgs.topics.add.success'
+                    )
+                });
             }, function () {
                 deferredPost.reject();
+                toaster.add({
+                    type: 'sf-error',
+                    message: TranslationService.trans(
+                        'aes.msgs.topics.add.error'
+                    )
+                });
             });
 
             return deferredPost.promise;
@@ -277,9 +299,21 @@ angular.module('authoringEnvironmentApp').factory('Topic', [
             })
             .success(function () {
                 deferred.resolve(topics);
+                toaster.add({
+                    type: 'sf-info',
+                    message: TranslationService.trans(
+                        'aes.msgs.topics.assign.success'
+                    )
+                });
             })
             .error(function (responseBody) {
                 deferred.reject(responseBody);
+                toaster.add({
+                    type: 'sf-error',
+                    message: TranslationService.trans(
+                        'aes.msgs.topics.assign.success'
+                    )
+                });
             });
 
             return deferred.promise;
@@ -320,9 +354,21 @@ angular.module('authoringEnvironmentApp').factory('Topic', [
             })
             .success(function () {
                 deferred.resolve();
+                toaster.add({
+                    type: 'sf-info',
+                    message: TranslationService.trans(
+                        'aes.msgs.topics.unassign.success'
+                    )
+                });
             })
             .error(function (responseBody) {
                 deferred.reject(responseBody);
+                toaster.add({
+                    type: 'sf-error',
+                    message: TranslationService.trans(
+                        'aes.msgs.topics.unassign.success'
+                    )
+                });
             });
 
             return deferred.promise;

@@ -11,7 +11,16 @@ angular.module('authoringEnvironmentApp').controller('PaneTopicsCtrl', [
     'article',
     'modalFactory',
     'Topic',
-    function ($q, $scope, articleService, modalFactory, Topic) {
+    'toaster',
+    'TranslationService',
+    function (
+        $q,
+        $scope,
+        articleService,
+        modalFactory,
+        Topic,
+        toaster,
+        TranslationService) {
         var article = articleService.articleInstance,
             availableTopics = [],   // all existing topics to choose from
             topicListRetrieved = false;  // avilableTopics initialized yet?
@@ -190,10 +199,12 @@ angular.module('authoringEnvironmentApp').controller('PaneTopicsCtrl', [
                 title,
                 text;
 
-            title = 'Do you really want to unassign this topic from ' +
-                'the article?';
-            text = 'Should you change your mind, the topic can ' +
-                'always be re-assigned again.';
+            title = TranslationService.trans(
+                'aes.msgs.topics.unassign.popupHead'
+            );
+            text = TranslationService.trans(
+                'aes.msgs.topics.unassign.popup'
+            );
 
             modal = modalFactory.confirmLight(title, text);
 
