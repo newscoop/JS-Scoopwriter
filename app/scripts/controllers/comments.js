@@ -200,9 +200,6 @@ angular.module('authoringEnvironmentApp').controller('CommentsCtrl', [
                     )
                 });
             }, function () {
-                // XXX: when consistent reporting mechanism is developed,
-                // inform user about the error (API failure) - the reason
-                // why the value has been switched back to origValue
                 $scope.commentingSetting = origValue;
                 toaster.add({
                     type: 'sf-error',
