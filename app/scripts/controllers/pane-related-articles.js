@@ -13,7 +13,17 @@ angular.module('authoringEnvironmentApp')
     'Publication',
     'Issue',
     'Section',
-    function ($q, articleService, modalFactory, Publication, Issue, Section) {
+    'toaster',
+    'TranslationService',
+    function (
+        $q,
+        articleService,
+        modalFactory,
+        Publication,
+        Issue,
+        Section,
+        toaster,
+        TranslationService) {
         var self = this;
 
         self.article = articleService.articleInstance;
@@ -217,10 +227,12 @@ angular.module('authoringEnvironmentApp')
                 title,
                 text;
 
-            title = 'Do you really want to unassign ' +
-                'this relatedArticle from the article?';
-            text = 'Should you change your mind, the ' +
-                'relatedArticle can always be re-assigned again.';
+            title = TranslationService.trans(
+                'aes.msgs.relatedarticles.unpin.popupHead'
+            );
+            text = TranslationService.trans(
+                'aes.msgs.relatedarticles.unpin.popup'
+            );
 
             modal = modalFactory.confirmLight(title, text);
 

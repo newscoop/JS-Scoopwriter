@@ -54,15 +54,7 @@ describe('Controller: CommentsCtrl', function () {
         debug: jasmine.createSpy('debug mock')
     };
 
-
-    // Initialize the controller and a mock scope
-    beforeEach(inject(function (
-        $controller,
-        $rootScope, 
-        $injector,
-        _Article_) {
-        var articleService
-
+    beforeEach(inject(function ($injector) {
         mockTranslator = {
             trans: function (value) {
                 return value;
@@ -72,6 +64,14 @@ describe('Controller: CommentsCtrl', function () {
         $window = $injector.get('$window');
         $window.Translator = mockTranslator;
         Translator = $injector.get('Translator');
+    }));
+
+    // Initialize the controller and a mock scope
+    beforeEach(inject(function (
+        $controller,
+        $rootScope, 
+        _Article_) {
+        var articleService;
 
         Article = _Article_;
 

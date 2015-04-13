@@ -9,6 +9,9 @@
 describe('Factory: Article', function () {
 
     var Article,
+        $window,
+        Translator,
+        mockTranslator,
         $rootScope,
         $httpBackend;
 
@@ -26,12 +29,28 @@ describe('Factory: Article', function () {
 
     beforeEach(module('authoringEnvironmentApp'));
 
+    beforeEach(inject(function ($injector) {
+        mockTranslator = {
+            trans: function (value) {
+                return value;
+            }
+        };
+
+        $window = $injector.get('$window');
+        $window.Translator = mockTranslator;
+        Translator = $injector.get('Translator');
+    }));
+
     beforeEach(inject(function (_Article_, _$rootScope_, _$httpBackend_) {
         Article = _Article_;
         $rootScope = _$rootScope_;
         $httpBackend = _$httpBackend_;
 
     }));
+
+    afterEach(function () {
+        delete $window.Translator;
+    });
 
     it('defines correct options for the commenting setting', function () {
         var options = Article.commenting;

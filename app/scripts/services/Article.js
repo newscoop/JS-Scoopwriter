@@ -10,7 +10,15 @@ angular.module('authoringEnvironmentApp').factory('Article', [
     '$q',
     'transform',
     'ArticleType',
-    function ($http, $q, transform, ArticleType) {
+    'toaster',
+    'TranslationService',
+    function (
+        $http,
+        $q,
+        transform,
+        ArticleType,
+        toaster,
+        TranslationService) {
         var Article,
             unicodeWords = new XRegExp('(\\p{Letter}|\\d)+', 'g');
 
@@ -507,9 +515,21 @@ angular.module('authoringEnvironmentApp').factory('Article', [
             })
             .success(function () {
                 deferred.resolve();
+                toaster.add({
+                    type: 'sf-info',
+                    message: TranslationService.trans(
+                        'aes.msgs.relatedarticles.pin.success'
+                    )
+                });
             })
             .error(function (responseBody) {
                 deferred.reject(responseBody);
+                toaster.add({
+                    type: 'sf-error',
+                    message: TranslationService.trans(
+                        'aes.msgs.relatedarticles.pin.error'
+                    )
+                });
             });
 
             return deferred.promise;
@@ -548,9 +568,21 @@ angular.module('authoringEnvironmentApp').factory('Article', [
             })
             .success(function () {
                 deferred.resolve();
+                toaster.add({
+                    type: 'sf-info',
+                    message: TranslationService.trans(
+                        'aes.msgs.relatedarticles.unpin.success'
+                    )
+                });
             })
             .error(function (responseBody) {
                 deferred.reject(responseBody);
+                toaster.add({
+                    type: 'sf-error',
+                    message: TranslationService.trans(
+                        'aes.msgs.relatedarticles.unpin.error'
+                    )
+                });
             });
 
             return deferred.promise;
@@ -796,9 +828,21 @@ angular.module('authoringEnvironmentApp').factory('Article', [
             })
             .success(function () {
                 defered.resolve();
+                toaster.add({
+                    type: 'sf-info',
+                    message: TranslationService.trans(
+                        'aes.msgs.relatedarticles.order.success'
+                    )
+                });
             })
             .error(function (responseBody) {
                 defered.reject(responseBody);
+                toaster.add({
+                    type: 'sf-info',
+                    message: TranslationService.trans(
+                        'aes.msgs.relatedarticles.order.success'
+                    )
+                });
             });
 
             return defered.promise;

@@ -12,9 +12,24 @@ describe('Factory: articleLoader', function () {
         articleService,
         fakeInstance,
         getArticleDeferred,
+        $window,
+        Translator,
+        mockTranslator,
         $rootScope;
 
     beforeEach(module('authoringEnvironmentApp'));
+
+    beforeEach(inject(function ($injector) {
+        mockTranslator = {
+            trans: function (value) {
+                return value;
+            }
+        };
+
+        $window = $injector.get('$window');
+        $window.Translator = mockTranslator;
+        Translator = $injector.get('Translator');
+    }));
 
     beforeEach(inject(function (
         $q, _$rootScope_, $route, $httpBackend,
@@ -42,6 +57,10 @@ describe('Factory: articleLoader', function () {
 
         $httpBackend.whenGET('views/error.html').respond(200, {});
     }));
+
+    afterEach(function () {
+        delete $window.Translator;
+    });
 
     it('returns a function', function () {
         expect(typeof articleLoader).toBe('function');
