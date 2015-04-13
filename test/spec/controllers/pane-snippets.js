@@ -9,6 +9,9 @@ describe('Controller: PaneSnippetsCtrl', function () {
         SnippetTemplate,
         SnippetsCtrl,
         snippetsService,
+        $window,
+        Translator,
+        mockTranslator,
         scope,
         $q;
 
@@ -18,6 +21,18 @@ describe('Controller: PaneSnippetsCtrl', function () {
             articleInstance: {articleId: 25, language: 'de'}
         };
         $provide.value('article', articleServiceMock);
+    }));
+
+    beforeEach(inject(function ($injector) {
+        mockTranslator = {
+            trans: function (value) {
+                return value;
+            }
+        };
+
+        $window = $injector.get('$window');
+        $window.Translator = mockTranslator;
+        Translator = $injector.get('Translator');
     }));
 
     beforeEach(inject(
@@ -54,6 +69,10 @@ describe('Controller: PaneSnippetsCtrl', function () {
             });
         }
     ));
+
+    afterEach(function () {
+        delete $window.Translator;
+    });
 
     it('initializes scope\'s showAddSnippet flag to false', function () {
         expect(scope.showAddSnippet).toBe(false);

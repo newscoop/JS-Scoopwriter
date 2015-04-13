@@ -8,7 +8,9 @@
 angular.module('authoringEnvironmentApp').factory('Snippet', [
     '$http',
     '$q',
-    function ($http, $q) {
+    'toaster',
+    'TranslationService',
+    function ($http, $q, toaster, TranslationService) {
         var self = this,
             Snippet = function () {};  // snippet constructor function
 
@@ -200,9 +202,21 @@ angular.module('authoringEnvironmentApp').factory('Snippet', [
             })
             .success(function () {
                 deferred.resolve();
+                toaster.add({
+                    type: 'sf-info',
+                    message: TranslationService.trans(
+                        'aes.msgs.snippets.add.success'
+                    )
+                });
             })
             .error(function (responseBody) {
                 deferred.reject(responseBody);
+                toaster.add({
+                    type: 'sf-error',
+                    message: TranslationService.trans(
+                        'aes.msgs.snippets.add.error'
+                    )
+                });
             });
 
             return deferred.promise;
@@ -241,9 +255,21 @@ angular.module('authoringEnvironmentApp').factory('Snippet', [
             })
             .success(function () {
                 deferred.resolve();
+                toaster.add({
+                    type: 'sf-info',
+                    message: TranslationService.trans(
+                        'aes.msgs.snippets.remove.success'
+                    )
+                });
             })
             .error(function (responseBody) {
                 deferred.reject(responseBody);
+                toaster.add({
+                    type: 'sf-error',
+                    message: TranslationService.trans(
+                        'aes.msgs.snippets.remove.error'
+                    )
+                });
             });
 
             return deferred.promise;

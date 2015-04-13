@@ -10,14 +10,33 @@ describe('Factory: Snippet', function () {
 
     var Snippet,
         snippets,
+        $window,
+        Translator,
+        mockTranslator,
         $httpBackend;
 
     beforeEach(module('authoringEnvironmentApp'));
+
+    beforeEach(inject(function ($injector) {
+        mockTranslator = {
+            trans: function (value) {
+                return value;
+            }
+        };
+
+        $window = $injector.get('$window');
+        $window.Translator = mockTranslator;
+        Translator = $injector.get('Translator');
+    }));
 
     beforeEach(inject(function (_Snippet_, _$httpBackend_) {
         Snippet = _Snippet_;
         $httpBackend = _$httpBackend_;
     }));
+
+    afterEach(function () {
+        delete $window.Translator;
+    });
 
     describe('getAllByArticle() method', function () {
         var url;
