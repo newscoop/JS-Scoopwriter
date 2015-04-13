@@ -9,6 +9,9 @@ describe('Controller: DroppedImageCtrl', function () {
         NcImage,
         scope,
         $log,
+        $window,
+        Translator,
+        mockTranslator,
         image = {
             basename: '/test.jpg',
         },
@@ -21,6 +24,18 @@ describe('Controller: DroppedImageCtrl', function () {
             byArticleImageId: function () {},
         };
 
+    beforeEach(inject(function ($injector) {
+        mockTranslator = {
+            trans: function (value) {
+                return value;
+            }
+        };
+
+        $window = $injector.get('$window');
+        $window.Translator = mockTranslator;
+        Translator = $injector.get('Translator');
+    }));
+
     // Initialize the controller and a mock scope
     beforeEach(inject(function ($controller, $rootScope, _NcImage_, _$log_) {
         NcImage = _NcImage_;
@@ -30,6 +45,10 @@ describe('Controller: DroppedImageCtrl', function () {
             images: images
         });
     }));
+
+    afterEach(function () {
+        delete $window.Translator;
+    });
 
     it('exposes images service in scope', function () {
         expect(scope.images).toBe(images);

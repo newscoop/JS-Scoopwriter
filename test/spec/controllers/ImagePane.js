@@ -10,10 +10,25 @@ describe('Controller: ImagepaneCtrl', function () {
 
     var fakeImagesService,
         ImagepaneCtrl,
+        $window,
+        Translator,
+        mockTranslator,
         scope;
 
     // load the controller's module
     beforeEach(module('authoringEnvironmentApp'));
+
+    beforeEach(inject(function ($injector) {
+        mockTranslator = {
+            trans: function (value) {
+                return value;
+            }
+        };
+
+        $window = $injector.get('$window');
+        $window.Translator = mockTranslator;
+        Translator = $injector.get('Translator');
+    }));
 
     beforeEach(inject(function ($controller, $rootScope) {
         fakeImagesService = {};
@@ -24,6 +39,10 @@ describe('Controller: ImagepaneCtrl', function () {
             images: fakeImagesService
         });
     }));
+
+    afterEach(function () {
+        delete $window.Translator;
+    });
 
     it('attaches images to the scope', function () {
         expect(scope.images).toBeDefined();

@@ -78,6 +78,9 @@ describe('Service: Images', function () {
     var getAllImagesDeferred,
         images,
         NcImage,
+        $window,
+        Translator,
+        mockTranslator,
         $httpBackend;
 
     // load the service's module
@@ -89,6 +92,18 @@ describe('Service: Images', function () {
             articleInstance: {articleId: 64, language: 'de'}
         };
         $provide.value('article', articleServiceMock);
+    }));
+
+    beforeEach(inject(function ($injector) {
+        mockTranslator = {
+            trans: function (value) {
+                return value;
+            }
+        };
+
+        $window = $injector.get('$window');
+        $window.Translator = mockTranslator;
+        Translator = $injector.get('Translator');
     }));
 
     beforeEach(inject(function ($q, _NcImage_) {
@@ -105,6 +120,10 @@ describe('Service: Images', function () {
         images = _images_;
         $httpBackend = _$httpBackend_;
     }));
+
+    afterEach(function () {
+        delete $window.Translator;
+    });
 
     it('sets itemsPerPage to 50 by default', function () {
         expect(images.itemsPerPage).toEqual(50);

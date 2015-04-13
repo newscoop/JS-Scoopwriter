@@ -10,15 +10,33 @@ describe('Factory: NcImage', function () {
 
     var NcImage,
         imgData,
+        $window,
+        Translator,
+        mockTranslator,
         $httpBackend;
 
     beforeEach(module('authoringEnvironmentApp'));
+
+    beforeEach(inject(function ($injector) {
+        mockTranslator = {
+            trans: function (value) {
+                return value;
+            }
+        };
+
+        $window = $injector.get('$window');
+        $window.Translator = mockTranslator;
+        Translator = $injector.get('Translator');
+    }));
 
     beforeEach(inject(function (_NcImage_, _$httpBackend_) {
         NcImage = _NcImage_;
         $httpBackend = _$httpBackend_;
     }));
 
+    afterEach(function () {
+        delete $window.Translator;
+    });
 
     describe('constructor', function () {
         it('initializes instance\'s fields with provided values', function () {

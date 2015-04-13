@@ -14,7 +14,16 @@ angular.module('authoringEnvironmentApp').factory('NcImage', [
     '$upload',
     'transform',
     'formDataFactory',
-    function ($http, $q, $upload, transform, formDataFactory) {
+    'toaster',
+    'TranslationService',
+    function (
+        $http,
+        $q,
+        $upload,
+        transform,
+        formDataFactory,
+        toaster,
+        TranslationService) {
         var NcImage;
 
         /**
@@ -218,9 +227,21 @@ angular.module('authoringEnvironmentApp').factory('NcImage', [
             })
             .success(function () {
                 deferred.resolve();
+                toaster.add({
+                    type: 'sf-info',
+                    message: TranslationService.trans(
+                        'aes.msgs.images.attach.success'
+                    )
+                });
             })
             .error(function (responseBody) {
                 deferred.reject(responseBody);
+                toaster.add({
+                    type: 'sf-error',
+                    message: TranslationService.trans(
+                        'aes.msgs.images.attach.error'
+                    )
+                });
             });
 
             return deferred.promise;
@@ -377,9 +398,21 @@ angular.module('authoringEnvironmentApp').factory('NcImage', [
             })
             .success(function () {
                 deferred.resolve();
+                toaster.add({
+                    type: 'sf-info',
+                    message: TranslationService.trans(
+                        'aes.msgs.images.detach.success'
+                    )
+                });
             })
             .error(function (responseBody) {
                 deferred.reject(responseBody);
+                toaster.add({
+                    type: 'sf-error',
+                    message: TranslationService.trans(
+                        'aes.msgs.images.detach.success'
+                    )
+                });
             });
 
             return deferred.promise;
