@@ -61,12 +61,15 @@ describe('Controller: AttachImageCtrl', function () {
     });
 
     describe('scope\'s attachCollected() method', function () {
-        var deferred;
+        var deferred,
+            toaster;
 
-        beforeEach(inject(function ($q) {
+        beforeEach(inject(function ($q, _toaster_) {
             deferred = $q.defer(); 
+            toaster = _toaster_;
             spyOn(fakeImagesService, 'attachAllCollected').andReturn(deferred.promise);
             spyOn(fakeImagesService, 'discardAll').andReturn(deferred.promise);
+            spyOn(toaster, 'add').andReturn(deferred.promise);
             spyOn(modal, 'hide');
         }));
 
@@ -82,6 +85,26 @@ describe('Controller: AttachImageCtrl', function () {
             deferred.resolve(true);
             scope.$digest();
             expect(fakeImagesService.discardAll).toHaveBeenCalled();
+        });
+
+        it('calls toaster.add with correct params on success', function () {
+            scope.attachCollected();
+            deferred.resolve(true);
+            scope.$digest();
+            expect(toaster.add).toHaveBeenCalledWith({
+                type: 'sf-info',
+                message: 'aes.msgs.images.attach.success'
+            });
+        });
+
+        it('calls toaster.add with correct params on error', function () {
+            scope.attachCollected();
+            deferred.reject(false);
+            scope.$digest();
+            expect(toaster.add).toHaveBeenCalledWith({
+                type: 'sf-error',
+                message: 'aes.msgs.images.attach.error'
+            });
         });
 
         it('closes the modal', function () {

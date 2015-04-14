@@ -127,9 +127,9 @@ angular.module('authoringEnvironmentApp')
                 });
             }, function () {
                 toaster.add({
-                    type: 'sf-info',
+                    type: 'sf-error',
                     message: TranslationService.trans(
-                        'aes.msgs.relatedarticles.order.success'
+                        'aes.msgs.relatedarticles.order.error'
                     )
                 });
             });

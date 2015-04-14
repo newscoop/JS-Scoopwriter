@@ -89,7 +89,7 @@ angular.module('authoringEnvironmentApp').controller('ImagePaneCtrl', [
                     toaster.add({
                         type: 'sf-error',
                         message: TranslationService.trans(
-                            'aes.msgs.images.detach.success'
+                            'aes.msgs.images.detach.error'
                         )
                     });
                 });

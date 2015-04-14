@@ -155,9 +155,13 @@ describe('Controller: PaneSnippetsCtrl', function () {
         var createdSnippet,
             deferredAddToArticle,
             deferredCreate,
+            deferred,
+            toaster,
             snippetData;
 
-        beforeEach(inject(function ($q) {
+        beforeEach(inject(function ($q, _toaster_) {
+            toaster = _toaster_;
+            deferred = $q.defer();
             snippetData = {
                 name: 'my video',
                 template: {
@@ -181,6 +185,10 @@ describe('Controller: PaneSnippetsCtrl', function () {
                 .andReturn(deferredAddToArticle.promise);
 
             spyOn(scope, 'clearNewSnippetForm');
+
+            spyOn(toaster, 'add').andCallFake(function () {
+                return deferred.promise;
+            });
         }));
 
         it('sets addingNewSnippet flag before doing anything', function () {
@@ -202,6 +210,30 @@ describe('Controller: PaneSnippetsCtrl', function () {
                 expect(scope.showAddSnippet).toBe(false);
             }
         );
+
+        it('calls toaster.add() with appropriate params on success', function () {
+            scope.addNewSnippetToArticle(snippetData);
+            deferredCreate.resolve(createdSnippet);
+            deferredAddToArticle.resolve();
+            scope.$digest();
+
+            expect(toaster.add).toHaveBeenCalledWith({
+                type: 'sf-info',
+                message: 'aes.msgs.snippets.add.success'
+            });
+        });
+
+        it('calls toaster.add() with appropriate params on error', function () {
+            scope.addNewSnippetToArticle(snippetData);
+            deferredCreate.resolve(createdSnippet);
+            deferredAddToArticle.reject();
+            scope.$digest();
+
+            expect(toaster.add).toHaveBeenCalledWith({
+                type: 'sf-error',
+                message: 'aes.msgs.snippets.add.error'
+            });
+        });
 
         it('clears the add snippet form on successful server response',
             function () {
@@ -285,11 +317,13 @@ describe('Controller: PaneSnippetsCtrl', function () {
 
     describe('scope\'s confirmRemoveSnippet() method', function () {
         var snippet,
+            toaster,
             deferred,
             modalDeferred,
             modalFactory;
 
-        beforeEach(inject(function ($q, _modalFactory_) {
+        beforeEach(inject(function ($q, _modalFactory_, _toaster_) {
+            toaster = _toaster_;
             deferred = $q.defer(); 
             modalDeferred = $q.defer();
             modalFactory = _modalFactory_;
@@ -302,6 +336,10 @@ describe('Controller: PaneSnippetsCtrl', function () {
             snippet = {id: 42};
 
             spyOn(snippetsService, 'removeFromArticle').andReturn(deferred.promise);
+
+            spyOn(toaster, 'add').andCallFake(function () {
+                return deferred.promise;
+            });
         }));
 
         it('opens a "light" confirmation dialog', function () {
@@ -320,6 +358,32 @@ describe('Controller: PaneSnippetsCtrl', function () {
                     snippet, {articleId: 25, language: 'de'});
             }
         );
+
+        it('calls toaster.add() with appropriate params on success', function () {
+            scope.confirmRemoveSnippet(snippet);
+            modalDeferred.resolve(true);
+            scope.$digest();
+            deferred.resolve(true);
+            scope.$digest();
+
+            expect(toaster.add).toHaveBeenCalledWith({
+                type: 'sf-info',
+                message: 'aes.msgs.snippets.remove.success'
+            });
+        });
+
+        it('calls toaster.add() with appropriate params on error', function () {
+            scope.confirmRemoveSnippet(snippet);
+            modalDeferred.resolve(true);
+            scope.$digest();
+            deferred.reject(false);
+            scope.$digest();
+
+            expect(toaster.add).toHaveBeenCalledWith({
+                type: 'sf-error',
+                message: 'aes.msgs.snippets.remove.error'
+            });
+        });
 
         it('does not remove anything on action cancellation', function () {
             scope.confirmRemoveSnippet(snippet);

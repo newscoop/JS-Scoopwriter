@@ -93,9 +93,13 @@ describe('Controller: PaneTopicsCtrl', function () {
     describe('scope\'s addNewTopicToArticle() method', function () {
         var addToArticleDelay,
             fakeNewTopic,
+            toaster,
+            deferred,
             topicCreateDelay;
 
-        beforeEach(inject(function ($q) {
+        beforeEach(inject(function ($q, _toaster_) {
+            toaster = _toaster_;
+            deferred = $q.defer();
             fakeNewTopic = {
                 id: 55,
                 title: 'New Topic',
@@ -110,6 +114,9 @@ describe('Controller: PaneTopicsCtrl', function () {
             addToArticleDelay = $q.defer();
             spyOn(Topic, 'addToArticle').andCallFake(function () {
                 return addToArticleDelay.promise;
+            });
+            spyOn(toaster, 'add').andCallFake(function () {
+                return deferred.promise;
             });
         }));
 
@@ -147,6 +154,28 @@ describe('Controller: PaneTopicsCtrl', function () {
                     .toHaveBeenCalledWith('duplicate', false);
             }
         );
+
+        it('calls toaster.add() with appropriate params on success', function () {
+            scope.addNewTopicToArticle({title: 'Fake Topic'});
+            topicCreateDelay.resolve(true);
+            scope.$digest();
+
+            expect(toaster.add).toHaveBeenCalledWith({
+                type: 'sf-info',
+                message: 'aes.msgs.topics.add.success'
+            });
+        });
+
+        it('calls toaster.add() with appropriate params on error', function () {
+            scope.addNewTopicToArticle({title: 'Fake Topic'});
+            topicCreateDelay.reject(false);
+            scope.$digest();
+
+            expect(toaster.add).toHaveBeenCalledWith({
+                type: 'sf-error',
+                message: 'aes.msgs.topics.add.error'
+            });
+        });
 
         it('tries to assign the newly created topic to article', function () {
             scope.addNewTopicToArticle({title: 'New Topic'});
@@ -359,9 +388,13 @@ describe('Controller: PaneTopicsCtrl', function () {
 
     describe('scope\'s assignSelectedToArticle() method', function () {
         var deferredAdd,
+            deferred,
+            toaster,
             topics;
 
-        beforeEach(inject(function ($q) {
+        beforeEach(inject(function ($q, _toaster_) {
+            toaster = _toaster_;
+            deferred = $q.defer();
             topics = [
                 {id: 2, title: 'topic 2'},
                 {id: 9, title: 'topic 9'},
@@ -375,6 +408,10 @@ describe('Controller: PaneTopicsCtrl', function () {
 
             scope.selectedTopics = angular.copy(topics);
             scope.assignedTopics = [{id: 4, title: 'topic 4'}];
+
+            spyOn(toaster, 'add').andCallFake(function () {
+                return deferred.promise;
+            });
         }));
 
         it('sets the assigningTopics flag before doing anything', function () {
@@ -404,6 +441,28 @@ describe('Controller: PaneTopicsCtrl', function () {
                 expect(scope.assigningTopics).toBe(false);
             }
         );
+
+        it('calls toaster.add() with appropriate params on success', function () {
+            scope.assignSelectedToArticle();
+            deferredAdd.resolve(topics);
+            scope.$apply();
+
+            expect(toaster.add).toHaveBeenCalledWith({
+                type: 'sf-info',
+                message: 'aes.msgs.topics.assign.success'
+            });
+        });
+
+        it('calls toaster.add() with appropriate params on error', function () {
+            scope.assignSelectedToArticle();
+            deferredAdd.reject(false);
+            scope.$apply();
+
+            expect(toaster.add).toHaveBeenCalledWith({
+                type: 'sf-error',
+                message: 'aes.msgs.topics.assign.error'
+            });
+        });
 
         it('clears the assigningTopics flag on server error response',
             function () {
@@ -448,10 +507,14 @@ describe('Controller: PaneTopicsCtrl', function () {
     describe('scope\'s confirmUnassignTopic() method', function () {
         var deferedRemove,
             topic,
+            deferred,
+            toaster,
             modalDeferred,
             modalFactory;
 
-        beforeEach(inject(function ($q, _modalFactory_) {
+        beforeEach(inject(function ($q, _modalFactory_, _toaster_) {
+            toaster = _toaster_;
+            deferred = $q.defer();
             deferedRemove = $q.defer();
             modalDeferred = $q.defer();
             modalFactory = _modalFactory_;
@@ -472,6 +535,10 @@ describe('Controller: PaneTopicsCtrl', function () {
                 removeFromArticle: function () {}
             };
             spyOn(topic, 'removeFromArticle').andReturn(deferedRemove.promise);
+
+            spyOn(toaster, 'add').andCallFake(function () {
+                return deferred.promise;
+            });
         }));
 
         it('opens a "light" confirmation dialog', function () {
@@ -519,6 +586,30 @@ describe('Controller: PaneTopicsCtrl', function () {
                 );
             }
         );
+
+        it('calls toaster.add() with appropriate params on success', function () {
+            scope.confirmUnassignTopic(topic);
+            modalDeferred.resolve();
+            deferedRemove.resolve();
+            scope.$apply();
+
+            expect(toaster.add).toHaveBeenCalledWith({
+                type: 'sf-info',
+                message: 'aes.msgs.topics.unassign.success'
+            });
+        });
+
+        it('calls toaster.add() with appropriate params on error', function () {
+            scope.confirmUnassignTopic(topic);
+            modalDeferred.resolve();
+            deferedRemove.reject(false);
+            scope.$apply();
+
+            expect(toaster.add).toHaveBeenCalledWith({
+                type: 'sf-error',
+                message: 'aes.msgs.topics.unassign.error'
+            });
+        });
     });
 
 });

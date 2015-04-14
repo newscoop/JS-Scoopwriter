@@ -202,7 +202,7 @@ angular.module('authoringEnvironmentApp').controller('PaneTopicsCtrl', [
                 toaster.add({
                     type: 'sf-error',
                     message: TranslationService.trans(
-                        'aes.msgs.topics.assign.success'
+                        'aes.msgs.topics.assign.error'
                     )
                 });
             }).finally(function () {
@@ -247,7 +247,7 @@ angular.module('authoringEnvironmentApp').controller('PaneTopicsCtrl', [
                         toaster.add({
                             type: 'sf-error',
                             message: TranslationService.trans(
-                                'aes.msgs.topics.unassign.success'
+                                'aes.msgs.topics.unassign.error'
                             )
                         });
                     });

@@ -204,10 +204,10 @@ angular.module('authoringEnvironmentApp').controller('CommentsCtrl', [
         * Calls the comment models sendReply function 
         *
         * @method sendReply 
-        * @param [comment] {comment} a specific comment to save
+        * @param [comment] {comment} a specific comment to reply to
         */
         $scope.sendReply = function (comment) {
-            comment.save().then(function () {
+            comment.sendReply().then(function () {
                 toaster.add({
                     type: 'sf-info',
                     message: TranslationService.trans(

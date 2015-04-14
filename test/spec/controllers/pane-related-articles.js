@@ -226,8 +226,13 @@ describe('Controller: PaneRelatedArticlesCtrl', function () {
 
     describe('orderChange() method', function () {
         var fakeArticle,
+            toaster,
+            deferred,
             deferedOrder;
-        beforeEach(inject(function ($q) {
+
+        beforeEach(inject(function ($q, _toaster_) {
+            toaster = _toaster_;
+            deferred = $q.defer();
             deferedOrder = $q.defer();
             fakeArticle = {
                 articleId: 1,
@@ -240,6 +245,10 @@ describe('Controller: PaneRelatedArticlesCtrl', function () {
                 .createSpy('setOrderOfRelatedArticles')
                 .andReturn(deferedOrder.promise); 
             PaneRelatedArticlesCtrl.orderChange(fakeArticle, 1);
+
+            spyOn(toaster, 'add').andCallFake(function () {
+                return deferred.promise;
+            });
         }));
 
         it('invokes article\'s setOrderOfRelatedArticles() method ' +
@@ -251,8 +260,29 @@ describe('Controller: PaneRelatedArticlesCtrl', function () {
 
                 expect(PaneRelatedArticlesCtrl.article.setOrderOfRelatedArticles).
                     toHaveBeenCalledWith(fakeArticle, 1);
-            }
-        );
+        });
+
+        it('calls toaster.add() with appropriate params on success', function () {
+            PaneRelatedArticlesCtrl.orderChange(fakeArticle, 1);
+            deferedOrder.resolve();
+            $rootScope.$apply();
+
+            expect(toaster.add).toHaveBeenCalledWith({
+                type: 'sf-info',
+                message: 'aes.msgs.relatedarticles.order.success'
+            });
+        });
+
+        it('calls toaster.add() with appropriate params on error', function () {
+            PaneRelatedArticlesCtrl.orderChange(fakeArticle, 1);
+            deferedOrder.reject(false);
+            $rootScope.$apply();
+
+            expect(toaster.add).toHaveBeenCalledWith({
+                type: 'sf-error',
+                message: 'aes.msgs.relatedarticles.order.error'
+            });
+        });
     });
 
     describe('clearSearch() method', function () {
@@ -310,9 +340,13 @@ describe('Controller: PaneRelatedArticlesCtrl', function () {
 
     describe('assignToArticle() method', function () {
         var deferedAssign,
+            deferred,
+            toaster,
             relatedArticle;
 
-        beforeEach(inject(function($q) {
+        beforeEach(inject(function($q, _toaster_) {
+            toaster = _toaster_;
+            deferred = $q.defer();
             deferedAssign = $q.defer();
 
             relatedArticle = {
@@ -330,6 +364,10 @@ describe('Controller: PaneRelatedArticlesCtrl', function () {
                 .createSpy('loadSearchResults')
                 .andReturn([]); 
 
+            spyOn(toaster, 'add').andCallFake(function () {
+                return deferred.promise;
+            });
+
         }));
 
         it('sets assigningRelatedArticles flag to false', function () {
@@ -343,6 +381,28 @@ describe('Controller: PaneRelatedArticlesCtrl', function () {
             deferedAssign.resolve();
             $rootScope.$apply();
             expect(PaneRelatedArticlesCtrl.assignedRelatedArticles).toEqual([relatedArticle]);
+        });
+
+        it('calls toaster.add() with appropriate params on success', function () {
+            PaneRelatedArticlesCtrl.assignToArticle(relatedArticle);
+            deferedAssign.resolve();
+            $rootScope.$apply();
+
+            expect(toaster.add).toHaveBeenCalledWith({
+                type: 'sf-info',
+                message: 'aes.msgs.relatedarticles.pin.success'
+            });
+        });
+
+        it('calls toaster.add() with appropriate params on error', function () {
+            PaneRelatedArticlesCtrl.assignToArticle(relatedArticle);
+            deferedAssign.reject();
+            $rootScope.$apply();
+
+            expect(toaster.add).toHaveBeenCalledWith({
+                type: 'sf-error',
+                message: 'aes.msgs.relatedarticles.pin.error'
+            });
         });
     });
 
@@ -424,11 +484,15 @@ describe('Controller: PaneRelatedArticlesCtrl', function () {
 
     describe('confirmUnassignRelatedArticle() method', function () {
         var deferedRemove,
+            deferred,
+            toaster,
             relatedArticle,
             modalDefered,
             modalFactory;
 
-        beforeEach(inject(function ($q, _modalFactory_) {
+        beforeEach(inject(function ($q, _modalFactory_, _toaster_) {
+            toaster = _toaster_;
+            deferred = $q.defer();
             modalDefered = $q.defer();
             deferedRemove = $q.defer();
             modalFactory = _modalFactory_;
@@ -447,6 +511,10 @@ describe('Controller: PaneRelatedArticlesCtrl', function () {
             PaneRelatedArticlesCtrl.article.removeRelatedArticle = jasmine
                 .createSpy('removeRelatedArticle')
                 .andReturn(deferedRemove.promise); 
+
+            spyOn(toaster, 'add').andCallFake(function () {
+                return deferred.promise;
+            });
         }));
 
         it('opens a "light" confirmation dialog', function () {
@@ -465,6 +533,32 @@ describe('Controller: PaneRelatedArticlesCtrl', function () {
                     toHaveBeenCalledWith({ articleId : 20, language : 'de' });
             }
         );
+
+        it('calls toaster.add() with appropriate params on success', function () {
+            PaneRelatedArticlesCtrl.confirmUnassignRelatedArticle(relatedArticle);
+            modalDefered.resolve(true);
+            $rootScope.$apply();
+            deferedRemove.resolve(true);
+            $rootScope.$apply();
+
+            expect(toaster.add).toHaveBeenCalledWith({
+                type: 'sf-info',
+                message: 'aes.msgs.relatedarticles.unpin.success'
+            });
+        });
+
+        it('calls toaster.add() with appropriate params on error', function () {
+            PaneRelatedArticlesCtrl.confirmUnassignRelatedArticle(relatedArticle);
+            modalDefered.resolve(true);
+            $rootScope.$apply();
+            deferedRemove.reject(true);
+            $rootScope.$apply();
+
+            expect(toaster.add).toHaveBeenCalledWith({
+                type: 'sf-error',
+                message: 'aes.msgs.relatedarticles.unpin.error'
+            });
+        });
 
         it('does not try to unassign relatedArticle on action cancellation',
             function () {

@@ -155,12 +155,20 @@ describe('Controller: PaneSwitchesCtrl', function () {
     });
 
     describe('save() method', function () {
-        var saveSwitchesDeferred;
+        var saveSwitchesDeferred,
+            deferred,
+            toaster;
 
-        beforeEach(inject(function ($q) {
+        beforeEach(inject(function ($q, _toaster_) {
+            toaster = _toaster_;
+            deferred = $q.defer();
             saveSwitchesDeferred = $q.defer();
             PaneSwitchesCtrl.article.saveSwitches = jasmine.createSpy()
                 .andReturn(saveSwitchesDeferred.promise);
+
+            spyOn(toaster, 'add').andCallFake(function () {
+                return deferred.promise;
+            });
         }));
 
         it('sets the saveInProgress flag before doing anything', function () {
@@ -177,6 +185,28 @@ describe('Controller: PaneSwitchesCtrl', function () {
             $rootScope.$digest();
 
             expect(PaneSwitchesCtrl.saveInProgress).toBe(false);
+        });
+
+        it('calls toaster.add() with appropriate params on success', function () {
+            PaneSwitchesCtrl.save();
+            saveSwitchesDeferred.resolve();
+            $rootScope.$digest();
+
+            expect(toaster.add).toHaveBeenCalledWith({
+                type: 'sf-info',
+                message: 'aes.msgs.switches.success'
+            });
+        });
+
+        it('calls toaster.add() with appropriate params on error', function () {
+            PaneSwitchesCtrl.save();
+            saveSwitchesDeferred.reject(false);
+            $rootScope.$digest();
+
+            expect(toaster.add).toHaveBeenCalledWith({
+                type: 'sf-error',
+                message: 'aes.msgs.switches.error'
+            });
         });
 
         it('clears the saveInProgress flag on error', function () {
