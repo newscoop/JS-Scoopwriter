@@ -85,7 +85,7 @@
         <div class="replyToControls">
           <button
              class="btn btn-primary btn-sm pull-right"
-             ng-click="model.sendReply()"
+             ng-click="onReply({comment: model})"
              ng-disabled="model.sendingReply"
              >
             {{ ::('aes.btn.reply'|trans) }}
@@ -117,7 +117,7 @@
          ></span>
       <span
          class="glyphicon glyphicon-floppy-disk"
-         ng-click="model.save()"
+         ng-click="onSave({comment: model})"
          ng-show="model.isEdited"
          title="{{ ::('Save'|trans) }}"
          ></span>

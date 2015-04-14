@@ -177,6 +177,54 @@ angular.module('authoringEnvironmentApp').controller('CommentsCtrl', [
         };
 
         /**
+        * Saves comment
+        *
+        * @method saveComment 
+        * @param [comment] {comment} a specific comment to save
+        */
+        $scope.saveComment = function (comment) {
+            comment.save().then(function () {
+                toaster.add({
+                    type: 'sf-info',
+                    message: TranslationService.trans(
+                        'aes.msgs.comments.edit.success'
+                    )
+                });
+            }, function () {
+                toaster.add({
+                    type: 'sf-error',
+                    message: TranslationService.trans(
+                        'aes.msgs.comments.edit.error'
+                    )
+                });
+            });
+        };
+
+        /**
+        * Calls the comment models sendReply function 
+        *
+        * @method sendReply 
+        * @param [comment] {comment} a specific comment to save
+        */
+        $scope.sendReply = function (comment) {
+            comment.save().then(function () {
+                toaster.add({
+                    type: 'sf-info',
+                    message: TranslationService.trans(
+                        'aes.msgs.comments.reply.success'
+                    )
+                });
+            }, function () {
+                toaster.add({
+                    type: 'sf-error',
+                    message: TranslationService.trans(
+                        'aes.msgs.comments.reply.error'
+                    )
+                });
+            });
+        };
+
+        /**
         * Changes the value of the article's commenting setting and updates
         * it on the server. In case of an erroneous server response it
         * restores the setting back to the original value (i.e. the value

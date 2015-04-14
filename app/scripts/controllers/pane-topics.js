@@ -65,10 +65,22 @@ angular.module('authoringEnvironmentApp').controller('PaneTopicsCtrl', [
             )
             .then(function (topic) {
                 newTopic = topic;
+                toaster.add({
+                    type: 'sf-info',
+                    message: TranslationService.trans(
+                        'aes.msgs.topics.add.success'
+                    )
+                });
                 return Topic.addToArticle(
                     article.articleId, article.language, [newTopic]
                 );
             }, function (response) {
+                toaster.add({
+                    type: 'sf-error',
+                    message: TranslationService.trans(
+                        'aes.msgs.topics.add.error'
+                    )
+                });
                 if (response.status === 409) {
                     // failed due to a duplicate name
                     $scope.addTopic.topicTitle.$setValidity(
@@ -180,6 +192,19 @@ angular.module('authoringEnvironmentApp').controller('PaneTopicsCtrl', [
                     $scope.assignedTopics.push(item);
                 });
                 $scope.clearSelectedTopics();
+                toaster.add({
+                    type: 'sf-info',
+                    message: TranslationService.trans(
+                        'aes.msgs.topics.assign.success'
+                    )
+                });
+            }, function () {
+                toaster.add({
+                    type: 'sf-error',
+                    message: TranslationService.trans(
+                        'aes.msgs.topics.assign.success'
+                    )
+                });
             }).finally(function () {
                 $scope.assigningTopics = false;
             });
@@ -210,11 +235,23 @@ angular.module('authoringEnvironmentApp').controller('PaneTopicsCtrl', [
 
             modal.result.then(function () {
                 return topic.removeFromArticle(
-                    article.articleId, article.language);
-            }, $q.reject)
-            .then(function () {
-                _.remove($scope.assignedTopics, {id: topic.id});
-            });
+                    article.articleId, article.language).then(function () {
+                        _.remove($scope.assignedTopics, {id: topic.id});
+                        toaster.add({
+                            type: 'sf-info',
+                            message: TranslationService.trans(
+                                'aes.msgs.topics.unassign.success'
+                            )
+                        });
+                    }, function () {
+                        toaster.add({
+                            type: 'sf-error',
+                            message: TranslationService.trans(
+                                'aes.msgs.topics.unassign.success'
+                            )
+                        });
+                    });
+            }, $q.reject);
         };
     }
 ]);

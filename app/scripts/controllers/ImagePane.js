@@ -10,8 +10,15 @@ angular.module('authoringEnvironmentApp').controller('ImagePaneCtrl', [
     'images',
     'modal',  // XXX: later move this old modal service into modalFactory
     'modalFactory',
+    'toaster',
     'TranslationService',
-    function ($scope, images, modal, modalFactory, TranslationService) {
+    function (
+        $scope,
+        images,
+        modal,
+        modalFactory,
+        toaster,
+        TranslationService) {
 
         $scope.images = images;
         $scope.defaultWidth = '100%';
@@ -71,7 +78,21 @@ angular.module('authoringEnvironmentApp').controller('ImagePaneCtrl', [
             modal = modalFactory.confirmLight(title, text);
 
             modal.result.then(function (data) {
-                images.detach(imageId);
+                images.detach(imageId).then(function () {
+                    toaster.add({
+                        type: 'sf-info',
+                        message: TranslationService.trans(
+                            'aes.msgs.images.detach.success'
+                        )
+                    });
+                }, function () {
+                    toaster.add({
+                        type: 'sf-error',
+                        message: TranslationService.trans(
+                            'aes.msgs.images.detach.success'
+                        )
+                    });
+                });
             }, function (reason) {
                 // action canceled, do nothing
             });

@@ -21,9 +21,6 @@ describe('Controller: PaneRelatedArticlesCtrl', function () {
         mockedIssues,
         mockedSections,
         previewArticle,
-        $window,
-        Translator,
-        mockTranslator,
         $q,
         $rootScope;
 
@@ -45,18 +42,6 @@ describe('Controller: PaneRelatedArticlesCtrl', function () {
         { 'title': 'section one', 'number': 1 },
         { 'title': 'section two', 'number': 2 }
     ],
-
-    beforeEach(inject(function ($injector) {
-        mockTranslator = {
-            trans: function (value) {
-                return value;
-            }
-        };
-
-        $window = $injector.get('$window');
-        $window.Translator = mockTranslator;
-        Translator = $injector.get('Translator');
-    }));
 
     beforeEach(inject(function (
         $controller,
@@ -93,10 +78,6 @@ describe('Controller: PaneRelatedArticlesCtrl', function () {
         });
 
     }));
-
-    afterEach(function () {
-        delete $window.Translator;
-    });
 
     it('initializes articlesSearchResults to empty list', function () {
         expect(PaneRelatedArticlesCtrl.articlesSearchResults).toEqual([]);
@@ -465,7 +446,7 @@ describe('Controller: PaneRelatedArticlesCtrl', function () {
 
             PaneRelatedArticlesCtrl.article.removeRelatedArticle = jasmine
                 .createSpy('removeRelatedArticle')
-                .andReturn(deferedRemove); 
+                .andReturn(deferedRemove.promise); 
         }));
 
         it('opens a "light" confirmation dialog', function () {

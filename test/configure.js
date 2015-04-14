@@ -8,3 +8,24 @@ $.fn.alohaBlock = function() {
 var Aloha = {};
 Aloha.settings = {};
 Aloha.settings.jQuery = window.jQuery.noConflict(true);
+
+
+/* added because Translator is expected to be available in window object */
+var window,
+    Translator,
+    mockTranslator;
+
+beforeEach(function () {
+    mockTranslator = {
+        trans: function (value) {
+            return value;
+        }
+    };
+
+    window.Translator = mockTranslator;
+});
+
+afterEach(function () {
+    delete window.Translator;
+});
+

@@ -18,25 +18,10 @@ describe('Controller: ArticleCtrl', function () {
         platformService,
         saveArticleDeferred,
         scope,
-        $window,
-        Translator,
-        mockTranslator,
         $rootScope;
 
     // load the controller's module
     beforeEach(module('authoringEnvironmentApp'));
-
-    beforeEach(inject(function ($injector) {
-        mockTranslator = {
-            trans: function (value) {
-                return value;
-            }
-        };
-
-        $window = $injector.get('$window');
-        $window.Translator = mockTranslator;
-        Translator = $injector.get('Translator');
-    }));
 
     beforeEach(inject(function ($controller, _$rootScope_, $q, _Article_) {
         $rootScope = _$rootScope_;
@@ -89,10 +74,6 @@ describe('Controller: ArticleCtrl', function () {
             platform: platformService
         });
     }));
-
-    afterEach(function () {
-        delete $window.Translator;
-    });
 
     it('exposes mode service in scope', function () {
         expect(scope.mode).toBe(modeService);

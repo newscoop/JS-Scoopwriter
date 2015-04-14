@@ -7,10 +7,11 @@ angular.module('authoringEnvironmentApp').controller('PaneSnippetsCtrl', [
     'SnippetTemplate',
     'snippets',
     'modalFactory',
+    'toaster',
     'TranslationService',
     function (
         $scope, $q, articleService, Snippet, SnippetTemplate, snippets,
-        modalFactory, TranslationService
+        modalFactory, toaster, TranslationService
     ) {
         var article = articleService.articleInstance;
 
@@ -60,7 +61,23 @@ angular.module('authoringEnvironmentApp').controller('PaneSnippetsCtrl', [
             )
             .then(function (snippet) {
                 newSnippet = snippet;
-                return snippets.addToArticle(newSnippet, article);
+                return snippets.addToArticle(newSnippet, article).then(
+                    function() {
+                        toaster.add({
+                            type: 'sf-info',
+                            message: TranslationService.trans(
+                                'aes.msgs.snippets.add.success'
+                            )
+                        });
+                    }, function () {
+                        toaster.add({
+                            type: 'sf-error',
+                            message: TranslationService.trans(
+                                'aes.msgs.snippets.add.error'
+                            )
+                        });
+                    }
+                );
             }, $q.reject)
             .then(function () {
                 // hide form on successful add and clear its field
@@ -97,7 +114,23 @@ angular.module('authoringEnvironmentApp').controller('PaneSnippetsCtrl', [
                 // NOTE: detach snippet from article but don't delete it,
                 // because it might be attached to some other article, too
                 // (in theory at least)
-                snippets.removeFromArticle(snippet, article);
+                snippets.removeFromArticle(snippet, article).then(
+                    function () {
+                        toaster.add({
+                            type: 'sf-info',
+                            message: TranslationService.trans(
+                                'aes.msgs.snippets.remove.success'
+                            )
+                        });
+                    }, function () {
+                        toaster.add({
+                            type: 'sf-error',
+                            message: TranslationService.trans(
+                                'aes.msgs.snippets.remove.error'
+                            )
+                        });
+                    }
+                );
             });
         };
 

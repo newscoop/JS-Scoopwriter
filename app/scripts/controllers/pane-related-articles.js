@@ -117,7 +117,22 @@ angular.module('authoringEnvironmentApp')
         * @param newIndex int position in list
         */
         self.orderChange = function(item, newIndex) {
-            self.article.setOrderOfRelatedArticles(item, newIndex);
+            self.article.setOrderOfRelatedArticles(item, newIndex)
+            .then(function () {
+                toaster.add({
+                    type: 'sf-info',
+                    message: TranslationService.trans(
+                        'aes.msgs.relatedarticles.order.success'
+                    )
+                });
+            }, function () {
+                toaster.add({
+                    type: 'sf-info',
+                    message: TranslationService.trans(
+                        'aes.msgs.relatedarticles.order.success'
+                    )
+                });
+            });
         };
 
         /**
@@ -208,6 +223,19 @@ angular.module('authoringEnvironmentApp')
                 .then(function (relatedArticles) {
                 self.assignedRelatedArticles.push(relatedArticle);
                 self.loadSearchResults(self.query);
+                toaster.add({
+                    type: 'sf-info',
+                    message: TranslationService.trans(
+                        'aes.msgs.relatedarticles.pin.success'
+                    )
+                });
+            }, function () {
+                toaster.add({
+                    type: 'sf-error',
+                    message: TranslationService.trans(
+                        'aes.msgs.relatedarticles.pin.error'
+                    )
+                });
             }).finally(function () {
                 self.assigningRelatedArticles = false;
             });
@@ -237,7 +265,22 @@ angular.module('authoringEnvironmentApp')
             modal = modalFactory.confirmLight(title, text);
 
             modal.result.then(function () {
-                return self.article.removeRelatedArticle(relatedArticle);
+                return self.article.removeRelatedArticle(relatedArticle)
+                    .then(function () {
+                        toaster.add({
+                            type: 'sf-info',
+                            message: TranslationService.trans(
+                                'aes.msgs.relatedarticles.unpin.success'
+                            )
+                        });
+                    }, function () {
+                        toaster.add({
+                            type: 'sf-error',
+                            message: TranslationService.trans(
+                                'aes.msgs.relatedarticles.unpin.error'
+                            )
+                        });
+                    });
             }, $q.reject)
             .then(function () {
                 _.remove(

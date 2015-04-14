@@ -9,24 +9,9 @@ describe('Controller: PaneTopicsCtrl', function () {
     var articleService,
         PaneTopicsCtrl,
         scope,
-        $window,
-        Translator,
-        mockTranslator,
         Topic;
 
     beforeEach(module('authoringEnvironmentApp'));
-
-    beforeEach(inject(function ($injector) {
-        mockTranslator = {
-            trans: function (value) {
-                return value;
-            }
-        };
-
-        $window = $injector.get('$window');
-        $window.Translator = mockTranslator;
-        Translator = $injector.get('Translator');
-    }));
 
     beforeEach(inject(function (
         $controller, $rootScope, _article_, _Topic_
@@ -57,10 +42,6 @@ describe('Controller: PaneTopicsCtrl', function () {
             Topic: Topic
         });
     }));
-
-    afterEach(function () {
-        delete $window.Translator;
-    });
 
     it('initializes the list of selected topics in scope to empty list',
         function () {

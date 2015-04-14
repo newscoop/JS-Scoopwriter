@@ -10,28 +10,16 @@ describe('Controller: ImagepaneCtrl', function () {
 
     var fakeImagesService,
         ImagepaneCtrl,
-        $window,
-        Translator,
-        mockTranslator,
         scope;
 
     // load the controller's module
     beforeEach(module('authoringEnvironmentApp'));
 
-    beforeEach(inject(function ($injector) {
-        mockTranslator = {
-            trans: function (value) {
-                return value;
-            }
+    beforeEach(inject(function ($q, $controller, $rootScope) {
+        fakeImagesService = {
+            detach: $q.defer(),
+            attachAllCollected: $q.defer(),
         };
-
-        $window = $injector.get('$window');
-        $window.Translator = mockTranslator;
-        Translator = $injector.get('Translator');
-    }));
-
-    beforeEach(inject(function ($controller, $rootScope) {
-        fakeImagesService = {};
         scope = $rootScope.$new();
 
         ImagepaneCtrl = $controller('ImagePaneCtrl', {
@@ -39,10 +27,6 @@ describe('Controller: ImagepaneCtrl', function () {
             images: fakeImagesService
         });
     }));
-
-    afterEach(function () {
-        delete $window.Translator;
-    });
 
     it('attaches images to the scope', function () {
         expect(scope.images).toBeDefined();
@@ -97,13 +81,16 @@ describe('Controller: ImagepaneCtrl', function () {
 
     describe('scope\'s detachImage() method', function () {
         var deferred,
+            deferredDetach,
             modalFactory,
             resultPromise;
 
         beforeEach(inject(function ($q, _modalFactory_) {
             modalFactory = _modalFactory_;
 
-            fakeImagesService.detach = jasmine.createSpy();
+            //fakeImagesService.detach = jasmine.createSpy();
+            deferredDetach = $q.defer();
+            spyOn(fakeImagesService, 'detach').andReturn(deferredDetach.promise);
 
             deferred = $q.defer();
             resultPromise = deferred.promise;

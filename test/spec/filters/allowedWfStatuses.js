@@ -10,24 +10,9 @@ describe('Filter: allowedWfStatuses', function () {
 
     var Article,
         filter,
-        $window,
-        Translator,
-        mockTranslator,
         statuses;
 
     beforeEach(module('authoringEnvironmentApp'));
-
-    beforeEach(inject(function ($injector) {
-        mockTranslator = {
-            trans: function (value) {
-                return value;
-            }
-        };
-
-        $window = $injector.get('$window');
-        $window.Translator = mockTranslator;
-        Translator = $injector.get('Translator');
-    }));
 
     beforeEach(inject(function ($filter, _Article_) {
         filter = $filter('allowedWfStatuses');
@@ -43,10 +28,6 @@ describe('Filter: allowedWfStatuses', function () {
             }
         ];
     }));
-
-    afterEach(function () {
-        delete $window.Translator;
-    });
 
     it('filters out "Published w/ issue" status if the article is published',
         function () {

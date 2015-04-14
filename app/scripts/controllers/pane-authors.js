@@ -152,6 +152,19 @@ angular.module('authoringEnvironmentApp').controller('PaneAuthorsCtrl', [
                 // works on the server
                 $scope.authors.push(author);
                 self.setRoleChangeWatch(author);
+                toaster.add({
+                    type: 'sf-info',
+                    message: TranslationService.trans(
+                        'aes.msgs.authors.add.success'
+                    )
+                });
+            }, function () {
+                toaster.add({
+                    type: 'sf-error',
+                    message: TranslationService.trans(
+                        'aes.msgs.authors.add.error'
+                    )
+                });
             })
             .finally(function () {
                 $scope.addingNewAuthor = false;
@@ -184,13 +197,25 @@ angular.module('authoringEnvironmentApp').controller('PaneAuthorsCtrl', [
                     article.articleId,
                     article.language,
                     author.articleRole.id
-                );
-            }, $q.reject)
-            .then(function () {
-                _.remove($scope.authors, function (item) {
-                    return item === author;
+                ).then(function () {
+                    _.remove($scope.authors, function (item) {
+                        return item === author;
+                    });
+                    toaster.add({
+                        type: 'sf-info',
+                        message: TranslationService.trans(
+                            'aes.msgs.authors.remove.success'
+                        )
+                    });
+                }, function () {
+                    toaster.add({
+                        type: 'sf-error',
+                        message: TranslationService.trans(
+                            'aes.msgs.authors.remove.error'
+                        )
+                    });
                 });
-            });
+            }, $q.reject);
         };
 
         /**

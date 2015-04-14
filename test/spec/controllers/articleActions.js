@@ -12,25 +12,11 @@ describe('Controller: ArticleActionsCtrl', function () {
         articleService,
         modeService,
         scope,
-        toaster,
-        Translator,
-        mockTranslator,
-        $window;
+        $window,
+        toaster;
 
     // load the controller's module
     beforeEach(module('authoringEnvironmentApp'));
-
-    beforeEach(inject(function ($injector) {
-        mockTranslator = {
-            trans: function (value) {
-                return value;
-            }
-        };
-
-        $window = $injector.get('$window');
-        $window.Translator = mockTranslator;
-        Translator = $injector.get('Translator');
-    }));
 
     beforeEach(inject(function (
         $controller, $rootScope, $q, _Article_, _toaster_
@@ -73,10 +59,6 @@ describe('Controller: ArticleActionsCtrl', function () {
 
         spyOn(scope, 'setModified').andCallThrough();
     }));
-
-    afterEach(function () {
-        delete $window.Translator;
-    });
 
     it('exposes mode service in scope', function () {
         expect(scope.mode).toBe(modeService);

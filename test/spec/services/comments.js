@@ -11,10 +11,7 @@ describe('Service: Comments', function () {
     // load the service's module
     beforeEach(module('authoringEnvironmentApp'));
 
-    var $window,
-        Translator,
-        mockTranslator,
-        items = [{
+    var items = [{
             id: 24,
             author: 'Boom-boom Boba',
             subject: 'I approve',
@@ -58,22 +55,6 @@ describe('Service: Comments', function () {
         };
         $provide.value('article', articleServiceMock);
     }));
-
-    beforeEach(inject(function ($injector) {
-        mockTranslator = {
-            trans: function (value) {
-                return value;
-            }
-        };
-
-        $window = $injector.get('$window');
-        $window.Translator = mockTranslator;
-        Translator = $injector.get('Translator');
-    }));
-
-    afterEach(function () {
-        delete $window.Translator;
-    });
 
     describe('the resource', function() {
         var $httpBackend, comments;

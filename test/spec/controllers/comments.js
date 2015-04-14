@@ -13,9 +13,6 @@ describe('Controller: CommentsCtrl', function () {
 
     var CommentsCtrl,
     scope,
-    $window,
-    Translator,
-    mockTranslator,
     commentsThenMethod = function (callback) {
         callback();
     },
@@ -53,18 +50,6 @@ describe('Controller: CommentsCtrl', function () {
     log = {
         debug: jasmine.createSpy('debug mock')
     };
-
-    beforeEach(inject(function ($injector) {
-        mockTranslator = {
-            trans: function (value) {
-                return value;
-            }
-        };
-
-        $window = $injector.get('$window');
-        $window.Translator = mockTranslator;
-        Translator = $injector.get('Translator');
-    }));
 
     // Initialize the controller and a mock scope
     beforeEach(inject(function (
@@ -106,10 +91,6 @@ describe('Controller: CommentsCtrl', function () {
             $log: log
         });
     }));
-
-    afterEach(function () {
-        delete $window.Translator;
-    });
 
     it('proxies comments', function () {
         expect(scope.comments).toBeDefined();

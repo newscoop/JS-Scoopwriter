@@ -8,22 +8,7 @@ describe('Controller: DroppedSnippetCtrl', function () {
     var DroppedSnippetCtrl,
         Snippet,
         snippetsService,
-        $window,
-        Translator,
-        mockTranslator,
         scope;
-
-    beforeEach(inject(function ($injector) {
-        mockTranslator = {
-            trans: function (value) {
-                return value;
-            }
-        };
-
-        $window = $injector.get('$window');
-        $window.Translator = mockTranslator;
-        Translator = $injector.get('Translator');
-    }));
 
     beforeEach(inject(function ($controller, $rootScope, _Snippet_) {
         Snippet = _Snippet_;
@@ -36,10 +21,6 @@ describe('Controller: DroppedSnippetCtrl', function () {
             snippets: snippetsService
         });
     }));
-
-    afterEach(function () {
-        delete $window.Translator;
-    });
 
     it('initializes the "expanded" flag in scope to false', function () {
         expect(scope.expanded).toBe(false);

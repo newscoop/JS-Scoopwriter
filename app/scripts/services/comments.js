@@ -14,11 +14,9 @@ angular.module('authoringEnvironmentApp').service('comments', [
     'pageTracker',
     '$log',
     'nestedSort',
-    'toaster',
-    'TranslationService',
     function comments(
         articleService, $http, $q, $resource, transform, pageTracker,
-        $log, nestedSort, toaster, TranslationService
+        $log, nestedSort
     ) {
         /* max number of comments per page, decrease it in order to
          * test pagination, and sorting change with paginated
@@ -494,30 +492,23 @@ angular.module('authoringEnvironmentApp').service('comments', [
             * @method save
             */
             comment.save = function () {
-                var comment = this;
+                var comment = this,
+                    deferred = $q.defer();
 
                 self.resource.save({
                     articleNumber: article.articleId,
                     languageCode: article.language,
                     commentId: comment.id
                 }, { comment: comment.editing }, function () {
+                    deferred.resolve();
                     comment.subject = comment.editing.subject;
                     comment.message = comment.editing.message;
                     comment.isEdited = false;
-                    toaster.add({
-                        type: 'sf-info',
-                        message: TranslationService.trans(
-                            'aes.msgs.comments.edit.success'
-                        )
-                    });
                 }, function () {
-                    toaster.add({
-                        type: 'sf-error',
-                        message: TranslationService.trans(
-                            'aes.msgs.comments.edit.success'
-                        )
-                    });
+                    deferred.reject();
                 });
+
+                return deferred.promise;
             };
 
             /**
@@ -562,31 +553,24 @@ angular.module('authoringEnvironmentApp').service('comments', [
             */
             comment.sendReply = function () {
                 var comment = this,
+                    deferred = $q.defer(),
                     // alias for the comment object itself
                     replyData = angular.copy(comment.reply);
                 replyData.parent = comment.id;
                 comment.sendingReply = true;
                 self.add({ 'comment': replyData }).then(function () {
+                    deferred.resolve();
                     comment.sendingReply = false;
                     comment.isReplyMode = false;
                     comment.reply = {
                         subject: 'Re: ' + comment.subject,
                         message: ''
                     };
-                    toaster.add({
-                        type: 'sf-info',
-                        message: TranslationService.trans(
-                            'aes.msgs.comments.reply.success'
-                        )
-                    });
                 }, function () {
-                    toaster.add({
-                        type: 'sf-error',
-                        message: TranslationService.trans(
-                            'aes.msgs.comments.reply.error'
-                        )
-                    });
+                    deferred.reject();
                 });
+
+                return deferred.promise;
             };
 
             /**

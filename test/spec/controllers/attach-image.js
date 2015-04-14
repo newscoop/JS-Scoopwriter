@@ -17,11 +17,14 @@ describe('Controller: AttachImageCtrl', function () {
         scope;
 
     // Initialize the controller and a mock scope
-    beforeEach(inject(function ($controller, $rootScope, _modal_) {
+    beforeEach(inject(function ($q, $controller, $rootScope, _modal_) {
         scope = $rootScope.$new();
         modal = _modal_;
 
-        fakeImagesService = {};
+        fakeImagesService = {
+            attachAllCollected: $q.defer(),
+            discardAll: $q.defer()
+        };
 
         AttachImageCtrl = $controller('AttachImageCtrl', {
             $scope: scope,
@@ -58,24 +61,33 @@ describe('Controller: AttachImageCtrl', function () {
     });
 
     describe('scope\'s attachCollected() method', function () {
-        beforeEach(function () {
-            fakeImagesService.attachAllCollected = jasmine.createSpy();
-            fakeImagesService.discardAll = jasmine.createSpy();
+        var deferred;
+
+        beforeEach(inject(function ($q) {
+            deferred = $q.defer(); 
+            spyOn(fakeImagesService, 'attachAllCollected').andReturn(deferred.promise);
+            spyOn(fakeImagesService, 'discardAll').andReturn(deferred.promise);
             spyOn(modal, 'hide');
-        });
+        }));
 
         it('triggers attaching all images currently in basket', function () {
             scope.attachCollected();
+            deferred.resolve(true);
+            scope.$digest();
             expect(fakeImagesService.attachAllCollected).toHaveBeenCalled();
         });
 
         it('triggers clearing the basket and upload list', function () {
             scope.attachCollected();
+            deferred.resolve(true);
+            scope.$digest();
             expect(fakeImagesService.discardAll).toHaveBeenCalled();
         });
 
         it('closes the modal', function () {
             scope.attachCollected();
+            deferred.resolve(true);
+            scope.$digest();
             expect(modal.hide).toHaveBeenCalled();
         });
     });

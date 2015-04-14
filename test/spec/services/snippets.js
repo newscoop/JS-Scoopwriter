@@ -10,9 +10,6 @@ describe('Service: snippets', function () {
     var Snippet,
         snippets,
         snippetsResponse,
-        $window,
-        Translator,
-        mockTranslator,
         $rootScope;
 
     // load the service's module
@@ -24,18 +21,6 @@ describe('Service: snippets', function () {
             articleInstance: {articleId: 55, language: 'pl'}
         };
         $provide.value('article', articleServiceMock);
-    }));
-
-    beforeEach(inject(function ($injector) {
-        mockTranslator = {
-            trans: function (value) {
-                return value;
-            }
-        };
-
-        $window = $injector.get('$window');
-        $window.Translator = mockTranslator;
-        Translator = $injector.get('Translator');
     }));
 
     beforeEach(inject(function (_$rootScope_, _Snippet_) {
@@ -53,10 +38,6 @@ describe('Service: snippets', function () {
     beforeEach(inject(function (_snippets_) {
         snippets = _snippets_;
     }));
-
-    afterEach(function () {
-        delete $window.Translator;
-    });
 
     it('stores retrieved article data', function () {
         expect(snippets.article).toEqual({articleId: 55, language: 'pl'});
