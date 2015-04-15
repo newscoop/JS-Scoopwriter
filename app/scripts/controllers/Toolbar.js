@@ -34,6 +34,10 @@ angular.module('authoringEnvironmentApp').controller('ToolbarCtrl', [
                 name: 'Heading 5'
             },
             {
+                element: 'blockquote',
+                name: 'Blockquote'
+            },
+            {
                 element: 'pre',
                 name: 'Preformatted'
             }
@@ -63,6 +67,16 @@ angular.module('authoringEnvironmentApp').controller('ToolbarCtrl', [
                         $scope.active = filtered[0].name;
                     });
                 }
+            } else {
+                // Aloha events are a little slow so
+                // we have to wrap this check in a timeout
+                $timeout(function () {
+                    if (Aloha.blockquoteFound) {
+                        $scope.active = 'Blockquote';
+                    } else {
+                        $scope.active = 'Normal Text';
+                    }
+                }, 30);
             }
         };
 
