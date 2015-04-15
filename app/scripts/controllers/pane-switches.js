@@ -9,7 +9,14 @@ angular.module('authoringEnvironmentApp').controller('PaneSwitchesCtrl', [
     '$q',
     'article',
     'ArticleType',
-    function ($q, articleService, ArticleType) {
+    'toaster',
+    'TranslationService',
+    function (
+        $q,
+        articleService,
+        ArticleType,
+        toaster,
+        TranslationService) {
         var self = this;
 
         self.article = articleService.articleInstance;
@@ -70,7 +77,21 @@ angular.module('authoringEnvironmentApp').controller('PaneSwitchesCtrl', [
             self.saveInProgress = true;
 
             self.article.saveSwitches(switchNames)
-            .finally(function () {
+            .then(function () {
+                toaster.add({
+                    type: 'sf-info',
+                    message: TranslationService.trans(
+                        'aes.msgs.switches.success'
+                    )
+                });
+            }, function () {
+                toaster.add({
+                    type: 'sf-error',
+                    message: TranslationService.trans(
+                        'aes.msgs.switches.error'
+                    )
+                });
+            }).finally(function () {
                 self.modified = false;
                 self.saveInProgress = false;
             });

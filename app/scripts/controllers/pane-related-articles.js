@@ -13,7 +13,17 @@ angular.module('authoringEnvironmentApp')
     'Publication',
     'Issue',
     'Section',
-    function ($q, articleService, modalFactory, Publication, Issue, Section) {
+    'toaster',
+    'TranslationService',
+    function (
+        $q,
+        articleService,
+        modalFactory,
+        Publication,
+        Issue,
+        Section,
+        toaster,
+        TranslationService) {
         var self = this;
 
         self.article = articleService.articleInstance;
@@ -107,7 +117,22 @@ angular.module('authoringEnvironmentApp')
         * @param newIndex int position in list
         */
         self.orderChange = function(item, newIndex) {
-            self.article.setOrderOfRelatedArticles(item, newIndex);
+            self.article.setOrderOfRelatedArticles(item, newIndex)
+            .then(function () {
+                toaster.add({
+                    type: 'sf-info',
+                    message: TranslationService.trans(
+                        'aes.msgs.relatedarticles.order.success'
+                    )
+                });
+            }, function () {
+                toaster.add({
+                    type: 'sf-error',
+                    message: TranslationService.trans(
+                        'aes.msgs.relatedarticles.order.error'
+                    )
+                });
+            });
         };
 
         /**
@@ -198,6 +223,19 @@ angular.module('authoringEnvironmentApp')
                 .then(function (relatedArticles) {
                 self.assignedRelatedArticles.push(relatedArticle);
                 self.loadSearchResults(self.query);
+                toaster.add({
+                    type: 'sf-info',
+                    message: TranslationService.trans(
+                        'aes.msgs.relatedarticles.pin.success'
+                    )
+                });
+            }, function () {
+                toaster.add({
+                    type: 'sf-error',
+                    message: TranslationService.trans(
+                        'aes.msgs.relatedarticles.pin.error'
+                    )
+                });
             }).finally(function () {
                 self.assigningRelatedArticles = false;
             });
@@ -217,15 +255,32 @@ angular.module('authoringEnvironmentApp')
                 title,
                 text;
 
-            title = 'Do you really want to unassign ' +
-                'this relatedArticle from the article?';
-            text = 'Should you change your mind, the ' +
-                'relatedArticle can always be re-assigned again.';
+            title = TranslationService.trans(
+                'aes.msgs.relatedarticles.unpin.popupHead'
+            );
+            text = TranslationService.trans(
+                'aes.msgs.relatedarticles.unpin.popup'
+            );
 
             modal = modalFactory.confirmLight(title, text);
 
             modal.result.then(function () {
-                return self.article.removeRelatedArticle(relatedArticle);
+                return self.article.removeRelatedArticle(relatedArticle)
+                    .then(function () {
+                        toaster.add({
+                            type: 'sf-info',
+                            message: TranslationService.trans(
+                                'aes.msgs.relatedarticles.unpin.success'
+                            )
+                        });
+                    }, function () {
+                        toaster.add({
+                            type: 'sf-error',
+                            message: TranslationService.trans(
+                                'aes.msgs.relatedarticles.unpin.error'
+                            )
+                        });
+                    });
             }, $q.reject)
             .then(function () {
                 _.remove(

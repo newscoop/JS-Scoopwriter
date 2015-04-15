@@ -161,17 +161,27 @@ describe('Controller: PaneAuthorsCtrl', function () {
 
     describe('authorRoleChanged() method', function () {
         var author,
+            toaster,
+            deferred,
             deferredUpdate;
 
-        beforeEach(inject(function ($q) {
+        beforeEach(inject(function ($q, _toaster_) {
+            deferred = $q.defer();
+            toaster = _toaster_;
             author = {
                 updateRole: function () {},
+                stopRoleChangeWatch: function () {},
+                setRoleChangeWatch: function () {},
                 articleRole: roles[3]  // 13, Lector
             };
 
             deferredUpdate = $q.defer();
             spyOn(author, 'updateRole').andCallFake(function () {
                 return deferredUpdate.promise;
+            });
+
+            spyOn(toaster, 'add').andCallFake(function () {
+                return deferred.promise;
             });
         }));
 
@@ -186,6 +196,38 @@ describe('Controller: PaneAuthorsCtrl', function () {
             ctrl.authorRoleChanged(newRole, oldRole, author);
 
             expect(author.updatingRole).toEqual(true);
+        });
+
+        it('calls toaster.add() with appropriate params on success', function () {
+            var newRole = roles[0],  // 1, Writer
+                oldRole = roles[3],  // 13, Lector
+                promise;
+
+            author.articleRole = newRole;  // Writer
+            ctrl.authorRoleChanged(newRole, oldRole, author);
+            deferredUpdate.resolve(true);
+            scope.$digest();
+
+            expect(toaster.add).toHaveBeenCalledWith({
+                type: 'sf-info',
+                message: 'aes.msgs.authors.change.success'
+            });
+        });
+
+        it('calls toaster.add() with appropriate params on error', function () {
+            var newRole = roles[0],  // 1, Writer
+                oldRole = roles[3],  // 13, Lector
+                promise;
+
+            author.articleRole = newRole;  // Writer
+            ctrl.authorRoleChanged(newRole, oldRole, author);
+            deferredUpdate.reject(false);
+            scope.$digest();
+
+            expect(toaster.add).toHaveBeenCalledWith({
+                type: 'sf-error',
+                message: 'aes.msgs.authors.change.error'
+            });
         });
 
         it('invokes author.updateRole() with correct parameters', function () {
@@ -283,9 +325,13 @@ describe('Controller: PaneAuthorsCtrl', function () {
 
     describe('scope\'s addAuthorToArticle() method', function () {
         var author,
+            toaster,
+            deferred,
             deferredAddToArticle;
 
-        beforeEach(inject(function ($q) {
+        beforeEach(inject(function ($q, _toaster_) {
+            toaster = _toaster_;
+            deferred = $q.defer();
             author = {
                 id: 82,
                 articleRole: null,
@@ -303,6 +349,10 @@ describe('Controller: PaneAuthorsCtrl', function () {
             spyOn(author, 'addToArticle').andCallFake(function () {
                 return deferredAddToArticle.promise;
             });
+
+            spyOn(toaster, 'add').andCallFake(function () {
+                return deferred.promise;
+            });
         }));
 
         it('sets addingNewAuthor flag before doing anything', function () {
@@ -317,6 +367,28 @@ describe('Controller: PaneAuthorsCtrl', function () {
                 expect(author.addToArticle).toHaveBeenCalledWith(64, 'de', 13);
             }
         );
+
+        it('calls toaster.add() with appropriate params on success', function () {
+            scope.addAuthorToArticle();
+            deferredAddToArticle.resolve(true);
+            scope.$digest();
+
+            expect(toaster.add).toHaveBeenCalledWith({
+                type: 'sf-info',
+                message: 'aes.msgs.authors.add.success'
+            });
+        });
+
+        it('calls toaster.add() with appropriate params on error', function () {
+            scope.addAuthorToArticle();
+            deferredAddToArticle.reject(false);
+            scope.$digest();
+
+            expect(toaster.add).toHaveBeenCalledWith({
+                type: 'sf-error',
+                message: 'aes.msgs.authors.add.error'
+            });
+        });
 
         it('appends new author to the list of article authors ' +
            'on sucessful server response',
@@ -381,10 +453,14 @@ describe('Controller: PaneAuthorsCtrl', function () {
     describe('scope\'s confirmRemoveAuthor() method', function () {
         var author,
             authorRemoveDeferred,
+            toaster,
+            deferred,
             modalDeferred,
             modalFactory;
 
-        beforeEach(inject(function ($q, _modalFactory_) {
+        beforeEach(inject(function ($q, _modalFactory_, _toaster_) {
+            toaster = _toaster_;
+            deferred = $q.defer();
             authorRemoveDeferred = $q.defer();
             modalDeferred = $q.defer();
             modalFactory = _modalFactory_;
@@ -393,6 +469,10 @@ describe('Controller: PaneAuthorsCtrl', function () {
                 return {
                     result: modalDeferred.promise
                 }
+            });
+
+            spyOn(toaster, 'add').andCallFake(function () {
+                return deferred.promise;
             });
 
             author = {
@@ -436,6 +516,36 @@ describe('Controller: PaneAuthorsCtrl', function () {
 
             expect(author.removeFromArticle).not.toHaveBeenCalled();
             expect(scope.authors.length).toEqual(3);
+        });
+
+        it('calls toaster.add() with appropriate params on success', function () {
+            scope.authors = [{id:123}, author, {id:321}];
+
+            scope.confirmRemoveAuthor(author);
+            modalDeferred.resolve(true);
+            scope.$digest();
+            authorRemoveDeferred.resolve(true);
+            scope.$digest();
+
+            expect(toaster.add).toHaveBeenCalledWith({
+                type: 'sf-info',
+                message: 'aes.msgs.authors.remove.success'
+            });
+        });
+
+        it('calls toaster.add() with appropriate params on error', function () {
+            scope.authors = [{id:123}, author, {id:321}];
+
+            scope.confirmRemoveAuthor(author);
+            modalDeferred.resolve(true);
+            scope.$digest();
+            authorRemoveDeferred.reject(false);
+            scope.$digest();
+
+            expect(toaster.add).toHaveBeenCalledWith({
+                type: 'sf-error',
+                message: 'aes.msgs.authors.remove.error'
+            });
         });
 
         it('does not remove author on server error response', function () {

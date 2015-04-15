@@ -9,22 +9,9 @@ describe('Directive: comment', function () {
     ));
 
     var element,
-    scope,
-    $window,
-    Translator,
-    mockTranslator;
+        scope;
 
-    beforeEach(inject(function ($rootScope, $templateCache, $injector) {
-        mockTranslator = {
-            trans: function (value) {
-                return value;
-            }
-        };
-
-        $window = $injector.get('$window');
-        $window.Translator = mockTranslator;
-
-        Translator = $injector.get('Translator');
+    beforeEach(inject(function ($rootScope, $templateCache) {
 
         var template = $templateCache.get('app/views/comment.html');
         $templateCache.put('views/comment.html', template);
@@ -40,10 +27,6 @@ describe('Directive: comment', function () {
             selected: true
         };
     }));
-
-    afterEach(function () {
-        delete $window.Translator;
-    });
 
     describe('compiled', function () {
         beforeEach(inject(function($compile) {

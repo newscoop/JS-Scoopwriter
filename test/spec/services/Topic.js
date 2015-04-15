@@ -18,7 +18,6 @@ describe('Factory: Topic', function () {
         $httpBackend = _$httpBackend_;
     }));
 
-
     describe('createFromApiData() method', function () {
         var data;
 
