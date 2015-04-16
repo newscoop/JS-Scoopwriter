@@ -6,7 +6,6 @@ angular.module('authoringEnvironmentApp').controller('ToolbarCtrl', [
     '$filter',
     '$timeout',
     function ($scope, $rootScope, $filter, $timeout) {
-        var updateScope;
 
         $scope.stylers = [
             {
@@ -49,7 +48,7 @@ angular.module('authoringEnvironmentApp').controller('ToolbarCtrl', [
             true
         )[0].name;
 
-        updateScope = function () {
+        $scope.updateScope = function () {
             var commandValue = Aloha.queryCommandValue('formatBlock'),
                 filtered;
 
@@ -81,11 +80,11 @@ angular.module('authoringEnvironmentApp').controller('ToolbarCtrl', [
         };
 
         $rootScope.$on('texteditor-selection-changed', function () {
-            updateScope();
+            $scope.updateScope();
         });
 
         $rootScope.$on('texteditor-command-executed', function () {
-            updateScope();
+            $scope.updateScope();
         });
     }
 ]);
