@@ -7,7 +7,8 @@
 */
 
 describe('Directive: sfAlohaFormatGeneric', function () {
-    var scope,
+    var isoScope,
+        scope,
         element;
 
     beforeEach(module('authoringEnvironmentApp'));
@@ -26,34 +27,40 @@ describe('Directive: sfAlohaFormatGeneric', function () {
         element = $compile(html)(scope);
         scope.$digest();
 
-        Aloha.addBlockQuote = function () { return true; }
-        Aloha.execCommand = function () { return true; }
+        isoScope = element.isolateScope();
+
+        Aloha.addBlockQuote = function () { return true; };
+        Aloha.removeBlockQuote = function () { return true; };
+        Aloha.execCommand = function () { return true; };
     }));
 
-    /**
-     * TODO: this totally doesn't work at the moment
-     * having problems getting the click to fire
-     */
     it('calls Aloha.addBlockQuote on Blockquote select', function () {
-        //var isolated = element.isolateScope();
-
         var addBlockQuoteSpy = spyOn(Aloha, 'addBlockQuote').andReturn(true);
-        var execCommandSpy = spyOn(Aloha, 'execCommand').andReturn(true);
 
-        //scope.styledElement = 'blockquote';
+        isoScope.styleElement = 'blockquote';
         element.click();
-        scope.$apply();
 
-        //expect(addBlockQuoteSpy).toHaveBeenCalled();
-        //expect(execCommandSpy).toHaveBeenCalled();
-        expect(true).toEqual(true);
+        expect(addBlockQuoteSpy).toHaveBeenCalled();
     });
 
     it('calls Aloha.removesBlockQuote when blockquotes are found', function () {
-        expect(true).toEqual(true);
+        var removeBlockQuoteSpy = spyOn(
+            Aloha, 'removeBlockQuote').andReturn(true);
+
+        isoScope.styleElement = 'something-that-is-not-blockquote';
+        Aloha.blockquoteFound = true;
+        element.click();
+
+        expect(removeBlockQuoteSpy).toHaveBeenCalled();
     });
 
     it('called the correct Aloha.execCommand', function () {
-        expect(true).toEqual(true);
+        var execCommandSpy = spyOn(Aloha, 'execCommand').andReturn(true);
+
+        isoScope.styleElement = 'something-that-is-not-blockquote';
+        element.click();
+
+        expect(execCommandSpy).toHaveBeenCalledWith(
+            'formatBlock', false, 'something-that-is-not-blockquote');
     });
 });
