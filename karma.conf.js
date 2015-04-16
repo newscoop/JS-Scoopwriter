@@ -49,6 +49,7 @@ module.exports = function(config) {
       'app/bower_components/bootstrap/dist/js/bootstrap.js',
       'app/bower_components/xregexp/min/xregexp-all-min.js',
       'app/bower_components/ng-tags-input/ng-tags-input.js',
+      'app/bower_components/angular-symfony-translation/dist/angular-symfony-translation.js',
       //include the directory where directive templates are stored
       'app/views/*.html'
     ],

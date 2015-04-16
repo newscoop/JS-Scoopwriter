@@ -9,9 +9,10 @@ describe('Directive: comment', function () {
     ));
 
     var element,
-    scope;
+        scope;
 
     beforeEach(inject(function ($rootScope, $templateCache) {
+
         var template = $templateCache.get('app/views/comment.html');
         $templateCache.put('views/comment.html', template);
         

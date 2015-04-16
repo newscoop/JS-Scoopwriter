@@ -19,7 +19,6 @@ describe('Factory: NcImage', function () {
         $httpBackend = _$httpBackend_;
     }));
 
-
     describe('constructor', function () {
         it('initializes instance\'s fields with provided values', function () {
             var data,

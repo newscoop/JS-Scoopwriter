@@ -4,7 +4,7 @@
     auto-list-offset="200">
 
   <div class="panel-title">
-    Topics
+    {{ ::('aes.label.topics'|trans) }}
   </div>
 
   <div class="paneFormWrapper">
@@ -15,25 +15,25 @@
           <span class="glyphicon"
                 ng-class="{'glyphicon-plus': !showAddNew,
                            'glyphicon-minus': showAddNew}"
-                ></span><span class="add-text">ADD NEW TOPIC</span>
+                ></span><span class="add-text">{{ ::('aes.label.addtopic'|trans) }}</span>
         </button>
       </div>
 
       <form name="addTopic" class="body" ng-show="showAddNew">
-        <div class="input-name">Title</div>
+        <div class="input-name">{{ ::('Title'|trans) }}</div>
         <input name="topicTitle" required
             class="editor-input"
             placeholder="Title"
             ng-model="newTopic.title">
 
         <span class="error-msg" ng-show="addTopic.topicTitle.$error.duplicate">
-          A topic with the same name already exists.
+          {{ ::('aes.msgs.topics.add.exists'|trans) }}
         </span>
 
         <input type="hidden" ui-select2="select2Options"
           class="topicSearch"
           ng-model="newTopic.parentTopic"
-          data-placeholder="-- select parent topic --"
+          data-placeholder="-- {{ ::('aes.label.selectparent'|trans) }} --"
           ng-disabled="addingNewTopic"
           />
 
@@ -42,13 +42,13 @@
               class="btn btn-primary btn-sm pull-right"
               ng-click="addNewTopicToArticle(newTopic)"
               ng-disabled="addTopic.$invalid || addingNewTopic"
-              >Add</button>
+              >{{ ::('Add'|trans) }}</button>
           <button
               class="btn btn-default btn-sm pull-right"
               ng-click="clearNewTopicForm()"
               ng-disabled="addingNewTopic ||
                           (!newTopic.title && !newTopic.parentTopic)"
-              >Clear</button>
+              >{{ ::('Clear'|trans) }}</button>
         </div>
       </form>
     </div>
@@ -60,7 +60,7 @@
           <span class="glyphicon"
                 ng-class="{'glyphicon-plus': !showAddExisting,
                            'glyphicon-minus': showAddExisting}"
-                ></span><span class="add-text">ADD EXISTING TOPIC(S)</span>
+                ></span><span class="add-text">{{ ::('aes.label.addexistingtopics'|trans) }}</span>
         </button>
       </div>
 
@@ -69,7 +69,7 @@
             class="ti-input-sm"
             ng-model="selectedTopics"
             display-property="title"
-            placeholder="Topic name"
+            placeholder="{{ ::('aes.label.topicname'|trans) }}"
             add-from-autocomplete-only="true">
           <auto-complete
               source="findTopics($query)"
@@ -81,19 +81,19 @@
               class="btn btn-primary btn-sm pull-right"
               ng-disabled="assigningTopics || selectedTopics.length < 1"
               ng-click="assignSelectedToArticle()"
-              >Add</button>
+              >{{ ::('Add'|trans) }}</button>
           <button
               class="btn btn-default btn-sm pull-right"
               ng-disabled="assigningTopics || selectedTopics.length < 1"
               ng-click="clearSelectedTopics()"
-              >Clear</button>
+              >{{ ::('Clear'|trans) }}</button>
         </div>
       </div>
     </div>
 
   </div>
 
-  <div class="assigned-title">Assigned Topics</div>
+  <div class="assigned-title">{{ ::('aes.label.assignedtopics'|trans) }}</div>
 
   <div class="list">
     <div

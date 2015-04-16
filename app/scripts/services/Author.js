@@ -11,7 +11,12 @@ angular.module('authoringEnvironmentApp').factory('Author', [
     '$timeout',
     'dateFactory',
     'pageTracker',
-    function ($http, $q, $timeout, dateFactory, pageTracker) {
+    function (
+        $http,
+        $q,
+        $timeout,
+        dateFactory,
+        pageTracker) {
         var SEARCH_DELAY_MS = 250,  // after the last search term change
             lastContext = null,  // most recent live search context
             lastTermChange = 0,  // time of the most recent search term change
@@ -45,7 +50,8 @@ angular.module('authoringEnvironmentApp').factory('Author', [
             if (data.author.image) {
                 author.avatarUrl = decodeURIComponent(data.author.image);
             } else {
-                author.avatarUrl = '/bundles/newscoopeditor/images/authors-default-avatar.png';
+                author.avatarUrl = '/bundles/newscoopeditor/images/' +
+                    'authors-default-avatar.png';
             }
 
             author.sortOrder = data.order;

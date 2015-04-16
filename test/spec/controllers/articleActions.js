@@ -12,8 +12,8 @@ describe('Controller: ArticleActionsCtrl', function () {
         articleService,
         modeService,
         scope,
-        toaster,
-        $window;
+        $window,
+        toaster;
 
     // load the controller's module
     beforeEach(module('authoringEnvironmentApp'));

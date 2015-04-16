@@ -15,8 +15,11 @@ describe('Controller: ImagepaneCtrl', function () {
     // load the controller's module
     beforeEach(module('authoringEnvironmentApp'));
 
-    beforeEach(inject(function ($controller, $rootScope) {
-        fakeImagesService = {};
+    beforeEach(inject(function ($q, $controller, $rootScope) {
+        fakeImagesService = {
+            detach: $q.defer(),
+            attachAllCollected: $q.defer(),
+        };
         scope = $rootScope.$new();
 
         ImagepaneCtrl = $controller('ImagePaneCtrl', {
@@ -78,13 +81,18 @@ describe('Controller: ImagepaneCtrl', function () {
 
     describe('scope\'s detachImage() method', function () {
         var deferred,
+            deferredDetach,
             modalFactory,
+            toaster,
             resultPromise;
 
-        beforeEach(inject(function ($q, _modalFactory_) {
+        beforeEach(inject(function ($q, _modalFactory_, _toaster_) {
             modalFactory = _modalFactory_;
+            toaster = _toaster_;
 
-            fakeImagesService.detach = jasmine.createSpy();
+            //fakeImagesService.detach = jasmine.createSpy();
+            deferredDetach = $q.defer();
+            spyOn(fakeImagesService, 'detach').andReturn(deferredDetach.promise);
 
             deferred = $q.defer();
             resultPromise = deferred.promise;
@@ -93,6 +101,10 @@ describe('Controller: ImagepaneCtrl', function () {
                 return {
                     result: resultPromise
                 };
+            });
+
+            spyOn(toaster, 'add').andCallFake(function () {
+                return deferred.promise;
             });
         }));
 
@@ -108,6 +120,36 @@ describe('Controller: ImagepaneCtrl', function () {
             scope.$digest();
 
             expect(fakeImagesService.detach).toHaveBeenCalledWith(123);
+        });
+
+        it('calls toaster.add() with appropriate params on success', function () {
+            scope.detachImage(123);
+
+            deferred.resolve(true);
+            scope.$digest();
+            
+            deferredDetach.resolve(true);
+            scope.$digest();
+
+            expect(toaster.add).toHaveBeenCalledWith({
+                type: 'sf-info',
+                message: 'aes.msgs.images.detach.success'
+            });
+        });
+
+        it('calls toaster.add() with appropriate params on error', function () {
+            scope.detachImage(123);
+
+            deferred.resolve(true);
+            scope.$digest();
+            
+            deferredDetach.reject(false);
+            scope.$digest();
+
+            expect(toaster.add).toHaveBeenCalledWith({
+                type: 'sf-error',
+                message: 'aes.msgs.images.detach.error'
+            });
         });
 
         it('does *not* detach image on action rejection"', function () {

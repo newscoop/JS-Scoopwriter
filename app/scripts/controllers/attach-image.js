@@ -11,7 +11,9 @@ angular.module('authoringEnvironmentApp').controller('AttachImageCtrl', [
     '$q',
     'images',
     'modal',
-    function ($scope, $q, images, modal) {
+    'toaster',
+    'TranslationService',
+    function ($scope, $q, images, modal, toaster, TranslationService) {
         $scope.root = AES_SETTINGS.API.rootURI;
         $scope.images = images;
 
@@ -56,9 +58,23 @@ angular.module('authoringEnvironmentApp').controller('AttachImageCtrl', [
         * @method attachCollected
         */
         $scope.attachCollected = function () {
-            images.attachAllCollected();
-            images.discardAll();  // clear the basket
-            modal.hide();
+            images.attachAllCollected().then(function () {
+                toaster.add({
+                    type: 'sf-info',
+                    message: TranslationService.trans(
+                        'aes.msgs.images.attach.success'
+                    )
+                });
+                images.discardAll();  // clear the basket
+                modal.hide();
+            }, function () {
+                toaster.add({
+                    type: 'sf-error',
+                    message: TranslationService.trans(
+                        'aes.msgs.images.attach.error'
+                    )
+                });
+            });
         };
 
         /**

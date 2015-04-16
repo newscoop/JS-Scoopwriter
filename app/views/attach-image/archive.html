@@ -9,11 +9,11 @@
         <input
           type="text"
           ng-model="images.searchFilter"
-          placeholder="Search Media Archive"
+          placeholder="{{ ::('aes.label.searchmedia'|trans) }}"
           />
         <div 
           class="remove" 
-          title="Remove" 
+          title="{{ ::('aes.btn.remove'|trans) }}" 
           ng-click="clearSearch()"
           ><span class="glyphicon glyphicon-remove"></span>
         </div>
@@ -21,10 +21,10 @@
       <button
         type="submit"
         class="btn btn-default btn-sm"
-        >Search</button>
+        >{{ ::('aes.label.search'|trans) }}</button>
 
-        <span>Displaying: <span class="label label-default">{{images.displayed.length}} / {{images.itemsFound}}</span></span>
-        <span>Current filter: <span class="label label-info">{{appliedFilter}}</span></span>
+        <span>{{ ::('aes.label.displaying'|trans) }}: <span class="label label-default">{{images.displayed.length}} / {{images.itemsFound}}</span></span>
+        <span>{{ ::('aes.label.currentfilter'|trans) }}: <span class="label label-info">{{appliedFilter}}</span></span>
     </form>
   </div>
 
@@ -43,10 +43,10 @@
       <img
          class="thumbnail"
          ng-src="{{root}}/images/thumbnails/{{image.thumbnailPath}}"
-         alt="{{image.description || 'No description'}}"
+         alt="{{image.description || 'aes.label.nodescription'|trans}}"
          >
       <div class="img-metadata">
-        {{image.description || "No description"}}<br/>
+        {{image.description || 'aes.label.nodescription'|trans}}<br/>
         <span class="size-info">{{image.width}} x {{image.height}}</span>
       </div>
     </div>
@@ -59,7 +59,7 @@
          type="button"
          class="btn btn-default"
          ng-click="loadMore()"
-         >Load More</button>
+         >{{ ::('aes.label.loadmore'|trans) }}</button>
     </div>
   </div>
 </div>

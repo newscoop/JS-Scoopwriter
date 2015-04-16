@@ -21,7 +21,11 @@ describe('Directive: droppedImage', function () {
 
     beforeEach(inject(
         function (
-            $rootScope, $templateCache, $compile, $q, droppedImageDirective
+            $rootScope,
+            $templateCache,
+            $compile,
+            $q,
+            droppedImageDirective
         ) {
             var directive = droppedImageDirective[0],
                 html,

@@ -13,7 +13,17 @@ angular.module('authoringEnvironmentApp').controller('CommentsCtrl', [
     'Article',
     'modalFactory',
     '$log',
-    function ($scope, comments, articleService, Article, modalFactory, $log) {
+    'TranslationService',
+    'toaster',
+    function (
+        $scope,
+        comments,
+        articleService,
+        Article,
+        modalFactory,
+        $log,
+        TranslationService,
+        toaster) {
 
         var article = articleService.articleInstance,
             others = [
@@ -125,10 +135,23 @@ angular.module('authoringEnvironmentApp').controller('CommentsCtrl', [
                 // collapse the form
                 $scope.isSending = false;
                 $scope.create = {};
+                toaster.add({
+                    type: 'sf-info',
+                    message: TranslationService.trans(
+                        'aes.msgs.comments.add.success'
+                    )
+                });
+                
             }, function () {
                 // on failures (e.g. timeouts) we re-enable the form, allowing
                 // user to submit a comment again
                 $scope.isSending = false;
+                toaster.add({
+                    type: 'sf-error',
+                    message: TranslationService.trans(
+                        'aes.msgs.comments.add.error'
+                    )
+                });
             });
         };
         $scope.cancel = function () {
@@ -154,6 +177,54 @@ angular.module('authoringEnvironmentApp').controller('CommentsCtrl', [
         };
 
         /**
+        * Saves comment
+        *
+        * @method saveComment 
+        * @param [comment] {comment} a specific comment to save
+        */
+        $scope.saveComment = function (comment) {
+            comment.save().then(function () {
+                toaster.add({
+                    type: 'sf-info',
+                    message: TranslationService.trans(
+                        'aes.msgs.comments.edit.success'
+                    )
+                });
+            }, function () {
+                toaster.add({
+                    type: 'sf-error',
+                    message: TranslationService.trans(
+                        'aes.msgs.comments.edit.error'
+                    )
+                });
+            });
+        };
+
+        /**
+        * Calls the comment models sendReply function 
+        *
+        * @method sendReply 
+        * @param [comment] {comment} a specific comment to reply to
+        */
+        $scope.sendReply = function (comment) {
+            comment.sendReply().then(function () {
+                toaster.add({
+                    type: 'sf-info',
+                    message: TranslationService.trans(
+                        'aes.msgs.comments.reply.success'
+                    )
+                });
+            }, function () {
+                toaster.add({
+                    type: 'sf-error',
+                    message: TranslationService.trans(
+                        'aes.msgs.comments.reply.error'
+                    )
+                });
+            });
+        };
+
+        /**
         * Changes the value of the article's commenting setting and updates
         * it on the server. In case of an erroneous server response it
         * restores the setting back to the original value (i.e. the value
@@ -170,11 +241,20 @@ angular.module('authoringEnvironmentApp').controller('CommentsCtrl', [
             article.changeCommentingSetting(newValue).then(function () {
                 // value on the server successfully changed
                 $scope.commentingSettingSrv = newValue;
+                toaster.add({
+                    type: 'sf-info',
+                    message: TranslationService.trans(
+                        'aes.msgs.comments.change.success'
+                    )
+                });
             }, function () {
-                // XXX: when consistent reporting mechanism is developed,
-                // inform user about the error (API failure) - the reason
-                // why the value has been switched back to origValue
                 $scope.commentingSetting = origValue;
+                toaster.add({
+                    type: 'sf-error',
+                    message: TranslationService.trans(
+                        'aes.msgs.comments.change.error'
+                    )
+                });
             }).finally(function () {
                 $scope.updateCommentingDirtyFlag();
                 $scope.isChangingCommenting = false;
@@ -236,13 +316,12 @@ angular.module('authoringEnvironmentApp').controller('CommentsCtrl', [
                 title,
                 text;
 
-            if (commentIdGiven) {
-                title = 'Do you really want to hide this comment?';
-                text = 'Comment\'s content will not be visible to users.';
-            } else {
-                title = 'Do you really want to hide selected comments?';
-                text = 'Comments\' contents will not be visible to users.';
-            }
+            title = TranslationService.trans(
+                'aes.msgs.comments.hide.popupHead'
+            );
+            text = TranslationService.trans(
+                'aes.msgs.comments.hide.popup'
+            );
 
             modal = modalFactory.confirmLight(title, text);
 
@@ -252,8 +331,19 @@ angular.module('authoringEnvironmentApp').controller('CommentsCtrl', [
                 } else {
                     comments.changeSelectedStatus('hidden', false);
                 }
+                toaster.add({
+                    type: 'sf-info',
+                    message: TranslationService.trans(
+                        'aes.msgs.comments.hide.success'
+                    )
+                });
             }, function (reason) {
-                // nothing to do
+                toaster.add({
+                    type: 'sf-error',
+                    message: TranslationService.trans(
+                        'aes.msgs.comments.hide.error'
+                    )
+                });
             });
         };
 
@@ -273,15 +363,12 @@ angular.module('authoringEnvironmentApp').controller('CommentsCtrl', [
                 title,
                 text;
 
-            if (commentIdGiven) {
-                title = 'Are you sure you want to mark this ' +
-                    'comment as deleted?';
-                text = 'Deleted comments are not visible to users.';
-            } else {
-                title = 'Are you sure you want to mark selected ' +
-                    'comments as deleted?';
-                text = 'Deleted comments are not visible to users.';
-            }
+            title = TranslationService.trans(
+                'aes.msgs.comments.delete.popupHead'
+            );
+            text = TranslationService.trans(
+                'aes.msgs.comments.delete.popup'
+            );
 
             modal = modalFactory.confirmHeavy(title, text);
 
@@ -291,8 +378,19 @@ angular.module('authoringEnvironmentApp').controller('CommentsCtrl', [
                 } else {
                     comments.changeSelectedStatus('deleted', true);
                 }
+                toaster.add({
+                    type: 'sf-info',
+                    message: TranslationService.trans(
+                        'aes.msgs.comments.delete.success'
+                    )
+                });
             }, function (reason) {
-                // nothing to do
+                toaster.add({
+                    type: 'sf-error',
+                    message: TranslationService.trans(
+                        'aes.msgs.comments.delete.error'
+                    )
+                });
             });
         };
 

@@ -492,17 +492,23 @@ angular.module('authoringEnvironmentApp').service('comments', [
             * @method save
             */
             comment.save = function () {
-                var comment = this;
+                var comment = this,
+                    deferred = $q.defer();
 
                 self.resource.save({
                     articleNumber: article.articleId,
                     languageCode: article.language,
                     commentId: comment.id
                 }, { comment: comment.editing }, function () {
+                    deferred.resolve();
                     comment.subject = comment.editing.subject;
                     comment.message = comment.editing.message;
                     comment.isEdited = false;
+                }, function () {
+                    deferred.reject();
                 });
+
+                return deferred.promise;
             };
 
             /**
@@ -547,18 +553,24 @@ angular.module('authoringEnvironmentApp').service('comments', [
             */
             comment.sendReply = function () {
                 var comment = this,
+                    deferred = $q.defer(),
                     // alias for the comment object itself
                     replyData = angular.copy(comment.reply);
                 replyData.parent = comment.id;
                 comment.sendingReply = true;
                 self.add({ 'comment': replyData }).then(function () {
+                    deferred.resolve();
                     comment.sendingReply = false;
                     comment.isReplyMode = false;
                     comment.reply = {
                         subject: 'Re: ' + comment.subject,
                         message: ''
                     };
+                }, function () {
+                    deferred.reject();
                 });
+
+                return deferred.promise;
             };
 
             /**

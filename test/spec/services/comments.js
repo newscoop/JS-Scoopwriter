@@ -8,6 +8,9 @@
 
 describe('Service: Comments', function () {
 
+    // load the service's module
+    beforeEach(module('authoringEnvironmentApp'));
+
     var items = [{
             id: 24,
             author: 'Boom-boom Boba',
@@ -44,9 +47,6 @@ describe('Service: Comments', function () {
             recommended: 0
         }
     ];
-
-    // load the service's module
-    beforeEach(module('authoringEnvironmentApp'));
 
     beforeEach(module(function ($provide) {
         // create a fake article service to inject around into other services

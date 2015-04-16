@@ -10,7 +10,15 @@ angular.module('authoringEnvironmentApp').controller('ImagePaneCtrl', [
     'images',
     'modal',  // XXX: later move this old modal service into modalFactory
     'modalFactory',
-    function ($scope, images, modal, modalFactory) {
+    'toaster',
+    'TranslationService',
+    function (
+        $scope,
+        images,
+        modal,
+        modalFactory,
+        toaster,
+        TranslationService) {
 
         $scope.images = images;
         $scope.defaultWidth = '100%';
@@ -60,15 +68,31 @@ angular.module('authoringEnvironmentApp').controller('ImagePaneCtrl', [
                 title,
                 text;
 
-            title = 'Do you really want to detach this image from ' +
-                'the article?';
-            text = 'Should you change your mind, the image can ' +
-                'always be re-attached again.';
+            title = TranslationService.trans(
+                'aes.msgs.images.detach.popupHead'
+            );
+            text = TranslationService.trans(
+                'aes.msgs.images.detach.popup'
+            );
 
             modal = modalFactory.confirmLight(title, text);
 
             modal.result.then(function (data) {
-                images.detach(imageId);
+                images.detach(imageId).then(function () {
+                    toaster.add({
+                        type: 'sf-info',
+                        message: TranslationService.trans(
+                            'aes.msgs.images.detach.success'
+                        )
+                    });
+                }, function () {
+                    toaster.add({
+                        type: 'sf-error',
+                        message: TranslationService.trans(
+                            'aes.msgs.images.detach.error'
+                        )
+                    });
+                });
             }, function (reason) {
                 // action canceled, do nothing
             });

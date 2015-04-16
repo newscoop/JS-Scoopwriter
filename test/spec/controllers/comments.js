@@ -46,15 +46,17 @@ describe('Controller: CommentsCtrl', function () {
 
     article,
     Article,
-
+    fakeComment,
     log = {
         debug: jasmine.createSpy('debug mock')
     };
 
-
     // Initialize the controller and a mock scope
-    beforeEach(inject(function ($controller, $rootScope, _Article_) {
-        var articleService
+    beforeEach(inject(function (
+        $controller,
+        $rootScope, 
+        _Article_) {
+        var articleService;
 
         Article = _Article_;
 
@@ -184,16 +186,122 @@ describe('Controller: CommentsCtrl', function () {
         );
     });
 
-    describe('scope\'s changeCommentingSetting() method', function () {
+    describe('scope\'s saveComment() method', function () {
         var deferred,
+            deferredSave,
+            toaster,
+            fakeComment,
             $q;
 
-        beforeEach(inject(function (_$q_) {
+        beforeEach(inject(function (_$q_, _toaster_) {
             $q = _$q_;
             deferred = $q.defer();
+            deferredSave = $q.defer();
+            toaster = _toaster_;
+            fakeComment = {
+                save: function () {
+                }
+            };
+
+            spyOn(fakeComment, 'save').andCallFake(function () {
+                return deferredSave.promise;
+            });
+
+            spyOn(toaster, 'add').andCallFake(function () {
+                return deferred.promise;
+            });
+        }));
+
+        it('calls toaster.add() with appropriate params on success', function () {
+            scope.saveComment(fakeComment);
+            deferredSave.resolve(true);
+            scope.$digest();
+
+            expect(toaster.add).toHaveBeenCalledWith({
+                type: 'sf-info',
+                message: 'aes.msgs.comments.edit.success'
+            });
+        });
+
+        it('calls toaster.add() with appropriate params on error', function () {
+            scope.saveComment(fakeComment);
+            deferredSave.reject();
+            scope.$digest();
+
+            expect(toaster.add).toHaveBeenCalledWith({
+                type: 'sf-error',
+                message: 'aes.msgs.comments.edit.error'
+            });
+        });
+    });
+
+    describe('scope\'s sendReply() method', function () {
+        var deferred,
+            deferredReply,
+            fakeComment,
+            toaster,
+            $q;
+
+        beforeEach(inject(function (_$q_, _toaster_) {
+            $q = _$q_;
+            deferred = $q.defer();
+            deferredReply = $q.defer();
+            toaster = _toaster_;
+            fakeComment = {
+                sendReply: function () {
+                }
+            };
+
+            spyOn(fakeComment, 'sendReply').andCallFake(function () {
+                return deferredReply.promise;
+            });
+
+            spyOn(toaster, 'add').andCallFake(function () {
+                return deferred.promise;
+            });
+        }));
+
+        it('calls toaster.add() with appropriate params on success', function () {
+            scope.sendReply(fakeComment);
+            deferredReply.resolve(true);
+            scope.$digest();
+
+            expect(toaster.add).toHaveBeenCalledWith({
+                type: 'sf-info',
+                message: 'aes.msgs.comments.reply.success'
+            });
+        });
+
+        it('calls toaster.add() with appropriate params on error', function () {
+            scope.sendReply(fakeComment);
+            deferredReply.reject();
+            scope.$digest();
+
+            expect(toaster.add).toHaveBeenCalledWith({
+                type: 'sf-error',
+                message: 'aes.msgs.comments.reply.error'
+            });
+        });
+    });
+
+    describe('scope\'s changeCommentingSetting() method', function () {
+        var deferred,
+            deferredToaster,
+            $q,
+            toaster;
+
+        beforeEach(inject(function (_$q_, _toaster_) {
+            $q = _$q_;
+            toaster = _toaster_;
+            deferred = $q.defer();
+            deferredToaster = $q.defer();
 
             spyOn(article, 'changeCommentingSetting').andCallFake(function () {
                 return deferred.promise;
+            });
+
+            spyOn(toaster, 'add').andCallFake(function () {
+                return deferredToaster.promise;
             });
         }));
 
@@ -236,6 +344,17 @@ describe('Controller: CommentsCtrl', function () {
 
                 expect(scope.isChangingCommenting).toBe(false);
             });
+
+            it('calls toaster.add with correct params', function () {
+                scope.changeCommentingSetting();
+                deferred.resolve();
+                scope.$apply();
+
+                expect(toaster.add).toHaveBeenCalledWith({
+                    type: 'sf-info',
+                    message: 'aes.msgs.comments.change.success'
+                });
+            });
         });
 
         describe('on server error response', function () {
@@ -270,6 +389,17 @@ describe('Controller: CommentsCtrl', function () {
                 deferred.reject('server timeout');
                 scope.$apply();
                 expect(scope.isChangingCommenting).toBe(false);
+            });
+
+            it('calls toaster.add with correct params', function () {
+                scope.changeCommentingSetting();
+                deferred.reject('server timeout');
+                scope.$apply();
+
+                expect(toaster.add).toHaveBeenCalledWith({
+                    type: 'sf-error',
+                    message: 'aes.msgs.comments.change.error'
+                });
             });
         });
     });
@@ -500,10 +630,17 @@ describe('Controller: CommentsCtrl', function () {
         });
     });
     describe('disabled form when comment is being posted', function () {
-        var comment = {
+        var $q,
+            toaster,
+            comment = {
             subject: "Comment subject",
             message: "Comment message",
         };
+
+        beforeEach(inject(function (_$q_, _toaster_) {
+            $q = _$q_;
+            toaster = _toaster_;
+        }));
 
         it('isSending flag initially cleared', function () {
             expect(scope.isSending).toBe(false);
@@ -520,6 +657,48 @@ describe('Controller: CommentsCtrl', function () {
             expect(scope.isSending).toBe(true);
 
             commentsThenMethod = origThen;
+        });
+
+        it('calls toaster.add() with appropriate params on success', function () {
+            var deferred = $q.defer();
+            var deferredAdd = $q.defer();
+
+            comments.add = function () {
+                return deferredAdd.promise;
+            };
+
+            spyOn(toaster, 'add').andCallFake(function () {
+                return deferred.promise;
+            });
+
+            scope.add(comment);
+            deferredAdd.resolve(true);
+            scope.$digest();
+
+            expect(toaster.add).toHaveBeenCalledWith({
+                type: 'sf-info',
+                message: 'aes.msgs.comments.add.success'
+            });
+        });
+
+        it('calls toaster.add() with appropriate params on error', function () {
+            var deferred = $q.defer();
+            var origThen = commentsThenMethod;
+
+            // simulate an error response when scope.add() is invoked
+            commentsThenMethod = commentsThenErrorMethod;
+
+            spyOn(toaster, 'add').andCallFake(function () {
+                return deferred.promise;
+            });
+
+            scope.add(comment);
+            scope.$digest();
+
+            expect(toaster.add).toHaveBeenCalledWith({
+                type: 'sf-error',
+                message: 'aes.msgs.comments.add.error'
+            });
         });
 
         it('clears isSending flag when posting is done', function () {

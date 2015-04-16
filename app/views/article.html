@@ -11,7 +11,7 @@
        ng-disabled="!articleService.modified"
        ng-click="save()"
        >
-      Save
+      {{ ::('aes.btn.save'|trans) }} 
     </button>
     <button
        class="btn btn-sf-invisible zen-close"
@@ -79,7 +79,7 @@
       <div class="header">
         <span ng-click="showCustomFields = !showCustomFields">
           <i class="fa fa-chevron-{{showCustomFields ? 'down' : 'right'}}"></i>
-          Custom fields
+          {{ ::('aes.label.customfields'|trans) }}
         </span>
       </div>
 
@@ -109,7 +109,7 @@
         </ul>
 
         <div ng-show="nonContentFields.length < 1">
-          There are no metadata fields for this type of article
+          {{ ::('aes.label.nofields'|trans) }}
         </div>
       </div>
 

@@ -12,7 +12,15 @@ angular.module('authoringEnvironmentApp').controller('PaneAuthorsCtrl', [
     'Author',
     'modalFactory',
     'toaster',
-    function ($scope, $q, articleService, Author, modalFactory, toaster) {
+    'TranslationService',
+    function (
+        $scope,
+        $q,
+        articleService,
+        Author,
+        modalFactory,
+        toaster,
+        TranslationService) {
 
         var article = articleService.articleInstance,
             self = this;
@@ -68,7 +76,14 @@ angular.module('authoringEnvironmentApp').controller('PaneAuthorsCtrl', [
                 newRoleId: author.articleRole.id
             })
             .then(
-                null,
+                function () {
+                    toaster.add({
+                        type: 'sf-info',
+                        message: TranslationService.trans(
+                            'aes.msgs.authors.change.success'
+                        )
+                    });
+                },
                 function () {
                     // on error simply revert back to old role...
 
@@ -79,6 +94,12 @@ angular.module('authoringEnvironmentApp').controller('PaneAuthorsCtrl', [
                     author.stopRoleChangeWatch();
                     author.articleRole = oldRole;
                     self.setRoleChangeWatch(author);
+                    toaster.add({
+                        type: 'sf-error',
+                        message: TranslationService.trans(
+                            'aes.msgs.authors.change.error'
+                        )
+                    });
                 }
             )
             .finally(function () {
@@ -131,6 +152,19 @@ angular.module('authoringEnvironmentApp').controller('PaneAuthorsCtrl', [
                 // works on the server
                 $scope.authors.push(author);
                 self.setRoleChangeWatch(author);
+                toaster.add({
+                    type: 'sf-info',
+                    message: TranslationService.trans(
+                        'aes.msgs.authors.add.success'
+                    )
+                });
+            }, function () {
+                toaster.add({
+                    type: 'sf-error',
+                    message: TranslationService.trans(
+                        'aes.msgs.authors.add.error'
+                    )
+                });
             })
             .finally(function () {
                 $scope.addingNewAuthor = false;
@@ -149,9 +183,12 @@ angular.module('authoringEnvironmentApp').controller('PaneAuthorsCtrl', [
                 title,
                 text;
 
-            title = 'Do you really want to remove this author?';
-            text = 'Should you change your mind, the same author can ' +
-                'always be added again.';
+            title = TranslationService.trans(
+                'aes.msgs.authors.remove.popupHead'
+            );
+            text = TranslationService.trans(
+                'aes.msgs.authors.remove.popup'
+            );
 
             modal = modalFactory.confirmLight(title, text);
 
@@ -160,13 +197,25 @@ angular.module('authoringEnvironmentApp').controller('PaneAuthorsCtrl', [
                     article.articleId,
                     article.language,
                     author.articleRole.id
-                );
-            }, $q.reject)
-            .then(function () {
-                _.remove($scope.authors, function (item) {
-                    return item === author;
+                ).then(function () {
+                    _.remove($scope.authors, function (item) {
+                        return item === author;
+                    });
+                    toaster.add({
+                        type: 'sf-info',
+                        message: TranslationService.trans(
+                            'aes.msgs.authors.remove.success'
+                        )
+                    });
+                }, function () {
+                    toaster.add({
+                        type: 'sf-error',
+                        message: TranslationService.trans(
+                            'aes.msgs.authors.remove.error'
+                        )
+                    });
                 });
-            });
+            }, $q.reject);
         };
 
         /**

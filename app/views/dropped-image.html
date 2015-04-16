@@ -62,26 +62,29 @@
          ng-class="{active: activeSize === 'small'}"
          ng-click="setSize('small')"
          >
-        <span class="glyphicon glyphicon-stop"></span> small
+        <span class="glyphicon glyphicon-stop"></span>
+        {{ ::('aes.settings.form.imagesize.small'|trans) }}
       </button><button
                   class="btn btn-default btn-xs medium"
                   ng-class="{active: activeSize === 'medium'}"
                   ng-click="setSize('medium')"
                   >
-        <span class="glyphicon glyphicon-stop"></span> medium
+        <span class="glyphicon glyphicon-stop"></span>
+        {{ ::('aes.settings.form.imagesize.medium'|trans) }}
       </button><button
                   class="btn btn-default btn-xs"
                   ng-class="{active: activeSize === 'big'}"
                   ng-click="setSize('big')"
                   >
-        <span class="glyphicon glyphicon-stop"></span> big
+        <span class="glyphicon glyphicon-stop"></span>
+        {{ ::('aes.settings.form.imagesize.big'|trans) }}
       </button><button
                   class="btn btn-default btn-xs"
                   ng-class="{active: activeSize === 'original'}"
                   data-id="original"
                   ng-click="setSize('original')"
                   >
-        original
+        {{ ::('aes.settings.form.imagesize.original'|trans) }}
       </button>
       <span class="pixels"><input
                               class="pixels"
