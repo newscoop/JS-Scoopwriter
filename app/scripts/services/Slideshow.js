@@ -8,17 +8,9 @@
 angular.module('authoringEnvironmentApp').factory('Slideshow', [
     '$http',
     '$q',
-    '$timeout',
-    'dateFactory',
-    'pageTracker',
-    'transform',
     function (
         $http,
-        $q,
-        $timeout,
-        dateFactory,
-        pageTracker,
-        transform
+        $q
     ) {
         var Slideshow = function () {};  // slideshow constructor
 
