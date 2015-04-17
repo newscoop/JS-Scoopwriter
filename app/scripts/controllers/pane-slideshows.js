@@ -1,71 +1,72 @@
-(function () {
-    'use strict';
+'use strict';
 
-    /**
-    * Constructor function for the article preview modal controller.
-    *
-    * @class ModalCtrl
-    */
-    function ModalCtrl($modalInstance, $sce, articleInfo) {
-        var self = this,
-            url;
+/**
+* AngularJS controller for the Slideshows pane.
+*
+* @class PaneSlideshowsCtrl
+*/
+angular.module('authoringEnvironmentApp').controller('PaneSlideshowsCtrl', [
+    '$q',
+    'article',
+    'modalFactory',
+    'Slideshow',
+    'toaster',
+    'TranslationService',
+    function (
+        $q,
+        articleService,
+        modalFactory,
+        Slideshow,
+        toaster,
+        TranslationService) {
+        var article = articleService.articleInstance,
+            self = this;
 
-        url = [
-            AES_SETTINGS.API.rootURI,
-            '/admin/slideshow/create',
-            '/article_number/', articleInfo.articleId
-        ].join('');
-
-        self.url = $sce.trustAsResourceUrl(url);
+        // retrieve all slideshows assigned to the article
+        self.assignedSlideshows = Slideshow.getAllByArticle(
+            article.articleId, article.language
+        );
 
         /**
-        * Closes the modal.
+        * Asks user to confirm unassigning slideshow from the article and then
+        * unassignes the slideshow, if the action is confirmed.
         *
-        * @method close
+        * @method confirmUnassignSlideshow
+        * @param slideshow {Object} slideshow to unassign
         */
-        self.close = function () {
-            $modalInstance.close();
+        self.confirmUnassignSlideshow = function (slideshow) {
+            var modal,
+                title,
+                text;
+
+            title = TranslationService.trans(
+                'aes.msgs.slideshows.unassign.popupHead'
+            );
+            text = TranslationService.trans(
+                'aes.msgs.slideshows.unassign.popup'
+            );
+
+            modal = modalFactory.confirmLight(title, text);
+
+            modal.result.then(function () {
+                return slideshow.removeFromArticle(
+                    article.articleId, article.language).then(function () {
+                        _.remove(self.assignedSlideshows, {id: slideshow.id});
+                        toaster.add({
+                            type: 'sf-info',
+                            message: TranslationService.trans(
+                                'aes.msgs.slideshows.unassign.success'
+                            )
+                        });
+                    }, function () {
+                        toaster.add({
+                            type: 'sf-error',
+                            message: TranslationService.trans(
+                                'aes.msgs.slideshows.unassign.error'
+                            )
+                        });
+                    });
+            }, $q.reject);
         };
     }
-
-    ModalCtrl.$inject = ['$modalInstance', '$sce', 'articleInfo'];
-
-
-    /**
-    * AngularJS controller for displaying a modal containing renditions editor.
-    *
-    * @class RenditionsEditorCtrl
-    */
-    angular.module('authoringEnvironmentApp')
-    .controller('SlideshowsCtrl', [
-        '$modal',
-        'article',
-        function ($modal, articleService) {
-            var article = articleService.articleInstance,
-                self = this;
-
-            /**
-            * Opens a modal containing the renditions editor.
-            *
-            * @method openRenditionsEditor
-            */
-            self.openSlideshowsEditor = function () {
-                $modal.open({
-                    templateUrl: 'views/modal-slideshows-editor.html',
-                    controller: ModalCtrl,
-                    controllerAs: 'modalSlideshowsCtrl',
-                    windowClass: 'slideshowsModal',
-                    resolve: {
-                        articleInfo: function () {
-                            return {
-                                articleId: article.articleId,
-                                languageId: article.languageData.id
-                            };
-                        }
-                    }
-                });
-            };
-        }
-    ]);
-
-}());
+]);

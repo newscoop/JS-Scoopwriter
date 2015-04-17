@@ -2,10 +2,10 @@
    class="tabcontent image-panel slideshow"
    id="media-tab"
    style="display: block;"
-   ng-controller="ImagePaneCtrl"
+   ng-controller="SlideshowsEditorCtrl as slideshowsEditorCtrl"
    >
   <div class="panel-title">
-    Slideshows
+    {{ ::('aes.label.slideshows'|trans) }}
   </div>
   <div class="attach-image-section">
     <button
@@ -13,52 +13,48 @@
        id="add-media"
        data-test-button="slideshow-attach"
        role="button"
-       title="Attach Slideshow from library"
-       ng-click=""
+       title="{{ ::('aes.label.attachslideshows'|trans) }}"
+       ng-click="slideshowsEditorCtrl.openSlideshowsEditor('attach')"
        >
-       <i class="fa fa-picture-o"></i> 
-       Attach / Detach
+       <i class="fa fa-picture-o"></i>
+       {{ ::('aes.label.attachdetach'|trans) }}
     </button>
 
-    <div
-        ng-controller="SlideshowsCtrl as slideshowsCtrl"
-        class="renditions-btn">
+    <div class="renditions-btn">
       <button
         type="button"
         class="btn btn-default btn-sm"
         title="Create Slideshow"
-        ng-click="slideshowsCtrl.openSlideshowsEditor()"
+        ng-click="slideshowsEditorCtrl.openSlideshowsEditor('create')"
         >
-        <i class="fa fa-plus"></i> 
-        Create Slideshow
+        <i class="fa fa-plus"></i>
+        {{ ::('aes.label.createslideshow'|trans) }}
       </button>
     </div>
 
   </div>
-  <div class="images-wrapper">
-    <div class="attached-title">Attached Slideshows</div>
+  <div ng-controller="PaneSlideshowsCtrl as slideshowsCtrl" class="images-wrapper">
+    <div class="attached-title">{{ ::('aes.label.attachedslideshows'|trans) }}</div>
     <div class="media-tab">
       <ul class="media-items media-images" id="media-images">
-        <li 
+        <li ng-repeat="slideshow in slideshowsCtrl.assignedSlideshows track by slideshow.id"
           class="media-image"
-          ng-click=""
+          ng-click="$parent.slideshowsEditorCtrl.openSlideshowsEditor('edit', slideshow.id)"
           >
-          <div class="detach" title="Remove">
-            <span class="glyphicon glyphicon-remove"></span>
-          </div>
-          <div ng-if="" class="attached">
-            <span class="glyphicon glyphicon-ok"></span>
+          <div class="detach" title="{{ ::('aes.label.remove'|trans) }}">
+            <span class="glyphicon glyphicon-remove" ng-click="slideshowsCtrl.confirmUnassignSlideshow(slideshow); $event.stopPropagation()"></span>
           </div>
           <figure>
-            <img ng-src="http://newscoop.aes.sourcefabric.net/images/thumbnails/cms-thumb-000000008.JPG" src="http://newscoop.aes.sourcefabric.net/images/thumbnails/cms-thumb-000000008.JPG">
+            <img ng-if="slideshow.type == 'image' && slideshow.cover" width="100%" height="100%" ng-src="{{slideshow.cover}}">
+            <img ng-if="slideshow.type == 'video' && slideshow.cover" width="100%" height="100%" ng-src="{{slideshow.cover|youtubeThumbnail}}"></img>
           </figure>
           <div class="media-description approved">
             <span class="number">
-              <span class="badge">3</span>
-              Images
+              <span class="badge">{{slideshow.itemsCount}}</span>
+               {{'aes.label.itemscount'|transChoice: slideshow.itemsCount }}
             </span>
             <span class="description">
-              Slideshow title here
+              {{slideshow.title}}
             </span>
           </div>
         </li>
