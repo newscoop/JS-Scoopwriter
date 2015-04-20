@@ -27,7 +27,7 @@ angular.module('authoringEnvironmentApp').factory('Slideshow', [
             slideshow.id = parseInt(data.id);
             slideshow.title = data.title;
             slideshow.itemsCount = parseInt(data.itemsCount);
-            if (data.items.length > 0) {
+            if (data.items !== undefined && data.items.length > 0) {
                 slideshow.cover = data.items[0].link;
                 slideshow.type = data.items[0].type;
             }

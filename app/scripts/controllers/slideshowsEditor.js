@@ -10,7 +10,7 @@
         var self = this,
             url;
 
-        if (info.action == 'edit') {
+        if (info.action === 'edit') {
             url = [
                 AES_SETTINGS.API.rootURI,
                 '/admin/slideshow/edit',
@@ -19,7 +19,7 @@
             ].join('');
         }
 
-        if (info.action == 'create') {
+        if (info.action === 'create') {
             url = [
                 AES_SETTINGS.API.rootURI,
                 '/admin/slideshow/create',
@@ -27,7 +27,7 @@
             ].join('');
         }
 
-        if (info.action == 'attach') {
+        if (info.action === 'attach') {
             url = [
                 AES_SETTINGS.API.rootURI,
                 '/admin/slideshow/attach',
@@ -55,7 +55,8 @@
     *
     * @class SlideshowsEditorCtrl
     */
-    angular.module('authoringEnvironmentApp').controller('SlideshowsEditorCtrl', [
+    angular.module('authoringEnvironmentApp').controller(
+        'SlideshowsEditorCtrl', [
         '$modal',
         'article',
         function ($modal, articleService) {
