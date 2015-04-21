@@ -12,7 +12,8 @@ angular.module('authoringEnvironmentApp').factory('Slideshow', [
         $http,
         $q
     ) {
-        var Slideshow = function () {};  // slideshow constructor
+        // slideshow constructor
+        var Slideshow = function () {};
 
         /**
         * Converts raw data object to a Slideshow instance.

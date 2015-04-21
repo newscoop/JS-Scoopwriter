@@ -10,12 +10,19 @@ describe('Controller: SlideshowsEditorCtrl', function () {
     var articleService,
         SlideshowsEditorCtrl,
         $httpBackend,
-        $modal;
+        $modal,
+        rootScope;
 
     beforeEach(module('authoringEnvironmentApp'));
 
     beforeEach(inject(function (
-        $controller, _$modal_, _$httpBackend_, $q, $templateCache, article
+        $controller,
+        _$modal_,
+        _$httpBackend_,
+        $q,
+        $templateCache,
+        article,
+        $rootScope
     ) {
         var modalTemplate;
 
@@ -32,6 +39,8 @@ describe('Controller: SlideshowsEditorCtrl', function () {
             }
         };
 
+        rootScope = $rootScope.$new();
+        spyOn(rootScope, '$broadcast');
         spyOn($modal, 'open').andCallThrough();
         modalTemplate = $templateCache.get(
             'app/views/modal-slideshows-editor.html');
@@ -141,7 +150,7 @@ describe('Controller: SlideshowsEditorCtrl', function () {
                 articleId: 111,
             };
 
-            ctrl = new ModalCtrl(fakeModalInstance, fakeSCE, infoParam);
+            ctrl = new ModalCtrl(fakeModalInstance, fakeSCE, infoParam, rootScope);
         });
 
         it('exposes correct edit slideshow URL', function () {
@@ -155,7 +164,7 @@ describe('Controller: SlideshowsEditorCtrl', function () {
             infoParam.action = 'edit';
             infoParam.slideshowId = 1;
 
-            ctrl = new ModalCtrl(fakeModalInstance, fakeSCE, infoParam);
+            ctrl = new ModalCtrl(fakeModalInstance, fakeSCE, infoParam, rootScope);
 
             expect(ctrl.url).toEqual(expectedUrl);
         });
@@ -170,7 +179,7 @@ describe('Controller: SlideshowsEditorCtrl', function () {
             infoParam.action = 'create';
             infoParam.slideshowId = 1;
 
-            ctrl = new ModalCtrl(fakeModalInstance, fakeSCE, infoParam);
+            ctrl = new ModalCtrl(fakeModalInstance, fakeSCE, infoParam, rootScope);
 
             expect(ctrl.url).toEqual(expectedUrl);
         });
@@ -185,14 +194,15 @@ describe('Controller: SlideshowsEditorCtrl', function () {
             infoParam.action = 'attach';
             infoParam.slideshowId = 1;
 
-            ctrl = new ModalCtrl(fakeModalInstance, fakeSCE, infoParam);
+            ctrl = new ModalCtrl(fakeModalInstance, fakeSCE, infoParam, rootScope);
 
             expect(ctrl.url).toEqual(expectedUrl);
         });
 
         describe('close() method', function () {
-            it('closes the modal', function () {
+            it("should broadcast 'close-slideshow-modal' and close the modal", function() {
                 ctrl.close();
+                expect(rootScope.$broadcast).toHaveBeenCalledWith('close-slideshow-modal');
                 expect(fakeModalInstance.close).toHaveBeenCalled();
             });
         });

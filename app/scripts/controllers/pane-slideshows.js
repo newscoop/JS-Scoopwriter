@@ -11,6 +11,7 @@ angular.module('authoringEnvironmentApp').controller('PaneSlideshowsCtrl', [
     'modalFactory',
     'Slideshow',
     'toaster',
+    '$scope',
     'TranslationService',
     function (
         $q,
@@ -18,6 +19,7 @@ angular.module('authoringEnvironmentApp').controller('PaneSlideshowsCtrl', [
         modalFactory,
         Slideshow,
         toaster,
+        $scope,
         TranslationService) {
         var article = articleService.articleInstance,
             self = this;
@@ -26,6 +28,12 @@ angular.module('authoringEnvironmentApp').controller('PaneSlideshowsCtrl', [
         self.assignedSlideshows = Slideshow.getAllByArticle(
             article.articleId, article.language
         );
+
+        $scope.$on('close-slideshow-modal', function(event) {
+            self.assignedSlideshows = Slideshow.getAllByArticle(
+                article.articleId, article.language
+            );
+        });
 
         /**
         * Asks user to confirm unassigning slideshow from the article and then

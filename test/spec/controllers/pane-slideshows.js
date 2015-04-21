@@ -21,6 +21,7 @@ describe('Controller: PaneSlideshowsCtrl', function () {
 
         scope = $rootScope.$new();
 
+        spyOn(scope, '$broadcast').andCallThrough();
         articleService.articleInstance = {
             articleId: 64,
             language: 'en'
@@ -44,6 +45,7 @@ describe('Controller: PaneSlideshowsCtrl', function () {
         );
 
         PaneSlideshowsCtrl = $controller('PaneSlideshowsCtrl', {
+            $scope: scope,
             article: articleService,
             Slideshow: Slideshow
         });
@@ -74,6 +76,11 @@ describe('Controller: PaneSlideshowsCtrl', function () {
                     type: "image"
                 }]
             );
+        });
+
+        it('$scope.$on should have been triggered', function() {
+            scope.$broadcast("close-slideshow-modal");
+            expect(scope.$broadcast).toHaveBeenCalledWith("close-slideshow-modal");
         });
     });
 

@@ -6,7 +6,7 @@
     *
     * @class ModalCtrl
     */
-    function ModalCtrl($modalInstance, $sce, info) {
+    function ModalCtrl($modalInstance, $sce, info, $rootScope) {
         var self = this,
             url;
 
@@ -43,11 +43,12 @@
         * @method close
         */
         self.close = function () {
+            $rootScope.$broadcast('close-slideshow-modal');
             $modalInstance.close();
         };
     }
 
-    ModalCtrl.$inject = ['$modalInstance', '$sce', 'info'];
+    ModalCtrl.$inject = ['$modalInstance', '$sce', 'info', '$rootScope'];
 
 
     /**
