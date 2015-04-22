@@ -37,9 +37,7 @@ angular.module('authoringEnvironmentApp').directive('sfIframeLogin', [
 
                 $element.on('load', function () {
                     try {
-                        scope.onLoadHandler({
-                            location: $element[0].contentWindow.location
-                        });
+                        scope.onLoadHandler();
                     } catch (e) {
                         // A security exception occurs when trying to access
                         // iframe's contents when login comes from a different

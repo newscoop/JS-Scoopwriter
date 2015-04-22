@@ -1,3 +1,13 @@
 <div>
   <p>{{ ::('aes.label.finishingauth'|trans) }}...</p>
 </div>
+<script type="text/javascript">
+    var tokenRegex = new RegExp('access_token=(\\w+)'),
+        matches = tokenRegex.exec(window.location.hash),
+        token;
+
+    token = matches[1];
+    if (!sessionStorage.getItem('token') && token) {
+        sessionStorage.setItem('token', token);
+    }
+</script>

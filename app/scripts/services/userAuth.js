@@ -6,9 +6,8 @@
     *
     * @class ModalLoginCtrl
     */
-    function ModalLoginCtrl($modalInstance) {
-        var self = this,
-            tokenRegex = new RegExp('access_token=(\\w+)');
+    function ModalLoginCtrl($modalInstance, $window) {
+        var self = this;
 
         // On successful login, Newscoop login form redirects user to some
         // redirect URL and that URL contains the new authentication token.
@@ -18,30 +17,19 @@
         /**
         * Updates article's workflow status on the server.
         *
-        * @method iframeLoadedHandler
-        * @param location {Object} window.location object of the page
-        *   loaded in the modal's iframe
+        * @method close
         */
-        self.iframeLoadedHandler = function (location) {
-            var matches,
-                token;
-
-            if (typeof location.hash !== 'string') {
-                return;
-            }
-
-            matches = tokenRegex.exec(location.hash);
-
-            if (matches !== null) {
-                token = matches[1];
-                $modalInstance.close(token);
+        self.close = function () {
+            console.log($window.sessionStorage.getItem('token'));
+            if ($window.sessionStorage.getItem('token')) {
+                $modalInstance.close();
             }
             // if token is not found (perhaps due to the failed login),
             // nothing happens and the modal stays open
         };
     }
 
-    ModalLoginCtrl.$inject = ['$modalInstance'];
+    ModalLoginCtrl.$inject = ['$modalInstance', '$window'];
 
 
     /**
@@ -99,13 +87,12 @@
                     backdrop: 'static'
                 });
 
-                dialog.result.then(function (token) {
-                    $window.sessionStorage.setItem('token', token);
+                dialog.result.then(function () {
                     toaster.add({
                         type: 'sf-info',
                         message: 'Successfully refreshed authentication token.'
                     });
-                    deferred.resolve(token);
+                    deferred.resolve();
                 })
                 .catch(function (reason) {
                     toaster.add({
