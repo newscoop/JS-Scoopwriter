@@ -9,11 +9,13 @@
     function ModalLoginCtrl($modalInstance, $window) {
         // On successful login, Newscoop login form redirects user to some
         // redirect URL and that URL contains the new authentication token.
-        // Upon redirect, the iframe in modal body is reloaded and its Javascript
-        // code extracts the token from the URL. On session storage change login
-        // modal will be closed.
+        // Upon redirect, the iframe in modal body is reloaded and its
+        // Javascript code extracts the token from the URL. On session
+        // storage change login modal will be closed.
         angular.element($window).on('storage', function() {
-            if ($window.sessionStorage.getItem("token")) {
+            if ($window.sessionStorage.getItem(
+                    AES_SETTINGS.auth.tokenKeyName
+                )) {
                 $modalInstance.close();
             }
         });
@@ -43,7 +45,9 @@
             * @return {String} the token itself or null if does not exist
             */
             self.token = function () {
-                return $window.sessionStorage.getItem('token');
+                return $window.sessionStorage.getItem(
+                    AES_SETTINGS.auth.tokenKeyName
+                );
             };
 
             /**
@@ -54,7 +58,9 @@
             * @return {Boolean}
             */
             self.isAuthenticated = function () {
-                return !!$window.sessionStorage.getItem('token');
+                return !!$window.sessionStorage.getItem(
+                    AES_SETTINGS.auth.tokenKeyName
+                );
             };
 
             /**

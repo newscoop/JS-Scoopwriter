@@ -55,17 +55,10 @@ describe('Directive: sfIframeLogin', function () {
 
     it('produces an iframe', function () {
         var $element,
-            template = createHtmlTemplate({'on-load': 'foo()'});
+            template = createHtmlTemplate();
 
         $element = compileElement(template, scope);
         expect($element.is('iframe')).toBe(true);
-    });
-
-    it('throws an error if onLoad handler is not specified', function () {
-        var template = createHtmlTemplate();
-        expect(function () {
-            compileElement(template, scope);
-        }).toThrow();
     });
 
     describe('setting element attributes', function () {
@@ -119,35 +112,6 @@ describe('Directive: sfIframeLogin', function () {
 
             $element = compileElement(template, scope);
             expect($element.attr('src')).toEqual(expectedUrl);
-        });
-    });
-
-    describe('element\'s onLoad handler', function () {
-        var $element,
-            handlerSpy;
-
-        beforeEach(function () {
-            var template = createHtmlTemplate({'on-load': 'foo()'});
-            scope.foo = jasmine.createSpy();
-            $element = compileElement(template, scope);
-
-            // XXX: how to mock $element[0].contentWindow? It's a read-only
-            // attribute and because it is null in tests, an error occurs
-            // in the onLoad handler, making it difficult (impossible?) to test
-            // whether the provided handler is invoked with correct parameters,
-            //  etc.
-        });
-
-        it('', function () {
-            var isoScope = $element.isolateScope();
-            spyOn(isoScope, 'onLoadHandler');
-
-            $element.triggerHandler('load');
-
-            // XXX: this would fail:
-            // expect(isoScope.onLoadHandler).toHaveBeenCalledWith(
-            //     mocked_contentWindow_here
-            // );
         });
     });
 

@@ -14,7 +14,6 @@ angular.module('authoringEnvironmentApp').directive('sfIframeLogin', [
             link: function(scope, $element, attrs) {
                 var url;
 
-
                 // NOTE: when bundled into a Newscoop plugin, AES_SETTINGS is
                 // available as a global variable (it is set by the PHP code
                 // that produces the index.html file containing our app)

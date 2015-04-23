@@ -25,7 +25,7 @@ describe('Factory: userAuth', function () {
 
     describe('token() method', function () {
         it('returns the current token in sessionStorage', function () {
-            $window.sessionStorage.setItem('token', 'someToken');
+            $window.sessionStorage.setItem(AES_SETTINGS.auth.tokenKeyName, 'someToken');
             expect(userAuth.token()).toEqual('someToken');
         });
     });
@@ -33,13 +33,13 @@ describe('Factory: userAuth', function () {
 
     describe('isAuthenticated() method', function () {
         it('returns true if there is a token in sessionStorage', function () {
-            $window.sessionStorage.setItem('token', 'someToken');
+            $window.sessionStorage.setItem(AES_SETTINGS.auth.tokenKeyName, 'someToken');
             expect(userAuth.isAuthenticated()).toBe(true);
         });
 
         it('returns false if there is no token in sessionStorage',
             function () {
-                $window.sessionStorage.removeItem('token');
+                $window.sessionStorage.removeItem(AES_SETTINGS.auth.tokenKeyName);
                 expect(userAuth.isAuthenticated()).toBe(false);
             }
         );
@@ -124,19 +124,18 @@ describe('Factory: userAuth', function () {
     describe('login modal\'s controller', function () {
         var ctrl,
             fakeModalInstance,
-            $rootScope,
             $window;
 
-        beforeEach(inject(function ($modal, $q, _$rootScope_, $window) {
+        beforeEach(inject(function ($modal, _$window_) {
             var ModalCtrl;
 
-            $rootScope = _$rootScope_;
             $window = _$window_;
 
             // return a fake modal template
             $httpBackend.whenGET(/.+\.html/).respond(200, '<div></div>');
 
             spyOn($modal, 'open').andCallThrough();
+            angular.element($window).trigger('storage');
             userAuth.newTokenByLoginModal();
 
             // XXX: this is not ideal, since obtaining a reference to the
@@ -151,34 +150,17 @@ describe('Factory: userAuth', function () {
             };
 
             ctrl = new ModalCtrl(fakeModalInstance, $window);
+
         }));
 
-        describe('close() method', function () {
-            it('closes the modal', function () {
-                ctrl.close();
-                expect(fakeModalInstance.close).toHaveBeenCalled();
-            });
+        it('should have been triggered on session storage change', function() {
+            $window.sessionStorage.setItem(AES_SETTINGS.auth.tokenKeyName, 'someToken');
+            expect($window.sessionStorage.getItem(AES_SETTINGS.auth.tokenKeyName)).toEqual('someToken');
+        });
 
-            it('keeps the modal open locations\'s hash part does not exist',
-                function () {
-                    var location = {
-                        hash: undefined
-                    };
-                    ctrl.iframeLoadedHandler(location);
-                    expect(fakeModalInstance.close).not.toHaveBeenCalled();
-                }
-            );
-
-            it('keeps the modal open if token is not found in locations\'s' +
-                'hash part',
-                function () {
-                    var location = {
-                        hash: '#login_failed=true&retry'
-                    };
-                    ctrl.iframeLoadedHandler(location);
-                    expect(fakeModalInstance.close).not.toHaveBeenCalled();
-                }
-            );
+        it('should do nothing on session storage change when it was not modified', function() {
+            $window.sessionStorage.removeItem(AES_SETTINGS.auth.tokenKeyName);
+            expect($window.sessionStorage.getItem(AES_SETTINGS.auth.tokenKeyName)).toBe(null);
         });
     });
 });
