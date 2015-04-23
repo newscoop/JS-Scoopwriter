@@ -10,29 +10,34 @@
         var self = this,
             url;
 
-        if (info.action === 'edit') {
-            url = [
-                AES_SETTINGS.API.rootURI,
-                '/admin/slideshow/edit',
-                '/article_number/', info.articleId,
-                '/slideshow/', info.slideshowId
-            ].join('');
-        }
+        switch(info.action) {
+            case 'edit':
+                url = [
+                    AES_SETTINGS.API.rootURI,
+                    '/admin/slideshow/edit',
+                    '/article_number/', info.articleId,
+                    '/slideshow/', info.slideshowId
+                ].join('');
 
-        if (info.action === 'create') {
-            url = [
-                AES_SETTINGS.API.rootURI,
-                '/admin/slideshow/create',
-                '/article_number/', info.articleId
-            ].join('');
-        }
+                break;
+            case 'create':
+                url = [
+                    AES_SETTINGS.API.rootURI,
+                    '/admin/slideshow/create',
+                    '/article_number/', info.articleId
+                ].join('');
 
-        if (info.action === 'attach') {
-            url = [
-                AES_SETTINGS.API.rootURI,
-                '/admin/slideshow/attach',
-                '/article_number/', info.articleId
-            ].join('');
+                break;
+            case 'attach':
+                url = [
+                    AES_SETTINGS.API.rootURI,
+                    '/admin/slideshow/attach',
+                    '/article_number/', info.articleId
+                ].join('');
+
+                break;
+            default:
+                url = "";
         }
 
         self.url = $sce.trustAsResourceUrl(url);

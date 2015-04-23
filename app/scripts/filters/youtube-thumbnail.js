@@ -16,7 +16,9 @@ angular.module('authoringEnvironmentApp').filter('youtubeThumbnail', [
         return function (input) {
 			var match = input.match(youtubeRegExp);
 
-            return '//img.youtube.com/vi/' + match[2] + '/default.jpg';
+            if (match) {
+                return '//img.youtube.com/vi/' + match[2] + '/default.jpg';
+            }
         };
     }
 ]);

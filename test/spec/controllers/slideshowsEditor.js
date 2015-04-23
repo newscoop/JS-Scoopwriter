@@ -199,6 +199,22 @@ describe('Controller: SlideshowsEditorCtrl', function () {
             expect(ctrl.url).toEqual(expectedUrl);
         });
 
+        it('exposes empty URL when not existing action provided', function () {
+            var expectedUrl = [
+                'http://server.net',
+                '/admin/slideshow/attach',
+                '/article_number/111'
+            ].join('');
+
+            infoParam.action = 'other';
+            infoParam.slideshowId = 1;
+
+            ctrl = new ModalCtrl(fakeModalInstance, fakeSCE, infoParam, rootScope);
+
+            expect(ctrl.url).not.toEqual(expectedUrl);
+            expect(ctrl.url).toEqual("");
+        });
+
         describe('close() method', function () {
             it("should broadcast 'close-slideshow-modal' and close the modal", function() {
                 ctrl.close();

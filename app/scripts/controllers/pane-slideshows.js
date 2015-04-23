@@ -58,7 +58,8 @@ angular.module('authoringEnvironmentApp').controller('PaneSlideshowsCtrl', [
 
             modal.result.then(function () {
                 return slideshow.removeFromArticle(
-                    article.articleId, article.language).then(function () {
+                        article.articleId, article.language
+                    ).then(function () {
                         _.remove(self.assignedSlideshows, {id: slideshow.id});
                         toaster.add({
                             type: 'sf-info',
