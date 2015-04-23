@@ -7,26 +7,16 @@
     * @class ModalLoginCtrl
     */
     function ModalLoginCtrl($modalInstance, $window) {
-        var self = this;
-
         // On successful login, Newscoop login form redirects user to some
         // redirect URL and that URL contains the new authentication token.
-        // Upon redirect, the iframe in modal body is reloaded and we catch
-        // its onLoad event, giving us a chance to extract new token from URL.
-
-        /**
-        * Updates article's workflow status on the server.
-        *
-        * @method close
-        */
-        self.close = function () {
-            console.log($window.sessionStorage.getItem('token'));
-            if ($window.sessionStorage.getItem('token')) {
+        // Upon redirect, the iframe in modal body is reloaded and its Javascript
+        // code extracts the token from the URL. On session storage change login
+        // modal will be closed.
+        angular.element($window).on('storage', function() {
+            if ($window.sessionStorage.getItem("token")) {
                 $modalInstance.close();
             }
-            // if token is not found (perhaps due to the failed login),
-            // nothing happens and the modal stays open
-        };
+        });
     }
 
     ModalLoginCtrl.$inject = ['$modalInstance', '$window'];

@@ -75,25 +75,15 @@ describe('Factory: userAuth', function () {
 
                 promise = userAuth.newTokenByLoginModal();
                 promise.then(onSuccessSpy);
-                modalResult.resolve('newToken');
+                modalResult.resolve();
                  $rootScope.$digest();
 
-                expect(onSuccessSpy).toHaveBeenCalledWith('newToken');
-            });
-
-            it('stores new token into session storage', function () {
-                $window.sessionStorage.token = 'existingToken';
-
-                userAuth.newTokenByLoginModal();
-                modalResult.resolve('newToken');
-                 $rootScope.$digest();
-
-                expect($window.sessionStorage.token).toEqual('newToken');
+                expect(onSuccessSpy).toHaveBeenCalled();
             });
 
             it('displays a toast with info message', function () {
                 userAuth.newTokenByLoginModal();
-                modalResult.resolve('newToken');
+                modalResult.resolve();
                  $rootScope.$digest();
 
                 expect(toaster.add).toHaveBeenCalledWith({
@@ -134,12 +124,14 @@ describe('Factory: userAuth', function () {
     describe('login modal\'s controller', function () {
         var ctrl,
             fakeModalInstance,
-            $rootScope;
+            $rootScope,
+            $window;
 
-        beforeEach(inject(function ($modal,$q, _$rootScope_) {
+        beforeEach(inject(function ($modal, $q, _$rootScope_, $window) {
             var ModalCtrl;
 
             $rootScope = _$rootScope_;
+            $window = _$window_;
 
             // return a fake modal template
             $httpBackend.whenGET(/.+\.html/).respond(200, '<div></div>');
@@ -158,18 +150,13 @@ describe('Factory: userAuth', function () {
                 close: jasmine.createSpy()
             };
 
-            ctrl = new ModalCtrl(fakeModalInstance);
+            ctrl = new ModalCtrl(fakeModalInstance, $window);
         }));
 
-        describe('iframeLoadedHandler() method', function () {
-            it('closes the modal, providing the new token', function () {
-                var location = {
-                    hash: '#token_type=bearer' +
-                        '&access_token=xYz123' +
-                        '&expires_in=3600'
-                };
-                ctrl.iframeLoadedHandler(location);
-                expect(fakeModalInstance.close).toHaveBeenCalledWith('xYz123');
+        describe('close() method', function () {
+            it('closes the modal', function () {
+                ctrl.close();
+                expect(fakeModalInstance.close).toHaveBeenCalled();
             });
 
             it('keeps the modal open locations\'s hash part does not exist',
