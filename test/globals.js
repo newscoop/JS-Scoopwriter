@@ -9,7 +9,8 @@ var rootURI = 'http://newscoop.aes.sourcefabric.net/api',
         auth: {
             server: 'http://server.net/oauth',
             client_id: '1234_qwerty',
-            redirect_uri: 'http://redirect.me:80'
+            redirect_uri: 'http://redirect.me:80',
+            tokenKeyName: 'newscoop.aes.token'
         },
         articleTypeFields: {
             news: {
