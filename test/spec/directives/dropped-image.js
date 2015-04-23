@@ -101,10 +101,6 @@ describe('Directive: droppedImage', function () {
         }
     );
 
-    describe('setAlignment', function () {
-        
-    });
-
     describe('onCaptionClick', function () {
         var evClick,
             stopPropigationSpy,
