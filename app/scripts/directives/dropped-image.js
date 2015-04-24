@@ -242,6 +242,7 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                     $parent.css('width', width);
                     $element.css('width', '100%');
                     $parent.attr('data-size', size);
+                    $parent.attr('data-sizepixels', $element.innerWidth() + 'px');
 
                     scope.widthPx = $element.innerWidth();
                     if (initPhase) {

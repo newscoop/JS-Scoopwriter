@@ -10,7 +10,7 @@ define(['aloha', 'aloha/plugin', 'jquery',  'aloha/console', 'block/block', 'blo
                 // we will use our own drag and drop directives
                 // instead of alohas
                 isDraggable: function() {return false;},
-                init: function($element, postProcessFn) { 
+                init: function($element, postProcessFn) {
                     // First we have to find the articleImageId
                     // we need the AngularJS injector
                     var $injector = angular.element($('body')).injector();
@@ -55,7 +55,7 @@ define(['aloha', 'aloha/plugin', 'jquery',  'aloha/console', 'block/block', 'blo
 
                     return postProcessFn();
                 }
-            });                 
+            });
 
             return Plugin.create('image', {
                 makeClean: function(obj) {
@@ -73,9 +73,13 @@ define(['aloha', 'aloha/plugin', 'jquery',  'aloha/console', 'block/block', 'blo
                                     contents += ' data-'+name+'="'+value+'"';
                                 }
                             });
-                                
+                            var sizeInPx = $this.data('sizepixels');
                             // add width for newsccop render
-                            contents += ' data-width="' + $this.width() + '%"';
+                            if (sizeInPx) {
+                                contents += ' data-width="' + sizeInPx.substring(0, sizeInPx.length - 2) + '"';
+                            }
+
+                            contents += ' data-percentage="' + $this.width() + '%"';
 
                             output += contents + '></div>';
                         }
