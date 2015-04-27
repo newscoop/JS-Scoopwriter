@@ -13,7 +13,11 @@
         // Javascript code extracts the token from the URL. On session
         // storage change login modal will be closed.
         angular.element($window).on('storage', function() {
-            $modalInstance.close();
+            if ($window.sessionStorage.getItem(
+                    AES_SETTINGS.auth.tokenKeyName
+                )) {
+                $modalInstance.close();
+            }
         });
     }
 

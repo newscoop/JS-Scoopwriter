@@ -7,7 +7,7 @@
         token;
 
     token = matches[1];
-    if (!sessionStorage.getItem(AES_SETTINGS.auth.tokenKeyName) && token) {
+    if (token) {
         sessionStorage.setItem(AES_SETTINGS.auth.tokenKeyName, token);
     }
 </script>
