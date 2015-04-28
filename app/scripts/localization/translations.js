@@ -561,5 +561,14 @@
     Translator.add("aes.msgs.topics.unassign.popup", "Should you change your mind, the topic can always be re-assigned again.", "messages", "en");
     Translator.add("aes.msgs.topics.unassign.success", "Topic(s) unassigned successfully.", "messages", "en");
     Translator.add("aes.msgs.topics.unassign.error", "Failed to unassign topic(s) from the article.", "messages", "en");
-    Translator.add("ert.menuLabel", "Estimated Read Time", "messages", "en");
+    Translator.add("aes.msgs.slideshows.unassign.popupHead", "Do you really want to unassign this slideshow from the article?", "messages", "en");
+    Translator.add("aes.msgs.slideshows.unassign.popup", "Should you change your mind, the slideshow can always be re-assigned again.", "messages", "en");
+    Translator.add("aes.msgs.slideshows.unassign.success", "Slideshow unassigned successfully.", "messages", "en");
+    Translator.add("aes.msgs.slideshows.unassign.error", "Failed to unassign slideshow from the article.", "messages", "en");
+    Translator.add("aes.label.attachedslideshows", "Attached Slideshows", "messages", "en");
+    Translator.add("aes.label.slideshows", "Slideshows", "messages", "en");
+    Translator.add("aes.label.itemscount", "{1} item|[0,Inf] items", "messages", "en");
+    Translator.add("aes.label.attachslideshows", "Attach Slideshow(s)", "messages", "en");
+    Translator.add("aes.label.attachdetach", "Attach \/ Detach", "messages", "en");
+    Translator.add("aes.label.createslideshow", "Create Slideshow", "messages", "en");
 })(Translator);

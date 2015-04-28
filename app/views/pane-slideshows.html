@@ -1,0 +1,64 @@
+<section
+   class="tabcontent image-panel slideshow"
+   id="media-tab"
+   style="display: block;"
+   ng-controller="SlideshowsEditorCtrl as slideshowsEditorCtrl"
+   >
+  <div class="panel-title">
+    {{ ::('aes.label.slideshows'|trans) }}
+  </div>
+  <div class="attach-image-section">
+    <button
+       class="btn btn-default btn-sm"
+       id="add-media"
+       data-test-button="slideshow-attach"
+       role="button"
+       title="{{ ::('aes.label.attachslideshows'|trans) }}"
+       ng-click="slideshowsEditorCtrl.openSlideshowsEditor('attach')"
+       >
+       <i class="fa fa-picture-o"></i>
+       {{ ::('aes.label.attachdetach'|trans) }}
+    </button>
+
+    <div class="renditions-btn">
+      <button
+        type="button"
+        class="btn btn-default btn-sm"
+        title="Create Slideshow"
+        ng-click="slideshowsEditorCtrl.openSlideshowsEditor('create')"
+        >
+        <i class="fa fa-plus"></i>
+        {{ ::('aes.label.createslideshow'|trans) }}
+      </button>
+    </div>
+
+  </div>
+  <div ng-controller="PaneSlideshowsCtrl as slideshowsCtrl" class="images-wrapper">
+    <div class="attached-title">{{ ::('aes.label.attachedslideshows'|trans) }}</div>
+    <div class="media-tab">
+      <ul class="media-items media-images" id="media-images">
+        <li ng-repeat="slideshow in slideshowsCtrl.assignedSlideshows track by slideshow.id"
+          class="media-image"
+          ng-click="$parent.slideshowsEditorCtrl.openSlideshowsEditor('edit', slideshow.id)"
+          >
+          <div class="detach" title="{{ ::('aes.label.remove'|trans) }}">
+            <span class="glyphicon glyphicon-remove" ng-click="slideshowsCtrl.confirmUnassignSlideshow(slideshow); $event.stopPropagation()"></span>
+          </div>
+          <figure>
+            <img ng-if="slideshow.type == 'image' && slideshow.cover" width="100%" height="100%" ng-src="{{slideshow.cover}}">
+            <img ng-if="slideshow.type == 'video' && slideshow.cover" width="100%" height="100%" ng-src="{{slideshow.cover|youtubeThumbnail}}"></img>
+          </figure>
+          <div class="media-description approved">
+            <span class="number">
+              <span class="badge">{{slideshow.itemsCount}}</span>
+               {{'aes.label.itemscount'|transChoice: slideshow.itemsCount }}
+            </span>
+            <span class="description">
+              {{slideshow.title}}
+            </span>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>

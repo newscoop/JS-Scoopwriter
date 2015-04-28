@@ -70,6 +70,17 @@ angular.module('authoringEnvironmentApp').factory('panes', [
                     selected: true
                 },
                 {
+                    name: 'Slideshows',
+                    id: 'slideshows',
+                    icon: 'slideshows',
+                    template: 'views/pane-slideshows.html',
+                    position: 'left',
+                    size: 'small',
+                    visible: false,
+                    active: false,
+                    selected: true
+                },
+                {
                     name: 'Snippets',
                     id: 'snippets',
                     icon: 'embeds',
