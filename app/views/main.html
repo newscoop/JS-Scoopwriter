@@ -11,13 +11,13 @@
            class="main-article-container-container"
            ></div>
       <div 
-        ng-controller="FeedbackForm"
+        ng-controller="FeedbackForm as feedbackCtrl"
         >
         <div 
           class="feedback-button"
-          ng-click="feedbackModal()"
+          ng-click="feedbackCtrl.feedbackModal()"
           >
-          <i class="fa fa-envelope"></i>Feedback
+          <i class="fa fa-envelope"></i>{{::('aes.msgs.feedback.header'|trans)}}
         </div>
       </div>
       <div ng-include src="'views/modal.html'"></div>

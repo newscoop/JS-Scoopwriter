@@ -29,11 +29,17 @@ angular.module('authoringEnvironmentApp').service('modal', [
         * @param opt {Object} Object containing modal options.
         *   @param [opt.title] {String} Title of the modal box.
         *   @param opt.templateUrl {String} URL of modal's HTML template.
+        *   @param opt.windowClass {String} Class of modal window.
         */
         this.show = function (opt) {
             this.title = opt.title;
             // could also be undefined
             this.url = opt.templateUrl;
+            if (opt.windowClass !== undefined) {
+                this.windowClass = opt.windowClass;
+            } else {
+                this.windowClass = 'large';
+            }
 
             opt.backdrop = 'static';
             opt.keyboard = false;
