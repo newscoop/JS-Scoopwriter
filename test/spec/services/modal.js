@@ -34,12 +34,15 @@ describe('Service: Modal', function () {
             $httpBackend.flush();
             */
         }));
+
         it('updates its visibility', function() {
             expect(Modal.visible).toBe(true);
         });
+
         it('checks if modal class is set to large by default', function() {
             expect(Modal.windowClass).toEqual('large');
         });
+
         it('sets custom modal class', function() {
             Modal.show({
                 templateUrl: 'test-locator.html',
@@ -48,17 +51,21 @@ describe('Service: Modal', function () {
 
             expect(Modal.windowClass).toEqual('small');
         });
+
         describe('hidden', function() {
             beforeEach(function() {
                 Modal.hide();
             });
+
             it('hides', function() {
                 expect(Modal.visible).toBe(false);
             });
+
             describe('opened again', function() {
                 beforeEach(inject(function($templateCache) {
                     Modal.show({templateUrl: 'test-locator.html'});
                 }));
+
                 it('updates its visibility', function() {
                     expect(Modal.visible).toBe(true);
                 });
