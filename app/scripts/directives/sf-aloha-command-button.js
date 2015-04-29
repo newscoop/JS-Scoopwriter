@@ -27,7 +27,11 @@ angular.module('authoringEnvironmentApp').directive('sfAlohaCommandButton', [
 
                 if (scope.buttonCommand === 'undo') {
                     checkAvailable = function () {
-                        return Aloha.canUndo();
+                        if (typeof Aloha.canUndo === 'function') {
+                            return Aloha.canUndo();
+                        } else {
+                            return false;
+                        }
                     };
                     checkEvent = 'aloha-redo-clicked';
                     clickEvent = 'aloha-undo-clicked';
@@ -38,7 +42,11 @@ angular.module('authoringEnvironmentApp').directive('sfAlohaCommandButton', [
 
                 if (scope.buttonCommand === 'redo') {
                     checkAvailable = function () {
-                        return Aloha.canRedo();
+                        if (typeof Aloha.canRedo === 'function') {
+                            return Aloha.canRedo();
+                        } else {
+                            return false;
+                        }
                     };
                     checkEvent = 'aloha-undo-clicked';
                     clickEvent = 'aloha-redo-clicked';
