@@ -62,16 +62,16 @@ angular.module('authoringEnvironmentApp').controller('FeedbackForm', [
                     )
                 });
                 self.feedback = {};
-                self.processing = false;
                 modal.hide();
             }, function () {
-                self.processing = false;
                 toaster.add({
                     type: 'sf-error',
                     message: TranslationService.trans(
                         'aes.msgs.feedback.error'
                     )
                 });
+            }).finally(function () {
+                self.processing = false;
             });
         };
     }

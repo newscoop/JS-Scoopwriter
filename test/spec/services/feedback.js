@@ -1,9 +1,9 @@
 'use strict';
 
 /**
-* Module with tests for the Feedback factory.
+* Module with tests for the feedback service.
 *
-* @module Feedback factory tests
+* @module feedback service tests
 */
 
 describe('Service: feedback', function () {

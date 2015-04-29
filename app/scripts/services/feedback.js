@@ -1,9 +1,9 @@
 'use strict';
 
 /**
-* A factory which creates a Feedback model.
+* AngularJS service for submitting feedback form.
 *
-* @class Feedback
+* @class feedback
 */
 angular.module('authoringEnvironmentApp').service('feedback', [
     '$http',
@@ -21,7 +21,7 @@ angular.module('authoringEnvironmentApp').service('feedback', [
         * @param feedbackParams {Object} feedback form object
         *   which contains form fields
         * @return {Object} promise object which is resolved with
-        * new Feedback instance on success and rejected on error
+        *   new Feedback instance on success and rejected on error
         */
         self.submit = function (feedbackParams) {
             var deferredPost = $q.defer(),
