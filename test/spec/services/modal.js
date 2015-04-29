@@ -19,6 +19,7 @@ describe('Service: Modal', function () {
     it('is initially hidden', function () {
         expect(Modal.visible).toBe(false);
     });
+
     describe('show view locator', function() {
         beforeEach(inject(function($templateCache) {
             /*
@@ -26,13 +27,26 @@ describe('Service: Modal', function () {
                 .expectGET('test-locator.html')
                 .respond('<test></test>');
                 */
-            Modal.show({templateUrl: 'test-locator.html'});
+            Modal.show({
+                templateUrl: 'test-locator.html'
+            });
             /*
             $httpBackend.flush();
             */
         }));
         it('updates its visibility', function() {
             expect(Modal.visible).toBe(true);
+        });
+        it('checks if modal class is set to large by default', function() {
+            expect(Modal.windowClass).toEqual('large');
+        });
+        it('sets custom modal class', function() {
+            Modal.show({
+                templateUrl: 'test-locator.html',
+                windowClass: 'small'
+            });
+
+            expect(Modal.windowClass).toEqual('small');
         });
         describe('hidden', function() {
             beforeEach(function() {

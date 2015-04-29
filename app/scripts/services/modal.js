@@ -35,10 +35,9 @@ angular.module('authoringEnvironmentApp').service('modal', [
             this.title = opt.title;
             // could also be undefined
             this.url = opt.templateUrl;
+            this.windowClass = 'large';
             if (opt.windowClass !== undefined) {
                 this.windowClass = opt.windowClass;
-            } else {
-                this.windowClass = 'large';
             }
 
             opt.backdrop = 'static';

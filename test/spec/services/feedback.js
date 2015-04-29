@@ -64,7 +64,7 @@ describe('Service: feedback', function () {
             }
         );
 
-        it('resolves given promise with the new Feedback instance on success',
+        it('resolves given promise with the response on success',
             function () {
                 var onSuccessSpy = jasmine.createSpy(),
                     feedbackData;

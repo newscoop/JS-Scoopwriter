@@ -2,9 +2,7 @@
 
 /**
 * AngularJS controller for the Feedback modal.
-*
 */
-
 angular.module('authoringEnvironmentApp').controller('FeedbackForm', [
     'modal',
     'feedback',
@@ -24,7 +22,7 @@ angular.module('authoringEnvironmentApp').controller('FeedbackForm', [
         */
         self.feedbackModal = function () {
             modal.show({
-                title: Translator.trans('aes.msgs.feedback.modalHead'),
+                title: TranslationService.trans('aes.msgs.feedback.modalHead'),
                 templateUrl: 'views/feedback.html',
                 windowClass: 'small'
             });
