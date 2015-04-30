@@ -150,6 +150,9 @@ define([
             var markup = $('<blockquote></blockquote>');
             Aloha.Selection.changeMarkupOnSelection(markup);
             Aloha.blockquoteFound = true;
+            Aloha.trigger('aloha-smart-content-changed', {
+                'editable': Aloha.activeEditable
+            });
         },
 
         /**
@@ -162,6 +165,9 @@ define([
             var markup = $('<p></p>');
             Aloha.Selection.changeMarkupOnSelection(markup);
             Aloha.blockquoteFound = false;
+            Aloha.trigger('aloha-smart-content-changed', {
+                'editable': Aloha.activeEditable
+            });
         },
 
         /**
