@@ -396,6 +396,7 @@
     Translator.add("aes.alerts.notfound", "Article couldn't be found.", "messages", "en");
     Translator.add("aes.alerts.notfoundHead", "Article doesn't exist", "messages", "en");
     Translator.add("aes.alerts.saved", "Successfully saved", "messages", "en");
+    Translator.add("aes.alerts.saved.error", "Failed to save", "messages", "en");
     Translator.add("aes.alerts.assignedall", "All users have been assigned to use this editor", "messages", "en");
     Translator.add("aes.alerts.assigned", "User has been assigned successfully", "messages", "en");
     Translator.add("aes.alerts.unassigned", "User has been unassigned successfully", "messages", "en");

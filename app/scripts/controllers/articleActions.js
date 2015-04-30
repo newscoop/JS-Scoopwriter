@@ -14,8 +14,10 @@ angular.module('authoringEnvironmentApp').controller('ArticleActionsCtrl', [
     'Article',
     'mode',
     'toaster',
+    'TranslationService',
     function (
-        $rootScope, $scope, $window, articleService, Article, mode, toaster
+        $rootScope, $scope, $window, articleService, Article, mode, toaster,
+        TranslationService
     ) {
         var statusObj;
 
@@ -130,6 +132,19 @@ angular.module('authoringEnvironmentApp').controller('ArticleActionsCtrl', [
             // saving?
             $scope.article.save().then(function () {
                 $scope.setModified(false);
+                toaster.add({
+                    type: 'sf-info',
+                    message: TranslationService.trans(
+                        'aes.alerts.saved'
+                    )
+                });
+            }, function () {
+                toaster.add({
+                    type: 'sf-error',
+                    message: TranslationService.trans(
+                        'aes.alerts.save.error'
+                    )
+                });
             });
         };
 
