@@ -272,6 +272,32 @@ describe('Controller: ArticleActionsCtrl', function () {
             }
         );
 
+        it('display success message when save is successful',
+            function () {
+                spyOn(toaster, 'add');
+                scope.save();
+                deferredSave.resolve();
+                scope.$digest();
+
+                expect(toaster.add).toHaveBeenCalledWith(
+                    {type: 'sf-info', message: 'aes.alerts.saved'}
+                );
+            }
+        );
+
+        it('display error message when save is not successful',
+            function () {
+                spyOn(toaster, 'add');
+                scope.save();
+                deferredSave.reject(false);
+                scope.$digest();
+
+                expect(toaster.add).toHaveBeenCalledWith(
+                    {type: 'sf-error', message: 'aes.alerts.save.error'}
+                );
+            }
+        );
+
         it('clears the article modifed flag in article service', function () {
             articleService.modified = true;
 
