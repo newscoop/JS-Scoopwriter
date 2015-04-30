@@ -25,6 +25,22 @@ define(['aloha', 'aloha/plugin', 'jquery',  'aloha/console', 'block/block', 'blo
                         // finally place the element and $compile it into AngularJS
                         $element.empty().append($compile('<div dropped-image '+contents+'></div>')($rootScope));
 
+                        // not sure exactly why, but we have to define our
+                        // own handler for delete keypress
+                        $element.on('keydown', function (e) {
+                            if (e.keyCode === 8 || e.keyCode === 46)  {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                var cursorPosition = $(e.target).prop("selectionStart");
+                                var currentText = $(e.target).val();
+                                var newText = currentText.slice(0, cursorPosition - 1) + currentText.slice(cursorPosition);
+                                $(e.target).val(newText);
+                                $(e.target).focus();
+                                e.target.selectionStart = cursorPosition - 1;
+                                e.target.selectionEnd = cursorPosition - 1;
+                            }
+                        });
+
                         $element.on('dragstart', function (e) {
                             var data = {
                                 type: 'image',
