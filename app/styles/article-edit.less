@@ -4100,6 +4100,10 @@ a:hover {
                     }
                 }
             }
+            iframe {
+                border: none;
+                outline: none;
+            }
 
             /* Modal heavy */
             .modal-heavy {
@@ -4377,6 +4381,23 @@ a:hover {
                 left: 0;
                 right: 0;
                 border-radius: 6px;
+            }
+        }
+        /* Login form style */
+        &.modalLogin {
+            .modal-dialog {
+                width: 440px;
+                .modal-login {
+                    background-color: #f2f2f2;
+                    .border-radius(6px);
+                    .modal-header {
+                        background-color: #fff;
+                        .border-radius(6px 6px 0 0);
+                    }
+                    .modal-body {
+                        padding: 0;
+                    }
+                }
             }
         }
     }
