@@ -43,17 +43,29 @@
     angular.module('authoringEnvironmentApp')
     .controller('ArticlePreviewCtrl', [
         '$modal',
+        '$window',
         'article',
-        function ($modal, articleService) {
+        function ($modal, $window, articleService) {
             var self = this;
 
+            self.article = articleService.articleInstance;
+
             /**
-            * Opens the article preview modal.
+            * Opens the live view of the article in a 
+            * new window.
             *
-            * @function openPreviewModal
-            * @param article {Object} article instance
+            * @method openLiveView
             */
-            function openPreviewModal(article) {
+            self.openLiveView = function () {
+                $window.open(self.article.url);
+            };
+
+            /**
+            * Opens the article preview modal, providing article data to it.
+            *
+            * @method openPreview
+            */
+            self.openPreview = function () {
                 $modal.open({
                     templateUrl: 'views/modal-article-preview.html',
                     controller: ModalCtrl,
@@ -62,24 +74,15 @@
                     resolve: {
                         articleInfo: function () {
                             return {
-                                articleId: article.articleId,
-                                languageId: article.languageData.id,
-                                publicationId: article.publication.id,
-                                issueId: article.issue.number,
-                                sectionId: article.section.number
+                                articleId: self.article.articleId,
+                                languageId: self.article.languageData.id,
+                                publicationId: self.article.publication.id,
+                                issueId: self.article.issue.number,
+                                sectionId: self.article.section.number
                             };
                         }
                     }
                 });
-            }
-
-            /**
-            * Opens the article preview modal, providing article data to it.
-            *
-            * @method openPreview
-            */
-            self.openPreview = function () {
-                openPreviewModal(articleService.articleInstance);
             };
         }
     ]);

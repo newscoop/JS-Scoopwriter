@@ -36,20 +36,22 @@
       type="button"
       class="btn btn-default btn-sm"
       title="Preview article"
+      ng-show="wfStatus.text === 'Published'"
+      ng-click="previewCtrl.openLiveView()"
+    >
+      <i class="fa fa-external-link"></i>
+    </button>
+
+    <button
+      type="button"
+      class="btn btn-default btn-sm"
+      title="Preview article"
+      ng-hide="wfStatus.text === 'Published'"
       ng-click="previewCtrl.openPreview()"
     >
       <i class="fa fa-eye"></i>
     </button>
     
-    <!-- if article is published, switch button to -->
-    <!--button
-      type="button"
-      class="btn btn-default btn-sm"
-      title="Go to live article"
-    >
-       <i class="fa fa-external-link"></i>
-    </button-->
-
   </div>
 
   <div class="btn-group save-close">
