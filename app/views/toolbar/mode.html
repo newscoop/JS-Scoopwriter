@@ -36,7 +36,8 @@
       type="button"
       class="btn btn-default btn-sm"
       title="Preview article"
-      ng-show="wfStatus.value === Article.wfStatus.PUBLISHED"
+      ng-show="wfStatus.value === Article.wfStatus.PUBLISHED
+        || wfStatus.value === Article.wfStatus.PUBLISHED_W_ISS"
       ng-click="previewCtrl.openLiveView()"
     >
       <i class="fa fa-external-link"></i>
@@ -46,7 +47,8 @@
       type="button"
       class="btn btn-default btn-sm"
       title="Preview article"
-      ng-hide="wfStatus.value === Article.wfStatus.PUBLISHED"
+      ng-hide="wfStatus.value === Article.wfStatus.PUBLISHED
+        || wfStatus.value === Article.wfStatus.PUBLISHED_W_ISS"
       ng-click="previewCtrl.openPreview()"
     >
       <i class="fa fa-eye"></i>
