@@ -99,12 +99,12 @@
 
 /* viewport styles */
 
-/* Adjust the width of the viewport for mobile devices.
+/* Adjust the width of the viewport for desktop devices.
  * example: 13.3 inch laptop screens are 1360 pixels wide */
 .authoring-environment .main-article-container.desktop {
   max-width: 960px;
 }
-/* Adjust the width of the viewport for mobile devices.
+/* Adjust the width of the viewport for tablet devices.
  * example: iPad mini screens are 768 pixels wide in portrait mode */
 .authoring-environment .main-article-container.tablet {
   max-width: 768px;
