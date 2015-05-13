@@ -100,7 +100,8 @@ angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
                     return;
                 }
 
-                if (field.showInEditor) {  // field is a content field
+                if (field.showInEditor &&
+                    field.type !== 'switch') {  // field is a content field
                     // set default text if necessary and calculate text stats
                     fieldValue = $scope.article.fields[field.name];
                     if (!fieldValue) {
