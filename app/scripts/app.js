@@ -16,7 +16,8 @@ angular.module('authoringEnvironmentApp', [
     'ui.select2',
     'gc.toaster',
     'angularFileUpload',
-    'ngTagsInput'
+    'ngTagsInput',
+    'boxuk.translation'
 ]).config([
     '$routeProvider',
     '$httpProvider',

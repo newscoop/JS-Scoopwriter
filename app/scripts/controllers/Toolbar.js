@@ -6,7 +6,6 @@ angular.module('authoringEnvironmentApp').controller('ToolbarCtrl', [
     '$filter',
     '$timeout',
     function ($scope, $rootScope, $filter, $timeout) {
-        var updateScope;
 
         $scope.stylers = [
             {
@@ -34,6 +33,10 @@ angular.module('authoringEnvironmentApp').controller('ToolbarCtrl', [
                 name: 'Heading 5'
             },
             {
+                element: 'blockquote',
+                name: 'Blockquote'
+            },
+            {
                 element: 'pre',
                 name: 'Preformatted'
             }
@@ -45,7 +48,7 @@ angular.module('authoringEnvironmentApp').controller('ToolbarCtrl', [
             true
         )[0].name;
 
-        updateScope = function () {
+        $scope.updateScope = function () {
             var commandValue = Aloha.queryCommandValue('formatBlock'),
                 filtered;
 
@@ -63,15 +66,25 @@ angular.module('authoringEnvironmentApp').controller('ToolbarCtrl', [
                         $scope.active = filtered[0].name;
                     });
                 }
+            } else {
+                // Aloha events are a little slow so
+                // we have to wrap this check in a timeout
+                $timeout(function () {
+                    if (Aloha.blockquoteFound) {
+                        $scope.active = 'Blockquote';
+                    } else {
+                        $scope.active = 'Normal Text';
+                    }
+                }, 30);
             }
         };
 
         $rootScope.$on('texteditor-selection-changed', function () {
-            updateScope();
+            $scope.updateScope();
         });
 
         $rootScope.$on('texteditor-command-executed', function () {
-            updateScope();
+            $scope.updateScope();
         });
     }
 ]);

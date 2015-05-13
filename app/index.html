@@ -36,14 +36,9 @@
           auth: {
               client_id: '7_6203opwgvx8g4skgskksgkws8cs44ks8s4cw4sc8cg4wsk8c40',
               redirect_uri: 'http://localhost:9000',
-              server: 'http://newscoop.aes.sourcefabric.net/oauth/v2/auth'
-          },
-          article: {
-              width: {
-                  desktop: 960,
-                  tablet: 600,
-                  phone: 320
-              }
+              server: 'http://newscoop.aes.sourcefabric.net/oauth/v2/auth',
+              // token key name which is used to retrieve the token from session
+              tokenKeyName: 'newscoop.aes.token'
           },
           image: {
               width: {
@@ -99,7 +94,7 @@
         <link rel="stylesheet" href="css/aes-custom-styles.css">
         <!-- devcode: newscoop -->
         <style rel="stylesheet">
-            {{ custom_styles }}
+            {{ custom_styles|raw }}
         </style>
         <!-- endcode -->
 
@@ -159,6 +154,7 @@
 
     <script src="bower_components/requirejs/require.js"></script>
     <script src="bower_components/ng-aloha-editor/libs/alohaeditor-0.26.4/aloha/lib/vendor/jquery-1.7.2.js"></script>
+    <script src="bower_components/angular-symfony-translation/dist/angular-symfony-translation.js"></script>
     <script type="text/javascript">
     var Aloha = window.Aloha || ( window.Aloha = {} );
     // Load your Plugins here, can't be done after Aloha has loaded
@@ -166,7 +162,7 @@
     // custom blocks after undo/redo actions
     Aloha.settings = {
         plugins: {
-            load: "common/ui, common/format, common/paste, common/block, common/list, common/table, common/contenthandler, aes/snippet, aes/nsimage, aes/undo",
+            load: "common/ui, common/format, common/paste, common/block, common/list, common/table, common/contenthandler, aes/quotes, aes/snippet, aes/nsimage, aes/undo",
             block: {
                 defaults: {
                     '.aloha-image-block': {
@@ -250,6 +246,8 @@
         <script src="scripts/controllers/pane-info.js"></script>
         <script src="scripts/controllers/pane-topics.js"></script>
         <script src="scripts/controllers/pane-switches.js"></script>
+        <script src="scripts/controllers/feedbackForm.js"></script>
+        <script src="scripts/services/feedback.js"></script>
         <script src="scripts/services/panes.js"></script>
         <script src="scripts/controllers/panes-config.js"></script>
         <script src="scripts/controllers/article.js"></script>
@@ -316,6 +314,7 @@
         <script src="scripts/services/Issue.js"></script>
         <script src="scripts/services/Section.js"></script>
         <script src="scripts/directives/sf-aloha-command-button.js"></script>
+        <script src="scripts/controllers/feedbackForm.js"></script>
         <!-- endbuild -->
 </body>
 </html>

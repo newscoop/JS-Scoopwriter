@@ -12,8 +12,8 @@ describe('Controller: ArticleActionsCtrl', function () {
         articleService,
         modeService,
         scope,
-        toaster,
-        $window;
+        $window,
+        toaster;
 
     // load the controller's module
     beforeEach(module('authoringEnvironmentApp'));
@@ -269,6 +269,32 @@ describe('Controller: ArticleActionsCtrl', function () {
             function () {
                 scope.save();
                 expect(scope.article.save).toHaveBeenCalled();
+            }
+        );
+
+        it('display success message when save is successful',
+            function () {
+                spyOn(toaster, 'add');
+                scope.save();
+                deferredSave.resolve();
+                scope.$digest();
+
+                expect(toaster.add).toHaveBeenCalledWith(
+                    {type: 'sf-info', message: 'aes.alerts.saved'}
+                );
+            }
+        );
+
+        it('display error message when save is not successful',
+            function () {
+                spyOn(toaster, 'add');
+                scope.save();
+                deferredSave.reject(false);
+                scope.$digest();
+
+                expect(toaster.add).toHaveBeenCalledWith(
+                    {type: 'sf-error', message: 'aes.alerts.save.error'}
+                );
             }
         );
 

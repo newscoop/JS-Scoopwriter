@@ -12,7 +12,13 @@ angular.module('authoringEnvironmentApp').factory('Topic', [
     'dateFactory',
     'pageTracker',
     'transform',
-    function ($http, $q, $timeout, dateFactory, pageTracker, transform) {
+    function (
+        $http,
+        $q,
+        $timeout,
+        dateFactory,
+        pageTracker,
+        transform) {
         var SEARCH_DELAY_MS = 250,  // after the last search term change
             lastContext = null,  // most recent live search context
             lastTermChange = 0,  // time of the most recent search term change

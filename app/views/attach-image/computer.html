@@ -8,11 +8,11 @@
       drop-images handler="addToUploadList(files)"
       >
       <div class="drag-area-title">
-        Drag Your Images Here
+        {{ ::('aes.label.draghere'|trans) }}
       </div>
       <div class="drag-area-button">
         <button class="btn btn-default" file-upload handler="addToUploadList(files)">
-          <span class="glyphicon glyphicon-upload"></span> or Select them from folder
+          <span class="glyphicon glyphicon-upload"></span> {{ ::('aes.label.orselect'|trans) }}
         </button>
       </div>
     </div>
@@ -23,7 +23,7 @@
         <button
           type="button"
           class="close"
-          title="Remove"
+          title="{{ ::('aes.btn.remove'|trans) }}"
           ng-click="removeFromStaging(image)"
           >×</button>
       </div>
@@ -50,18 +50,18 @@
 
         <a class="set-for-all"
            ng-click="setForAllPhotographer(image.photographer)"
-          >Use for all</a>
+          >{{ ::('aes.label.useforall'|trans) }}</a>
         <input
             ng-model="image.photographer"
-            placeholder="Photographer"
+            placeholder="{{ ::('aes.label.photographer'|trans) }}"
             />
 
         <a class="set-for-all"
            ng-click="setForAllDescription(image.description)"
-          >Use for all</a>
+          >{{ ::('aes.label.useforall'|trans) }}</a>
         <textarea
             ng-model="image.description"
-            placeholder="Description"
+            placeholder="{{ ::('aes.label.description'|trans) }}"
             cols="40" rows="2"
             ></textarea>
       </div>
@@ -75,14 +75,14 @@
        class="btn btn-primary"
        ng-disabled="images.images2upload.length < 1 || uploading"
        ng-click="uploadStaged()">
-      Upload
+      {{ ::('aes.btn.upload'|trans) }}
     </button>
     <button
        type="button"
        class="btn btn-default"
        ng-disabled="images.images2upload.length < 1 || uploading"
        ng-click="clearStaged()">
-      Clear
+      {{ ::('aes.btn.clear'|trans) }}
     </button>
   </div>
 

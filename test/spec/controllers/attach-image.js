@@ -17,11 +17,14 @@ describe('Controller: AttachImageCtrl', function () {
         scope;
 
     // Initialize the controller and a mock scope
-    beforeEach(inject(function ($controller, $rootScope, _modal_) {
+    beforeEach(inject(function ($q, $controller, $rootScope, _modal_) {
         scope = $rootScope.$new();
         modal = _modal_;
 
-        fakeImagesService = {};
+        fakeImagesService = {
+            attachAllCollected: $q.defer(),
+            discardAll: $q.defer()
+        };
 
         AttachImageCtrl = $controller('AttachImageCtrl', {
             $scope: scope,
@@ -58,24 +61,56 @@ describe('Controller: AttachImageCtrl', function () {
     });
 
     describe('scope\'s attachCollected() method', function () {
-        beforeEach(function () {
-            fakeImagesService.attachAllCollected = jasmine.createSpy();
-            fakeImagesService.discardAll = jasmine.createSpy();
+        var deferred,
+            toaster;
+
+        beforeEach(inject(function ($q, _toaster_) {
+            deferred = $q.defer(); 
+            toaster = _toaster_;
+            spyOn(fakeImagesService, 'attachAllCollected').andReturn(deferred.promise);
+            spyOn(fakeImagesService, 'discardAll').andReturn(deferred.promise);
+            spyOn(toaster, 'add').andReturn(deferred.promise);
             spyOn(modal, 'hide');
-        });
+        }));
 
         it('triggers attaching all images currently in basket', function () {
             scope.attachCollected();
+            deferred.resolve(true);
+            scope.$digest();
             expect(fakeImagesService.attachAllCollected).toHaveBeenCalled();
         });
 
         it('triggers clearing the basket and upload list', function () {
             scope.attachCollected();
+            deferred.resolve(true);
+            scope.$digest();
             expect(fakeImagesService.discardAll).toHaveBeenCalled();
+        });
+
+        it('calls toaster.add with correct params on success', function () {
+            scope.attachCollected();
+            deferred.resolve(true);
+            scope.$digest();
+            expect(toaster.add).toHaveBeenCalledWith({
+                type: 'sf-info',
+                message: 'aes.msgs.images.attach.success'
+            });
+        });
+
+        it('calls toaster.add with correct params on error', function () {
+            scope.attachCollected();
+            deferred.reject(false);
+            scope.$digest();
+            expect(toaster.add).toHaveBeenCalledWith({
+                type: 'sf-error',
+                message: 'aes.msgs.images.attach.error'
+            });
         });
 
         it('closes the modal', function () {
             scope.attachCollected();
+            deferred.resolve(true);
+            scope.$digest();
             expect(modal.hide).toHaveBeenCalled();
         });
     });

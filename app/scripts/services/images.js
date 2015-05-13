@@ -189,7 +189,8 @@ angular.module('authoringEnvironmentApp').service('images', [
         * @method attachAllCollected
         */
         self.attachAllCollected = function () {
-            var notYetAttached = [];
+            var notYetAttached = [],
+                deferred = $q.defer();
 
             // skip already attached images (this should generally not happen,
             // but if it does, it might be some bug in the basket logic)
@@ -207,6 +208,7 @@ angular.module('authoringEnvironmentApp').service('images', [
                 self.article.articleId, self.article.language, notYetAttached
             )
             .then(function () {
+                deferred.resolve();
                 // notYetAttached.forEach(function (image) {
                 //     self.attached.push(image);
                 // });
@@ -217,7 +219,11 @@ angular.module('authoringEnvironmentApp').service('images', [
                 // Redundant, but unfortunately unavoidable until API is
                 // updated.
                 self.loadAttached(self.article);
+            }, function (responseBody) {
+                deferred.reject(responseBody);
             });
+
+            return deferred.promise;
         };
 
         /**
@@ -228,7 +234,8 @@ angular.module('authoringEnvironmentApp').service('images', [
         * @param id {Number} ID of an image to detach
         */
         self.detach = function (id) {
-            var image = _.find(self.attached, {id: id});
+            var image = _.find(self.attached, {id: id}),
+                deferred = $q.defer();
 
             if (!image) {
                 return;  // image not attached, nothing to do
@@ -238,8 +245,13 @@ angular.module('authoringEnvironmentApp').service('images', [
                 self.article.articleId, self.article.language
             )
             .then(function () {
+                deferred.resolve();
                 _.remove(self.attached, {id: id});
+            }, function (responseBody) {
+                deferred.reject(responseBody);
             });
+        
+            return deferred.promise;
         };
 
         /**

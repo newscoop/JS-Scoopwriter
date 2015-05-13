@@ -3,7 +3,7 @@
     class="tabcontent">
 
     <div class="panel-title">
-        Related Articles
+        {{ ::('aes.label.relatedarticles'|trans) }}
     </div>
     
     <div ng-hide="paneRelatedArticles.showArticlePreview">
@@ -15,7 +15,7 @@
                   ng-class="{'glyphicon-plus': !paneRelatedArticles.showAddFilter,
                              'glyphicon-minus': paneRelatedArticles.showAddFilter}"
                   ></span>
-                <span class="add-text">ADVANCED FILTER</span>
+                <span class="add-text">{{ ::('aes.label.advancedfilter'|trans) }}</span>
                 </button>
             </div>
 
@@ -25,19 +25,20 @@
                         <select 
                             ng-model="paneRelatedArticles.publicationFilter"
                             ng-options="publication.name for publication in paneRelatedArticles.availablePublications"
-                            ng-change="paneRelatedArticles.loadAvailableFilters()">
-                            <option value="" class="">-- Publication --</option>
+                            ng-change="paneRelatedArticles.loadAvailableFilters(); paneRelatedArticles.loadSearchResults()">
+                            <option value="" class="">-- {{ ::('aes.label.publication'|trans) }} --</option>
                         </select>
                         <select 
                             ng-model="paneRelatedArticles.issueFilter"
                             ng-options="issue.title for issue in paneRelatedArticles.availableIssues"
-                            ng-change="paneRelatedArticles.loadAvailableFilters()">
-                            <option value="" class="">-- Issue --</option>
+                            ng-change="paneRelatedArticles.loadAvailableFilters();paneRelatedArticles.loadSearchResults()">
+                            <option value="" class="">-- {{ ::('aes.label.issue'|trans) }} --</option>
                         </select>
                         <select 
                             ng-model="paneRelatedArticles.sectionFilter" 
+                            ng-change="paneRelatedArticles.loadSearchResults()"
                             ng-options="section.title for section in paneRelatedArticles.availableSections">
-                            <option value="" class="">-- Section --</option>
+                            <option value="" class="">-- {{ ::('aes.label.section'|trans) }} --</option>
                         </select>
                     </div>
                     <div class="input-group">
@@ -48,7 +49,7 @@
                         <span class="input-group-btn">
                             <button
                                 ng-disabled="!paneRelatedArticles.query || !paneRelatedArticles.articlesSearchResultsListRetrieved" 
-                                class="btn btn-primary btn-sm" type="submit">Filter</button>
+                                class="btn btn-primary btn-sm" type="submit">{{ ::('aes.btn.filter'|trans) }}</button>
                         </span>
                     </div>
                 </form>
@@ -67,7 +68,7 @@
                        <span class="glyphicon"
                             ng-class="{'glyphicon-chevron-right': !showPinnedArticles,
                                         'glyphicon-chevron-down': showPinnedArticles}">
-                        </span> Pinned articles
+                        </span> {{ ::('aes.label.pinnedarticles'|trans) }}
                     </div>
                     <div class="related-articles-list"
                         ng-show="showPinnedArticles"
@@ -97,7 +98,7 @@
 
                 <!-- search results -->
                 <div class="group">
-                    <div class="title"><span class="glyphicon glyphicon-search"></span> Search results</div>
+                    <div class="title"><span class="glyphicon glyphicon-search"></span> {{ ::('aes.label.searchresults'|trans) }}</div>
                     <!-- loader -->
                     <div  ng-hide="paneRelatedArticles.articlesSearchResultsListRetrieved"
                         class="load-anim">
@@ -134,7 +135,7 @@
                 <div class="btn-group">
                     <button class="btn btn-default btn-xs"
                       ng-click="paneRelatedArticles.clearPreview()">
-                      <i class="fa fa-chevron-left"></i> Back
+                      <i class="fa fa-chevron-left"></i> {{ ::('Back'|trans) }}
                     </button>
                 </div>
                 <div class="btn-group">
@@ -142,7 +143,7 @@
                       ng-href="{{ paneRelatedArticles.relatedArticlePreview.editorUrl }}"
                       target="_blank"
                       class="btn btn-default btn-xs">
-                        <i class="fa fa-pencil"></i> Edit
+                        <i class="fa fa-pencil"></i> {{ ::('Edit'|trans) }}
                     </a>
                 </div>
             </div>

@@ -14,7 +14,12 @@ angular.module('authoringEnvironmentApp').factory('NcImage', [
     '$upload',
     'transform',
     'formDataFactory',
-    function ($http, $q, $upload, transform, formDataFactory) {
+    function (
+        $http,
+        $q,
+        $upload,
+        transform,
+        formDataFactory) {
         var NcImage;
 
         /**

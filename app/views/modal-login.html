@@ -1,13 +1,12 @@
 <div class="modal-login">
 
     <div class="modal-header">
-      <h3 id="modalLoginTitle">Login</h3>
+      <h3 id="modalLoginTitle">{{ ::('Login'|trans) }}</h3>
     </div>
 
     <div class="modal-body">
         <sf-iframe-login
             width="570" height="510"
-            on-load="ctrl.iframeLoadedHandler(location)"
             ></sf-iframe-login>
     </div>
 

@@ -2,7 +2,7 @@
        <button type="button" class="close"
           ng-click="modalPreviewCtrl.close()">
           <span aria-hidden="true">&times;</span></button>
-      <h4>Article Preview</h4>
+      <h4>{{ ::('aes.label.articlepreview'|trans) }}</h4>
     </div>
 
     <div class="modal-body">
@@ -11,5 +11,5 @@
 
     <div class="modal-footer">
       <button class="btn btn-primary"
-          ng-click="modalPreviewCtrl.close()">Close</button>
+          ng-click="modalPreviewCtrl.close()">{{ ::('Close'|trans) }}</button>
     </div>

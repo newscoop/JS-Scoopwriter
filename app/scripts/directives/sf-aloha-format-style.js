@@ -17,8 +17,28 @@ angular.module('authoringEnvironmentApp').directive(
                 );
                 element.toggleClass('disabled', isDisabled);
                 element.bind('click', function () {
-                    Aloha.execCommand(
-                        'formatBlock', false, scope.styleElement);
+                    // blockquotes implemented with custom Aloha plugin
+                    // because aloha-cite is broken with our Aloha
+                    // implementation, thus we have an exception
+                    // in handeling here
+                    if (scope.styleElement === 'blockquote') {
+                        Aloha.addBlockQuote();
+                    } else {
+                        if (Aloha.blockquoteFound) {
+                            Aloha.removeBlockQuote();
+                        }
+                        Aloha.execCommand(
+                            'formatBlock',
+                            false,
+                            scope.styleElement
+                        );
+                        // for some reason execCommand does not trigger 
+                        // a change event.  We need this to fire to enable
+                        // the article save button
+                        Aloha.trigger('aloha-smart-content-changed', {
+                            'editable': Aloha.activeEditable
+                        });
+                    }
                 });
             }
         };
