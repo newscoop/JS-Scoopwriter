@@ -96,3 +96,21 @@
     font-weight: normal; /* Roboto: 300,400,500 or 700 */
     font-style: normal; /* normal, italic */
 }
+
+/* viewport styles */
+
+/* Adjust the width of the viewport for desktop devices.
+ * example: 13.3 inch laptop screens are 1360 pixels wide */
+.authoring-environment .main-article-container.desktop {
+  max-width: 960px;
+}
+/* Adjust the width of the viewport for tablet devices.
+ * example: iPad mini screens are 768 pixels wide in portrait mode */
+.authoring-environment .main-article-container.tablet {
+  max-width: 768px;
+}
+/* Adjust the width of the viewport for mobile devices.
+ * example: iPhone5 screens are 640 pixels wide in portrait mode */
+.authoring-environment .main-article-container.mobile {
+  max-width: 640px; 
+}
