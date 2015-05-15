@@ -34,7 +34,7 @@ angular.module('authoringEnvironmentApp').factory('authInterceptor', [
                 config.headers = config.headers || {};
 
                 token = userAuth.token();
-                if (token) {
+                if (token && !config.IS_AUTHORIZATION_HEADER) {
                     config.headers.Authorization = 'Bearer ' + token;
                 }
 
@@ -78,27 +78,38 @@ angular.module('authoringEnvironmentApp').factory('authInterceptor', [
                     // obtain a new token and then repeat the failed request.
                     failedRequestConfig = response.config;
                     retryDeferred = $q.defer();
+                    $http = $injector.get('$http');
+                    configToRepeat = angular.copy(failedRequestConfig);
+                    configToRepeat.IS_RETRY = true;
 
-                    userAuth.newTokenByLoginModal()
-                    .then(function () {
-                        // new token successfully obtained, repeat the request
-                        $http = $injector.get('$http');
-
-                        configToRepeat = angular.copy(failedRequestConfig);
-                        configToRepeat.IS_RETRY = true;
-
+                    userAuth.obtainToken()
+                    .then(function (responseBody) {
                         $http(configToRepeat)
                         .then(function (newResponse) {
                             delete newResponse.config.IS_RETRY;
                             retryDeferred.resolve(newResponse);
                         })
                         .catch(function () {
+                            retryDeferred.reject(responseBody);
+                        });
+                    }, function (response) {
+                        userAuth.newTokenByLoginModal()
+                        .then(function () {
+                            // new token successfully obtained,
+                            // repeat the request
+                            $http(configToRepeat)
+                            .then(function (newResponse) {
+                                delete newResponse.config.IS_RETRY;
+                                retryDeferred.resolve(newResponse);
+                            })
+                            .catch(function () {
+                                retryDeferred.reject(response);
+                            });
+                        })
+                        .catch(function () {
+                            // obtaining new token failed, reject the request
                             retryDeferred.reject(response);
                         });
-                    })
-                    .catch(function () {
-                        // obtaining new token failed, reject the request
-                        retryDeferred.reject(response);
                     });
 
                     return retryDeferred.promise;
