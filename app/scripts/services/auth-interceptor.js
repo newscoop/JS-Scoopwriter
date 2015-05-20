@@ -90,9 +90,9 @@ angular.module('authoringEnvironmentApp').factory('authInterceptor', [
                             retryDeferred.resolve(newResponse);
                         })
                         .catch(function () {
-                            retryDeferred.reject(responseBody);
+                            retryDeferred.reject(response);
                         });
-                    }, function (response) {
+                    }, function (responseBody) {
                         userAuth.newTokenByLoginModal()
                         .then(function () {
                             // new token successfully obtained,

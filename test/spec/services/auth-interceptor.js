@@ -19,7 +19,8 @@ describe('Service: authInterceptor', function () {
     beforeEach(module(function ($provide) {
         fakeUserAuth = {
             token: jasmine.createSpy(),
-            newTokenByLoginModal: jasmine.createSpy()
+            newTokenByLoginModal: jasmine.createSpy(),
+            obtainToken: jasmine.createSpy()
         };
         $provide.value('userAuth', fakeUserAuth);
 
@@ -80,12 +81,32 @@ describe('Service: authInterceptor', function () {
                     'Bearer abcd1234');
             }
         );
+
+        it('doesnt\'t set the authorization header for API requests if ' +
+           'session contains authorization token ' +
+           '(with IS_AUTHENTICATION_HEADER flag removed)',
+            function () {
+                var config,
+                    returned;
+
+                config = {
+                    url: 'http://backend.com/api/articles/8/en',
+                    headers: {}
+                };
+                fakeUserAuth.token.andReturn('abcd1234');
+                config.IS_AUTHORIZATION_HEADER = true;
+                returned = authInterceptor.request(config);
+                expect(returned.headers.Authorization).toEqual(null);
+            }
+        );
     });
 
 
     describe('response error interceptor', function () {
         var httpDelay,
             loginModalResult,
+            requestResult,
+            expectedRetryConfig,
             responseObj,
             $rootScope;
 
@@ -105,9 +126,17 @@ describe('Service: authInterceptor', function () {
             };
 
             loginModalResult = $q.defer();
+            requestResult = $q.defer();
             fakeUserAuth.newTokenByLoginModal.andReturn(
                 loginModalResult.promise
             );
+
+            fakeUserAuth.obtainToken.andReturn(
+                requestResult.promise
+            );
+
+            expectedRetryConfig = angular.copy(responseObj.config);
+            expectedRetryConfig.IS_RETRY = true;
 
             httpDelay = $q.defer();
             fakeHttp.andReturn(httpDelay.promise);
@@ -132,6 +161,9 @@ describe('Service: authInterceptor', function () {
                 expect(onErrorSpy).toHaveBeenCalledWith(responseObj);
                 expect(fakeHttp).not.toHaveBeenCalled();
                 expect(
+                    fakeUserAuth.obtainToken
+                ).not.toHaveBeenCalled();
+                expect(
                     fakeUserAuth.newTokenByLoginModal
                 ).not.toHaveBeenCalled();
             }
@@ -152,24 +184,70 @@ describe('Service: authInterceptor', function () {
                 expect(onErrorSpy).toHaveBeenCalledWith(responseObj);
                 expect(fakeHttp).not.toHaveBeenCalled();
                 expect(
+                    fakeUserAuth.obtainToken
+                ).not.toHaveBeenCalled();
+                expect(
                     fakeUserAuth.newTokenByLoginModal
                 ).not.toHaveBeenCalled();
             }
         );
 
         describe('handling authentication errors', function () {
-
-            it('displays a login modal', function () {
-                responseObj.status = 401;
-                authInterceptor.responseError(responseObj);
-                expect(fakeUserAuth.newTokenByLoginModal).toHaveBeenCalled();
-            });
-
             it('recognizes auth. error by an error message', function () {
                 responseObj.status = 500;
                 responseObj.statusText = 'OAuth2 authentication required';;
                 authInterceptor.responseError(responseObj);
-                expect(fakeUserAuth.newTokenByLoginModal).toHaveBeenCalled();
+                expect(fakeUserAuth.obtainToken).toHaveBeenCalled();
+            });
+
+            describe('obtaining a new token through the API endpoint', function () {
+                it('resolves the error if the retried request succeeds', function () {
+                    var expectedPromiseData,
+                        newResponse,
+                        onSuccessSpy = jasmine.createSpy(),
+                        promise;
+
+                    responseObj.status = 401;
+                    responseObj.MARKER = 'foo'; // to recognize the object
+                    newResponse = {
+                        status: 201,
+                        statusText: 'Created',
+                        config: angular.copy(responseObj.config)
+                    };
+                    newResponse.config.IS_RETRY = true;
+
+                    promise = authInterceptor.responseError(responseObj);
+                    requestResult.resolve();
+                    promise.then(onSuccessSpy);
+                    loginModalResult.resolve();
+                    httpDelay.resolve(newResponse);
+                    $rootScope.$digest();
+
+                    expectedPromiseData = angular.copy(newResponse);
+                    delete expectedPromiseData.config.IS_RETRY;
+                    expect(
+                        onSuccessSpy
+                    ).toHaveBeenCalledWith(expectedPromiseData);
+                });
+
+                it ('forwards the error if the retried request fails',
+                    function () {
+                        var onErrorSpy = jasmine.createSpy(),
+                            promise;
+
+                        responseObj.status = 401;
+                        responseObj.MARKER = 'foo'; // to recognize the object
+
+                        promise = authInterceptor.responseError(responseObj);
+                        requestResult.resolve();
+                        promise.catch(onErrorSpy);
+
+                        httpDelay.reject();
+                        $rootScope.$digest();
+
+                        expect(onErrorSpy).toHaveBeenCalledWith(responseObj);
+                    }
+                );
             });
 
             describe('logging-in through a modal fails', function () {
@@ -181,9 +259,13 @@ describe('Service: authInterceptor', function () {
                     responseObj.MARKER = 'foo'; // to recognize the object
                     promise = authInterceptor.responseError(responseObj);
                     promise.catch(onErrorSpy);
-
+                    requestResult.reject();
                     loginModalResult.reject();
                     $rootScope.$digest();
+
+                    expect(
+                        fakeUserAuth.newTokenByLoginModal
+                    ).toHaveBeenCalled();
 
                     expect(onErrorSpy).toHaveBeenCalledWith(responseObj);
                 });
@@ -191,15 +273,15 @@ describe('Service: authInterceptor', function () {
 
             describe('logging-in through a modal succeeds', function () {
                 it ('repeats the failed request and marks it', function () {
-                    var expectedRetryConfig;
-
                     responseObj.status = 401;
-                    expectedRetryConfig = angular.copy(responseObj.config);
-                    expectedRetryConfig.IS_RETRY = true;
-
                     authInterceptor.responseError(responseObj);
+                    requestResult.reject();
                     loginModalResult.resolve();
                     $rootScope.$digest();
+
+                    expect(
+                        fakeUserAuth.newTokenByLoginModal
+                    ).toHaveBeenCalled();
 
                     expect(fakeHttp).toHaveBeenCalledWith(expectedRetryConfig);
                 });
@@ -223,6 +305,7 @@ describe('Service: authInterceptor', function () {
                         newResponse.config.IS_RETRY = true;
 
                         promise = authInterceptor.responseError(responseObj);
+                        requestResult.reject();
                         promise.then(onSuccessSpy);
                         loginModalResult.resolve();
                         httpDelay.resolve(newResponse);
@@ -230,8 +313,9 @@ describe('Service: authInterceptor', function () {
 
                         expectedPromiseData = angular.copy(newResponse);
                         delete expectedPromiseData.config.IS_RETRY;
-                        expect(onSuccessSpy).toHaveBeenCalledWith(
-                            expectedPromiseData);
+                        expect(
+                            onSuccessSpy
+                        ).toHaveBeenCalledWith(expectedPromiseData);
                     }
                 );
 
@@ -244,8 +328,10 @@ describe('Service: authInterceptor', function () {
                         responseObj.MARKER = 'foo'; // to recognize the object
 
                         promise = authInterceptor.responseError(responseObj);
-                        promise.catch(onErrorSpy);
+                        requestResult.reject();
                         loginModalResult.resolve();
+                        promise.catch(onErrorSpy);
+
                         httpDelay.reject();
                         $rootScope.$digest();
 
