@@ -7,7 +7,8 @@ controller('MainCtrl', [
         '$window',
         'mode',
         'userAuth',
-        function ($scope, $window, mode, userAuth) {
+        'toaster',
+        function ($scope, $window, mode, userAuth, toaster) {
             if (!userAuth.isAuthenticated()) {
                 $scope.auth = false;
 
@@ -22,7 +23,11 @@ controller('MainCtrl', [
                         $scope.auth = true;
                     })
                     .catch(function () {
-                        // XXX: show toast message?
+                        toaster.add({
+                            type: 'sf-error',
+                            message: 'Could not get access token. ' +
+                            'Check AES_SETTINGS.auth config.'
+                        });
                     });
                 });
             } else {
