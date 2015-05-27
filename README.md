@@ -35,8 +35,6 @@ install the dependencies:
 NOTE: if you get a lot of `EACCES` errors, you might want to run the third
 command with superuser privileges (e.g. by prefixing it with `sudo`).
 
-TODO: configure the server (API)
-
 ## Run
 
 To run the application, simply type the following in console (from inside
@@ -78,15 +76,10 @@ for Firefox the path to it looks something similar to this:
 
 # <a name="compatibility"></a>Browser Compatibility
 
-TODO: to be tested, but it should work in any modern browser:
-
-* Chrome x.y
-* Firefox x.y
+* Chrome 39.0
+* Firefox 30.0
 * Internet Explorer 10+
-* Safari x.y
-* ...
-
-TODO: what about mobile browsers?
+* Safari 8.0
 
 ([Back to Top](#top))
 
@@ -101,6 +94,5 @@ Thanks!
 
 # <a name="toImprove"></a>Things to Improve
 
-TODO: ...
 
 ([Back to Top](#top))
