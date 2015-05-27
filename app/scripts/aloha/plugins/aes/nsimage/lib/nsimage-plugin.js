@@ -95,8 +95,6 @@ define(['aloha', 'aloha/plugin', 'jquery',  'aloha/console', 'block/block', 'blo
                                 contents += ' data-width="' + sizeInPx.substring(0, sizeInPx.length - 2) + '"';
                             }
 
-                            contents += ' data-percentage="' + $this.width() + '%"';
-
                             output += contents + '></div>';
                         }
 
