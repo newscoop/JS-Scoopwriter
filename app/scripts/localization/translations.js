@@ -428,6 +428,7 @@
     Translator.add("aes.btn.reply", "Reply", "messages", "en");
     Translator.add("aes.btn.zenmode", "Zen mode", "messages", "en");
     Translator.add("aes.btn.previewarticle", "Preview article", "messages", "en");
+    Translator.add("aes.btn.livearticle", "Go to live article", "messages", "en");
     Translator.add("aes.btn.editcaption", "Edit Caption", "messages", "en");
     Translator.add("aes.btn.upload", "Upload", "messages", "en");
     Translator.add("aes.btn.discard", "Discard", "messages", "en");
