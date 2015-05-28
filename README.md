@@ -1,93 +1,98 @@
-# About
-This project is at the moment mainly targeted at `Newscoop` which is an open source CMS for news by Sourcefabric. However it should be flexible enough to be used for other projects too.
+# <a name="top"></a>About
+AES is a new modern article edit screen for
+[Newscoop](https://github.com/sourcefabric/Newscoop),
+[Sourcefabric](www.sourcefabric.org)'s open source CMS for news. It is a single
+page application written in AngularJS meant to be used as a Newscoop plugin.
+Its aim is to provide a modern and responsive alternative to the existing
+article edit screen, which is starting to show its age.
 
-# Getting started
+# Table of Contents
+
+* [Getting Started](#gettingStarted)
+* [Browser Compatibility](#compatibility)
+* [How to Contribute](#contribute)
+* [Things to Improve](#toImprove)
+* [Endpoint Routing](ROUTING.md)
+* [Newscoop Plugin](PLUGIN.md)
+
+# <a name="gettingStarted"></a>Getting Started
+## Dependencies
+* `node` - http://nodejs.org/download/ (follow instruction for your specific platform)
+* `npm` - comes with node now
+* `grunt` - npm install -g grunt-cli
+* `bower` - npm install -g bower
+
 ## Setup
-In order to run this you need `node.js` and `npm`. Checkout the repo,
-then install the dependencies:
+In order to run it you need to have all the dependencies listed
+above installed on your machine. Clone the repository and then 
+install the dependencies:
 
     $ git clone <repo address>
-    $ cd aes/
-    $ npm install .
+    $ cd aes
+    $ npm install .  # note the trailing dot
     $ bower install
 
-## Standalone with mocked backend
-For the standalone demo there is a Mocked Backend included (also used for E2E). You will need `grunt` for this to work.
+NOTE: if you get a lot of `EACCES` errors, you might want to run the third
+command with superuser privileges (e.g. by prefixing it with `sudo`).
 
-	$ grunt server
-	
+## Run
 
-## Building the Project
-If you want to create a build of the project it's as simple as taking `grunt` and doing a build. This will include, minimize etc all the required assets.
-
-	$ grunt build
-	
-The resulting build files end up in the `dist/` directory.
-Inside the `dist/` dir you can now run a local server like `serve` (available from `npm`, package `node-serve`) to test.
-
-	$ cd dist/
-	$ serve
-
-## Creating new angular entities
-
-Until now, we created new entities using yeoman:
-
-    $ yo angular:service my-awesome-servire
-
-Note that the name has to be separated by hyphens, and yeoman will
-convert it to camel case. Note also that yeoman will create services
-starting with an uppercase letter like `MyAwesomeService`, but this is
-wrong: services are singletons so a name like `myAwesomeService` is
-closer to javascript good practices, that say to call just class names
-uppercase. Controllers, on the other hand, should have uppercase names
-since any instance will be generated on its own and will be
-independent.
-
-# Tests
-## Unit Tests
-
-Unit tests depend on `karma`
-
-	$ grunt test
-
-## E2E Tests
-
-Integration tests depend on `protractor` and `selenium`. Run them using:
-
-    $ protractor protractorConf.js
-
-Be sure to have the application served where the tests will try to
-connect (at the current moment `127.0.0.1:9000`), for example running:
+To run the application, simply type the following in console (from inside
+the directory you cloned the repository into):
 
     $ grunt server
 
-## Coverage report
+You can now access the application by pointing your browser to
+**localhost:9000**. To stop the server, press `<CTRL> + C` in the console
+window where you started it.
 
-In order to get coverage reports, uncomment the `reporters` section in
-the karma conf file. It is better to keep coverage disabled if some
-tests are failing, and enable it just if all the tests succeed. When
-coverage is enabled, no details about failing tests are shown.
+## Test
 
-After running the tests, coverage reports are produced in the
-`coverage` folder. In order to read them, fire your browser to one of
-the index files, for example with Mac OSX:
+Unit tests depend on the [karma](http://karma-runner.github.io/) test runner.
+To run them, type the following in console:
 
-    $ open "coverage/Chrome 33.0.1750 (Mac OS X 10.9.2)/index.html"
+    $ grunt test
 
-In order to change the way coverage is generated, act on the karma
-conf file
+By default it runs tests in Chrome and Firefox. If you don't have these
+browsers installed or if you want to run tests in a different browser, change
+the corresponding setting in the `karma.conf.js` file (the `browsers` option).
 
-# Compatibility table
+### <a name="testCoverage"></a>Coverage Report
+In order to get coverage reports, uncomment the `reporters` section in the
+`karma.conf.js` file. All test must pass, otherwise the reports will not be
+generated.
 
-The following features restrict the application usage to the related
-browsers
+After running the tests, coverage reports are produced in the `coverage`
+subdirectory located directly under the the application's root directory.
+Reports are generated for every browser version the tests were run in, each
+bundle in its own subdirectory.
 
-Feature       | Explorer | Android Browser | iOS Safari |
----           | ---      | ---             | ---        |
-File API      | 10       | 4.4             | 6.1        |
-Drag and Drop | 10       | no              | no         |
+To view the reports, open the `index.html` in one of these subdirectories, e.g.
+for Firefox the path to it looks something similar to this:
 
-Final support restrictions:
-- Explorer 10
-- no Android Browser
-- no iOS Safari
+`<aes_dir>/coverage/Firefox\ 34.0.0\ \(Ubuntu\)/index.html`
+
+([Back to Top](#top))
+
+# <a name="compatibility"></a>Browser Compatibility
+
+* Chrome 39.0
+* Firefox 30.0
+* Internet Explorer 10+
+* Safari 8.0
+
+([Back to Top](#top))
+
+# <a name="contribute"></a>How to Contribute
+
+You want to contribute to the project? That's great and we really appreciate
+it! Before sumbitting your work though, please read the
+[contributing guideline](CONTRIBUTING.md) for the details on how to do it.
+Thanks!
+
+([Back to Top](#top))
+
+# <a name="toImprove"></a>Things to Improve
+
+
+([Back to Top](#top))
