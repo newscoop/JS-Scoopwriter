@@ -64,6 +64,47 @@
             };
 
             /**
+            * Sets the current oAuth token in sessionStorage.
+            *
+            * @param {String} access token
+            * @method setToken
+            */
+            self.setToken = function (token) {
+                $window.sessionStorage.setItem(
+                    AES_SETTINGS.auth.tokenKeyName,
+                    token
+                );
+            };
+
+            /**
+            * Gets access token by client id. Opening a modal
+            * when user session in Newscoop is still valid,
+            * is not needed then. Instead a new token is
+            * obtained directly from the API.
+            *
+            * @method obtainToken
+            * @return {Object} promise object
+            */
+            self.obtainToken = function () {
+                var deferredGet = $q.defer();
+
+                $http.get(Routing.generate(
+                    'newscoop_gimme_users_getuseraccesstoken',
+                    {clientId: AES_SETTINGS.auth.client_id},
+                    true
+                ),{IS_RETRY: true, IS_AUTHORIZATION_HEADER: true})
+                .success(function(response) {
+                    self.setToken(response.access_token);
+                    deferredGet.resolve(response);
+                })
+                .error(function (response) {
+                    deferredGet.reject(response);
+                });
+
+                return deferredGet.promise;
+            };
+
+            /**
             * Opens a modal with Newscoop login form. On successful login it
             * stores the new authentication token into session storage and
             * resolves given promise with it.
