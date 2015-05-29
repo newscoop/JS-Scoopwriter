@@ -201,6 +201,36 @@ describe('Controller: ArticleCtrl', function () {
             ).toEqual('26 Characters / 5 Words');
         });
 
+        it('updates changed field\'s stats text if event\'s trigger type is "undo"',
+            function () {
+                scope.editableFields[0].statsText = 'Original stats text';
+                ArticleCtrl.fieldStatsText.andReturn('New stats text');
+                alohaEditable.triggerType = 'undo';
+
+                scope.$emit('texteditor-content-changed', {}, alohaEditable);
+                scope.$digest();
+
+                expect(
+                    scope.editableFields[0].statsText  // teaser field
+                ).toEqual('New stats text');
+            }
+        );
+
+        it('updates changed field\'s stats text if event\'s trigger type is "redo"',
+            function () {
+                scope.editableFields[0].statsText = 'Original stats text';
+                ArticleCtrl.fieldStatsText.andReturn('New stats text');
+                alohaEditable.triggerType = 'redo';
+
+                scope.$emit('texteditor-content-changed', {}, alohaEditable);
+                scope.$digest();
+
+                expect(
+                    scope.editableFields[0].statsText  // teaser field
+                ).toEqual('New stats text');
+            }
+        );
+
         it('does not do anything if event\'s trigger type is "blur"',
             function () {
                 scope.editableFields[0].statsText = 'Original stats text';

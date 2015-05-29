@@ -130,6 +130,30 @@ describe('Controller: ArticleActionsCtrl', function () {
             }
         );
 
+        it('sets the article modified flag on triggerType undo',
+            function () {
+                articleService.modified = false;
+
+                scope.article.fields.body = 'New body text.';
+                alohaEditable.triggerType = 'undo';
+                scope.$emit('texteditor-content-changed', {}, alohaEditable);
+                
+                expect(articleService.modified).toBe(true);
+            }
+        );
+
+        it('sets the article modified flag on triggerType redo',
+            function () {
+                articleService.modified = false;
+
+                scope.article.fields.body = 'New body text.';
+                alohaEditable.triggerType = 'redo';
+                scope.$emit('texteditor-content-changed', {}, alohaEditable);
+                
+                expect(articleService.modified).toBe(true);
+            }
+        );
+
         it('does *not* set the article modified flag if event\'s trigger ' +
             'type is "blur"',
             function () {
