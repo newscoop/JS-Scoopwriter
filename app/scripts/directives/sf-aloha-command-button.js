@@ -35,8 +35,19 @@ angular.module('authoringEnvironmentApp').directive('sfAlohaCommandButton', [
                     };
                     checkEvent = 'aloha-redo-clicked';
                     clickEvent = 'aloha-undo-clicked';
-                    clickFunction = function () {
+                    clickFunction = function (e) {
                         Aloha.undo();
+                        var editable = Aloha.undoneEditable;
+                        editable.editable = {
+                            'originalObj': $(Aloha.undoneEditable
+                                .originalObj[0].outerHTML)
+                        };
+                        editable.triggerType = 'undo';
+                        $rootScope.$emit(
+                            'texteditor-content-changed',
+                            e,
+                            editable
+                        );
                     };
                 }
 
@@ -50,8 +61,19 @@ angular.module('authoringEnvironmentApp').directive('sfAlohaCommandButton', [
                     };
                     checkEvent = 'aloha-undo-clicked';
                     clickEvent = 'aloha-redo-clicked';
-                    clickFunction = function () {
+                    clickFunction = function (e) {
                         Aloha.redo();
+                        var editable = Aloha.redoneEditable;
+                        editable.editable = {
+                            'originalObj': $(Aloha.undoneEditable
+                                .originalObj[0].outerHTML)
+                        };
+                        editable.triggerType = 'undo';
+                        $rootScope.$emit(
+                            'texteditor-content-changed',
+                            e,
+                            editable
+                        );
                     };
                 }
 

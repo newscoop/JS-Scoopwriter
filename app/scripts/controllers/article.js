@@ -66,7 +66,13 @@ angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
         ) {
             var fieldName,
                 statsText,
-                reactOnTypes = {'keypress': true, 'paste': true, 'idle': true};
+                reactOnTypes = {
+                    'keypress': true,
+                    'paste': true,
+                    'idle': true,
+                    'undo': true,
+                    'redo': true
+                };
 
             if (!(alohaEditable.triggerType in reactOnTypes)) {
                 return;
