@@ -217,6 +217,7 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                 scope.setSize = function (size, initPhase) {
                     var width;
 
+                    $parent = findParent();
                     if (size.match(/^\d+px$/)) {
                         width = size.substring(0, size.length - 2);
                         scope.changePixelSize(parseInt(width));
@@ -226,6 +227,10 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                     } else if (size in AES_SETTINGS.image.width) {
                         width = AES_SETTINGS.image.width[size];
                         scope.activeSize = size;
+                        $parent.attr(
+                            'data-percentage',
+                            width
+                        );
                     } else {
                         // set to original image size (NOTE: add 2px because
                         // border width is subtracted from image width due to
@@ -234,14 +239,16 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                         scope.activeSize = 'original';
                     }
 
-                    $parent = findParent();
-
                     // NOTE: use .css() instead of .width() as the latter
                     // does not set the desired pixel width due to "border-box"
                     // box-sizing CSS property that we use
                     $parent.css('width', width);
                     $element.css('width', '100%');
                     $parent.attr('data-size', size);
+                    $parent.attr(
+                        'data-sizepixels',
+                        $element.innerWidth() + 'px'
+                    );
 
                     scope.widthPx = $element.innerWidth();
                     if (initPhase) {
@@ -268,7 +275,6 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                     if (angular.isNumber(width) && width > 0) {
                         width = Math.round(width);
                         $element.css('width', width + 'px');
-
                         // we must reselect parent here, in case image has been
                         // drag-dropped, which creates a new parent
                         $parent = findParent();
@@ -279,10 +285,19 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                         // box-sizing property)
                         $parent.css('width', width + 2 + 'px');
                         $parent.attr('data-size', width + 'px');
+                        $parent.attr(
+                            'data-sizepixels',
+                            width + 'px'
+                        );
+
+                        $parent.attr(
+                            'data-percentage',
+                            100 + '%'
+                        );
 
                         scope.widthPx = width;
                         scope.activeSize = 'custom';
-                        
+
                         triggerChangeEvent();
                         positionToolbar();
                     }

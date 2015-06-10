@@ -14,8 +14,10 @@ angular.module('authoringEnvironmentApp').controller('ArticleActionsCtrl', [
     'Article',
     'mode',
     'toaster',
+    'TranslationService',
     function (
-        $rootScope, $scope, $window, articleService, Article, mode, toaster
+        $rootScope, $scope, $window, articleService, Article, mode, toaster,
+        TranslationService
     ) {
         var statusObj;
 
@@ -50,7 +52,13 @@ angular.module('authoringEnvironmentApp').controller('ArticleActionsCtrl', [
         $rootScope.$on('texteditor-content-changed', function (
             eventObj, jqEvent, alohaEditable
         ) {
-            var reactOnTypes = {'keypress': true, 'paste': true, 'idle': true};
+            var reactOnTypes = {
+                'keypress': true,
+                'paste': true,
+                'idle': true,
+                'undo': true,
+                'redo': true
+            };
 
             if (!(alohaEditable.triggerType in reactOnTypes)) {
                 // drag and drop change will not have a triggerType
@@ -130,6 +138,19 @@ angular.module('authoringEnvironmentApp').controller('ArticleActionsCtrl', [
             // saving?
             $scope.article.save().then(function () {
                 $scope.setModified(false);
+                toaster.add({
+                    type: 'sf-info',
+                    message: TranslationService.trans(
+                        'aes.alerts.saved'
+                    )
+                });
+            }, function () {
+                toaster.add({
+                    type: 'sf-error',
+                    message: TranslationService.trans(
+                        'aes.alerts.save.error'
+                    )
+                });
             });
         };
 

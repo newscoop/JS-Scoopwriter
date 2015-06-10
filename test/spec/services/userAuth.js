@@ -46,6 +46,101 @@ describe('Factory: userAuth', function () {
     });
 
 
+    describe('setToken() method', function () {
+        it('sets given token in sessionStorage', function () {
+            $window.sessionStorage.setItem(AES_SETTINGS.auth.tokenKeyName, 'someToken');
+            expect(userAuth.setToken('someToken')).toEqual(null);
+            expect(userAuth.token()).toEqual('someToken');
+        });
+    });
+
+
+    describe('obtainToken() method', function () {
+        var url,
+            response;
+
+        beforeEach(function () {
+            response = {
+                access_token: 'MGYyOWNiYTU1YjhjNTAz',
+                expires_in: '3600',
+                token_type: 'bearer',
+                refresh_token: 'NjBiMzgxZGQ0ZTY4ZmFjMTFl'
+            };
+
+            url = Routing.generate(
+                'newscoop_gimme_users_getuseraccesstoken',
+                {clientId: AES_SETTINGS.auth.client_id},
+                true
+            );
+
+            $httpBackend.expectGET(url, function () {
+                return {IS_RETRY: true, IS_AUTHORIZATION_HEADER: true}
+            }).respond(200, response);
+        });
+
+        afterEach(function () {
+            $httpBackend.verifyNoOutstandingExpectation();
+        });
+
+        it('sends a correct request to API', function () {
+            userAuth.obtainToken();
+        });
+
+        it('returns an object which is populated on successful response',
+            function () {
+                var expectedArg,
+                    spyHelper = {
+                        onSuccess: jasmine.createSpy()
+                    };
+
+                userAuth.obtainToken()
+                    .then(spyHelper.onSuccess);
+                $httpBackend.flush(1);
+
+                expect(spyHelper.onSuccess).toHaveBeenCalled();
+                expectedArg = spyHelper.onSuccess.mostRecentCall.args[0];
+                expect(expectedArg instanceof Object).toBe(true);
+                expect(expectedArg).toEqual(response);
+        });
+
+        it('resolves given promise on successful server response',
+            function () {
+                var expectedArg,
+                    spyHelper = {
+                        onSuccess: jasmine.createSpy()
+                    };
+
+                userAuth.obtainToken()
+                    .then(spyHelper.onSuccess);
+                $httpBackend.flush(1);
+
+                expect(spyHelper.onSuccess).toHaveBeenCalled();
+                expectedArg = spyHelper.onSuccess.mostRecentCall.args[0];
+                expect(expectedArg instanceof Object).toBe(true);
+                expect(expectedArg.access_token).toEqual('MGYyOWNiYTU1YjhjNTAz');
+                expect(userAuth.token()).toEqual('MGYyOWNiYTU1YjhjNTAz');
+            }
+        );
+
+        it('rejects given promise on server error response', function () {
+            var expectedArg,
+                spyHelper = {
+                    errorCallback: jasmine.createSpy()
+                };
+
+            $httpBackend.resetExpectations();
+            $httpBackend.expectGET(url)
+                .respond(401, 'Error :(');
+
+            userAuth.obtainToken()
+                .catch(spyHelper.errorCallback);
+            $httpBackend.flush(1);
+
+            expect(spyHelper.errorCallback).toHaveBeenCalledWith('Error :(');
+        });
+    });
+
+
     describe('newTokenByLoginModal() method', function () {
         var modalResult,
             toaster,

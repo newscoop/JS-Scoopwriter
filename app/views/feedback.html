@@ -1,0 +1,42 @@
+<form ng-controller="FeedbackForm as feedbackCtrl" name="feedbackForm" novalidate ng-submit="feedbackCtrl.submit()">
+	<div style="font-size: 13px;">{{::('aes.msgs.feedback.info'|trans)}}</div><hr>
+	<div class="modal-body">
+		<div class="form-group"
+			ng-class="!feedbackForm.name.$valid ? 'has-error has-feedback' : 'has-success has-feedback'">
+			<input ng-maxlength="60" type="text" name="name" class="form-control"
+				ng-model="feedbackCtrl.feedback.name" placeholder="{{::('aes.msgs.feedback.name'|trans)}}" required>
+			<span style="top: 0px !important;" ng-class="!feedbackForm.name.$valid ? 'glyphicon-remove' : 'glyphicon-ok'"
+				class="glyphicon form-control-feedback" aria-hidden="true">
+			</span>
+		</div>
+
+		<div class="form-group" ng-maxlength="60"
+			ng-class="!feedbackForm.email.$valid ? 'has-error has-feedback' : 'has-success has-feedback'">
+			<input type="email" name="email" class="form-control"
+				ng-model="feedbackCtrl.feedback.email"
+				placeholder="{{::('aes.msgs.feedback.email'|trans)}}" required>
+			<span ng-class="!feedbackForm.email.$valid ? 'glyphicon-remove' : 'glyphicon-ok'"
+				style="top: 0px !important;"
+				class="glyphicon form-control-feedback" aria-hidden="true">
+			</span>
+		</div>
+
+		<div class="form-group"
+			ng-class="!feedbackForm.message.$valid ? 'has-error has-feedback' : 'has-success has-feedback'">
+			<textarea style="resize: none;" ng-maxlength="feedbackCtrl.messageMaxLength" name="message"
+				ng-model="feedbackCtrl.feedback.message" rows="8" cols="50" class="form-control"
+				placeholder="{{::('aes.msgs.feedback.msg'|trans)}}" required>
+			</textarea>
+			<span ng-class="!feedbackForm.message.$valid ? 'glyphicon-remove' : 'glyphicon-ok'"
+				style="top: 0px !important;"
+				class="glyphicon form-control-feedback" aria-hidden="true">
+			</span>
+		</div>
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-default"
+			ng-click="feedbackCtrl.cancel($event)">{{::('aes.btn.cancel'|trans)}}</button>
+		<button class="btn btn-primary"
+			ng-disabled="!feedbackForm.$valid || feedbackCtrl.processing">{{::('aes.btn.submit'|trans)}}</button>
+	</div>
+</form>

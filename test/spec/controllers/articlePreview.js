@@ -9,7 +9,8 @@
 describe('Controller: ArticlePreviewCtrl', function () {
     var articlePreviewCtrl,
         $httpBackend,
-        $modal;
+        $modal,
+        $window;
 
     beforeEach(module('authoringEnvironmentApp'));
 
@@ -25,6 +26,7 @@ describe('Controller: ArticlePreviewCtrl', function () {
         articleService = article;
 
         articleService.articleInstance = {
+            url: 'testurl',
             articleId: 123,
             language: 'de',
             languageData: {
@@ -42,7 +44,15 @@ describe('Controller: ArticlePreviewCtrl', function () {
             }
         };
 
+        // mock $window to avoid "full page reload" error in tests
+        $window = {
+            open: function (params) {
+                return params;
+            }
+        };
+
         spyOn($modal, 'open').andCallThrough();
+        spyOn($window, 'open').andCallThrough();
         modalTemplate = $templateCache.get(
             'app/views/modal-article-preview.html');
         $httpBackend.whenGET('views/modal-article-preview.html')
@@ -50,9 +60,17 @@ describe('Controller: ArticlePreviewCtrl', function () {
 
         articlePreviewCtrl = $controller('ArticlePreviewCtrl', {
             article: articleService,
-            $modal: $modal
+            $modal: $modal,
+            $window: $window
         });
     }));
+
+    describe('openLiveView() method', function () {
+        it('opens a new window with correct parameters', function () {
+            articlePreviewCtrl.openLiveView();
+            expect($window.open).toHaveBeenCalledWith('testurl');
+        });
+    });
 
     describe('openPreview() method', function () {
         it('opens a modal with correct parameters', function () {

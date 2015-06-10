@@ -6,6 +6,7 @@
 * @class ArticleCtrl
 */
 angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
+    '$window',
     '$q',
     '$scope',
     '$rootScope',
@@ -15,11 +16,25 @@ angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
     'panes',
     'mode',
     'platform',
+    'toaster',
     function (
-        $q, $scope, $rootScope, articleService, Article, ArticleType, panes,
-        mode, platform
+        $window, $q, $scope, $rootScope, articleService, Article, ArticleType,
+        panes, mode, platform, toaster
     ) {
         var self = this;
+       
+        /**
+         * Alert the user when using any IE browser, as many Aloha features
+         * will NOT function properlly
+          */
+        if (/msie/i.test($window.navigator.userAgent)) {
+            toaster.add({
+                type: 'sf-error',
+                message: 'Article Edit Screen does not fully support ' +
+                'the Internet Explorer browser.  Some features may ' +
+                'not function as expected.'
+            });
+        }
 
         /**
         * Returns text with word and character count information for the given
@@ -66,7 +81,13 @@ angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
         ) {
             var fieldName,
                 statsText,
-                reactOnTypes = {'keypress': true, 'paste': true, 'idle': true};
+                reactOnTypes = {
+                    'keypress': true,
+                    'paste': true,
+                    'idle': true,
+                    'undo': true,
+                    'redo': true
+                };
 
             if (!(alohaEditable.triggerType in reactOnTypes)) {
                 return;
@@ -100,7 +121,8 @@ angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
                     return;
                 }
 
-                if (field.showInEditor) {  // field is a content field
+                if (field.showInEditor &&
+                    field.type !== 'switch') {  // field is a content field
                     // set default text if necessary and calculate text stats
                     fieldValue = $scope.article.fields[field.name];
                     if (!fieldValue) {

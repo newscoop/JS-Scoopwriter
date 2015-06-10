@@ -40,13 +40,6 @@
               // token key name which is used to retrieve the token from session
               tokenKeyName: 'newscoop.aes.token'
           },
-          article: {
-              width: {
-                  desktop: 960,
-                  tablet: 600,
-                  phone: 320
-              }
-          },
           image: {
               width: {
                  small: '30%',
@@ -101,7 +94,7 @@
         <link rel="stylesheet" href="css/aes-custom-styles.css">
         <!-- devcode: newscoop -->
         <style rel="stylesheet">
-            {{ custom_styles }}
+            {{ custom_styles|raw }}
         </style>
         <!-- endcode -->
 
@@ -253,6 +246,8 @@
         <script src="scripts/controllers/pane-info.js"></script>
         <script src="scripts/controllers/pane-topics.js"></script>
         <script src="scripts/controllers/pane-switches.js"></script>
+        <script src="scripts/controllers/feedbackForm.js"></script>
+        <script src="scripts/services/feedback.js"></script>
         <script src="scripts/services/panes.js"></script>
         <script src="scripts/controllers/panes-config.js"></script>
         <script src="scripts/controllers/article.js"></script>
@@ -323,6 +318,7 @@
         <script src="scripts/services/Issue.js"></script>
         <script src="scripts/services/Section.js"></script>
         <script src="scripts/directives/sf-aloha-command-button.js"></script>
+        <script src="scripts/controllers/feedbackForm.js"></script>
         <!-- endbuild -->
 </body>
 </html>

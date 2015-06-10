@@ -4151,6 +4151,10 @@ a:hover {
                     }
                 }
             }
+            iframe {
+                border: none;
+                outline: none;
+            }
 
             /* Modal heavy */
             .modal-heavy {
@@ -4430,6 +4434,23 @@ a:hover {
                 border-radius: 6px;
             }
         }
+        /* Login form style */
+        &.modalLogin {
+            .modal-dialog {
+                width: 440px;
+                .modal-login {
+                    background-color: #f2f2f2;
+                    .border-radius(6px);
+                    .modal-header {
+                        background-color: #fff;
+                        .border-radius(6px 6px 0 0);
+                    }
+                    .modal-body {
+                        padding: 0;
+                    }
+                }
+            }
+        }
     }
 
 /* Spinner animation */
@@ -4477,4 +4498,32 @@ a:hover {
     transform: scaleY(1.0);
     -webkit-transform: scaleY(1.0);
   }
+}
+
+/* feedback button */
+.feedback-button {
+    position: fixed;
+    padding: 13px 4px;
+    width: 120px;
+    height: 48px;
+    text-transform: uppercase;
+    background-color: #5ea9c8;
+    color: #FFF;
+    z-index: 1040; 
+    text-align: center;
+    .box-sizing(border-box);
+    transform-origin: top left;
+    -ms-transform-origin: top left;
+    -webkit-transform-origin: top left;
+    -moz-transform-origin: top left;
+    -o-transform-origin: top left;
+    -webkit-transform: rotate(-90deg);
+    -moz-transform: rotate(-90deg);
+    -ms-transform: rotate(-90deg);
+    -o-transform: rotate(-90deg);
+    filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+    cursor: pointer;
+    i {
+        margin-right: 10px;
+    }
 }

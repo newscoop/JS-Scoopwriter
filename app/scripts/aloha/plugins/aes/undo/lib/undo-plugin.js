@@ -53,9 +53,11 @@ function(Aloha, jQuery, Plugin, Ui, Button, Console) {
             //command object is created after execution.
         },
         undo: function() {
+            Aloha.undoneEditable = this.editable;
             this.phase(reversePatch(this.patch));
         },
         redo: function() {
+            Aloha.redoneEditable = this.editable;
             this.phase(this.patch);
         },
         phase: function(patch) {

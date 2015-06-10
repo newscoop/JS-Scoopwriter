@@ -28,7 +28,16 @@ angular.module('authoringEnvironmentApp').directive(
                             Aloha.removeBlockQuote();
                         }
                         Aloha.execCommand(
-                            'formatBlock', false, scope.styleElement);
+                            'formatBlock',
+                            false,
+                            scope.styleElement
+                        );
+                        // for some reason execCommand does not trigger 
+                        // a change event.  We need this to fire to enable
+                        // the article save button
+                        Aloha.trigger('aloha-smart-content-changed', {
+                            'editable': Aloha.activeEditable
+                        });
                     }
                 });
             }
