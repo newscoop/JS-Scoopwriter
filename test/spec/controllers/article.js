@@ -9,9 +9,11 @@
 describe('Controller: ArticleCtrl', function () {
     var Article,
         ArticleCtrl,
-        articleService,
         ArticleType,
+        articleService,
+        fakeArticleType,
         fakeTextStats,
+        settings,
         getArticleTypeDeferred,
         modeService,
         panesService,
@@ -26,7 +28,7 @@ describe('Controller: ArticleCtrl', function () {
     beforeEach(inject(function ($controller, _$rootScope_, $q, _Article_) {
         $rootScope = _$rootScope_;
         scope = $rootScope.$new();
-
+       
         modeService = {};
         platformService = {};
         panesService = {
@@ -48,6 +50,8 @@ describe('Controller: ArticleCtrl', function () {
             save: jasmine.createSpy()
         };
 
+        settings = AES_SETTINGS.articleTypeFields['news'];
+
         saveArticleDeferred = $q.defer();
         articleService.articleInstance.save.andReturn(
             saveArticleDeferred.promise);
@@ -58,6 +62,35 @@ describe('Controller: ArticleCtrl', function () {
             return fakeTextStats;
         });
 
+        fakeArticleType = {
+            name: 'news',
+            fields: [
+                {
+                    "name": "hidden-field",
+                    "type": "switch",
+                    "isHidden": true,
+                    "showInEditor": true,
+                },
+                {
+                    "name": "body",
+                    "type": "body",
+                    "isHidden": false,
+                    "showInEditor": true,
+                },
+                {
+                    "name": "switch",
+                    "type": "switch",
+                    "isHidden": false,
+                    "showInEditor": true,
+                },
+                {
+                    "name": "not-show-in-editor",
+                    "type": "longtext",
+                    "isHidden": false,
+                    "showInEditor": true,
+                }
+            ]
+        }
         ArticleType = {
             getByName: jasmine.createSpy('ArticleType.getByName()')
         };
@@ -168,6 +201,36 @@ describe('Controller: ArticleCtrl', function () {
             ).toEqual('26 Characters / 5 Words');
         });
 
+        it('updates changed field\'s stats text if event\'s trigger type is "undo"',
+            function () {
+                scope.editableFields[0].statsText = 'Original stats text';
+                ArticleCtrl.fieldStatsText.andReturn('New stats text');
+                alohaEditable.triggerType = 'undo';
+
+                scope.$emit('texteditor-content-changed', {}, alohaEditable);
+                scope.$digest();
+
+                expect(
+                    scope.editableFields[0].statsText  // teaser field
+                ).toEqual('New stats text');
+            }
+        );
+
+        it('updates changed field\'s stats text if event\'s trigger type is "redo"',
+            function () {
+                scope.editableFields[0].statsText = 'Original stats text';
+                ArticleCtrl.fieldStatsText.andReturn('New stats text');
+                alohaEditable.triggerType = 'redo';
+
+                scope.$emit('texteditor-content-changed', {}, alohaEditable);
+                scope.$digest();
+
+                expect(
+                    scope.editableFields[0].statsText  // teaser field
+                ).toEqual('New stats text');
+            }
+        );
+
         it('does not do anything if event\'s trigger type is "blur"',
             function () {
                 scope.editableFields[0].statsText = 'Original stats text';
@@ -188,7 +251,35 @@ describe('Controller: ArticleCtrl', function () {
     });
 
     it('retrieves info on retrieved article\'s type', function () {
+        var expectedEditableFields = [
+            {
+                name: 'body',
+                type: 'body',
+                isHidden: false,
+                showInEditor: true,
+                statsText: '0 Characters / 0 Words'
+            },
+            {
+                name: 'title',
+                phrase: undefined,
+                statsText: '0 Characters / 0 Words'
+            },
+            {
+                name: 'not-show-in-editor',
+                type: 'longtext',
+                isHidden: false,
+                showInEditor: true,
+                statsText: '0 Characters / 0 Words'
+            }
+        ];
+
         expect(ArticleType.getByName).toHaveBeenCalledWith('news');
+
+        getArticleTypeDeferred.resolve(fakeArticleType);
+        scope.$digest();
+
+        expect(scope.editableFields).toEqual(expectedEditableFields);
+        expect(scope.nonContentFields).toEqual([]);
     });
 
 

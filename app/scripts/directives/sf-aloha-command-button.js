@@ -27,23 +27,53 @@ angular.module('authoringEnvironmentApp').directive('sfAlohaCommandButton', [
 
                 if (scope.buttonCommand === 'undo') {
                     checkAvailable = function () {
-                        return Aloha.canUndo();
+                        if (typeof Aloha.canUndo === 'function') {
+                            return Aloha.canUndo();
+                        } else {
+                            return false;
+                        }
                     };
                     checkEvent = 'aloha-redo-clicked';
                     clickEvent = 'aloha-undo-clicked';
-                    clickFunction = function () {
+                    clickFunction = function (e) {
                         Aloha.undo();
+                        var editable = Aloha.undoneEditable;
+                        editable.editable = {
+                            'originalObj': $(Aloha.undoneEditable
+                                .originalObj[0].outerHTML)
+                        };
+                        editable.triggerType = 'undo';
+                        $rootScope.$emit(
+                            'texteditor-content-changed',
+                            e,
+                            editable
+                        );
                     };
                 }
 
                 if (scope.buttonCommand === 'redo') {
                     checkAvailable = function () {
-                        return Aloha.canRedo();
+                        if (typeof Aloha.canRedo === 'function') {
+                            return Aloha.canRedo();
+                        } else {
+                            return false;
+                        }
                     };
                     checkEvent = 'aloha-undo-clicked';
                     clickEvent = 'aloha-redo-clicked';
-                    clickFunction = function () {
+                    clickFunction = function (e) {
                         Aloha.redo();
+                        var editable = Aloha.redoneEditable;
+                        editable.editable = {
+                            'originalObj': $(Aloha.undoneEditable
+                                .originalObj[0].outerHTML)
+                        };
+                        editable.triggerType = 'undo';
+                        $rootScope.$emit(
+                            'texteditor-content-changed',
+                            e,
+                            editable
+                        );
                     };
                 }
 

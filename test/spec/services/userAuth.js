@@ -25,7 +25,7 @@ describe('Factory: userAuth', function () {
 
     describe('token() method', function () {
         it('returns the current token in sessionStorage', function () {
-            $window.sessionStorage.setItem('token', 'someToken');
+            $window.sessionStorage.setItem(AES_SETTINGS.auth.tokenKeyName, 'someToken');
             expect(userAuth.token()).toEqual('someToken');
         });
     });
@@ -33,16 +33,111 @@ describe('Factory: userAuth', function () {
 
     describe('isAuthenticated() method', function () {
         it('returns true if there is a token in sessionStorage', function () {
-            $window.sessionStorage.setItem('token', 'someToken');
+            $window.sessionStorage.setItem(AES_SETTINGS.auth.tokenKeyName, 'someToken');
             expect(userAuth.isAuthenticated()).toBe(true);
         });
 
         it('returns false if there is no token in sessionStorage',
             function () {
-                $window.sessionStorage.removeItem('token');
+                $window.sessionStorage.removeItem(AES_SETTINGS.auth.tokenKeyName);
                 expect(userAuth.isAuthenticated()).toBe(false);
             }
         );
+    });
+
+
+    describe('setToken() method', function () {
+        it('sets given token in sessionStorage', function () {
+            $window.sessionStorage.setItem(AES_SETTINGS.auth.tokenKeyName, 'someToken');
+            expect(userAuth.setToken('someToken')).toEqual(null);
+            expect(userAuth.token()).toEqual('someToken');
+        });
+    });
+
+
+    describe('obtainToken() method', function () {
+        var url,
+            response;
+
+        beforeEach(function () {
+            response = {
+                access_token: 'MGYyOWNiYTU1YjhjNTAz',
+                expires_in: '3600',
+                token_type: 'bearer',
+                refresh_token: 'NjBiMzgxZGQ0ZTY4ZmFjMTFl'
+            };
+
+            url = Routing.generate(
+                'newscoop_gimme_users_getuseraccesstoken',
+                {clientId: AES_SETTINGS.auth.client_id},
+                true
+            );
+
+            $httpBackend.expectGET(url, function () {
+                return {IS_RETRY: true, IS_AUTHORIZATION_HEADER: true}
+            }).respond(200, response);
+        });
+
+        afterEach(function () {
+            $httpBackend.verifyNoOutstandingExpectation();
+        });
+
+        it('sends a correct request to API', function () {
+            userAuth.obtainToken();
+        });
+
+        it('returns an object which is populated on successful response',
+            function () {
+                var expectedArg,
+                    spyHelper = {
+                        onSuccess: jasmine.createSpy()
+                    };
+
+                userAuth.obtainToken()
+                    .then(spyHelper.onSuccess);
+                $httpBackend.flush(1);
+
+                expect(spyHelper.onSuccess).toHaveBeenCalled();
+                expectedArg = spyHelper.onSuccess.mostRecentCall.args[0];
+                expect(expectedArg instanceof Object).toBe(true);
+                expect(expectedArg).toEqual(response);
+        });
+
+        it('resolves given promise on successful server response',
+            function () {
+                var expectedArg,
+                    spyHelper = {
+                        onSuccess: jasmine.createSpy()
+                    };
+
+                userAuth.obtainToken()
+                    .then(spyHelper.onSuccess);
+                $httpBackend.flush(1);
+
+                expect(spyHelper.onSuccess).toHaveBeenCalled();
+                expectedArg = spyHelper.onSuccess.mostRecentCall.args[0];
+                expect(expectedArg instanceof Object).toBe(true);
+                expect(expectedArg.access_token).toEqual('MGYyOWNiYTU1YjhjNTAz');
+                expect(userAuth.token()).toEqual('MGYyOWNiYTU1YjhjNTAz');
+            }
+        );
+
+        it('rejects given promise on server error response', function () {
+            var expectedArg,
+                spyHelper = {
+                    errorCallback: jasmine.createSpy()
+                };
+
+            $httpBackend.resetExpectations();
+            $httpBackend.expectGET(url)
+                .respond(401, 'Error :(');
+
+            userAuth.obtainToken()
+                .catch(spyHelper.errorCallback);
+            $httpBackend.flush(1);
+
+            expect(spyHelper.errorCallback).toHaveBeenCalledWith('Error :(');
+        });
     });
 
 
@@ -75,25 +170,15 @@ describe('Factory: userAuth', function () {
 
                 promise = userAuth.newTokenByLoginModal();
                 promise.then(onSuccessSpy);
-                modalResult.resolve('newToken');
+                modalResult.resolve();
                  $rootScope.$digest();
 
-                expect(onSuccessSpy).toHaveBeenCalledWith('newToken');
-            });
-
-            it('stores new token into session storage', function () {
-                $window.sessionStorage.token = 'existingToken';
-
-                userAuth.newTokenByLoginModal();
-                modalResult.resolve('newToken');
-                 $rootScope.$digest();
-
-                expect($window.sessionStorage.token).toEqual('newToken');
+                expect(onSuccessSpy).toHaveBeenCalled();
             });
 
             it('displays a toast with info message', function () {
                 userAuth.newTokenByLoginModal();
-                modalResult.resolve('newToken');
+                modalResult.resolve();
                  $rootScope.$digest();
 
                 expect(toaster.add).toHaveBeenCalledWith({
@@ -134,17 +219,18 @@ describe('Factory: userAuth', function () {
     describe('login modal\'s controller', function () {
         var ctrl,
             fakeModalInstance,
-            $rootScope;
+            $window;
 
-        beforeEach(inject(function ($modal,$q, _$rootScope_) {
+        beforeEach(inject(function ($modal, _$window_) {
             var ModalCtrl;
 
-            $rootScope = _$rootScope_;
+            $window = _$window_;
 
             // return a fake modal template
             $httpBackend.whenGET(/.+\.html/).respond(200, '<div></div>');
 
             spyOn($modal, 'open').andCallThrough();
+            angular.element($window).trigger('storage');
             userAuth.newTokenByLoginModal();
 
             // XXX: this is not ideal, since obtaining a reference to the
@@ -158,40 +244,18 @@ describe('Factory: userAuth', function () {
                 close: jasmine.createSpy()
             };
 
-            ctrl = new ModalCtrl(fakeModalInstance);
+            ctrl = new ModalCtrl(fakeModalInstance, $window);
+
         }));
 
-        describe('iframeLoadedHandler() method', function () {
-            it('closes the modal, providing the new token', function () {
-                var location = {
-                    hash: '#token_type=bearer' +
-                        '&access_token=xYz123' +
-                        '&expires_in=3600'
-                };
-                ctrl.iframeLoadedHandler(location);
-                expect(fakeModalInstance.close).toHaveBeenCalledWith('xYz123');
-            });
+        it('should have been triggered on session storage change', function() {
+            $window.sessionStorage.setItem(AES_SETTINGS.auth.tokenKeyName, 'someToken');
+            expect($window.sessionStorage.getItem(AES_SETTINGS.auth.tokenKeyName)).toEqual('someToken');
+        });
 
-            it('keeps the modal open locations\'s hash part does not exist',
-                function () {
-                    var location = {
-                        hash: undefined
-                    };
-                    ctrl.iframeLoadedHandler(location);
-                    expect(fakeModalInstance.close).not.toHaveBeenCalled();
-                }
-            );
-
-            it('keeps the modal open if token is not found in locations\'s' +
-                'hash part',
-                function () {
-                    var location = {
-                        hash: '#login_failed=true&retry'
-                    };
-                    ctrl.iframeLoadedHandler(location);
-                    expect(fakeModalInstance.close).not.toHaveBeenCalled();
-                }
-            );
+        it('should do nothing on session storage change when it was not modified', function() {
+            $window.sessionStorage.removeItem(AES_SETTINGS.auth.tokenKeyName);
+            expect($window.sessionStorage.getItem(AES_SETTINGS.auth.tokenKeyName)).toBe(null);
         });
     });
 });

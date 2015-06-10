@@ -130,6 +130,30 @@ describe('Controller: ArticleActionsCtrl', function () {
             }
         );
 
+        it('sets the article modified flag on triggerType undo',
+            function () {
+                articleService.modified = false;
+
+                scope.article.fields.body = 'New body text.';
+                alohaEditable.triggerType = 'undo';
+                scope.$emit('texteditor-content-changed', {}, alohaEditable);
+                
+                expect(articleService.modified).toBe(true);
+            }
+        );
+
+        it('sets the article modified flag on triggerType redo',
+            function () {
+                articleService.modified = false;
+
+                scope.article.fields.body = 'New body text.';
+                alohaEditable.triggerType = 'redo';
+                scope.$emit('texteditor-content-changed', {}, alohaEditable);
+                
+                expect(articleService.modified).toBe(true);
+            }
+        );
+
         it('does *not* set the article modified flag if event\'s trigger ' +
             'type is "blur"',
             function () {
@@ -269,6 +293,32 @@ describe('Controller: ArticleActionsCtrl', function () {
             function () {
                 scope.save();
                 expect(scope.article.save).toHaveBeenCalled();
+            }
+        );
+
+        it('display success message when save is successful',
+            function () {
+                spyOn(toaster, 'add');
+                scope.save();
+                deferredSave.resolve();
+                scope.$digest();
+
+                expect(toaster.add).toHaveBeenCalledWith(
+                    {type: 'sf-info', message: 'aes.alerts.saved'}
+                );
+            }
+        );
+
+        it('display error message when save is not successful',
+            function () {
+                spyOn(toaster, 'add');
+                scope.save();
+                deferredSave.reject(false);
+                scope.$digest();
+
+                expect(toaster.add).toHaveBeenCalledWith(
+                    {type: 'sf-error', message: 'aes.alerts.save.error'}
+                );
             }
         );
 

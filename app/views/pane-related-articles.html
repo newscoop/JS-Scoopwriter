@@ -25,17 +25,18 @@
                         <select 
                             ng-model="paneRelatedArticles.publicationFilter"
                             ng-options="publication.name for publication in paneRelatedArticles.availablePublications"
-                            ng-change="paneRelatedArticles.loadAvailableFilters()">
+                            ng-change="paneRelatedArticles.loadAvailableFilters(); paneRelatedArticles.loadSearchResults()">
                             <option value="" class="">-- {{ ::('aes.label.publication'|trans) }} --</option>
                         </select>
                         <select 
                             ng-model="paneRelatedArticles.issueFilter"
                             ng-options="issue.title for issue in paneRelatedArticles.availableIssues"
-                            ng-change="paneRelatedArticles.loadAvailableFilters()">
+                            ng-change="paneRelatedArticles.loadAvailableFilters();paneRelatedArticles.loadSearchResults()">
                             <option value="" class="">-- {{ ::('aes.label.issue'|trans) }} --</option>
                         </select>
                         <select 
                             ng-model="paneRelatedArticles.sectionFilter" 
+                            ng-change="paneRelatedArticles.loadSearchResults()"
                             ng-options="section.title for section in paneRelatedArticles.availableSections">
                             <option value="" class="">-- {{ ::('aes.label.section'|trans) }} --</option>
                         </select>

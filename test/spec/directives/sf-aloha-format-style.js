@@ -32,6 +32,7 @@ describe('Directive: sfAlohaFormatGeneric', function () {
         Aloha.addBlockQuote = function () { return true; };
         Aloha.removeBlockQuote = function () { return true; };
         Aloha.execCommand = function () { return true; };
+        Aloha.trigger = function () { return true; };
     }));
 
     it('calls Aloha.addBlockQuote on Blockquote select', function () {
@@ -62,5 +63,15 @@ describe('Directive: sfAlohaFormatGeneric', function () {
 
         expect(execCommandSpy).toHaveBeenCalledWith(
             'formatBlock', false, 'something-that-is-not-blockquote');
+    });
+
+    it('triggers aloha-smart-content-changed Aloha.execCommand', function () {
+        var execCommandSpy = spyOn(Aloha, 'execCommand').andReturn(true);
+        var triggerSpy = spyOn(Aloha, 'trigger').andReturn(true);
+
+        isoScope.styleElement = 'something-that-is-not-blockquote';
+        element.click();
+
+        expect(triggerSpy).toHaveBeenCalled();
     });
 });

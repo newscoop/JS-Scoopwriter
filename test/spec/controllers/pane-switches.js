@@ -10,6 +10,7 @@ describe('Controller: PaneSwitchesCtrl', function () {
         articleTypeDeferred,
         ArticleType,
         PaneSwitchesCtrl,
+        oldShowSwitches,
         $q,
         $rootScope;
 
@@ -22,6 +23,8 @@ describe('Controller: PaneSwitchesCtrl', function () {
         $rootScope = _$rootScope_;
         articleService = _article_;
         ArticleType = _ArticleType_;
+        oldShowSwitches = AES_SETTINGS.showSwitches;
+        AES_SETTINGS.showSwitches = true;
 
         articleService.articleInstance = {
             articleId: 8,
@@ -38,6 +41,10 @@ describe('Controller: PaneSwitchesCtrl', function () {
             ArticleType: ArticleType
         });
     }));
+
+    afterEach(function () {
+        AES_SETTINGS.showSwitches = oldShowSwitches;
+    });
 
     it('initializes the modified flag to false', function () {
         expect(PaneSwitchesCtrl.modified).toBe(false);
@@ -61,6 +68,21 @@ describe('Controller: PaneSwitchesCtrl', function () {
             ]);
         }
     );
+
+    it('initializes the list of switch fields\' names with built-in switches',
+        inject(function ($controller) {
+            var oldPaneSwitchesCtrl = PaneSwitchesCtrl;
+            AES_SETTINGS.showSwitches = false;
+            PaneSwitchesCtrl = $controller('PaneSwitchesCtrl', {
+                article: articleService,
+                ArticleType: ArticleType
+            });
+
+            expect(PaneSwitchesCtrl.switches).toEqual([]);
+
+            PaneSwitchesCtrl = oldPaneSwitchesCtrl;
+        }
+    ));
 
     it('adds field names of user-defined switches to the list of switch ' +
         'names when data is retrieved',

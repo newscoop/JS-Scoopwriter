@@ -24,11 +24,16 @@ angular.module('authoringEnvironmentApp').controller('PaneSwitchesCtrl', [
         self.modified = false;  // are there any unsaved changes?
         self.saveInProgress = false;  // saving to server in progress?
 
-        // some switches are predefined and always exist in the article object
-        self.switches = [
-            {name: 'show_on_front_page', text: 'Show on Front Page'},
-            {name: 'show_on_section_page', text: 'Show on Section Page'}
-        ];
+        // some switches are predefined with the plugin editor manager
+        // in newscoop admin
+        if (AES_SETTINGS.showSwitches) {
+            self.switches = [
+                {name: 'show_on_front_page', text: 'Show on Front Page'},
+                {name: 'show_on_section_page', text: 'Show on Section Page'}
+            ];
+        } else {
+            self.switches = [];
+        }
 
         // load article's switches' values
         ArticleType.getByName(self.article.type)
