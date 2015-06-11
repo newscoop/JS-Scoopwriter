@@ -573,6 +573,12 @@
     Translator.add("aes.msgs.slideshows.unassign.popup", "Should you change your mind, the slideshow can always be re-assigned again.", "messages", "en");
     Translator.add("aes.msgs.slideshows.unassign.success", "Slideshow unassigned successfully.", "messages", "en");
     Translator.add("aes.msgs.slideshows.unassign.error", "Failed to unassign slideshow from the article.", "messages", "en");
+    Translator.add("aes.label.attachedslideshows", "Attached Slideshows", "messages", "en");
+    Translator.add("aes.label.slideshows", "Slideshows", "messages", "en");
+    Translator.add("aes.label.itemscount", "{1} item|[0,Inf] items", "messages", "en");
+    Translator.add("aes.label.attachslideshows", "Attach Slideshow(s)", "messages", "en");
+    Translator.add("aes.label.attachdetach", "Attach \/ Detach", "messages", "en");
+    Translator.add("aes.label.createslideshow", "Create Slideshow", "messages", "en");
     Translator.add("aes.msgs.feedback.success", "The feedback message has been sent successfully.", "messages", "en");
     Translator.add("aes.msgs.feedback.error", "Failed to send the feedback message. Please try again later.", "messages", "en");
     Translator.add("aes.msgs.feedback.email", "Enter email address", "messages", "en");
