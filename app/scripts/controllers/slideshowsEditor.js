@@ -37,7 +37,7 @@
 
                 break;
             default:
-                url = "";
+                url = '';
         }
 
         self.url = $sce.trustAsResourceUrl(url);

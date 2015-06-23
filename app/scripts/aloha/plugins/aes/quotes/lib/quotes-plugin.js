@@ -144,9 +144,11 @@ define([
          * Formats the current selection with blockquote.
          */
         addBlockQuote: function () {
-            if (Aloha.activeEditable) {
-                Aloha.activeEditable.obj.click();
+            // Mozilla needs this fix or else the selection will not work
+            if (Aloha.activeEditable && $.browser.mozilla) {
+                Aloha.activeEditable.obj.focus();
             }
+
             var markup = $('<blockquote></blockquote>');
             Aloha.Selection.changeMarkupOnSelection(markup);
             Aloha.blockquoteFound = true;
@@ -159,8 +161,9 @@ define([
          * Removes blockquote from the current selection.
          */
         removeBlockQuote: function () {
-            if (Aloha.activeEditable) {
-                Aloha.activeEditable.obj.click();
+            // Mozilla needs this fix or else the selection will not work
+            if (Aloha.activeEditable && $.browser.mozilla) {
+                Aloha.activeEditable.obj.focus();
             }
             var markup = $('<p></p>');
             Aloha.Selection.changeMarkupOnSelection(markup);
