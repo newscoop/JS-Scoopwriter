@@ -9,11 +9,13 @@
 describe('Directive: sfAlohaFormatGeneric', function () {
     var isoScope,
         scope,
-        element;
+        element,
+        oldAloha,
+        $rootScope;
 
     beforeEach(module('authoringEnvironmentApp'));
 
-    beforeEach(inject(function ($rootScope, $compile) {
+    beforeEach(inject(function (_$rootScope_, $compile) {
         var html;
 
         html = [
@@ -21,6 +23,7 @@ describe('Directive: sfAlohaFormatGeneric', function () {
             'data-style-name="{{name}}" sf-aloha-format-style></button> ',
         ].join('');
 
+        $rootScope = _$rootScope_;
         scope = $rootScope.$new();
         scope.element = 'blockquote';
         scope.name = 'Blockquote';
@@ -29,11 +32,25 @@ describe('Directive: sfAlohaFormatGeneric', function () {
 
         isoScope = element.isolateScope();
 
+        oldAloha = Aloha;
         Aloha.addBlockQuote = function () { return true; };
         Aloha.removeBlockQuote = function () { return true; };
         Aloha.execCommand = function () { return true; };
         Aloha.trigger = function () { return true; };
+        Aloha.Selection = {
+            rangeObject: {
+                commonAncestorContainer: [
+                    {
+                        id: 'test-id'
+                    }
+                ]
+            }
+        };
     }));
+
+    afterEach(function () {
+        Aloha = oldAloha;
+    });
 
     it('calls Aloha.addBlockQuote on Blockquote select', function () {
         var addBlockQuoteSpy = spyOn(Aloha, 'addBlockQuote').andReturn(true);
