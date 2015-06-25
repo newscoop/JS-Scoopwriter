@@ -78,7 +78,15 @@ angular.module('authoringEnvironmentApp').controller('PaneSnippetsCtrl', [
                         });
                     }
                 );
-            }, $q.reject)
+            }, function () {
+                toaster.add({
+                    type: 'sf-error',
+                    message: TranslationService.trans(
+                        'aes.msgs.snippets.add.error'
+                    )
+                });
+                return $q.reject();
+            })
             .then(function () {
                 // hide form on successful add and clear its field
                 $scope.showAddSnippet = false;
