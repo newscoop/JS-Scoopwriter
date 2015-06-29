@@ -345,6 +345,7 @@
     Translator.add("aes.label.relatedarticles", "Related Articles", "messages", "en");
     Translator.add("aes.label.advancedfilter", "Advanced filter", "messages", "en");
     Translator.add("aes.label.publication", "Publication", "messages", "en");
+    Translator.add("aes.label.language", "Language", "messages", "en");
     Translator.add("aes.label.issue", "Issue", "messages", "en");
     Translator.add("aes.label.section", "Section", "messages", "en");
     Translator.add("aes.label.search", "Search", "messages", "en");
