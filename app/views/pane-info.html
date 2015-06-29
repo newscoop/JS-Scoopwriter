@@ -60,7 +60,7 @@
       </li>
       <li>
         <div class="field-description">
-          Language:
+          {{ ::('aes.label.language'|trans) }}:
         </div>
         <div class="field-value">
           <ul>
@@ -70,7 +70,7 @@
       </li>
       <li>
         <div class="field-description">
-          Publication:
+          {{ ::('aes.label.publication'|trans) }}:
         </div>
         <div class="field-value">
           <ul>
@@ -80,7 +80,7 @@
       </li>
       <li ng-if="infoCtrl.article.issue">
         <div class="field-description">
-          Issue:
+          {{ ::('aes.label.issue'|trans) }}:
         </div>
         <div class="field-value">
           <ul>
@@ -90,7 +90,7 @@
       </li>
       <li ng-if="infoCtrl.article.section">
         <div class="field-description">
-          Section:
+          {{ ::('aes.label.section'|trans) }}:
         </div>
         <div class="field-value">
           <ul>
