@@ -29,8 +29,11 @@ angular.module('authoringEnvironmentApp').factory('Slideshow', [
             slideshow.title = data.title;
             slideshow.itemsCount = parseInt(data.itemsCount);
             if (data.items !== undefined && data.items.length > 0) {
-                slideshow.cover = data.items[0].link;
+                slideshow.cover = data.items[0].thumbnail;
                 slideshow.type = data.items[0].type;
+                if (slideshow.type === 'video') {
+                    slideshow.cover = data.items[0].link;
+                }
             }
 
             return slideshow;

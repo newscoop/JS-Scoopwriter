@@ -30,7 +30,8 @@ describe('Factory: Slideshow', function () {
                 items: [{
                     "caption": "That's how they do it",
                     "type": "image",
-                    "link": "http://newscoop.dev/images/cache/3200x2368/fit/images%7Ccms-image-000000131.jpg"
+                    "link": "http://newscoop.dev/images/cache/3200x2368/fit/images%7Ccms-image-000000131.jpg",
+                    "thumbnail": "http://newscoop.dev/images/thumbnails/cms-thumb-000000131.jpg"
                 },
                 {
                     "type": "video",
@@ -44,13 +45,41 @@ describe('Factory: Slideshow', function () {
             expect(instance instanceof Slideshow).toBe(true);
         });
 
-        it('correctly initializes returned instance\'s attributes',
+        it('correctly initializes returned instance\'s attributes ' +
+            'when first item is of type image',
             function () {
                 var instance = Slideshow.createFromApiData(data);
                 expect(instance.id).toEqual(1);
                 expect(instance.title).toEqual('Test Slideshow');
                 expect(instance.type).toEqual('image');
-                expect(instance.cover).toEqual('http://newscoop.dev/images/cache/3200x2368/fit/images%7Ccms-image-000000131.jpg');
+                expect(instance.cover).toEqual('http://newscoop.dev/images/thumbnails/cms-thumb-000000131.jpg');
+            }
+        );
+
+        it('correctly initializes returned instance\'s attributes ' +
+            'when first item is of type video',
+            function () {
+                data = {
+                    id: "1",
+                    title: "Test Slideshow",
+                    itemsCount: "2",
+                    items: [{
+                        "type": "video",
+                        "link": "https://www.youtu.be/WhVtNNotBuq"
+                    },
+                    {
+                        "caption": "That's how they do it",
+                        "type": "image",
+                        "link": "http://newscoop.dev/images/cache/3200x2368/fit/images%7Ccms-image-000000131.jpg",
+                        "thumbnail": "http://newscoop.dev/images/thumbnails/cms-thumb-000000131.jpg"
+                    }]
+                };
+
+                var instance = Slideshow.createFromApiData(data);
+                expect(instance.id).toEqual(1);
+                expect(instance.title).toEqual('Test Slideshow');
+                expect(instance.type).toEqual('video');
+                expect(instance.cover).toEqual('https://www.youtu.be/WhVtNNotBuq');
             }
         );
     });
