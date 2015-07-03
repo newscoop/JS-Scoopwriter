@@ -93,11 +93,13 @@
               <input ng-switch-when="text"
                   type="text"
                   class="form-control"
+                  placeholder="{{ ::placeholder }}"
                   ng-model="article.fields[field.name]"
                   ng-change="nonContentFieldChanged()"/>
 
               <textarea ng-switch-when="longtext"
                   class="form-control"
+                  placeholder="{{ ::placeholder }}"
                   ng-model="article.fields[field.name]"
                   ng-change="nonContentFieldChanged()"></textarea>
 
