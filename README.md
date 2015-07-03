@@ -1,10 +1,7 @@
 # <a name="top"></a>About
-AES is a new modern article edit screen for
+JS-Scoopwriter is a new modern article edit screen for
 [Newscoop](https://github.com/sourcefabric/Newscoop),
-[Sourcefabric](www.sourcefabric.org)'s open source CMS for news. It is a single
-page application written in AngularJS meant to be used as a Newscoop plugin.
-Its aim is to provide a modern and responsive alternative to the existing
-article edit screen, which is starting to show its age.
+[Sourcefabric](www.sourcefabric.org)'s open source CMS for news. This single page application is written in AngularJS and bundled into the respective Newscoop plugin. Its aim is to provide a modern and responsive interface as an alternative to the existing article edit screen.
 
 # Table of Contents
 
@@ -28,7 +25,7 @@ above installed on your machine. Clone the repository and then
 install the dependencies:
 
     $ git clone <repo address>
-    $ cd aes
+    $ cd JS-Scoopwriter
     $ npm install .  # note the trailing dot
     $ bower install
 
