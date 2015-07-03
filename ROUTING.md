@@ -1,4 +1,4 @@
-#Newscoop Article Edit Screen API Routing
+#Scoopwriter API Routing
 
 The Newscoop API is implemented as a Symfony bundle and therefore all endpoint routing is handled by pre-compiled FOSJsRoutingBundle files:
 
