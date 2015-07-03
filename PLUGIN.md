@@ -1,16 +1,15 @@
-Newscoop Article Edit Screen Plugin
+Scoopwriter Plugin
 ===================
 
-The Newscoop Article Edit screen can be integrated into the Admin interface via a Newscoop Plugin.  Newscoop plugins are Symfony Bundles that
-extend the functionality of the Newscoop CMS via modular packages that are easy to install.  The Newscoop Article Edit Screen plugin is a spearate 
-code base (https://github.com/newscoop/Newscoop-Plugin-ArticleEditScreen) that needs to be updated whenever there are changes to the Article Edit Screen.  
-The Article Edit Screen Gruntfile also separates out a specific build that creates the necessary files and directory structure to be included in
+The JS-Scoopwriter can be integrated into the Admin interface via a Newscoop Plugin. Newscoop plugins are Symfony Bundles that
+extend the functionality of the Newscoop CMS via modular packages that are easy to install. The Scoopwriter plugin is a spearate code base (https://github.com/newscoop/plugin-Scoopwriter) that needs to be updated whenever there are changes to the JS-Scoopwriter.  
+The JS-Scoopwriter Gruntfile also separates out a specific build that creates the necessary files and directory structure to be included in
 a Symfony bundle.
 
 ***
 
-More information about The Article Edit Screen Newscoop Plugin can be found here:  
-[https://github.com/newscoop/Newscoop-Plugin-ArticleEditScreen](https://github.com/newscoop/Newscoop-Plugin-ArticleEditScreen)
+More information about The Scoopwriter Plugin can be found here:  
+[https://github.com/newscoop/plugin-Scoopwriter](https://github.com/newscoop/plugin-Scoopwriter)
 
 ***
 
