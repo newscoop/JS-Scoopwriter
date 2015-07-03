@@ -35,22 +35,21 @@ angular.module('authoringEnvironmentApp').factory('SnippetTemplate', [
                 } else {
                     // hard code default values, just until these can
                     // be moved to the plugin editor dialog
-                    if (template.name === 'Embed.ly') {
-                        if (field.name === 'maxwidth') {
-                            field.default = '560';
-                        } else {
-                            field.default = '';
-                        }
-                    } else if (template.name === 'Youtube') {
-                        if (field.name === 'width') {
-                            field.default = '560';
-                        } else if (field.name === 'height') {
-                            field.default = '315';
-                        } else {
-                            field.default = '';
-                        }
-                    } else {
-                        field.default = '';
+                    field.default = '';
+                    switch(template.name) {
+                        case 'Embed.ly':
+                            if (field.name === 'maxwidth') {
+                                field.default = '560';
+                            }
+                            break;
+                        case 'Youtube':
+                            if (field.name === 'width') {
+                                field.default = '560';
+                            }
+                            if (field.name === 'height') {
+                                field.default = '315';
+                            }
+                            break;
                     }
                     template.fields.push(angular.copy(field));
                 }
