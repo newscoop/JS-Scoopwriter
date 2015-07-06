@@ -1,7 +1,9 @@
 # <a name="top"></a>About
 JS-Scoopwriter is a new modern article edit screen for
 [Newscoop](https://github.com/sourcefabric/Newscoop),
-[Sourcefabric](www.sourcefabric.org)'s open source CMS for news. This single page application is written in AngularJS and bundled into the respective Newscoop plugin. Its aim is to provide a modern and responsive interface as an alternative to the existing article edit screen.
+[Sourcefabric](https://www.sourcefabric.org)'s open source CMS for news. This single page application is written in AngularJS and bundled into the respective Newscoop plugin. Its aim is to provide a modern and responsive interface as an alternative to the existing article edit screen.
+
+![aes](http://i60.tinypic.com/wiwuf8.png)
 
 # Table of Contents
 
