@@ -33,6 +33,24 @@ angular.module('authoringEnvironmentApp').factory('SnippetTemplate', [
                 if (field.scope !== 'frontend') {
                     return;  // skip internal Newscoop fields
                 } else {
+                    // hard code default values, just until these can
+                    // be moved to the plugin editor dialog
+                    field.default = '';
+                    switch(template.name) {
+                        case 'Embed.ly':
+                            if (field.name === 'maxwidth') {
+                                field.default = '560';
+                            }
+                            break;
+                        case 'Youtube':
+                            if (field.name === 'width') {
+                                field.default = '560';
+                            }
+                            if (field.name === 'height') {
+                                field.default = '315';
+                            }
+                            break;
+                    }
                     template.fields.push(angular.copy(field));
                 }
             });

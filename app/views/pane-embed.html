@@ -48,11 +48,13 @@
            ng-switch="field.type" ng-repeat-end>
         <textarea ng-switch-when="textarea"
                   name="{{field.name}}"
+                  placeholder="{{field.default}}"
                   ng-required="field.required"
                   ng-model="field.value"></textarea>
         <input ng-switch-default
                type="{{inputFieldTypes[field.type] || 'text'}}"
                name="{{field.name}}"
+               placeholder="{{field.default}}"
                ng-required="field.required"
                ng-model="field.value"/>
       </div>

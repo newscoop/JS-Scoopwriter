@@ -490,13 +490,8 @@ describe('Controller: ArticleCtrl', function () {
             });
         });
 
-        it('sets empty article fields to default text', function () {
-            scope.article.fields.body = null;
-
-            getArticleTypeDeferred.resolve(articleTypeNews);
-            scope.$digest();
-
-            expect(scope.article.fields.body).toEqual('[default text]');
+        it('sets placeholder to default text', function () {
+            expect(scope.placeholder).toEqual('[default text]');
         });
 
         it('sets article title to default text if empty', function () {

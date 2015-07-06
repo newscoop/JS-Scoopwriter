@@ -39,7 +39,7 @@ describe('Directive: sfAlohaFormatGeneric', function () {
         Aloha.trigger = function () { return true; };
         Aloha.Selection = {
             rangeObject: {
-                commonAncestorContainer: [
+                limitObject: [
                     {
                         id: 'test-id'
                     }

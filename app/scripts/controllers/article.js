@@ -73,6 +73,7 @@ angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
         $scope.article = articleService.articleInstance;
         $scope.panes = panes.query();
         $scope.platform = platform;
+        $scope.placeholder = AES_SETTINGS.placeholder;
 
         // listen to editor content changes and update character / word
         // count info above the changed field accordingly
@@ -125,10 +126,6 @@ angular.module('authoringEnvironmentApp').controller('ArticleCtrl', [
                     field.type !== 'switch') {  // field is a content field
                     // set default text if necessary and calculate text stats
                     fieldValue = $scope.article.fields[field.name];
-                    if (!fieldValue) {
-                        $scope.article.fields[field.name] =
-                            AES_SETTINGS.placeholder;
-                    }
                     field.statsText = self.fieldStatsText(field.name);
                     editableFields.push(field);
                 } else {  // field is a non-content field

@@ -22,7 +22,7 @@ angular.module('authoringEnvironmentApp').directive(
                     // to the editable of the current Aloha.Selection
                     // needed due to a bug with the formatBlock function
                     var selEditableId = $(Aloha.Selection
-                        .rangeObject.commonAncestorContainer)[0].id;
+                        .rangeObject.limitObject)[0].id;
                     for (var i = 0; i < Aloha.editables.length; i++) {
                         var editable = Aloha.editables[i];
                         if (selEditableId === editable.obj[0].id) {
