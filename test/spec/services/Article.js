@@ -898,6 +898,25 @@ describe('Factory: Article', function () {
                 article.save();
             });
 
+            it('serializes images in article body nested divs', function () {
+                article.fields.body = [
+                    'Body text',
+                    '<div>',
+                    '<div class="image aloha-image-block" data-articleimageid="123" ',
+                        'data-size="small">',
+                        '<img src="http://foo.com/bar.jpg" />',
+                    '</div>',
+                    '</div>',
+                    'End of text.'
+                ].join('');
+
+                expectedReqData.article.fields.body =
+                    'Body text<div><!** Image 123 size="small" ></div>End of text.';
+                expectedReqData.article.name = 'article title';
+
+                article.save();
+            });
+
             it('serializes snippets in article body', function () {
                 article.fields.body = [
                     'Body text',

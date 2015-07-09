@@ -139,7 +139,7 @@ angular.module('authoringEnvironmentApp').factory('Article', [
         */
         function serializeAlohaBlocks(text) {
             var content,
-                matches,
+                allMatches,
                 sep;
 
             if (text === null) {
@@ -150,31 +150,39 @@ angular.module('authoringEnvironmentApp').factory('Article', [
             content = $('<div/>').html(text);
 
             ['image', 'snippet'].forEach(function (type) {
-                matches = content.contents().filter('div.' + type);
+                allMatches = [];
+                allMatches.push(content.contents().filter('div.' + type));
+                // this is needed to match images/snippets may have been
+                //  dragged into pasted content with nested divs
+                allMatches.push(content.contents()
+                    .children('div').filter('div.' + type));
 
                 // replace each matching div with its serialized version
-                matches.replaceWith(function () {
-                    var dataItemName,
-                        serialized,
-                        $match = $(this);
+                allMatches.forEach(function (matches) {
+                    matches.replaceWith(function () {
+                        var dataItemName,
+                            serialized,
+                            $match = $(this);
 
-                    serialized = [
-                        '<', sep[type], ' ',
-                        type.charAt(0).toUpperCase(), type.slice(1), ' '
-                    ];
+                        serialized = [
+                            '<', sep[type], ' ',
+                            type.charAt(0).toUpperCase(), type.slice(1), ' '
+                        ];
 
-                    dataItemName = (type === 'snippet') ?
-                                    'id' : 'articleimageid';
-                    serialized.push(parseInt($match.data(dataItemName)));
+                        dataItemName = (type === 'snippet') ?
+                                        'id' : 'articleimageid';
+                        serialized.push(parseInt($match.data(dataItemName)));
 
-                    $.each($match.data(), function (name, value) {
-                        if ((name !== 'id') && (name !== 'articleimageid')) {
-                            serialized.push(' ', name, '="', value, '"');
-                        }
+                        $.each($match.data(), function (name, value) {
+                            if ((name !== 'id') &&
+                                (name !== 'articleimageid')) {
+                                serialized.push(' ', name, '="', value, '"');
+                            }
+                        });
+
+                        serialized.push(' ', sep[type], '>');
+                        return serialized.join('');
                     });
-
-                    serialized.push(' ', sep[type], '>');
-                    return serialized.join('');
                 });
             });
 
