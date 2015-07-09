@@ -202,6 +202,36 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                 };
 
                 /**
+                * Searches through included stylesheets for a selector and 
+                * returns the value of the propertyName.  This is needed to
+                * get the correct size in pixels of the largest viewport 
+                * (desktop) regardless of what view is currently active
+                * and calculate correct image size in pixels for attached 
+                * images with size set to "small", "medium", or "big" 
+                * percentages
+                *
+                * @function getStylesheetPropertyValue
+                * @param selectorText {String} (e.g. '.content .dekstop')
+                * @param propertyName {String} CSS property (e.g. 'wdith')
+                */
+                function getStylesheetPropertyValue (selectorText,
+                    propertyName) {
+                    // search backwards because the last match is more 
+                    // likely the right one
+                    for (var s= document.styleSheets.length - 1; s >= 0; s--) {
+                        var cssRules = document.styleSheets[s].cssRules ||
+                            // IE support
+                            document.styleSheets[s].rules || [];
+                        for (var c=0; c < cssRules.length; c++) {
+                            if (cssRules[c].selectorText === selectorText) {
+                                return cssRules[c].style[propertyName];
+                            }
+                        }
+                    }
+                    return null;
+                }
+
+                /**
                 * Sets the size of the image to one of the predifined sizes
                 * (e.g. 'big') or to the exact width in pixels. If the given
                 * size is unknown, it sets the width to the original size of
@@ -231,12 +261,35 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                             'data-percentage',
                             width
                         );
+
+                        /**
+                         * Here we need to calculate the width 
+                         * of the image in pixels using the max-width
+                         * defined in the aes-custom-styles.css
+                         * stylesheet, and the configured image 
+                         * width settings in AES_SETTINGS
+                         */
+                        var desktopWidth = getStylesheetPropertyValue(
+                            '.authoring-environment ' +
+                            '.main-article-container.desktop',
+                            'max-width'
+                        );
+                        var maxSizeInPixels =
+                            parseInt(desktopWidth) * (parseInt(width) / 100);
+                        $parent.attr(
+                            'data-sizepixels',
+                            maxSizeInPixels + 'px'
+                        );
                     } else {
                         // set to original image size (NOTE: add 2px because
                         // border width is subtracted from image width due to
                         // the "border-box" box-sizing property that we use)
                         width = scope.image.width + 2 + 'px';
                         scope.activeSize = 'original';
+                        $parent.attr(
+                            'data-sizepixels',
+                            $element.innerWidth() + 'px'
+                        );
                     }
 
                     // NOTE: use .css() instead of .width() as the latter
@@ -245,10 +298,6 @@ angular.module('authoringEnvironmentApp').directive('droppedImage', [
                     $parent.css('width', width);
                     $element.css('width', '100%');
                     $parent.attr('data-size', size);
-                    $parent.attr(
-                        'data-sizepixels',
-                        $element.innerWidth() + 'px'
-                    );
 
                     scope.widthPx = $element.innerWidth();
                     if (initPhase) {
