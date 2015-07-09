@@ -155,7 +155,7 @@ angular.module('authoringEnvironmentApp').factory('Article', [
                 // this is needed to match images/snippets may have been
                 //  dragged into pasted content with nested divs
                 allMatches.push(content.contents()
-                    .children('div').filter('div.' + type));
+                    .find('div').filter('div.' + type));
 
                 // replace each matching div with its serialized version
                 allMatches.forEach(function (matches) {
