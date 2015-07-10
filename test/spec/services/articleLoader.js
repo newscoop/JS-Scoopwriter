@@ -12,18 +12,20 @@ describe('Factory: articleLoader', function () {
         articleService,
         fakeInstance,
         getArticleDeferred,
-        $rootScope;
+        $rootScope,
+        pageHelper;
 
     beforeEach(module('authoringEnvironmentApp'));
 
     beforeEach(inject(function (
         $q, _$rootScope_, $route, $httpBackend,
-        article, _Article_, _articleLoader_
+        article, _Article_, _articleLoader_, _pageHelper_
     ) {
         $rootScope = _$rootScope_;
         articleService = article;
         Article = _Article_;
         articleLoader = _articleLoader_;
+        pageHelper = _pageHelper_;
 
         $route.current = {
             params: {
@@ -50,6 +52,14 @@ describe('Factory: articleLoader', function () {
     it('tries to retrieve a correct article', function () {
         articleLoader();
         expect(Article.getById).toHaveBeenCalledWith(111, 'pl');
+    });
+
+    it('populates article title in HTML title tag on article load', function () {
+        spyOn(pageHelper, 'populateHeaderTitle');
+        articleLoader();
+        getArticleDeferred.resolve(fakeInstance);
+        pageHelper.populateHeaderTitle();
+        expect(pageHelper.populateHeaderTitle).toHaveBeenCalled();
     });
 
     it('assigns retrieved article instance to article service', function () {
