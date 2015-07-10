@@ -15,9 +15,10 @@ angular.module('authoringEnvironmentApp').controller('ArticleActionsCtrl', [
     'mode',
     'toaster',
     'TranslationService',
+    'pageHelper',
     function (
         $rootScope, $scope, $window, articleService, Article, mode, toaster,
-        TranslationService
+        TranslationService, pageHelper
     ) {
         var statusObj;
 
@@ -138,6 +139,7 @@ angular.module('authoringEnvironmentApp').controller('ArticleActionsCtrl', [
             // saving?
             $scope.article.save().then(function () {
                 $scope.setModified(false);
+                pageHelper.populateHeaderTitle();
                 toaster.add({
                     type: 'sf-info',
                     message: TranslationService.trans(

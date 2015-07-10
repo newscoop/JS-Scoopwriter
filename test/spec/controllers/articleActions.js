@@ -13,17 +13,20 @@ describe('Controller: ArticleActionsCtrl', function () {
         modeService,
         scope,
         $window,
-        toaster;
+        toaster,
+        pageHelper;
 
     // load the controller's module
     beforeEach(module('authoringEnvironmentApp'));
 
     beforeEach(inject(function (
-        $controller, $rootScope, $q, _Article_, _toaster_
+        $controller, $rootScope, $q, _Article_, _toaster_,
+        _pageHelper_
     ) {
         scope = $rootScope.$new();
         Article = _Article_;
         toaster = _toaster_;
+        pageHelper = _pageHelper_;
         modeService = {};
 
         articleService = {};
@@ -296,11 +299,25 @@ describe('Controller: ArticleActionsCtrl', function () {
             }
         );
 
+        it('populates article title in HTML title tag when save is successful',
+            function () {
+                spyOn(pageHelper, 'populateHeaderTitle');
+                scope.save();
+                deferredSave.resolve();
+                pageHelper.populateHeaderTitle();
+                scope.$digest();
+
+                expect(pageHelper.populateHeaderTitle).toHaveBeenCalled();
+            }
+        );
+
         it('display success message when save is successful',
             function () {
                 spyOn(toaster, 'add');
+                spyOn(pageHelper, 'populateHeaderTitle');
                 scope.save();
                 deferredSave.resolve();
+                pageHelper.populateHeaderTitle();
                 scope.$digest();
 
                 expect(toaster.add).toHaveBeenCalledWith(
@@ -326,6 +343,8 @@ describe('Controller: ArticleActionsCtrl', function () {
             articleService.modified = true;
 
             scope.save();
+            spyOn(pageHelper, 'populateHeaderTitle');
+            pageHelper.populateHeaderTitle();
             deferredSave.resolve();
             scope.$digest();
 

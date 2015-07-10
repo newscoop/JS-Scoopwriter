@@ -11,7 +11,8 @@ angular.module('authoringEnvironmentApp').factory('articleLoader', [
     '$q',
     'Article',
     'article',
-    function ($route, $q, Article, articleService) {
+    'pageHelper',
+    function ($route, $q, Article, articleService, pageHelper) {
 
         return function () {
             var deferred = $q.defer(),
@@ -26,6 +27,7 @@ angular.module('authoringEnvironmentApp').factory('articleLoader', [
             )
             .then(function (articleInstance) {
                 articleService.articleInstance = articleInstance;
+                pageHelper.populateHeaderTitle();
                 deferred.resolve(articleInstance);
             })
             .catch(function (errorMsg) {
