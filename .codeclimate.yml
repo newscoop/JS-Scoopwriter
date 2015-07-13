@@ -1,0 +1,9 @@
+languages:
+    JavaScript: true
+exclude_paths:
+  - 'app/scripts/aloha/*'
+  - 'app/scripts/oerpub/*'
+  - 'app/scripts/localization/*'
+  - 'app/scripts/routing/*'
+  - 'test/*'
+  - 'protractorTests/*'

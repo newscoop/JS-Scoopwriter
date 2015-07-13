@@ -297,7 +297,6 @@ angular.module('authoringEnvironmentApp').factory('NcImage', [
                     });
                 } else {
                     // most likely an API bug
-                    console.warn(rejectMsg);
                     deferred.reject(rejectMsg);
                 }
             })

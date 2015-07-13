@@ -1,4 +1,5 @@
-# <a name="top"></a>About
+# <a name="top"></a>About  [![Build Status](https://travis-ci.org/newscoop/JS-Scoopwriter.svg?branch=master)](https://travis-ci.org/newscoop/JS-Scoopwriter) [![Coverage Status](https://coveralls.io/repos/newscoop/JS-Scoopwriter/badge.svg?branch=master&service=github)](https://coveralls.io/github/newscoop/JS-Scoopwriter?branch=master) [![Code Climate](https://codeclimate.com/github/newscoop/JS-Scoopwriter/badges/gpa.svg)](https://codeclimate.com/github/newscoop/JS-Scoopwriter)
+
 JS-Scoopwriter is a new modern article edit screen for
 [Newscoop](https://github.com/sourcefabric/Newscoop),
 [Sourcefabric](https://www.sourcefabric.org)'s open source CMS for news. This single page application is written in AngularJS and bundled into the respective Newscoop plugin. Its aim is to provide a modern and responsive interface as an alternative to the existing article edit screen.
