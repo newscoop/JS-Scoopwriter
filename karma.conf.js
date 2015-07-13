@@ -63,6 +63,15 @@ module.exports = function(config) {
     // possible values: LOG_DISABLE || LOG_ERROR || LOG_WARN || LOG_INFO || LOG_DEBUG
     logLevel: config.LOG_INFO,
 
+    // BrowserStack config for local development.
+    browserStack: {
+      project: 'JS-Scoopwriter',
+      name: 'Scoopwriter tests',
+      startTunnel: true,
+      timeout: 600,
+    },
+
+
 
     // enable / disable watching file and executing tests whenever any file changes
     autoWatch: false,
@@ -76,7 +85,6 @@ module.exports = function(config) {
     // - PhantomJS
     // - IE (only Windows)
     browsers: ['Chrome', 'Firefox'],
-
 
     // Continuous Integration mode
     // if true, it capture browsers, run tests and exit
@@ -102,6 +110,11 @@ module.exports = function(config) {
   });
 
   if (process.env.TRAVIS) {
-      config.logLevel = config.LOG_DEBUG;
+    var buildLabel = 'TRAVIS #' + process.env.TRAVIS_BUILD_NUMBER + ' (' + process.env.TRAVIS_BUILD_ID + ')';
+    config.logLevel = config.LOG_DEBUG;
+
+    config.browserStack.build = buildLabel;
+    config.browserStack.startTunnel = false;
+    config.browserStack.tunnelIdentifier = process.env.TRAVIS_JOB_NUMBER;
   };
 };

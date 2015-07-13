@@ -4,18 +4,16 @@ node_js:
   - '0.12'
 
 sudo: false
-addons:
-  firefox: "38.0"
 
 env:
   matrix:
     - ENV=test
-
-before_install:
-  - "export DISPLAY=:99.0"
-  - "sh -e /etc/init.d/xvfb start"
+  global:
+    - BROWSER_STACK_USERNAME=rafamuszyski1
+    - BROWSER_STACK_ACCESS_KEY=zGoD3pfnqs5xsN9tVXoV
 
 before_script:
+  - ./scripts/browserstack/start_tunnel.sh
   - npm install -g bower grunt-cli
   - bower install
 
