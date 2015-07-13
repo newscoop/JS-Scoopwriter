@@ -57,7 +57,7 @@
             * @method openLiveView
             */
             self.openLiveView = function () {
-                $window.open(self.article.url);
+                $window.open(articleService.articleInstance.url);
             };
 
             /**
