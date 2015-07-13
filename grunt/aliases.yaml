@@ -40,3 +40,6 @@ server:
  - 'connect:livereload'
  - 'open'
  - 'watch'
+
+travis:
+ - 'karma:travis'

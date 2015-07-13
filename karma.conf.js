@@ -1,8 +1,4 @@
-// Karma configuration
-// http://karma-runner.github.io/0.10/config/configuration-file.html
-
-// Testing directives with templateUrl
-// http://www.portlandwebworks.com/blog/testing-angularjs-directives-handling-external-templates
+'use strict';
 
 module.exports = function(config) {
   config.set({
@@ -11,6 +7,9 @@ module.exports = function(config) {
 
     // testing framework to use (jasmine/mocha/qunit/...)
     frameworks: ['jasmine'],
+    browserDisconnectTimeout: 10000,
+    browserDisconnectTolerance: 2,
+    browserNoActivityTimeout: 60000,
 
     // list of files / patterns to load in the browser
     files: [
@@ -68,7 +67,6 @@ module.exports = function(config) {
     // enable / disable watching file and executing tests whenever any file changes
     autoWatch: false,
 
-
     // Start these browsers, currently available:
     // - Chrome
     // - ChromeCanary
@@ -102,4 +100,8 @@ module.exports = function(config) {
     reporters: ['coverage']
     /**/
   });
+
+  if (process.env.TRAVIS) {
+      config.logLevel = config.LOG_DEBUG;
+  };
 };
