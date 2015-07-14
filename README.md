@@ -1,4 +1,4 @@
-# <a name="top"></a>About  [![Build Status](https://travis-ci.org/newscoop/JS-Scoopwriter.svg?branch=master)](https://travis-ci.org/newscoop/JS-Scoopwriter) [![Coverage Status](https://coveralls.io/repos/newscoop/JS-Scoopwriter/badge.svg?branch=master&service=github)](https://coveralls.io/github/newscoop/JS-Scoopwriter?branch=master) [![Code Climate](https://codeclimate.com/github/newscoop/JS-Scoopwriter/badges/gpa.svg)](https://codeclimate.com/github/newscoop/JS-Scoopwriter)
+# <a name="top"></a>About  [![Build Status](https://travis-ci.org/newscoop/JS-Scoopwriter.svg?branch=master?ts=1)](https://travis-ci.org/newscoop/JS-Scoopwriter) [![Coverage Status](https://coveralls.io/repos/newscoop/JS-Scoopwriter/badge.svg?branch=master&service=github?ts=1)](https://coveralls.io/github/newscoop/JS-Scoopwriter?branch=master) [![Code Climate](https://codeclimate.com/github/newscoop/JS-Scoopwriter/badges/gpa.svg?ts=1)](https://codeclimate.com/github/newscoop/JS-Scoopwriter)
 
 JS-Scoopwriter is a new modern article edit screen for
 [Newscoop](https://github.com/sourcefabric/Newscoop),
