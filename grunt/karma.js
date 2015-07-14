@@ -1,31 +1,17 @@
 module.exports = {
 	options: {
 	    configFile: 'karma.conf.js',
-	    singleRun: true
-	    client: {
-	      args: ['test']
-	    }
-	  },
-    unit: {},
-    travis: {
-        reporters: ['coverage'],
-        port: 8081,
+	    singleRun: true,
+	    reporters: ['coverage'],
+        port: 8080,
         coverageReporter: {
 	        type: "lcov",
 	        dir: "coverage/"
-	    },
-
+	    }
+	  },
+    unit: {},
+    bs: {
 	    customLaunchers: {
-	      'sl_Chrome': {
-	        base: 'SauceLabs',
-	        browserName: 'chrome',
-	        version: '41'
-	      },
-	      'sl_Firefox': {
-	        base: 'SauceLabs',
-	        browserName: 'firefox',
-	        version: '38'
-	      },
 	      'bs_Chrome': {
 	        base: 'BrowserStack',
 	        browser: 'chrome',
@@ -40,5 +26,20 @@ module.exports = {
 	      }
 	    },
 	    browsers: ["bs_Chrome", "bs_Firefox"],
+    },
+    sl: {
+	    customLaunchers: {
+	      'sl_Chrome': {
+	        base: 'SauceLabs',
+	        browserName: 'chrome',
+	        version: '41'
+	      },
+	      'sl_Firefox': {
+	        base: 'SauceLabs',
+	        browserName: 'firefox',
+	        version: '38'
+	      }
+	    },
+	    browsers: ["sl_Chrome", "sl_Firefox"],
     },
 };

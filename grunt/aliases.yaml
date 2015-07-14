@@ -41,5 +41,7 @@ server:
  - 'open'
  - 'watch'
 
-travis:
- - 'karma:travis'
+travis-bs:
+ - 'karma:bs'
+travis-sl:
+ - 'karma:sl'
