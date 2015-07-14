@@ -41,11 +41,13 @@
 
       <div class="input-name"
            ng-repeat-start="field in (newSnippet ? newSnippet.template.fields : [])"
+           ng-if="field.name != 'Endpoint'"
            >{{field.name}}<span ng-if="field.required">*</span>
             ({{field.type}})
       </div>
       <div class="template-field"
-           ng-switch="field.type" ng-repeat-end>
+           ng-switch="field.type" ng-repeat-end
+           ng-if="field.name != 'Endpoint'">
         <textarea ng-switch-when="textarea"
                   name="{{field.name}}"
                   placeholder="{{field.default}}"
