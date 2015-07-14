@@ -37,8 +37,36 @@ module.exports = {
 		    'SL_Firefox': {
 		      base: 'SauceLabs',
 		      browserName: 'firefox',
-		    }
+		    },
+		    'SL_Chrome': {
+	        base: 'SauceLabs',
+	        browserName: 'chrome',
+	        version: '39'
+	      },
+	      'SL_Firefox_30': {
+	        base: 'SauceLabs',
+	        browserName: 'firefox',
+	        version: '30'
+	      },
+	      'SL_Safari': {
+	        base: 'SauceLabs',
+	        browserName: 'safari',
+	        platform: 'OS X 10.10',
+	        version: '8'
+	      },
+	      'SL_IE_10': {
+	        base: 'SauceLabs',
+	        browserName: 'internet explorer',
+	        platform: 'Windows 7',
+	        version: '10'
+	      },
+	      'SL_IE_11': {
+	        base: 'SauceLabs',
+	        browserName: 'internet explorer',
+	        platform: 'Windows 8.1',
+	        version: '11'
+	      }
 	    },
-	    browsers: ["SL_Chrome", "SL_Firefox"],
+	    browsers: ["SL_Chrome", "SL_Firefox", "SL_Firefox_30", "SL_Safari", "SL_IE_10", "SL_IE_11"],
     },
 };
