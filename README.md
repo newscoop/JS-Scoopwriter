@@ -1,4 +1,5 @@
-# <a name="top"></a>About
+# <a name="top"></a>About  [![Build Status](https://travis-ci.org/newscoop/JS-Scoopwriter.svg?branch=master)](https://travis-ci.org/newscoop/JS-Scoopwriter) [![Coverage Status](https://coveralls.io/repos/newscoop/JS-Scoopwriter/badge.svg?branch=master&service=github)](https://coveralls.io/github/newscoop/JS-Scoopwriter?branch=master) [![Code Climate](https://codeclimate.com/github/newscoop/JS-Scoopwriter/badges/gpa.svg)](https://codeclimate.com/github/newscoop/JS-Scoopwriter)
+
 JS-Scoopwriter is a new modern article edit screen for
 [Newscoop](https://github.com/sourcefabric/Newscoop),
 [Sourcefabric](https://www.sourcefabric.org)'s open source CMS for news. This single page application is written in AngularJS and bundled into the respective Newscoop plugin. Its aim is to provide a modern and responsive interface as an alternative to the existing article edit screen.
@@ -55,6 +56,7 @@ To run them, type the following in console:
 By default it runs tests in Chrome and Firefox. If you don't have these
 browsers installed or if you want to run tests in a different browser, change
 the corresponding setting in the `karma.conf.js` file (the `browsers` option).
+The code is covered with tests and we offer you a continuous integration setup including [Travis](https://travis-ci.org/newscoop/JS-Scoopwriter), [Code Climate](https://codeclimate.com/github/newscoop/JS-Scoopwriter) and [BrowserStack](https://www.browserstack.com). Check the current test coverage on [Coveralls](https://coveralls.io/github/newscoop/JS-Scoopwriter).
 
 ### <a name="testCoverage"></a>Coverage Report
 In order to get coverage reports, uncomment the `reporters` section in the

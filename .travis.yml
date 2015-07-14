@@ -1,7 +1,24 @@
 language: node_js
 node_js:
-  - '0.8'
   - '0.10'
+  - '0.12'
+
+sudo: false
+
+env:
+  matrix:
+    - ENV=test
+  global:
+    - BROWSER_STACK_USERNAME=rafamuszyski1
+    - BROWSER_STACK_ACCESS_KEY=zGoD3pfnqs5xsN9tVXoV
+
 before_script:
-  - 'npm install -g bower grunt-cli'
-  - 'bower install'
+  - ./scripts/browserstack/start_tunnel.sh
+  - npm install -g bower grunt-cli
+  - bower install
+
+script:
+  - ./scripts/travis/build.sh
+
+after_script:
+  - grunt coveralls
