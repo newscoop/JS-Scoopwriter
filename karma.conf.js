@@ -71,7 +71,10 @@ module.exports = function(config) {
       timeout: 600,
     },
 
-
+    sauceLabs: {
+      testName: 'Scoopwriter tests',
+      startConnect: true
+    },
 
     // enable / disable watching file and executing tests whenever any file changes
     autoWatch: false,
