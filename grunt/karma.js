@@ -28,18 +28,19 @@ module.exports = {
 	    browsers: ["bs_Chrome", "bs_Firefox"],
     },
     sl: {
+    	reporters: ['coverage', 'saucelabs'],
 	    customLaunchers: {
-	      'sl_Chrome': {
+	      'SL_Chrome': {
 	        base: 'SauceLabs',
 	        browserName: 'chrome',
 	        version: '41'
 	      },
-	      'sl_Firefox': {
+	      'SL_Firefox': {
 	        base: 'SauceLabs',
 	        browserName: 'firefox',
 	        version: '38'
 	      }
 	    },
-	    browsers: ["sl_Chrome", "sl_Firefox"],
+	    browsers: ["SL_Chrome", "SL_Firefox"],
     },
 };
