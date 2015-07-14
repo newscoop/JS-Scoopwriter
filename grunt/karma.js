@@ -12,34 +12,32 @@ module.exports = {
     unit: {},
     bs: {
 	    customLaunchers: {
-	      'bs_Chrome': {
+	      'BS_Chrome': {
 	        base: 'BrowserStack',
 	        browser: 'chrome',
 	        os: 'OS X',
 	        os_version: 'Yosemite'
 	      },
-	      'bs_Firefox': {
+	      'BS_Firefox': {
 	        base: 'BrowserStack',
 	        browser: 'firefox',
 	        os: 'Windows',
 	        os_version: '8'
 	      }
 	    },
-	    browsers: ["bs_Chrome", "bs_Firefox"],
+	    browsers: ["BS_Chrome", "BS_Firefox"],
     },
     sl: {
     	reporters: ['coverage', 'saucelabs'],
 	    customLaunchers: {
 	      'SL_Chrome': {
-	        base: 'SauceLabs',
-	        browserName: 'chrome',
-	        version: '41'
-	      },
-	      'SL_Firefox': {
-	        base: 'SauceLabs',
-	        browserName: 'firefox',
-	        version: '38'
-	      }
+		      base: 'SauceLabs',
+		      browserName: 'chrome'
+		    },
+		    'SL_Firefox': {
+		      base: 'SauceLabs',
+		      browserName: 'firefox',
+		    }
 	    },
 	    browsers: ["SL_Chrome", "SL_Firefox"],
     },
