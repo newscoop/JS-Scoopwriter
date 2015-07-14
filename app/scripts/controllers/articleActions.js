@@ -96,7 +96,7 @@ angular.module('authoringEnvironmentApp').controller('ArticleActionsCtrl', [
                 );
                 $scope.wfStatus = statusObj;
                 if ($scope.article.url === undefined) {
-                    articleLoader().then(function() {});
+                    articleLoader().then();
                 }
             })
             .finally(function () {
