@@ -2,7 +2,6 @@ module.exports = {
 	options: {
 	    configFile: 'karma.conf.js',
 	    singleRun: true,
-	    reporters: ['coverage'],
         port: 8080,
         coverageReporter: {
 	        type: "lcov",
@@ -11,6 +10,7 @@ module.exports = {
 	  },
     unit: {},
     bs: {
+    	reporters: ['coverage'],
 	    customLaunchers: {
 	      'BS_Chrome': {
 	        base: 'BrowserStack',

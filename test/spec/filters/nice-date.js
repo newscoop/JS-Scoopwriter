@@ -14,7 +14,8 @@ describe('Filter: niceDate', function () {
 
     it('should return the hour if a date belongs to today', function () {
         var date = new Date('Fri Mar 21 2014 14:02:58 GMT+0100 (CET)');
-        expect(niceDate(date)).toBe('today 14:02');
+        var utc = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
+        expect(niceDate(utc)).toBe('today 13:02');
     });
     it('should return the day of any hour from yesterday on', function() {
         var date = new Date('Fri Mar 20 2014 14:02:58 GMT+0100 (CET)');
