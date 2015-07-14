@@ -95,7 +95,7 @@ angular.module('authoringEnvironmentApp').controller('ArticleActionsCtrl', [
                     $scope.workflowStatuses, {value: newStatus}
                 );
                 $scope.wfStatus = statusObj;
-                if ($scope.article.url === undefined) {
+                if (articleService.articleInstance.url === undefined) {
                     articleLoader().then();
                 }
             })

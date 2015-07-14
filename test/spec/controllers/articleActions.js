@@ -274,7 +274,7 @@ describe('Controller: ArticleActionsCtrl', function () {
             $httpBackend.expectGET(url).respond(200, fakeArticle);
             scope.$digest();
 
-            expect(scope.article.url).toBe(undefined);
+            expect(articleService.articleInstance.url).toBe(undefined);
             scope.article.url = fakeArticle.url;
             expect(scope.article.url).toBe(fakeArticle.url);
             expect(scope.wfStatus).toEqual(
