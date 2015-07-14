@@ -113,8 +113,19 @@ module.exports = function(config) {
     var buildLabel = 'TRAVIS #' + process.env.TRAVIS_BUILD_NUMBER + ' (' + process.env.TRAVIS_BUILD_ID + ')';
     config.logLevel = config.LOG_DEBUG;
 
+    //BrowserStack
     config.browserStack.build = buildLabel;
     config.browserStack.startTunnel = false;
     config.browserStack.tunnelIdentifier = process.env.TRAVIS_JOB_NUMBER;
+
+    //SouceLabs
+    config.sauceLabs.build = buildLabel;
+    config.sauceLabs.startConnect = false;
+    config.sauceLabs.tunnelIdentifier = process.env.TRAVIS_JOB_NUMBER;
+    config.sauceLabs.recordScreenshots = true;
+
+    if (process.env.BROWSER_PROVIDER === 'saucelabs') {
+      config.captureTimeout = 0;
+    }
   };
 };

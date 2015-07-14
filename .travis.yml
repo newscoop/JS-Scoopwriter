@@ -7,10 +7,16 @@ sudo: false
 
 env:
   matrix:
-    - ENV=test
+    - ENV=test BROWSER_PROVIDER=saucelabs
+    - ENV=test BROWSER_PROVIDER=browserstack
   global:
     - BROWSER_STACK_USERNAME=rafamuszyski1
     - BROWSER_STACK_ACCESS_KEY=zGoD3pfnqs5xsN9tVXoV
+    - SAUCE_USERNAME=takeit
+    - SAUCE_ACCESS_KEY=5016e251-2286-45c6-87d8-c78e79bbdff2
+
+allow_failures:
+    - env: "ENV=test BROWSER_PROVIDER=browserstack"
 
 before_script:
   - ./scripts/browserstack/start_tunnel.sh

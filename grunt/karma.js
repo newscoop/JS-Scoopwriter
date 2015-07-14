@@ -1,11 +1,13 @@
 module.exports = {
-    unit: {
-        configFile: 'karma.conf.js',
-        singleRun: true
-    },
+	options: {
+	    configFile: 'karma.conf.js',
+	    singleRun: true
+	    client: {
+	      args: ['test']
+	    }
+	  },
+    unit: {},
     travis: {
-    	configFile: 'karma.conf.js',
-	    singleRun: true,
         reporters: ['coverage'],
         port: 8081,
         coverageReporter: {
@@ -14,6 +16,16 @@ module.exports = {
 	    },
 
 	    customLaunchers: {
+	      'sl_Chrome': {
+	        base: 'SauceLabs',
+	        browserName: 'chrome',
+	        version: '41'
+	      },
+	      'sl_Firefox': {
+	        base: 'SauceLabs',
+	        browserName: 'firefox',
+	        version: '38'
+	      },
 	      'bs_Chrome': {
 	        base: 'BrowserStack',
 	        browser: 'chrome',
