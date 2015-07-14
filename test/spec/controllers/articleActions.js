@@ -14,19 +14,23 @@ describe('Controller: ArticleActionsCtrl', function () {
         scope,
         $window,
         toaster,
-        pageHelper;
+        pageHelper,
+        route,
+        $httpBackend;
 
     // load the controller's module
     beforeEach(module('authoringEnvironmentApp'));
 
     beforeEach(inject(function (
         $controller, $rootScope, $q, _Article_, _toaster_,
-        _pageHelper_
+        _pageHelper_, $route, _$httpBackend_
     ) {
         scope = $rootScope.$new();
         Article = _Article_;
         toaster = _toaster_;
         pageHelper = _pageHelper_;
+        route = $route;
+        $httpBackend = _$httpBackend_;
         modeService = {};
 
         articleService = {};
@@ -57,7 +61,8 @@ describe('Controller: ArticleActionsCtrl', function () {
             $scope: scope,
             $window: $window,
             article: articleService,
-            mode: modeService
+            mode: modeService,
+            $route: route
         });
 
         spyOn(scope, 'setModified').andCallThrough();
@@ -185,10 +190,34 @@ describe('Controller: ArticleActionsCtrl', function () {
 
 
     describe('scope\'s setWorkflowStatus() method', function () {
-        var deferredStatus;
+        var deferredStatus,
+            url,
+            fakeArticle;
 
         beforeEach(inject(function ($q) {
             deferredStatus = $q.defer();
+            route.current = {
+                params: {
+                    article: 2,
+                    language: 'en'
+                }
+            };
+
+            fakeArticle = {
+                number: route.current.params.article,
+                language: route.current.params.language,
+                title: 'test article',
+                url: '/some/test/url',
+            };
+
+            url = Routing.generate(
+                'newscoop_gimme_articles_getarticle',
+                {
+                    number: route.current.params.article,
+                    language: route.current.params.language
+                },
+                true
+            );
 
             scope.workflowStatuses = [
                 {value: 'A', text: 'Status A'},
@@ -196,6 +225,8 @@ describe('Controller: ArticleActionsCtrl', function () {
                 {value: 'C', text: 'Status C'}
             ];
             scope.wfStatus = {value: 'A', text: 'Status A'};
+
+            scope.article.url = '/test/url';
 
             scope.article.setWorkflowStatus.andReturn(deferredStatus.promise);
         }));
@@ -232,6 +263,20 @@ describe('Controller: ArticleActionsCtrl', function () {
             deferredStatus.resolve();
             scope.$digest();
 
+            expect(scope.wfStatus).toEqual(
+                {value: 'B', text: 'Status B'});
+        });
+
+        it('updates article instance when article is successfully published', function () {
+            scope.setWorkflowStatus('B');
+            scope.article.url = undefined;
+            deferredStatus.resolve();
+            $httpBackend.expectGET(url).respond(200, fakeArticle);
+            scope.$digest();
+
+            expect(articleService.articleInstance.url).toBe(undefined);
+            scope.article.url = fakeArticle.url;
+            expect(scope.article.url).toBe(fakeArticle.url);
             expect(scope.wfStatus).toEqual(
                 {value: 'B', text: 'Status B'});
         });

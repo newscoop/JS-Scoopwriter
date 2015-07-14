@@ -16,9 +16,10 @@ angular.module('authoringEnvironmentApp').controller('ArticleActionsCtrl', [
     'toaster',
     'TranslationService',
     'pageHelper',
+    'articleLoader',
     function (
         $rootScope, $scope, $window, articleService, Article, mode, toaster,
-        TranslationService, pageHelper
+        TranslationService, pageHelper, articleLoader
     ) {
         var statusObj;
 
@@ -94,6 +95,9 @@ angular.module('authoringEnvironmentApp').controller('ArticleActionsCtrl', [
                     $scope.workflowStatuses, {value: newStatus}
                 );
                 $scope.wfStatus = statusObj;
+                if (articleService.articleInstance.url === undefined) {
+                    articleLoader().then();
+                }
             })
             .finally(function () {
                 $scope.changingWfStatus = false;
