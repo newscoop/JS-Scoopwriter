@@ -8,7 +8,7 @@ test:
  - 'concurrent:test'
  - 'autoprefixer'
  - 'connect:test'
- - 'karma'
+ - 'karma:unit'
 
 pre-build:
  - 'clean:dist'
