@@ -7,7 +7,8 @@ angular.module('authoringEnvironmentApp').filter('niceDate', [
         return function (input) {
             var date;
             if (typeof input === 'string') {
-                date = new Date(Date.parse(input));
+                var str = input.split(/[^0-9]/);
+                date = new Date(str[0], str[1]-1, str[2], str[3], str[4], str[5]);
             } else {
                 date = input;
             }

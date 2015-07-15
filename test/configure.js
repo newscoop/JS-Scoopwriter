@@ -27,6 +27,5 @@ beforeEach(function () {
 
 afterEach(function () {
     delete window.Translator;
-    delete $.fn.alohaBlock;
 });
 
