@@ -7,94 +7,119 @@
  *
  */
 
-
-/* Date line */
-.authoring-environment .article-field.dateline {
-    font-family: 'Roboto', Arial, Helvetica, sans-serif;
-    font-size: 16px;
-    font-weight: 300; /* Roboto: 300,400,500 or 700 */
-    font-style: normal; /* normal, italic */
-    color: #333;
-    line-height: 140%;
-}
+@import url(http://fonts.googleapis.com/css?family=Oswald&subset=latin,latin-ext);
 
 /* Title */
 .authoring-environment .article-field.title {
-    font-family: Georgia, 'Times New Roman', Times, serif;
-    font-size: 38px;
-    font-weight: normal;
+    font-size: 2em;
+    font-family: 'Oswald', Tahoma, Arial, sans-serif;
+    color: #475f77;
+    line-height: 1.2em;
+    padding-bottom: 10px;
+    text-transform: uppercase;
+}
+
+/* Deck */
+.authoring-environment .article-field.deck {
+    font-family: 'Roboto', Arial, Helvetica, sans-serif;
+    font-size: 16px;
+    font-weight: 500;
     font-style: normal;
     color: #333;
     line-height: 140%;
 }
 
-/* Lead */
-.authoring-environment .article-field.lede {
-    font-family: 'Roboto', Arial, Helvetica, sans-serif;
-    font-size: 20px;
-    font-weight: 500; /* Roboto: 300,400,500 or 700 */
-    font-style: normal; /* normal, italic */
-    color: #333;
-    line-height: 140%;
-}
-
 /*  Body text - Normal */
-.authoring-environment .article-field.body {
-    font-family: 'Roboto', Arial, Helvetica, sans-serif;
-    font-size: 16px; /* body text size (normal) */
-    font-weight: 400; /* Roboto: 300,400,500 or 700 */
-    font-style: normal; /* normal, italic */
-    color: #333;
+.authoring-environment .article-field.full_text {
+    font-family: Tahoma, Arial, sans-serif;
+    font-size: 16px;
+    /* body text size (normal) */
+
+    font-weight: 400;
+    /* Roboto: 300,400,500 or 700 */
+
+    font-style: normal;
+    /* normal, italic */
+
+    color: #606060;
     line-height: 150%;
+
 }
 
 /* space between paragraphs */
 .authoring-environment .main-article-container p {
-    margin-bottom: 10px;
+    padding-bottom: 6px;
 }
 
-/* Headings in article body - font family */
+/* Headings in article body  */
 .authoring-environment .main-article-container h1,
 .authoring-environment .main-article-container h2,
 .authoring-environment .main-article-container h3,
 .authoring-environment .main-article-container h4,
 .authoring-environment .main-article-container h5 {
-    font-family: 'Roboto', Arial, Helvetica, sans-serif;
+    margin:0;
+    padding:0;
 }
 
 /* Heading 1 */
 .authoring-environment .main-article-container h1 {
-    font-size: 40px;
-    font-weight: normal; /* Roboto: 300,400,500 or 700 */
-    font-style: normal; /* normal, italic */
+    font-size: 2.5em;
+      font-family: 'Oswald', Tahoma, Arial, sans-serif;
+      color: #00b4ff;
+      line-height: 1.2em;
+      padding-bottom: 10px;
+      text-transform: uppercase;
 }
 
 /* Heading 2 */
 .authoring-environment .main-article-container h2 {
-    font-size: 34px;
-    font-weight: normal; /* Roboto: 300,400,500 or 700 */
-    font-style: normal; /* normal, italic */ 
+   font-size: 2em;
+   font-family: 'Oswald', Tahoma, Arial, sans-serif;
+   color: #475f77;
+   line-height: 1.2em;
+   padding-bottom: 10px;
+   text-transform: uppercase;
 }
 
 /* Heading 3 */
 .authoring-environment .main-article-container h3 {
-    font-size: 26px;
-    font-weight: normal; /* Roboto: 300,400,500 or 700 */
-    font-style: normal; /* normal, italic */
+    font-size: 1.5em;
+      font-family: 'Oswald', Tahoma, Arial, sans-serif;
+      line-height: 1.3em;
+      padding-bottom: 5px;
+      text-transform: uppercase;
 }
 
 /* Heading 4 */
 .authoring-environment .main-article-container h4 {
-    font-size: 22px;
-    font-weight: normal; /* Roboto: 300,400,500 or 700 */
-    font-style: normal; /* normal, italic */
+    font-size: 1.2em;
+  font-family: 'Oswald', Tahoma, Arial, sans-serif;
 }
 
-/* Heading 4 */
+/* Heading 5 */
 .authoring-environment .main-article-container h5 {
-    font-size: 18px;
-    font-weight: normal; /* Roboto: 300,400,500 or 700 */
-    font-style: normal; /* normal, italic */
+    font-size: 1em;
+      font-family: 'Oswald', Tahoma, Arial, sans-serif;
+      color: #00b4ff;
+      font-weight: 600;
+}
+
+/* blockquote */
+.authoring-environment .main-article-container blockquote {
+  border-left: 3px solid #00b4ff;
+  margin: 1.5em 10px;
+  padding: 0.5em 10px;
+  font-size:1.2em;
+  font-weight:200;
+  font-style: italic;
+  quotes: "\201C""\201D""\2018""\2019";
+}
+
+
+/* ul, ol lists */
+.authoring-environment .main-article-container section .aloha-editable ul,
+.authoring-environment .main-article-container section .aloha-editable ol{
+  margin-left:20px;
 }
 
 /* viewport styles */

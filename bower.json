@@ -1,6 +1,6 @@
 {
-  "name": "authoring-environment",
-  "version": "0.0.1",
+  "name": "scoopwriter",
+  "version": "1.0.1",
   "dependencies": {
     "angular": "~1.3.0",
     "json3": "~3.2.4",

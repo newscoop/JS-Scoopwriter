@@ -125,6 +125,7 @@
 	text-decoration: none;
 	border: 1px solid #409fc6;
 	background-color: #007fb3;
+	background-image: none;
 }
 
 #cs-specific .dropdown-menu .divider {
