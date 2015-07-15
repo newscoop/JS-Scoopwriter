@@ -9,7 +9,7 @@ module.exports = function(config) {
     frameworks: ['jasmine'],
     browserDisconnectTimeout: 10000,
     browserDisconnectTolerance: 2,
-    browserNoActivityTimeout: 180000,
+    browserNoActivityTimeout: 600000,
 
     // list of files / patterns to load in the browser
     files: [
