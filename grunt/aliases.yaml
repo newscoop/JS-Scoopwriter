@@ -16,7 +16,7 @@ pre-build:
  - 'concurrent:dist'
  - 'autoprefixer'
  - 'concat'
- - 'ngmin'
+ - 'ngAnnotate'
  - 'copy:dist'
  - 'uglify'
 
