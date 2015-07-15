@@ -9,7 +9,7 @@ module.exports = function(config) {
     frameworks: ['jasmine'],
     browserDisconnectTimeout: 10000,
     browserDisconnectTolerance: 2,
-    browserNoActivityTimeout: 600000,
+    browserNoActivityTimeout: 60000,
 
     // list of files / patterns to load in the browser
     files: [
@@ -117,6 +117,8 @@ module.exports = function(config) {
       console.log('Make sure the SAUCE_USERNAME and SAUCE_ACCESS_KEY environment variables are set.');
       process.exit(1);
     }
+
+    config.browserNoActivityTimeout = 120000;
 
     var buildLabel = 'TRAVIS #' + process.env.TRAVIS_BUILD_NUMBER + ' (' + process.env.TRAVIS_BUILD_ID + ')';
     config.logLevel = config.LOG_DEBUG;
