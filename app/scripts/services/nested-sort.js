@@ -6,7 +6,10 @@ angular.module('authoringEnvironmentApp').service('nestedSort', [
         // exposed just for testability
         this.sortByCreated = function (arr) {
             function getDate(element) {
-                return new Date(element.created);
+                var str = element.created.split(/[^0-9]/);
+
+                return new Date(str[0], str[1]-1, str[2],
+                    str[3], str[4], str[5]);
             }
             return _.sortBy(arr, getDate);
         };
