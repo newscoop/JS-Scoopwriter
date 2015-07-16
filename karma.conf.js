@@ -118,7 +118,7 @@ module.exports = function(config) {
       process.exit(1);
     }
 
-    config.browserNoActivityTimeout = 120000;
+    config.browserNoActivityTimeout = 180000;
 
     var buildLabel = 'TRAVIS #' + process.env.TRAVIS_BUILD_NUMBER + ' (' + process.env.TRAVIS_BUILD_ID + ')';
     config.logLevel = config.LOG_DEBUG;

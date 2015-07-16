@@ -2,32 +2,25 @@ language: node_js
 node_js:
   - '0.10'
   - '0.12'
-
 sudo: false
-
 addons:
   sauce_connect: true
-
 env:
   matrix:
     - ENV=test BROWSER_PROVIDER=saucelabs
     - ENV=test BROWSER_PROVIDER=browserstack
   global:
-    - BROWSER_STACK_USERNAME=rafamuszyski1
-    - BROWSER_STACK_ACCESS_KEY=zGoD3pfnqs5xsN9tVXoV
-    - SAUCE_USERNAME=takeit
-    - SAUCE_ACCESS_KEY=5016e251-2286-45c6-87d8-c78e79bbdff2
-
+    - secure: pHeklUDhjFxhlDhtZ9d5qO6ajOk2EhoHlKeo7FXxNLkyKOI4KQQflAnk9S/9daj64DwHuZKlwTqQaOpA4OUyyod6XVdTeGQJS7pz/PY9XbJ4aWiQhyuFNkUrdOaH6nuu8EKKQXw/iMTZwhpUJUgmja9CA86H853vkkl/9tHUyh7tbyrQKaASYbJCFMqFYULlesae9g3Y8GxrNjSGF5VpSwb1geZ5xEKXSExqbym5+XwfBEdAFgouSG+3qyjuCiQdieBukcxpcSZpxiAjf8reciSvCugGwlcv+YEky62OQ61HmFIgFXKhYgGQyCmIqq9dtY3dujdtDSRFaFnpZMD+KhSKxawvADEXLoMxuuxHuUT/lm68pG1Wi+8bMPCBtwFD3mzUu1wOleR9qQWcxJpWWVpxT2TDQo2+hb002RZFEzbn3yAQnSdqNMAx/kj36ek5wHKGtT8geEEI2Kb0jeVETTMlgMQwRcd70eRv5785NzmGNzVYTL620/jWae+zHuoFdZXAw43RvqT+FGJ2EigB/aahRFGVLoh9S7orsa8lIXzDV7ZSiTC9d5+KXG5Rbx3VTdK/bzwpT2za67SRZ0/1TOwLNieZ9h8MCOM/UqDa4XgViS1x4LNMtVKhVo7MPG1fNRKFoWWzVoacNEaLud/J3HK/JKOQJU+Z71F5tcdBPUw=
+    - secure: c5tq79YUYxrnrSnIY4XqgDwAaFbYpuSvbpir//vDjWzP9itZfFnvfzgY+CXGdzil3woL11ET5LYgzEO56OY3W1EMGXlQK+M5QJyTzEaVtPsQeZVv/AbAn5lSc/U7/8zhmaALZG7LuadqLXb+cqM/ANRC/1Gx6QjCutA+GACa3SVEOecEPFxE+ykB+zjDk3554dotdTJEZ80iH0jrvQjn/U1ofUtuvm4BXd3IIyD7p+eWiIsjZDaXF8BWyLvbxWVmKVTd8W+A4X9GZyd2PZx9Oqrf1YLklePn6l2lJmHXiGi6l3FpqYwFsKQXQLSN9J7H/bUXEtFGZZ+Fxap80/Vj2fiCfqe/yDWUK/Ftg1mjrIRX3r9pWWr6SxV0GbA6g3oxGc+oqPq6Vf3m2R1Ztfen1DbxinZeX7UFRnpngPMYUz3yRcehjQF0ttIZP2iW8c4saI8MW7jxTMo4xE7ETiXOXJf9y2L0bTsko2VW98CLBiDYfYBpQO0SIISmn7OWMej/3U0n4+rnLTbBoMSMtXs5fTlrmfeHrzkAdvNT0ER5xvnMseaQAekttdTNKDxzhVMKS6rFW/foe2SUEjSaZBCoSdfJzPThZfw+DCtJVMbrOhQWo8Svy/326j3E8h7x3Xte4LxsX/YaeSZXGT8cBxRgu5D+TrjTWTgEPgTMg8ZLY6w=
+    - secure: ZuCgrD3YddRQ6eE8YHQUFXSTVJ4sDy0N2ey4Y/+H72XZ5k/joIuvI0uU/yiwTkDGJo5e2pAM4Gy9papveeAePeDS08PhrIU13DCzAa2SD3/+FxxREEtWKf2hJchFJHuNi1K+pCpTI/4iKnZ/CymEAt/Can4bMj48EszzJwmTeXBxjU8wK6HmSb6q2Qz0bGHzqVa5wQRVNhtD8lFWkoxN2Q57Dl83+Q6KEbLuHTfTPq0aX6UNY+fpzODJ2J9PXgpKzkRmQFaIEiqQYQK0da76GZmljKrLv43ubRCJfvW0SXuM5XQDcT817RQb92vVTR0yMUmrt3DDYg5H9Krp2MkLUf+33+bg0ixQiwK7cHp3xYsKWIzxzcJxJlFSBmBQWrwoF4u27OzwP5Rda8jSTJBMWH4FgjjTOl+76b8Uce7vEigRZvAXI457JwyfI9v2nQ/aPuzD9m6AttU5L+ZaY7hgOE8nNj46+LYOiDz7I3hWyiFN4lBoKhqnYJtcynzZMPVJdQE6PxSS1RC7cLl6DAPKtV/9kMlLv3rod1yVsNhI2pttFXrDA3GhOFqGcXtjXnmRTFyunrqgAHUO4hdh36Xv8419Gc9b0v63sm2jVJptyJFEKinKQ78ywu6b7S2yTX9U1y0e7TD6ASeATeoFyWj6EbVTChD3UrCxR2CPW4FmDSo=
+    - secure: tLSVW85zpnIZvFTzSRvYyDqUUvoouUj0ez/sQPTiVdVjZqnWKZ+ALDcKYQ+/jkVgl/T2+NhH0z3ACT/bRmn5erT6qb1GP75zk5kLgGCbCbhKa7RzXVoM5wkUFpTMNZoCMLZsu56OrIu+6ztQ6q1/5oQkm4AosyAB3/CXjyt8qXOx+qC+4i0DAboA3IBmba57mEWFQS5v7yPY7rcPR4SoYNXCeWh/kP2ga3YvLVX4t8vCnmZ0a5Zl1VwsUTh1pprqdQdvlzwGhYgDB8T2jVeveK2Zpi4i0uDvszw/z065e+4A4she9fd7s8LjO6T4aP6FZUJaFx4Mx73GvMuWPOpIbs3flWOOVj7+mPO7n2dU9M2W0PGugkPU4awr/mDYA1LkvdQIQlQnXCHfZ5BJVl3dUDuRNc4RawBEG5QfGFHusAdBveP3QG60uMZdvgdrBAK2Mz018vtF2Wsk4eObI8BrGui+ARzV9A31KX/zdrrrE6SvBtqGLXD/HHJucHCPevHw6RRQTsaC08CXG/panTBkBzSis/u7c+K6WBWSUbKeWa4eD8ZOuMjgqCml627OV+qegK0JsmqYrFvHToXK34odGVwkDkMc9zyIARLd+8JpODHqZLOpToQ8+AG4/pVtanjdNek49KIVjV7eKApvtFfaWCdm1rSVaNY5WffHa+TF5d4=
 allow_failures:
-    - env: "ENV=test BROWSER_PROVIDER=browserstack"
-
+  - env: ENV=test BROWSER_PROVIDER=browserstack
 before_script:
-  - ./scripts/browserstack/start_tunnel.sh
+  - "./scripts/browserstack/start_tunnel.sh"
   - npm install -g bower grunt-cli
   - bower install
-
 script:
-  - ./scripts/travis/build.sh
-
+  - "./scripts/travis/build.sh"
 after_script:
   - grunt coveralls
