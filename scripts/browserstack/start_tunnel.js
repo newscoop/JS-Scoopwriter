@@ -7,7 +7,7 @@ var BrowserStackTunnel = require('browserstacktunnel-wrapper');
 var HOSTNAME = 'localhost';
 var PORTS = [9876, 8000];
 var ACCESS_KEY = process.env.BROWSER_STACK_ACCESS_KEY;
-var READY_FILE = process.env.BROWSER_STACK_FILE;
+var READY_FILE = process.env.BROWSER_STACK_READY_FILE;
 var TUNNEL_IDENTIFIER = process.env.TRAVIS_JOB_NUMBER;
 
 // We need to start fake servers, otherwise the tunnel does not start.
