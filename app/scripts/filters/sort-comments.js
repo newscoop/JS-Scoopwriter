@@ -19,7 +19,10 @@ angular.module('authoringEnvironmentApp')
         * @return {Object} comment's creation date
         */
         function dateCallback(item) {
-            return new Date(item.created);
+            var str = item.created.split(/[^0-9]/);
+
+            return new Date(str[0], str[1]-1, str[2],
+                str[3], str[4], str[5]);
         }
 
         return function (input, sorting) {

@@ -3,7 +3,11 @@
 set -e
 
 if [ $ENV = "test" ]; then
-  grunt travis
+  if [ "$BROWSER_PROVIDER" == "browserstack" ]; then
+    grunt travis-bs
+  else
+    grunt travis-sl
+  fi
   grunt jshint
 else
   echo "Unknown env type. Please set ENV=test"

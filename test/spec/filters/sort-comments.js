@@ -54,7 +54,6 @@ describe('Filter: sortComments', function () {
 
         it('sorts comments by creation date (descending)', function () {
             var sorted = filterFactory(mock, 'Chronological');
-
             expect(sorted[0].created).toBe("2013-04-19T04:04:55+0000");
             expect(sorted[1].created).toBe("2013-04-18T04:04:55+0000");
             expect(sorted[2].created).toBe("2013-04-17T23:53:19+0000");

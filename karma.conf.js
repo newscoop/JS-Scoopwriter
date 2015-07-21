@@ -67,11 +67,13 @@ module.exports = function(config) {
     browserStack: {
       project: 'JS-Scoopwriter',
       name: 'Scoopwriter tests',
-      startTunnel: true,
       timeout: 600,
     },
 
-
+    sauceLabs: {
+      testName: 'Scoopwriter tests',
+      startConnect: true
+    },
 
     // enable / disable watching file and executing tests whenever any file changes
     autoWatch: false,
@@ -110,11 +112,29 @@ module.exports = function(config) {
   });
 
   if (process.env.TRAVIS) {
+    if (process.env.BROWSER_PROVIDER === 'saucelabs' && !process.env.SAUCE_USERNAME || !process.env.SAUCE_ACCESS_KEY) {
+      console.log('Make sure the SAUCE_USERNAME and SAUCE_ACCESS_KEY environment variables are set.');
+      process.exit(1);
+    }
+
+    config.browserNoActivityTimeout = 180000;
+
     var buildLabel = 'TRAVIS #' + process.env.TRAVIS_BUILD_NUMBER + ' (' + process.env.TRAVIS_BUILD_ID + ')';
     config.logLevel = config.LOG_DEBUG;
 
+    //BrowserStack
     config.browserStack.build = buildLabel;
-    config.browserStack.startTunnel = false;
+    config.browserStack.startTunnel = true;
     config.browserStack.tunnelIdentifier = process.env.TRAVIS_JOB_NUMBER;
+
+    //SouceLabs
+    config.sauceLabs.build = buildLabel;
+    config.sauceLabs.startConnect = true;
+    config.sauceLabs.tunnelIdentifier = process.env.TRAVIS_JOB_NUMBER;
+    config.sauceLabs.recordScreenshots = true;
+
+    if (process.env.BROWSER_PROVIDER === 'saucelabs') {
+      config.captureTimeout = 0;
+    }
   };
 };
