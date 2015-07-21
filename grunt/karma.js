@@ -29,23 +29,9 @@ module.exports = {
 	        browser: 'safari',
 	        os: 'OS X',
 	        os_version: 'Yosemite'
-	      },
-	      'BS_IE_10': {
-	        base: 'BrowserStack',
-	        browser: 'ie',
-	        browser_version: '10.0',
-	        os: 'Windows',
-	        os_version: '8'
-	      },
-	      'BS_IE_11': {
-	        base: 'BrowserStack',
-	        browser: 'ie',
-	        browser_version: '11.0',
-	        os: 'Windows',
-	        os_version: '8.1'
 	      }
 	    },
-	    browsers: ["BS_Chrome", "BS_Firefox", "BS_Safari", "BS_IE_10", "BS_IE_11"],
+	    browsers: ["BS_Chrome", "BS_Firefox", "BS_Safari"],
     },
     sl: {
     	reporters: ['coverage', 'saucelabs'],
