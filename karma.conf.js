@@ -129,7 +129,7 @@ module.exports = function(config) {
 
     //SouceLabs
     config.sauceLabs.build = buildLabel;
-    config.sauceLabs.startConnect = false;
+    config.sauceLabs.startConnect = true;
     config.sauceLabs.tunnelIdentifier = process.env.TRAVIS_JOB_NUMBER;
     config.sauceLabs.recordScreenshots = true;
 
