@@ -7,10 +7,9 @@ module.exports = function(config) {
 
     // testing framework to use (jasmine/mocha/qunit/...)
     frameworks: ['jasmine'],
-    captureTimeout: 180000,
     browserDisconnectTimeout: 10000,
-    browserDisconnectTolerance: 1,
-    browserNoActivityTimeout: 180000,
+    browserDisconnectTolerance: 2,
+    browserNoActivityTimeout: 60000,
 
     // list of files / patterns to load in the browser
     files: [
@@ -68,7 +67,7 @@ module.exports = function(config) {
     browserStack: {
       project: 'JS-Scoopwriter',
       name: 'Scoopwriter tests',
-      timeout: 1800,
+      timeout: 600,
     },
 
     sauceLabs: {
@@ -119,6 +118,7 @@ module.exports = function(config) {
     }
 
     config.browserNoActivityTimeout = 180000;
+    config.captureTimeout = 0;
 
     var buildLabel = 'TRAVIS #' + process.env.TRAVIS_BUILD_NUMBER + ' (' + process.env.TRAVIS_BUILD_ID + ')';
     config.logLevel = config.LOG_DEBUG;
@@ -133,9 +133,5 @@ module.exports = function(config) {
     config.sauceLabs.startConnect = false;
     config.sauceLabs.tunnelIdentifier = process.env.TRAVIS_JOB_NUMBER;
     config.sauceLabs.recordScreenshots = true;
-
-    if (process.env.BROWSER_PROVIDER === 'saucelabs') {
-      config.captureTimeout = 0;
-    }
   };
 };
