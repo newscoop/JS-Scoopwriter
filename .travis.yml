@@ -17,6 +17,7 @@ env:
 allow_failures:
 - env: ENV=test BROWSER_PROVIDER=browserstack
 before_script:
+- travis_stop_sauce_connect
 - "./scripts/browserstack/start_tunnel.sh"
 - npm install -g bower grunt-cli
 - bower install
