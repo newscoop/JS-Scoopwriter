@@ -23,9 +23,29 @@ module.exports = {
 	        browser: 'firefox',
 	        os: 'Windows',
 	        os_version: '8'
+	      },
+	      'BS_Safari': {
+	        base: 'BrowserStack',
+	        browser: 'safari',
+	        os: 'OS X',
+	        os_version: 'Yosemite'
+	      },
+	      'BS_IE_10': {
+	        base: 'BrowserStack',
+	        browser: 'ie',
+	        browser_version: '10.0',
+	        os: 'Windows',
+	        os_version: '8'
+	      },
+	      'BS_IE_11': {
+	        base: 'BrowserStack',
+	        browser: 'ie',
+	        browser_version: '11.0',
+	        os: 'Windows',
+	        os_version: '8.1'
 	      }
 	    },
-	    browsers: ["BS_Chrome", "BS_Firefox"],
+	    browsers: ["BS_Chrome", "BS_Firefox", "BS_Safari", "BS_IE_10", "BS_IE_11"],
     },
     sl: {
     	reporters: ['coverage', 'saucelabs'],
@@ -48,12 +68,6 @@ module.exports = {
 	        browserName: 'firefox',
 	        version: '30'
 	      },
-	      'SL_Safari': {
-	        base: 'SauceLabs',
-	        browserName: 'safari',
-	        platform: 'OS X 10.10',
-	        version: '8'
-	      },
 	      'SL_IE_10': {
 	        base: 'SauceLabs',
 	        browserName: 'internet explorer',
@@ -67,6 +81,6 @@ module.exports = {
 	        version: '11'
 	      }
 	    },
-	    browsers: ["SL_Chrome", "SL_Firefox", "SL_Firefox_30", "SL_Safari", "SL_IE_10", "SL_IE_11"],
+	    browsers: ["SL_Chrome", "SL_Firefox", "SL_Firefox_30", "SL_IE_10", "SL_IE_11"],
     },
 };
