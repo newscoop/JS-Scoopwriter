@@ -67,7 +67,7 @@ module.exports = function(config) {
     browserStack: {
       project: 'JS-Scoopwriter',
       name: 'Scoopwriter tests',
-      timeout: 180000,
+      timeout: 1800,
     },
 
     sauceLabs: {
