@@ -3,7 +3,8 @@ node_js:
 - '0.10'
 - '0.12'
 sudo: false
-
+addons:
+  sauce_connect: true
 env:
   matrix:
   - ENV=test BROWSER_PROVIDER=saucelabs
