@@ -7,8 +7,9 @@ module.exports = function(config) {
 
     // testing framework to use (jasmine/mocha/qunit/...)
     frameworks: ['jasmine'],
+    captureTimeout: 180000,
     browserDisconnectTimeout: 10000,
-    browserDisconnectTolerance: 2,
+    browserDisconnectTolerance: 1,
     browserNoActivityTimeout: 180000,
 
     // list of files / patterns to load in the browser
