@@ -56,7 +56,7 @@ To run them, type the following in console:
 By default it runs tests in Chrome and Firefox. If you don't have these
 browsers installed or if you want to run tests in a different browser, change
 the corresponding setting in the `karma.conf.js` file (the `browsers` option).
-The code is covered with tests and we offer you a continuous integration setup including [Travis](https://travis-ci.org/newscoop/JS-Scoopwriter), [Code Climate](https://codeclimate.com/github/newscoop/JS-Scoopwriter) and [BrowserStack](https://www.browserstack.com). Check the current test coverage on [Coveralls](https://coveralls.io/github/newscoop/JS-Scoopwriter).
+The code is covered with tests and we offer you a continuous integration setup including [Travis](https://travis-ci.org/newscoop/JS-Scoopwriter), [Code Climate](https://codeclimate.com/github/newscoop/JS-Scoopwriter), [BrowserStack](https://www.browserstack.com) and [SauceLabs](https://saucelabs.com). Check the current test coverage on [Coveralls](https://coveralls.io/github/newscoop/JS-Scoopwriter).
 
 ### <a name="testCoverage"></a>Coverage Report
 In order to get coverage reports, uncomment the `reporters` section in the
