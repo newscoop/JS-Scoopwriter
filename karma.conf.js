@@ -124,7 +124,7 @@ module.exports = function(config) {
 
     //BrowserStack
     config.browserStack.build = buildLabel;
-    config.browserStack.startTunnel = false;
+    config.browserStack.startTunnel = true;
     config.browserStack.tunnelIdentifier = process.env.TRAVIS_JOB_NUMBER;
 
     //SouceLabs
