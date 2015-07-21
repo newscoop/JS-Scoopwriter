@@ -11,9 +11,7 @@ Aloha.settings.jQuery = window.jQuery.noConflict(true);
 
 
 /* added because Translator is expected to be available in window object */
-var window,
-    Translator,
-    mockTranslator;
+var mockTranslator;
 
 beforeEach(function () {
     mockTranslator = {

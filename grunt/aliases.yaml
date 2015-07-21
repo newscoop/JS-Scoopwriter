@@ -8,7 +8,7 @@ test:
  - 'concurrent:test'
  - 'autoprefixer'
  - 'connect:test'
- - 'karma'
+ - 'karma:unit'
 
 pre-build:
  - 'clean:dist'
@@ -16,7 +16,7 @@ pre-build:
  - 'concurrent:dist'
  - 'autoprefixer'
  - 'concat'
- - 'ngmin'
+ - 'ngAnnotate'
  - 'copy:dist'
  - 'uglify'
 
@@ -41,5 +41,7 @@ server:
  - 'open'
  - 'watch'
 
-travis:
- - 'karma:travis'
+travis-bs:
+ - 'karma:bs'
+travis-sl:
+ - 'karma:sl'

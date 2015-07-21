@@ -1,32 +1,72 @@
 module.exports = {
-    unit: {
-        configFile: 'karma.conf.js',
-        singleRun: true
-    },
-    travis: {
-    	configFile: 'karma.conf.js',
+	options: {
+	    configFile: 'karma.conf.js',
 	    singleRun: true,
-        reporters: ['coverage'],
-        port: 8081,
+        port: 8080,
         coverageReporter: {
 	        type: "lcov",
 	        dir: "coverage/"
-	    },
-
+	    }
+	  },
+    unit: {},
+    bs: {
+    	reporters: ['coverage'],
 	    customLaunchers: {
-	      'bs_Chrome': {
+	      'BS_Chrome': {
 	        base: 'BrowserStack',
 	        browser: 'chrome',
 	        os: 'OS X',
 	        os_version: 'Yosemite'
 	      },
-	      'bs_Firefox': {
+	      'BS_Firefox': {
 	        base: 'BrowserStack',
 	        browser: 'firefox',
 	        os: 'Windows',
 	        os_version: '8'
+	      },
+	      'BS_Safari': {
+	        base: 'BrowserStack',
+	        browser: 'safari',
+	        os: 'OS X',
+	        os_version: 'Yosemite'
 	      }
 	    },
-	    browsers: ["bs_Chrome", "bs_Firefox"],
+	    browsers: ["BS_Chrome", "BS_Firefox", "BS_Safari"],
+    },
+    sl: {
+    	reporters: ['coverage', 'saucelabs'],
+	    customLaunchers: {
+	      'SL_Chrome': {
+		      base: 'SauceLabs',
+		      browserName: 'chrome'
+		    },
+		    'SL_Firefox': {
+		      base: 'SauceLabs',
+		      browserName: 'firefox',
+		    },
+		    'SL_Chrome': {
+	        base: 'SauceLabs',
+	        browserName: 'chrome',
+	        version: '39'
+	      },
+	      'SL_Firefox_30': {
+	        base: 'SauceLabs',
+	        browserName: 'firefox',
+	        version: '30'
+	      },
+	      'SL_IE_10': {
+	        base: 'SauceLabs',
+	        browserName: 'internet explorer',
+	        platform: 'Windows 7',
+	        version: '10'
+	      },
+	      'SL_IE_11': {
+	        base: 'SauceLabs',
+	        browserName: 'internet explorer',
+	        platform: 'Windows 8.1',
+	        version: '11'
+	      }
+	    },
+	    browsers: ["SL_Chrome", "SL_Firefox", "SL_Firefox_30", "SL_IE_10", "SL_IE_11"],
     },
 };
