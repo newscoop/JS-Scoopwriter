@@ -118,7 +118,6 @@ module.exports = function(config) {
     }
 
     config.browserNoActivityTimeout = 180000;
-    config.captureTimeout = 0;
 
     var buildLabel = 'TRAVIS #' + process.env.TRAVIS_BUILD_NUMBER + ' (' + process.env.TRAVIS_BUILD_ID + ')';
     config.logLevel = config.LOG_DEBUG;
@@ -133,5 +132,9 @@ module.exports = function(config) {
     config.sauceLabs.startConnect = false;
     config.sauceLabs.tunnelIdentifier = process.env.TRAVIS_JOB_NUMBER;
     config.sauceLabs.recordScreenshots = true;
+
+    if (process.env.BROWSER_PROVIDER === 'saucelabs') {
+      config.captureTimeout = 0;
+    }
   };
 };
