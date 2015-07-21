@@ -9,7 +9,7 @@ module.exports = function(config) {
     frameworks: ['jasmine'],
     browserDisconnectTimeout: 10000,
     browserDisconnectTolerance: 2,
-    browserNoActivityTimeout: 60000,
+    browserNoActivityTimeout: 180000,
 
     // list of files / patterns to load in the browser
     files: [
@@ -67,8 +67,7 @@ module.exports = function(config) {
     browserStack: {
       project: 'JS-Scoopwriter',
       name: 'Scoopwriter tests',
-      startTunnel: true,
-      timeout: 600,
+      timeout: 180000,
     },
 
     sauceLabs: {
