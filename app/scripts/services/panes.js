@@ -101,6 +101,17 @@ angular.module('authoringEnvironmentApp').factory('panes', [
                     visible: false,
                     active: false,
                     selected: true
+                },
+                {
+                    name: 'Editorial Comments',
+                    id: 'editorial_comments',
+                    icon: 'editorial_comments',
+                    template: 'views/pane-editorial-comments.html',
+                    position: 'right',
+                    size: 'small',
+                    visible: false,
+                    active: false,
+                    selected: true
                 }
             ];
         panes.layout = {
