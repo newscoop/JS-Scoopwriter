@@ -390,6 +390,7 @@
     Translator.add("aes.label.attachslideshows", "Attach Slideshow(s)", "messages", "en");
     Translator.add("aes.label.attachdetach", "Attach \/ Detach", "messages", "en");
     Translator.add("aes.label.createslideshow", "Create Slideshow", "messages", "en");
+    Translator.add("aes.label.editorialcomments", "Editorial Comments", "messages", "en");
     Translator.add("aes.alerts.popup.resethead", "Do you really want to reset your custom CSS?", "messages", "en");
     Translator.add("aes.alerts.popup.reset", "Your current CSS will be gone and the default one will be loaded instead.", "messages", "en");
     Translator.add("aes.alerts.lockedHead", "This article is locked", "messages", "en");
@@ -510,6 +511,8 @@
     Translator.add("aes.settings.form.imagesize.medium", "medium", "messages", "en");
     Translator.add("aes.settings.form.imagesize.big", "big", "messages", "en");
     Translator.add("aes.settings.form.imagesize.original", "original", "messages", "en");
+    Translator.add("aes.msgs.editorialcomments.resolve.success", "The comment has been resolved successfully.", "messages", "en");
+    Translator.add("aes.msgs.editorialcomments.resolve.error", "The comment could not be resolved.", "messages", "en");
     Translator.add("aes.msgs.comments.add.success", "The comment has been added successfully.", "messages", "en");
     Translator.add("aes.msgs.comments.add.error", "The comment could not be added, please try again.", "messages", "en");
     Translator.add("aes.msgs.comments.change.success", "Comments settings updated successfully.", "messages", "en");
