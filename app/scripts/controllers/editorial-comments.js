@@ -8,45 +8,53 @@
 * @class EditorialCommentsCtrl
 */
 angular.module('authoringEnvironmentApp').controller('EditorialCommentsCtrl', [
-	'$scope',
-	'$timeout',
-	'editorialComments',
-	'$interval',
-	'TranslationService',
-	'toaster',
-	function (
-		$scope,
-		$timeout,
-		editorialComments,
-		$interval,
-		TranslationService,
-		toaster
-	) {
+    '$scope',
+    '$timeout',
+    'editorialComments',
+    '$interval',
+    'TranslationService',
+    'toaster',
+    function (
+        $scope,
+        $timeout,
+        editorialComments,
+        $interval,
+        TranslationService,
+        toaster
+    ) {
 
+    // Interval dely in seconds.
+    // Comments will be loaded everytime
+    // after defined value in seconds.
+    var seconds = 20,
+        self = this;
 
-	$scope.comments = editorialComments;
-	editorialComments.init();
-	$scope.stopRefreshing = false;
-	$scope.isLoading = false;
-    $scope.create = {};
-    $scope.isSending = false;
+    self.comments = editorialComments;
+    editorialComments.init();
+    self.isLoading = false;
+    self.create = {};
+    self.isSending = false;
+
+    /**
+    * Initializes comments.
+    * Sets isLoading accordingly.
+    */
+    self.initComments = function () {
+        self.isLoading = true;
+        editorialComments.init().then(function () {
+            self.isLoading = false;
+        });
+    }
 
     /**
      * It fetches comments every 20 seconds to update
      * the curent list of editorial comments.
      */
-    $scope.fetchComments = function () {
-        var intervalPromise = $interval(function(){
-            if (!$scope.stopRefreshing) {
-            	$scope.isLoading = true;
-                editorialComments.init().then(function () {
-	                $scope.isLoading = false;
-	            });
-            }
-        }, 20000);
+    self.fetchComments = function () {
+        var intervalPromise = $interval(self.initComments, seconds * 1000);
 
-        // destroy interval as it is
-        // not automatically destroyed
+        // destroy interval because it will
+        // not be automatically destroyed
         $scope.$on('$destroy', function() {
             if (angular.isDefined(intervalPromise)) {
                 $interval.cancel(intervalPromise);
@@ -56,13 +64,13 @@ angular.module('authoringEnvironmentApp').controller('EditorialCommentsCtrl', [
     };
 
     /**
-    * Cancels adding new comment.
+    * Cancels adding a new comment.
     *
     * @param {comment} comment Comment object
     */
-    $scope.cancel = function (comment) {
-        $scope.adding = false;
-        $scope.create = {};
+    self.cancel = function (comment) {
+        self.adding = false;
+        self.create = {};
     };
 
     /**
@@ -72,13 +80,13 @@ angular.module('authoringEnvironmentApp').controller('EditorialCommentsCtrl', [
     * @param parameters {Object} A wrapper around the object containing
     *   comment data.
     */
-    $scope.add = function (parameters) {
-        $scope.isSending = true;
+    self.add = function (parameters) {
+        self.isSending = true;
         editorialComments.add(parameters).then(function () {
-            $scope.adding = false;
+            self.adding = false;
             // collapse the form
-            $scope.isSending = false;
-            $scope.create = {};
+            self.isSending = false;
+            self.create = {};
             toaster.add({
                 type: 'sf-info',
                 message: TranslationService.trans(
@@ -88,7 +96,7 @@ angular.module('authoringEnvironmentApp').controller('EditorialCommentsCtrl', [
         }, function () {
             // on failures (e.g. timeouts) we re-enable the form, allowing
             // user to submit a comment again
-            $scope.isSending = false;
+            self.isSending = false;
             toaster.add({
                 type: 'sf-error',
                 message: TranslationService.trans(
@@ -104,7 +112,7 @@ angular.module('authoringEnvironmentApp').controller('EditorialCommentsCtrl', [
     * @method sendReply
     * @param [comment] {comment} a specific comment to reply to
     */
-    $scope.sendReply = function (comment) {
+    self.sendReply = function (comment) {
         comment.sendReply().then(function () {
             toaster.add({
                 type: 'sf-info',
@@ -128,7 +136,7 @@ angular.module('authoringEnvironmentApp').controller('EditorialCommentsCtrl', [
     * @method toggleResolved
     * @param [comment] {comment} a specific comment to resolve
     */
-    $scope.toggleResolved = function (comment) {
+    self.toggleResolved = function (comment) {
         comment.toggleResolved().then(function () {
             toaster.add({
                 type: 'sf-info',
@@ -152,8 +160,8 @@ angular.module('authoringEnvironmentApp').controller('EditorialCommentsCtrl', [
      * @method saveComment
      * @param [comment] {comment} a specific comment to save
      */
-    $scope.saveComment = function(comment) {
-	    comment.save().then(function () {
+    self.saveComment = function(comment) {
+        comment.save().then(function () {
             toaster.add({
                 type: 'sf-info',
                 message: TranslationService.trans(

@@ -163,6 +163,16 @@ describe('Controller: CommentsCtrl', function () {
         });
     });
 
+    describe('scope\'s cancel() method', function () {
+        it('Cancels adding a new comment.', function () {
+            scope.create.subject = "Re: test";
+            scope.create.message = "test comment";
+            scope.cancel();
+
+            expect(scope.create).toEqual({});
+            expect(scope.adding).toBe(false);
+        });
+    });
 
     describe('scope\'s updateCommentingDirtyFlag() method', function () {
         it('sets dirty flag when there IS a change in commenting ' +

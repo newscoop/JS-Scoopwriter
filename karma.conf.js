@@ -50,8 +50,14 @@ module.exports = function(config) {
       'app/bower_components/ng-tags-input/ng-tags-input.js',
       'app/bower_components/angular-symfony-translation/dist/angular-symfony-translation.js',
       //include the directory where directive templates are stored
-      'app/views/*.html'
+      'app/views/*.html',
+      {pattern: 'app/images/*.png', watched: false, included: false, served: true}
     ],
+
+    // images proxy so it won't throw warns about missing image
+    proxies: {
+      '/images/icon-nested-comment-level-0.png': '/base/app/images/icon-nested-comment-level-0.png'
+    },
 
     // list of files / patterns to exclude
     exclude: [],

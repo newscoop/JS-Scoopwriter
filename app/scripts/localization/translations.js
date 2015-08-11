@@ -391,6 +391,7 @@
     Translator.add("aes.label.attachdetach", "Attach \/ Detach", "messages", "en");
     Translator.add("aes.label.createslideshow", "Create Slideshow", "messages", "en");
     Translator.add("aes.label.editorialcomments", "Editorial Comments", "messages", "en");
+    Translator.add("aes.label.resolve", "Resolve", "messages", "en");
     Translator.add("aes.alerts.popup.resethead", "Do you really want to reset your custom CSS?", "messages", "en");
     Translator.add("aes.alerts.popup.reset", "Your current CSS will be gone and the default one will be loaded instead.", "messages", "en");
     Translator.add("aes.alerts.lockedHead", "This article is locked", "messages", "en");

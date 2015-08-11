@@ -15,7 +15,7 @@ angular.module('authoringEnvironmentApp').service('editorialComments', [
     function(articleService, $http, $q, transform, pageTracker, $log) {
 
     var article = articleService.articleInstance,
-        itemsPerPage = 10,
+        itemsPerPage = 50,
         latestPage = 1,
         self = this,
         sorting = 'nested';
@@ -65,17 +65,14 @@ angular.module('authoringEnvironmentApp').service('editorialComments', [
         *
         * @method init
         */
-        self.init = function (opt) {
+        self.init = function () {
             var deferredGet = $q.defer();
 
             self.tracker = pageTracker.getTracker();
             self.loaded = [];
             self.fetched = [];
-            if (opt && opt.sorting) {
-                sorting = opt.sorting;
-            } else {
-                sorting = 'nested';
-            }
+            self.canLoadMore = true;
+            sorting = 'nested';
 
             self.getAllByPage(self.tracker.next()).then(function (data) {
                 if (self.displayed.length === 0) {
@@ -83,14 +80,13 @@ angular.module('authoringEnvironmentApp').service('editorialComments', [
                 }
 
                 self.fetched = data.items.map(decorate);
-                self.canLoadMore = true;
                 createComments();
                 deferredGet.resolve();
                 if (self.canLoadMore) {
                     // prepare the next batch
                     self.getAllByPage(self.tracker.next()).then(
-                        function (data) {
-                            self.loaded = self.loaded.concat(data.items);
+                        function (response) {
+                            self.loaded = self.loaded.concat(response.items);
                         }
                     );
                 }
@@ -143,8 +139,11 @@ angular.module('authoringEnvironmentApp').service('editorialComments', [
                 self.displayed = self.displayed.concat(additional);
                 var next = self.tracker.next();
                 latestPage = next;
-                self.getAllByPage(next - 1).then(function (data) {
-                    self.loaded = self.loaded.concat(data.items);
+                self.getAllByPage(next - 1).then(function (response) {
+                    if (response.items.length < 1) {
+                        self.canLoadMore = false;
+                    }
+                    self.loaded = self.loaded.concat(response.items);
                 });
             } else {
                 $log.error(
@@ -169,14 +168,7 @@ angular.module('authoringEnvironmentApp').service('editorialComments', [
         */
         self.getAllByPage = function (page) {
             var deferredGet = $q.defer(),
-                sortingPart,
                 url;
-
-            if (sorting === 'nested') {
-                sortingPart = 'nested';
-            } else {
-                sortingPart = '';
-            }
 
             var totalPerPage = itemsPerPage * latestPage;
             itemsPerPage = totalPerPage;
@@ -190,19 +182,22 @@ angular.module('authoringEnvironmentApp').service('editorialComments', [
                 {
                     language: article.language,
                     number: article.articleId,
-                    order: sortingPart,
+                    order: sorting,
                     items_per_page: itemsPerPage,
                     page: page
                 },
                 true
             );
 
-            $http.get(url).success(function (data) {
-                deferredGet.resolve(data);
-                if (data.items.length < 1) {
+            $http.get(url)
+                .then(function (response) {
+                var responseData = response.data;
+                deferredGet.resolve(responseData);
+                if (responseData.items.length < 1 ||
+                    responseData.pagination === undefined) {
                     self.canLoadMore = false;
                 }
-            }).error(function (responseBody) {
+            }, function (responseBody) {
                 // in case of failure remove the page from the tracker
                 self.tracker.remove(page);
             });
@@ -245,12 +240,13 @@ angular.module('authoringEnvironmentApp').service('editorialComments', [
             ).then(function (response) {
                 var resourceUrl = response.headers('x-location');
                 if (resourceUrl) {
-                    $http.get(resourceUrl).success(function (data) {
-                        if (data.parent === undefined) {
-                            self.displayed.push(decorate(data));
+                    $http.get(resourceUrl).then(function (response) {
+                        var responseData = response.data;
+                        if (responseData.parent === undefined) {
+                            self.displayed.push(decorate(responseData));
                         }
 
-                        deferred.resolve(decorate(data));
+                        deferred.resolve(decorate(responseData));
                     });
                 } else {
                     // the header may not be available if the server
@@ -426,11 +422,11 @@ angular.module('authoringEnvironmentApp').service('editorialComments', [
                     url,
                     {editorial_comment: comment.editing},
                     {transformRequest: transform.formEncode}
-                ).success(function () {
+                ).then(function () {
                     deferred.resolve();
                     comment.comment = comment.editing.comment;
                     comment.isEdited = false;
-                }).error(function () {
+                }, function () {
                     deferred.reject();
                 });
 
@@ -479,12 +475,11 @@ angular.module('authoringEnvironmentApp').service('editorialComments', [
                     url,
                     {editorial_comment: {resolved: true}},
                     {transformRequest: transform.formEncode}
-                ).success(function () {
+                ).then(function () {
                     removeCommentWithChildren(comment.id);
                     deferred.resolve();
                     comment.resolving = false;
-                })
-                .error(function (responseBody) {
+                }, function (responseBody) {
                     deferred.reject(responseBody);
                 });
 
