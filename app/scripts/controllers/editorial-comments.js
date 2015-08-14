@@ -44,7 +44,7 @@ angular.module('authoringEnvironmentApp').controller('EditorialCommentsCtrl', [
         editorialComments.init().then(function () {
             self.isLoading = false;
         });
-    }
+    };
 
     /**
      * It fetches comments every 20 seconds to update
