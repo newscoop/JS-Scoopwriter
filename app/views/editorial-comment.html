@@ -1,0 +1,113 @@
+<div class="left-border-wrapper"> <!-- needed just for style reasons -->
+  <div class="bottom-border-wrapper"> <!-- needed just for style reasons -->
+    <div>
+      <figure class="author-avatar">
+        <img  ng-if="model.user.image" ng-src="{{ model.user.image }}">
+        <!-- devcode: !dist -->
+        <img  ng-if="!model.user.image" ng-src="images/authors-default-avatar.png">
+        <!-- endcode -->
+        <!-- devcode: dist -->
+        <img  ng-if="!model.user.image" ng-src="/bundles/newscoopeditor/images/authors-default-avatar.png">
+        <!-- endcode -->
+      </figure>
+      <div class="image-and-author-details">
+        <div class="controls pull-right" ng-hide="model.isReplyMode">
+          <span
+             class="glyphicon glyphicon-pencil"
+             ng-click="model.edit()"
+             ng-hide="model.isEdited"
+             title="{{ ::('Edit'|trans) }}"
+             ></span>
+          <span
+             class="glyphicon glyphicon-floppy-disk"
+             ng-click="onSave({comment: model})"
+             ng-show="model.isEdited"
+             title="{{ ::('Save'|trans) }}"
+             ></span>
+          <span
+             class="glyphicon glyphicon-remove"
+             ng-click="model.cancel()"
+             ng-show="model.isEdited"
+             title="{{ ::('Cancel'|trans) }}"
+             ></span>
+          <span
+             class="fa fa-reply"
+             ng-class="{disabled: !allowreplying }"
+             ng-hide="model.isEdited"
+             title="{{allowreplying ? ('aes.label.reply'|trans) : ''}}"
+             ng-click="allowreplying &amp;&amp; model.replyTo()"
+             ></span>
+          <span
+             class="glyphicon glyphicon-ok-circle"
+             ng-hide="model.isEdited"
+             ng-click="!model.resolving && onResolve({editorial_comment: model})"
+             title="{{::('aes.label.resolve'|trans)}}"
+             ></span>
+        </div>
+        <img
+           ng-hide="model.isEdited || model.isReplyMode || model.showStatus == 'expanded'"
+           class="pull-right"
+           ng-src="images/icon-nested-comment-level-{{model.parent ? 1 : 0}}.png"
+           />
+        <div class="date-and-name" ng-click="model.toggle()">
+        <div
+             class="author-name"
+             ng-bind="model.user.username"
+             ng-click="model.toggle()"
+             ></div>
+          <div class="date" ng-bind="model.created | niceDate"></div>
+        </div>
+      </div>
+        <div
+         class="subject"
+         ng-click="model.toggle()"
+         ng-hide="model.showStatus == 'expanded'"
+         >{{ model.comment| limitTo: 25 }}{{model.comment.length > 25 ? '...' : ''}}</div><br>
+      <div
+         ng-bind="model.comment"
+         ng-hide="model.isEdited"
+         ng-click="model.toggle()"
+         class="comment"></div>
+      <textarea
+         class="message"
+         ng-model="model.editing.comment"
+         ng-show="model.isEdited"
+         ></textarea>
+    </div>
+    <!-- reply-to-comment form -->
+    <form name="replyForm" class="add-reply right" ng-show="model.isReplyMode">
+
+      <div class="heading">
+        <span class="add-reply-text">{{ ::('aes.label.replycomment'|trans) }}</span>
+      </div>
+
+      <div class="body">
+        <textarea
+           class="editor-input"
+           placeholder="Comment reply here..."
+           ng-model="model.reply.comment"
+           ng-disabled="model.sendingReply"
+           required
+           ></textarea>
+
+        <div class="replyToControls">
+          <button
+             class="btn btn-primary btn-sm pull-right"
+             ng-click="onReply({editorial_comment: model})"
+             ng-disabled="model.sendingReply || replyForm.$invalid"
+             >
+            {{ ::('aes.btn.reply'|trans) }}
+          </button>
+          <button
+             class="btn btn-default btn-sm pull-right"
+             ng-click="model.cancelReply()"
+             ng-disabled="model.sendingReply"
+             >
+            {{ ::('aes.btn.cancel'|trans) }}
+          </button>
+        </div>
+      </div>
+
+    </form>
+  </div>
+</div>

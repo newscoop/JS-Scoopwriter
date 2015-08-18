@@ -1,0 +1,100 @@
+<section
+    ng-controller="EditorialCommentsCtrl as commentsCtrl"
+    class="tabcontent comments-panel">
+
+  <div class="panel-title">
+    {{ ::('aes.label.editorialcomments'|trans) }}
+    <div class="load-anim pull-right" ng-hide="!commentsCtrl.isLoading">
+      <div class="rect1"></div>
+      <div class="rect2"></div>
+      <div class="rect3"></div>
+      <div class="rect4"></div>
+      <div class="rect5"></div>
+    </div>
+  </div>
+    <div
+    class="add-element"
+    ng-class="{expanded: commentsCtrl.adding}"
+    >
+    <div class="heading">
+      <button
+         class="btn btn-sf-invisible"
+         data-test-button="add"
+         ng-click="commentsCtrl.adding = true"
+         ng-hide="commentsCtrl.adding"
+         >
+        <span class="glyphicon glyphicon-plus"></span><span class="add-text">{{ ::('aes.label.postcomment'|trans) }}</span>
+      </button>
+      <button
+         class="btn btn-sf-invisible"
+         ng-click="commentsCtrl.adding = false"
+         ng-show="commentsCtrl.adding"
+         >
+        <span class="glyphicon glyphicon-minus"></span><span class="add-text">{{ ::('aes.label.postcomment'|trans) }}</span>
+      </button>
+    </div>
+    <form name="addEditorialComment"
+       ng-show="commentsCtrl.adding"
+       class="body"
+       >
+      <div class="input-name">{{ ::('Comment'|trans) }}</div>
+      <textarea
+         class="editor-input"
+         ng-model="commentsCtrl.create.comment"
+         ng-disabled="commentsCtrl.isSending"
+         required
+         ></textarea>
+      <div class="controls">
+        <button
+           class="btn btn-primary btn-sm pull-right"
+           data-test-button="new"
+           ng-click="commentsCtrl.add({editorial_comment:commentsCtrl.create})"
+           ng-disabled="commentsCtrl.isSending || addEditorialComment.$invalid"
+           >
+          {{ ::('Send'|trans) }}
+        </button>
+        <button
+           class="btn btn-default btn-sm pull-right"
+           ng-click="commentsCtrl.cancel()"
+           ng-disabled="commentsCtrl.isSending"
+           >
+          {{ ::('Cancel'|trans) }}
+        </button>
+      </div>
+    </form>
+  </div>
+
+    <div class="list nested" ng-class="{'editorial-low': commentsCtrl.adding, 'editorial-high': !commentsCtrl.adding}">
+    <div class="liner" ng-init="commentsCtrl.fetchComments()">
+      <editorial-comment
+          model="comment"
+          ng-repeat="comment in filtered = (commentsCtrl.comments.displayed | sortComments:'Nested') track by comment.id"
+          class="{{comment.showStatus}} comment-editorial"
+          ng-class="{'level-0': !comment.parent , 'level-1': comment.parent }"
+          allowreplying="(!comment.parent)"
+          save-comment="commentsCtrl.saveComment(comment)"
+          send-reply="commentsCtrl.sendReply(comment)"
+          resolve="commentsCtrl.toggleResolved(comment)"
+         >
+      </editorial-comment>
+    </div>
+    <div
+       class="empty-message"
+       ng-show="filtered.length < 1"
+       >
+      {{ ::('aes.label.nocomments'|trans) }}
+    </div>
+    <div
+       class="more-button-wrapper"
+       ng-show="commentsCtrl.comments.canLoadMore"
+       >
+      <button
+         type="button"
+         class="btn btn-default"
+         ng-click="commentsCtrl.comments.more()"
+         >
+        {{ ::('aes.label.showmorecomments'|trans) }}
+      </button>
+    </div>
+  </div>
+</section>
