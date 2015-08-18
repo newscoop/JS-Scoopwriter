@@ -24,7 +24,7 @@ angular.module('authoringEnvironmentApp').service('editorialComments', [
         * A flag indicating whether there are more comments to be loaded.
         * @property canLoadMore
         * @type Boolean
-        * @default true
+        * @default false
         */
         self.canLoadMore = false;
 
