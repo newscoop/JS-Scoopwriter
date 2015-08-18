@@ -1,9 +1,9 @@
 'use strict';
 
 /**
-* A factory which is responsible to load comments using ngInfinite
+* AngularJS Service for managing article comments.
 *
-* @class Comments
+* @class editorialComments
 */
 angular.module('authoringEnvironmentApp').service('editorialComments', [
     'article',
@@ -155,16 +155,16 @@ angular.module('authoringEnvironmentApp').service('editorialComments', [
         };
 
         /**
-        * Retrieves a list of all slideshows assigned to a specific article.
+        * Retrieves a list of all editorial comment assigned to
+        * a specific article.
         *
         * Initially, an empty array is returned, which is later filled with
         * data on successful server response. At that point the given promise
-        * is resolved (exposed as a $promise property of the returned array).
+        * is resolved.
         *
-        * @method getAllByArticle
-        * @param number {Number} article ID
-        * @param language {String} article language code, e.g. 'de'
-        * @return {Object} array of article slideshows
+        * @method getAllByPage
+        * @param page {Number} Page number
+        * @return {Object} Editorial comments
         */
         self.getAllByPage = function (page) {
             var deferredGet = $q.defer(),
