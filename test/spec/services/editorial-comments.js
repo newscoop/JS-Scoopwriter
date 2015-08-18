@@ -99,14 +99,14 @@ describe('Service: editorialComments', function () {
             }));
 
             it('init() resets everything to default values', function () {
-                comments.canLoadMore = false;
+                comments.canLoadMore = true;
                 comments.loaded.push(items[0], items[1]);
                 comments.displayed.push(items[0]);
                 comments.fetched.push(items[0]);
 
                 comments.init();
 
-                expect(comments.canLoadMore).toBe(true);
+                expect(comments.canLoadMore).toBe(false);
                 expect(comments.loaded.length).toBe(0);
                 expect(comments.displayed.length).toBe(1);
                 expect(comments.fetched.length).toBe(0);

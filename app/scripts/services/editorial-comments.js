@@ -26,7 +26,7 @@ angular.module('authoringEnvironmentApp').service('editorialComments', [
         * @type Boolean
         * @default true
         */
-        self.canLoadMore = true;
+        self.canLoadMore = false;
 
         /**
         * A list of all comments loaded so far.
@@ -71,7 +71,7 @@ angular.module('authoringEnvironmentApp').service('editorialComments', [
             self.tracker = pageTracker.getTracker();
             self.loaded = [];
             self.fetched = [];
-            self.canLoadMore = true;
+            self.canLoadMore = false;
             sorting = 'nested';
 
             self.getAllByPage(self.tracker.next()).then(function (data) {
@@ -140,9 +140,11 @@ angular.module('authoringEnvironmentApp').service('editorialComments', [
                 var next = self.tracker.next();
                 latestPage = next;
                 self.getAllByPage(next - 1).then(function (response) {
-                    if (response.items.length < 1) {
-                        self.canLoadMore = false;
+                    self.canLoadMore = false;
+                    if (response.items.length > 0) {
+                        self.canLoadMore = true;
                     }
+
                     self.loaded = self.loaded.concat(response.items);
                 });
             } else {
@@ -193,7 +195,12 @@ angular.module('authoringEnvironmentApp').service('editorialComments', [
                 .then(function (response) {
                 var responseData = response.data;
                 deferredGet.resolve(responseData);
-                if (responseData.items.length < 1 ||
+                if (responseData.items.length > 0 ||
+                    responseData.pagination !== undefined) {
+                    self.canLoadMore = true;
+                }
+
+                if (responseData.items.length > 0 &&
                     responseData.pagination === undefined) {
                     self.canLoadMore = false;
                 }
