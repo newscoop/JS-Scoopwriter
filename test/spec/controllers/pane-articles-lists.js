@@ -85,24 +85,6 @@ describe('Controller: PaneArticlesListsCtrl', function () {
     });
 
 
-    describe('scope\'s clearNewArticlesListForm() method', function () {
-        it('clears all new articlesList form fields', function () {
-            scope.newArticlesList = {title: 'Economy', parentArticlesList: {id: 123}};
-
-            scope.clearNewArticlesListForm();
-
-            expect(scope.newArticlesList.title).toEqual('');
-            expect(scope.newArticlesList.parentArticlesList).toBe(null);
-        });
-
-        it('resets duplicate articlesList title error', function () {
-            scope.clearNewArticlesListForm();
-            expect(scope.addArticlesList.articlesListTitle.$setValidity)
-                .toHaveBeenCalledWith('duplicate', true);
-        });
-    });
-
-
     describe('scope\'s clearSelectedArticlesLists() method', function () {
         it('clears the selected articlesLists list', function () {
             scope.selectedArticlesLists = [

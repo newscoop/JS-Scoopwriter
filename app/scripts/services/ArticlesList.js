@@ -112,11 +112,6 @@ angular.module('authoringEnvironmentApp').factory('ArticlesList', [
                 {number: number, language: language},
                 true
             );
-            /* TODO: uncomment when api is ready
-            url = 'http://newscoop.aes.sourcefabric.net/api/articles/' + 
-                number + '/' +
-                language + '/playlists.json';
-            */
 
             $http.get(url)
             .success(function (response) {
