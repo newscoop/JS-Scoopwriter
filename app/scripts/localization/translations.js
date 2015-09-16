@@ -362,7 +362,7 @@
     Translator.add("aes.label.addtopic", "Add new topic", "messages", "en");
     Translator.add("aes.label.selectparent", "select parent topic", "messages", "en");
     Translator.add("aes.label.addexistingtopics", "Add existing topic(s)", "messages", "en");
-    Translator.add("aes.label.addexistingarticleslists", "Add existing articless list(s)", "messages", "en");
+    Translator.add("aes.label.addexistingarticleslists", "Add existing articles list(s)", "messages", "en");
     Translator.add("aes.label.topicname", "Topic name", "messages", "en");
     Translator.add("aes.label.articleslistname", "Articles list name", "messages", "en");
     Translator.add("aes.label.assignedtopics", "Assigned Topics", "messages", "en");
