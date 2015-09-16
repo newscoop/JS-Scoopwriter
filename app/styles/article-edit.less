@@ -3654,6 +3654,167 @@ a:hover {
         }
     }
 
+    .articleslists-pane {
+        .add-element {
+            overflow: visible;
+            background-color: @add-element-gray;
+            margin: 10px 0;
+            &:last-child {
+                margin: 10px 0 20px 0;
+            }
+            .heading {
+                padding: 0px;
+                button {
+                    line-height: 1em;
+                    box-shadow: none;
+                    padding: 8px 8px 10px 8px;
+                    margin: 0;
+                    width: 100%;
+                    text-align: left;
+                    .add-text {
+                        font-size: 12px;
+                        padding: 0 5px;
+                    }
+                    &:hover {
+                        background:#e6e6e6;
+                    }
+                }
+            }
+            .body {
+                overflow: visible;
+                &.ng-invalid-duplicate {
+                    input {
+                        border: 1px solid red;
+                    }
+                    span.error-msg {
+                        color: red;
+                    }
+                }
+            }
+            .editor-input {
+                width: 100%;
+                border: 1px solid #d0d0d0;
+                resize: none;
+                margin: 5px 0;
+                padding: 5px;
+                font-size: 90%;
+                &:hover {
+                    border: 1px solid #bbb;
+                }
+                &:focus {
+                    border: rgba(82, 168, 236, 1) solid 1px !important;
+                    outline: none !important;                   
+                    }
+                }
+        }
+
+        .body {
+            padding: 10px 15px 15px;
+            .controls {
+                overflow: hidden;
+                margin-top: 6px;
+                .btn + .btn {
+                    margin: 0 6px 0 0;
+                 }
+            }
+        }
+
+        .assigned-title { 
+            position: relative;
+            clear: both;
+            padding: 0;
+            margin-top: 12px;
+            background-color: @tabpane-background;
+            &:before {
+                content: " ";
+                position: absolute;
+                top: 10px;
+                left: 120px;
+                right: 0px;
+                background: #dcdcdc;
+                height: 1px;
+            }
+        }
+
+        .list {
+            position: absolute;
+            top: 155px;
+            right: 12px;
+            bottom: 18px;
+            left: 12px;
+            overflow: auto;
+            padding: 0;
+            &::-webkit-scrollbar { width: 14px !important; height: 8px; margin: -1px 0; }
+            &::-webkit-scrollbar-thumb { background: #949494; border-left: 6px solid rgba(0,0,0,0) !important; background-clip: padding-box !important; }
+            &::-webkit-scrollbar-thumb:hover { background: #6e6e6e; border-left: 6px solid rgba(0,0,0,0);background-clip: padding-box; }
+            .panel {
+                position: relative;
+                padding: 8px 25px 8px 12px;
+                background: #fff;
+                border: 1px solid #e0e0e0;
+                margin-bottom: 8px;
+                -webkit-box-shadow: 0 1px 0px #e0e0e0;
+                -moz-box-shadow: 0 1px 0px #e0e0e0;
+                box-shadow: 0 1px 0px #e0e0e0;
+                -webkit-border-radius: 3px;
+                -moz-border-radius: 3px;
+                border-radius: 3px;
+                word-break: break-all;
+                &:hover {
+                    border: 1px solid #ccc;
+                }
+                .unassign {
+                    position: absolute;
+                    top: 8px;
+                    right: 9px;
+                    cursor: pointer;
+                    color: gainsboro;
+                    &:hover {
+                        color:gray;
+                    }
+                }
+            }
+        }
+        tags-input {
+            &:focus {
+                outline: none !important;
+                border: none;
+            }
+            &.ti-input-sm .tags {
+                border-radius: 0;
+                margin: 5px 0;
+                border: 1px solid #d0d0d0;
+                box-shadow: none;
+            }
+            .tags {
+                outline: none !important; 
+                &:hover {
+                    border: 1px solid #bbb;
+                }
+                &.focused {
+                    border: rgba(82, 168, 236, 1) solid 1px !important;
+                    outline: none !important;                   
+                }
+                .tag-item {
+                    color: white;
+                    background: #2590bd;
+                    border: 1px solid #357ebd;
+                    border-radius: 2px !important;
+                    padding: 0 5px 2px 5px;
+                    .remove-button { 
+                        color: #fff;
+                        vertical-align: initial;
+                    }
+                }
+            }
+            .autocomplete .suggestion-item {
+                font: 16px "Roboto", Helvetica, Arial, sans-serif;
+                color: #666;
+                background-color: white;  
+            }
+        }
+    }
+
     .topics-pane {
         .add-element {
             overflow: visible;
