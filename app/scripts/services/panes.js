@@ -105,7 +105,7 @@ angular.module('authoringEnvironmentApp').factory('panes', [
                 {
                     name: 'Articles Lists',
                     id: 'articles-lists',
-                    icon: 'relatedarticles',
+                    icon: 'featuredarticles',
                     template: 'views/pane-articles-lists.html',
                     position: 'right',
                     size: 'small',
