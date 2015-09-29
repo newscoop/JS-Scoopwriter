@@ -2,11 +2,12 @@
    <button type="button" class="close"
       ng-click="modalArticlesListsEditorCtrl.close()">
       <span aria-hidden="true">&times;</span></button>
+      <h4>{{ ::('aes.label.addexistingarticleslists'|trans) }}</h4>
 </div>
 
 <div class="modal-body">
    <iframe
       src="{{modalArticlesListsEditorCtrl.url}}"
-      width="100%" height="100%"
+      width="100%" height="620px"
       ></iframe>
 </div>

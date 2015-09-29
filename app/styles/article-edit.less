@@ -3680,43 +3680,6 @@ a:hover {
                     }
                 }
             }
-            .body {
-                overflow: visible;
-                &.ng-invalid-duplicate {
-                    input {
-                        border: 1px solid red;
-                    }
-                    span.error-msg {
-                        color: red;
-                    }
-                }
-            }
-            .editor-input {
-                width: 100%;
-                border: 1px solid #d0d0d0;
-                resize: none;
-                margin: 5px 0;
-                padding: 5px;
-                font-size: 90%;
-                &:hover {
-                    border: 1px solid #bbb;
-                }
-                &:focus {
-                    border: rgba(82, 168, 236, 1) solid 1px !important;
-                    outline: none !important;                   
-                    }
-                }
-        }
-
-        .body {
-            padding: 10px 15px 15px;
-            .controls {
-                overflow: hidden;
-                margin-top: 6px;
-                .btn + .btn {
-                    margin: 0 6px 0 0;
-                 }
-            }
         }
 
         .assigned-title { 
@@ -3729,7 +3692,7 @@ a:hover {
                 content: " ";
                 position: absolute;
                 top: 10px;
-                left: 120px;
+                left: 160px;
                 right: 0px;
                 background: #dcdcdc;
                 height: 1px;
@@ -3778,44 +3741,6 @@ a:hover {
                         cursor: pointer;
                     }
                 }
-            }
-        }
-        tags-input {
-            &:focus {
-                outline: none !important;
-                border: none;
-            }
-            &.ti-input-sm .tags {
-                border-radius: 0;
-                margin: 5px 0;
-                border: 1px solid #d0d0d0;
-                box-shadow: none;
-            }
-            .tags {
-                outline: none !important; 
-                &:hover {
-                    border: 1px solid #bbb;
-                }
-                &.focused {
-                    border: rgba(82, 168, 236, 1) solid 1px !important;
-                    outline: none !important;                   
-                }
-                .tag-item {
-                    color: white;
-                    background: #2590bd;
-                    border: 1px solid #357ebd;
-                    border-radius: 2px !important;
-                    padding: 0 5px 2px 5px;
-                    .remove-button { 
-                        color: #fff;
-                        vertical-align: initial;
-                    }
-                }
-            }
-            .autocomplete .suggestion-item {
-                font: 16px "Roboto", Helvetica, Arial, sans-serif;
-                color: #666;
-                background-color: white;  
             }
         }
     }
@@ -4635,6 +4560,19 @@ a:hover {
                     .modal-body {
                         padding: 0;
                     }
+                }
+            }
+        }
+        &.featuredArticlesModal {
+            .modal-dialog {
+                width: 723px;
+                .modal-body {
+                    padding: 0;
+                }
+                .modal-header {
+                    min-height: 1px;
+                    background: none;
+                    padding: 0 17px;
                 }
             }
         }

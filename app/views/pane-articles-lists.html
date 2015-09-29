@@ -1,5 +1,5 @@
 <section
-    ng-controller="PaneArticlesListsCtrl"
+    ng-controller="PaneArticlesListsCtrl as alCtrl"
     class="tabcontent articleslists-pane"
     auto-list-offset="155">
 
@@ -7,22 +7,22 @@
     {{ ::('aes.label.articleslists'|trans) }}
   </div>
 
-  <div 
+  <div
     class="paneFormWrapper">
 
     <div class="add-element">
       <div class="heading">
 
         <button
-           class="btn btn-default btn-sm"
+           class="btn btn-sf-invisible"
            id="add-media"
            data-test-button="articles-lists-attach"
            role="button"
-           title="{{ ::('aes.label.attachslideshows'|trans) }}"
-           ng-click="openArticlesListsEditor('attach')"
+           title="{{ ::('aes.label.addexistingarticleslists'|trans) }}"
+           ng-click="alCtrl.openArticlesListsEditor('attach')"
            >
-           <i class="fa fa-picture-o"></i>
-           {{ ::('aes.label.addexistingarticleslists'|trans) }}
+           <span class="glyphicon glyphicon-plus"></span>
+            {{ ::('aes.label.addexistingarticleslists'|trans) }}
         </button>
       </div>
 
@@ -34,14 +34,14 @@
 
   <div class="list">
     <div
-       ng-repeat="articlesList in assignedArticlesLists"
-       class="panel panel-default" ng-class=" 'level-{{articlesList.level}}' ">
+       ng-repeat="articlesList in alCtrl.assignedArticlesLists"
+       class="panel panel-default">
       <div
-        ng-click="openArticlesListsEditor('edit', articlesList.id)">
+        ng-click="alCtrl.openArticlesListsEditor('edit', articlesList.id)">
        {{::articlesList.title}}
       </div>
-      <div class="unassign" ng-click="confirmUnassignArticlesList(articlesList)">
-        <span class="glyphicon glyphicon-remove" title="Unassign articlesList"></span>
+      <div class="unassign" ng-click="alCtrl.confirmUnassignArticlesList(articlesList)">
+        <span class="glyphicon glyphicon-remove" title="{{ ::('aes.label.unassignarticleslist'|trans) }}"></span>
       </div>
     </div>
   </div><!-- end list -->
