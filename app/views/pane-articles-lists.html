@@ -1,0 +1,49 @@
+<section
+    ng-controller="PaneArticlesListsCtrl as alCtrl"
+    class="tabcontent articleslists-pane"
+    auto-list-offset="155">
+
+  <div class="panel-title">
+    {{ ::('aes.label.articleslists'|trans) }}
+  </div>
+
+  <div
+    class="paneFormWrapper">
+
+    <div class="add-element">
+      <div class="heading">
+
+        <button
+           class="btn btn-sf-invisible"
+           id="add-media"
+           data-test-button="articles-lists-attach"
+           role="button"
+           title="{{ ::('aes.label.addexistingarticleslists'|trans) }}"
+           ng-click="alCtrl.openArticlesListsEditor('attach')"
+           >
+           <span class="glyphicon glyphicon-plus"></span>
+            {{ ::('aes.label.addexistingarticleslists'|trans) }}
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="assigned-title">{{ ::('aes.label.assignedarticleslists'|trans) }}</div>
+
+  <div class="list">
+    <div
+       ng-repeat="articlesList in alCtrl.assignedArticlesLists"
+       class="panel panel-default">
+      <div
+        ng-click="alCtrl.openArticlesListsEditor('edit', articlesList.id)">
+       {{::articlesList.title}}
+      </div>
+      <div class="unassign" ng-click="alCtrl.confirmUnassignArticlesList(articlesList)">
+        <span class="glyphicon glyphicon-remove" title="{{ ::('aes.label.unassignarticleslist'|trans) }}"></span>
+      </div>
+    </div>
+  </div><!-- end list -->
+
+</section>

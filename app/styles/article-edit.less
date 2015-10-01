@@ -3654,6 +3654,97 @@ a:hover {
         }
     }
 
+    .articleslists-pane {
+        .add-element {
+            overflow: visible;
+            background-color: @add-element-gray;
+            margin: 10px 0;
+            &:last-child {
+                margin: 10px 0 20px 0;
+            }
+            .heading {
+                padding: 0px;
+                button {
+                    line-height: 1em;
+                    box-shadow: none;
+                    padding: 8px 8px 10px 8px;
+                    margin: 0;
+                    width: 100%;
+                    text-align: left;
+                    .add-text {
+                        font-size: 12px;
+                        padding: 0 5px;
+                    }
+                    &:hover {
+                        background:#e6e6e6;
+                    }
+                }
+            }
+        }
+
+        .assigned-title { 
+            position: relative;
+            clear: both;
+            padding: 0;
+            margin-top: 12px;
+            background-color: @tabpane-background;
+            &:before {
+                content: " ";
+                position: absolute;
+                top: 10px;
+                left: 160px;
+                right: 0px;
+                background: #dcdcdc;
+                height: 1px;
+            }
+        }
+
+        .list {
+            position: absolute;
+            top: 155px;
+            right: 12px;
+            bottom: 18px;
+            left: 12px;
+            overflow: auto;
+            padding: 0;
+            &::-webkit-scrollbar { width: 14px !important; height: 8px; margin: -1px 0; }
+            &::-webkit-scrollbar-thumb { background: #949494; border-left: 6px solid rgba(0,0,0,0) !important; background-clip: padding-box !important; }
+            &::-webkit-scrollbar-thumb:hover { background: #6e6e6e; border-left: 6px solid rgba(0,0,0,0);background-clip: padding-box; }
+            .panel {
+                position: relative;
+                padding: 8px 25px 8px 12px;
+                background: #fff;
+                border: 1px solid #e0e0e0;
+                margin-bottom: 8px;
+                -webkit-box-shadow: 0 1px 0px #e0e0e0;
+                -moz-box-shadow: 0 1px 0px #e0e0e0;
+                box-shadow: 0 1px 0px #e0e0e0;
+                -webkit-border-radius: 3px;
+                -moz-border-radius: 3px;
+                border-radius: 3px;
+                word-break: break-all;
+                &:hover {
+                    border: 1px solid #ccc;
+                }
+                .unassign {
+                    position: absolute;
+                    top: 8px;
+                    right: 9px;
+                    cursor: pointer;
+                    color: gainsboro;
+                    &:hover {
+                        color:gray;
+                    }
+                }
+                div {
+                    &:hover {
+                        cursor: pointer;
+                    }
+                }
+            }
+        }
+    }
+
     .topics-pane {
         .add-element {
             overflow: visible;
@@ -4469,6 +4560,19 @@ a:hover {
                     .modal-body {
                         padding: 0;
                     }
+                }
+            }
+        }
+        &.featuredArticlesModal {
+            .modal-dialog {
+                width: 723px;
+                .modal-body {
+                    padding: 0;
+                }
+                .modal-header {
+                    min-height: 1px;
+                    background: none;
+                    padding: 0 17px;
                 }
             }
         }

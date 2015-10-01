@@ -103,6 +103,17 @@ angular.module('authoringEnvironmentApp').factory('panes', [
                     selected: true
                 },
                 {
+                    name: 'Articles Lists',
+                    id: 'articles-lists',
+                    icon: 'featuredarticles',
+                    template: 'views/pane-articles-lists.html',
+                    position: 'right',
+                    size: 'small',
+                    visible: false,
+                    active: false,
+                    selected: true
+                },
+                {
                     name: 'Editorial Comments',
                     id: 'editorial-comments',
                     icon: 'editorial_comments',
