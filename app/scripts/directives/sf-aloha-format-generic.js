@@ -20,8 +20,7 @@ angular.module('authoringEnvironmentApp').directive('sfAlohaFormatGeneric', [
             },
             link: function postLink(scope, element, attrs) {
                 var enabled,
-                    supported,
-                    $element = $(element);
+                    supported;
 
                 AlohaFormattingFactory.add(scope.alohaElement);
 
