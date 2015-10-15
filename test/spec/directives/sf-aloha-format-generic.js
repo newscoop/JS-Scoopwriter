@@ -27,8 +27,8 @@ describe('Directive: sfAlohaFormatGeneric', function () {
 
         $rootScope = _$rootScope_;
         scope = $rootScope.$new();
-        scope.name = 'Bold';
-        scope.element = 'Bold';
+        scope.name = 'notBold';
+        scope.element = 'notBold';
         element = $compile(html)(scope);
         scope.$digest();
 
@@ -55,11 +55,11 @@ describe('Directive: sfAlohaFormatGeneric', function () {
     it('called the correct Aloha.execCommand', function () {
         var execCommandSpy = spyOn(Aloha, 'execCommand').andReturn(true);
 
-        isoScope.alohaElement = 'something-that-is-not-bold';
+        isoScope.alohaElement = 'Bold';
         element.click();
 
         expect(execCommandSpy).toHaveBeenCalledWith(
-            'something-that-is-not-bold', false, '');
+            'Bold', false, '');
     });
 
     it('triggers aloha-smart-content-changed Aloha.execCommand', function () {
