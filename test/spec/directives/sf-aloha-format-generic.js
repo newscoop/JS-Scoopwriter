@@ -27,8 +27,8 @@ describe('Directive: sfAlohaFormatGeneric', function () {
 
         $rootScope = _$rootScope_;
         scope = $rootScope.$new();
-        scope.name = 'notBold';
-        scope.element = 'notBold';
+        scope.name = 'Italics';
+        scope.element = 'Italics';
         element = $compile(html)(scope);
         scope.$digest();
 
