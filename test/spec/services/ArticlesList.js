@@ -25,7 +25,7 @@ describe('Factory: ArticlesList', function () {
             // NOTE: have integers as strings to test data conversion
             data = {
                 id: '12',
-                title: 'Sports',
+                name: 'Sports',
                 notes: 'Sports Notes',
                 maxItems: '4',
                 text: 'Sports'
@@ -63,9 +63,9 @@ describe('Factory: ArticlesList', function () {
         beforeEach(function () {
             response = {
                 items: [
-                    {id: 5, title: 'articlesList 5'},
-                    {id: 2, title: 'articlesList 2'},
-                    {id: 9, title: 'articlesList 9'}
+                    {id: 5, name: 'articlesList 5'},
+                    {id: 2, name: 'articlesList 2'},
+                    {id: 9, name: 'articlesList 9'}
                 ]
             };
 
