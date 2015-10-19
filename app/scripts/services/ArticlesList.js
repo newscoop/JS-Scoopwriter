@@ -24,7 +24,7 @@ angular.module('authoringEnvironmentApp').factory('ArticlesList', [
             var articlesList = new ArticlesList();
 
             articlesList.id = parseInt(data.id);
-            articlesList.title = data.title;
+            articlesList.title = data.name;
             articlesList.notes = (data.notes) ? data.notes : null;
             articlesList.maxItems =
                 (data.maxItems) ? parseInt(data.maxItems) : null;
