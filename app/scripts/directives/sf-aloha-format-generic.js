@@ -34,6 +34,25 @@ angular.module('authoringEnvironmentApp').directive('sfAlohaFormatGeneric', [
                 element.attr('disabled', !supported || !enabled);
 
                 element.bind('click', function () {
+                    // this block sets the Aloha.activeEditable
+                    // to the editable of the current Aloha.Selection
+                    // needed due to a bug with the formatBlock function
+                    var selEditableId = $(Aloha.Selection
+                        .rangeObject.limitObject)[0].id;
+                    for (var i = 0; i < Aloha.editables.length; i++) {
+                        var editable = Aloha.editables[i];
+                        if (selEditableId === editable.obj[0].id) {
+                            Aloha.activeEditable = Aloha.editables[i];
+                        }
+                    }
+
+                    // for some reason execCommand does not trigger 
+                    // a change event (ff browser only).  We need this 
+                    // to fire to enable the article save button
+                    Aloha.trigger('aloha-smart-content-changed', {
+                        'editable': Aloha.activeEditable
+                    });
+
                     Aloha.execCommand(scope.alohaElement, false, '');
                     element.toggleClass(
                         'active',
